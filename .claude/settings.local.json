@@ -1,0 +1,16 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/nicom/OneDrive/Desktop//**)",
+      "Read(//c/Users/nicom/OneDrive/Desktop/**)",
+      "PowerShell(node --version)",
+      "PowerShell(npm --version)",
+      "PowerShell(python --version)",
+      "PowerShell(python3 --version 2>$null)",
+      "PowerShell(New-Item -ItemType Directory -Path \"C:\\\\Users\\\\nicom\\\\OneDrive\\\\Desktop\\\\AI Soccer College Couselor\\\\docs\\\\superpowers\\\\plans\" -Force)"
+    ],
+    "additionalDirectories": [
+      "C:\\Users\\nicom\\OneDrive\\Desktop\\AI Soccer College Couselor"
+    ]
+  }
+}

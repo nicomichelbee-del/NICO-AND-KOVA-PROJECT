@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SoccerRecruit AI — Option 2: Clean Sport</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg: #ffffff;
+    --bg2: #f8fafc;
+    --bg3: #f0fdf4;
+    --green: #16a34a;
+    --green-light: #22c55e;
+    --green-pale: #dcfce7;
+    --orange: #ea580c;
+    --orange-pale: #fff7ed;
+    --text: #0f172a;
+    --muted: #64748b;
+    --border: #e2e8f0;
+  }
+
+  body {
+    background: var(--bg);
+    color: var(--text);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+    overflow-x: hidden;
+  }
+
+  /* NAV */
+  nav {
+    position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+    display: flex; align-items: center; justify-content: space-between;
+    padding: 16px 60px;
+    background: rgba(255,255,255,0.95);
+    backdrop-filter: blur(10px);
+    border-bottom: 1px solid var(--border);
+  }
+  .logo {
+    font-size: 19px; font-weight: 800; letter-spacing: -0.5px;
+    color: var(--text);
+    display: flex; align-items: center; gap: 8px;
+  }
+  .logo-ball {
+    width: 30px; height: 30px;
+    background: var(--green);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px;
+  }
+  nav ul { list-style: none; display: flex; gap: 32px; }
+  nav ul li a {
+    text-decoration: none; color: var(--muted);
+    font-size: 14px; font-weight: 500;
+    transition: color 0.2s;
+  }
+  nav ul li a:hover { color: var(--text); }
+  .nav-cta {
+    background: var(--green);
+    color: #fff;
+    padding: 9px 20px;
+    border-radius: 8px;
+    font-weight: 600; font-size: 14px;
+    text-decoration: none;
+  }
+
+  /* HERO */
+  .hero {
+    padding: 140px 60px 80px;
+    max-width: 1200px;
+    margin: 0 auto;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 80px;
+    align-items: center;
+  }
+  .hero-left {}
+  .hero-badge {
+    display: inline-flex; align-items: center; gap: 8px;
+    background: var(--green-pale);
+    color: var(--green);
+    font-size: 13px; font-weight: 600;
+    padding: 6px 14px;
+    border-radius: 99px;
+    margin-bottom: 28px;
+    border: 1px solid rgba(22,163,74,0.2);
+  }
+  h1 {
+    font-size: clamp(40px, 4.5vw, 64px);
+    font-weight: 900;
+    line-height: 1.05;
+    letter-spacing: -2px;
+    color: var(--text);
+    margin-bottom: 24px;
+  }
+  h1 .accent { color: var(--green); }
+  h1 .accent2 { color: var(--orange); }
+  .hero-sub {
+    font-size: 17px;
+    color: var(--muted);
+    line-height: 1.75;
+    margin-bottom: 40px;
+    max-width: 440px;
+  }
+  .hero-ctas { display: flex; gap: 12px; align-items: center; }
+  .btn-primary {
+    background: var(--green);
+    color: #fff;
+    font-weight: 700; font-size: 15px;
+    padding: 14px 28px;
+    border-radius: 10px;
+    text-decoration: none;
+    transition: background 0.2s, transform 0.2s;
+  }
+  .btn-primary:hover { background: #15803d; transform: translateY(-1px); }
+  .btn-ghost {
+    color: var(--muted);
+    font-size: 14px;
+    text-decoration: none;
+    font-weight: 500;
+    padding: 14px 20px;
+    border: 1px solid var(--border);
+    border-radius: 10px;
+    transition: border-color 0.2s;
+  }
+  .btn-ghost:hover { border-color: var(--green); color: var(--green); }
+
+  /* HERO RIGHT — mockup card */
+  .hero-right {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .mock-card {
+    background: var(--bg2);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 20px 24px;
+    display: flex;
+    align-items: center;
+    gap: 16px;
+  }
+  .mock-card-icon {
+    width: 44px; height: 44px;
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 22px; flex-shrink: 0;
+  }
+  .mock-card-icon.g { background: var(--green-pale); }
+  .mock-card-icon.o { background: var(--orange-pale); }
+  .mock-card-title { font-weight: 700; font-size: 14px; color: var(--text); }
+  .mock-card-sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .mock-pill {
+    margin-left: auto; flex-shrink: 0;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 10px; border-radius: 99px;
+  }
+  .mock-pill.green { background: var(--green-pale); color: var(--green); }
+  .mock-pill.orange { background: var(--orange-pale); color: var(--orange); }
+
+  /* SOCIAL PROOF */
+  .social-proof {
+    padding: 20px 60px 60px;
+    max-width: 1200px;
+    margin: 0 auto;
+  }
+  .proof-bar {
+    display: flex; align-items: center; gap: 40px;
+    padding: 20px 32px;
+    background: var(--bg2);
+    border-radius: 14px;
+    border: 1px solid var(--border);
+    flex-wrap: wrap;
+  }
+  .proof-item {
+    display: flex; align-items: center; gap: 12px;
+  }
+  .proof-num { font-size: 24px; font-weight: 800; color: var(--text); letter-spacing: -0.5px; }
+  .proof-label { font-size: 13px; color: var(--muted); }
+  .proof-divider { width: 1px; height: 36px; background: var(--border); }
+
+  /* FEATURES */
+  .features-section {
+    padding: 100px 60px;
+    background: var(--bg2);
+  }
+  .features-inner { max-width: 1200px; margin: 0 auto; }
+  .section-label {
+    font-size: 12px; font-weight: 700; letter-spacing: 2px; text-transform: uppercase;
+    color: var(--green);
+    margin-bottom: 12px;
+  }
+  .section-title {
+    font-size: clamp(30px, 3.5vw, 44px);
+    font-weight: 900; letter-spacing: -1px;
+    color: var(--text); margin-bottom: 12px;
+    line-height: 1.1;
+  }
+  .section-sub { font-size: 16px; color: var(--muted); max-width: 480px; line-height: 1.7; margin-bottom: 56px; }
+
+  .features-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 16px;
+  }
+  .feature-card {
+    background: var(--bg);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 28px;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+  .feature-card:hover { border-color: var(--green); box-shadow: 0 4px 24px rgba(22,163,74,0.08); }
+  .feature-icon {
+    font-size: 24px; width: 48px; height: 48px;
+    background: var(--green-pale);
+    border-radius: 10px;
+    display: flex; align-items: center; justify-content: center;
+    margin-bottom: 18px;
+  }
+  .feature-card:nth-child(even) .feature-icon { background: var(--orange-pale); }
+  .feature-title { font-size: 16px; font-weight: 700; color: var(--text); margin-bottom: 8px; }
+  .feature-desc { font-size: 14px; color: var(--muted); line-height: 1.65; }
+  .feature-tier {
+    display: inline-block; margin-top: 14px;
+    font-size: 11px; font-weight: 700;
+    color: var(--green); background: var(--green-pale);
+    padding: 3px 10px; border-radius: 99px;
+  }
+
+  /* DIVISION SECTION */
+  .division-section {
+    padding: 80px 60px;
+    max-width: 1200px; margin: 0 auto;
+  }
+  .division-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 16px;
+    margin-top: 48px;
+  }
+  .div-card {
+    border: 2px solid var(--border);
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    transition: all 0.2s;
+  }
+  .div-card:hover { border-color: var(--green); transform: translateY(-2px); }
+  .div-label { font-size: 22px; font-weight: 900; color: var(--text); letter-spacing: -0.5px; margin-bottom: 8px; }
+  .div-name { font-size: 12px; font-weight: 600; color: var(--muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 12px; }
+  .div-tip { font-size: 13px; color: var(--muted); line-height: 1.6; }
+  .div-card.d1 { border-color: var(--orange); }
+  .div-card.d1 .div-label { color: var(--orange); }
+
+  /* PRICING */
+  .pricing-section {
+    padding: 100px 60px;
+    background: var(--text);
+  }
+  .pricing-inner { max-width: 1100px; margin: 0 auto; }
+  .pricing-section .section-label { color: var(--green-light); }
+  .pricing-section .section-title { color: #fff; }
+  .pricing-section .section-sub { color: #94a3b8; }
+
+  .pricing-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+    margin-top: 56px;
+  }
+  .price-card {
+    background: rgba(255,255,255,0.04);
+    border: 1px solid rgba(255,255,255,0.1);
+    border-radius: 20px;
+    padding: 36px;
+    position: relative;
+  }
+  .price-card.featured {
+    background: var(--green);
+    border-color: var(--green);
+  }
+  .price-badge {
+    position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+    background: var(--orange);
+    color: #fff;
+    font-size: 11px; font-weight: 700;
+    padding: 4px 16px; border-radius: 99px;
+  }
+  .price-tier { font-size: 12px; font-weight: 700; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 1.5px; }
+  .price-card.featured .price-tier { color: rgba(0,0,0,0.6); }
+  .price-amount { font-size: 52px; font-weight: 900; color: #fff; letter-spacing: -2px; margin: 10px 0 4px; }
+  .price-card.featured .price-amount { color: #000; }
+  .price-amount sup { font-size: 24px; font-weight: 700; vertical-align: super; }
+  .price-period { font-size: 13px; color: rgba(255,255,255,0.4); margin-bottom: 28px; }
+  .price-card.featured .price-period { color: rgba(0,0,0,0.5); }
+  .price-features { list-style: none; display: flex; flex-direction: column; gap: 11px; }
+  .price-features li { font-size: 14px; color: rgba(255,255,255,0.8); display: flex; align-items: center; gap: 10px; }
+  .price-card.featured .price-features li { color: rgba(0,0,0,0.8); }
+  .price-features li::before { content: '✓'; font-weight: 900; color: var(--green-light); }
+  .price-card.featured .price-features li::before { color: #000; }
+  .price-btn {
+    display: block; margin-top: 32px;
+    text-align: center; text-decoration: none;
+    padding: 13px; border-radius: 10px;
+    font-weight: 700; font-size: 14px;
+  }
+  .price-btn-outline { border: 1px solid rgba(255,255,255,0.2); color: #fff; }
+  .price-btn-outline:hover { background: rgba(255,255,255,0.05); }
+  .price-btn-dark { background: #000; color: #fff; }
+  .price-btn-dark:hover { background: #1a1a1a; }
+
+  /* CTA */
+  .cta-section {
+    padding: 100px 60px;
+    text-align: center;
+    background: var(--bg3);
+    border-top: 1px solid var(--border);
+  }
+  .cta-eyebrow { font-size: 13px; font-weight: 700; color: var(--green); letter-spacing: 1.5px; text-transform: uppercase; margin-bottom: 16px; }
+  .cta-title { font-size: clamp(36px, 4vw, 52px); font-weight: 900; letter-spacing: -1.5px; color: var(--text); margin-bottom: 16px; line-height: 1.1; }
+  .cta-sub { font-size: 17px; color: var(--muted); margin-bottom: 40px; }
+
+  /* FOOTER */
+  footer {
+    padding: 36px 60px;
+    border-top: 1px solid var(--border);
+    display: flex; align-items: center; justify-content: space-between;
+    background: var(--bg);
+  }
+  .footer-logo { font-size: 16px; font-weight: 800; color: var(--text); display: flex; align-items: center; gap: 8px; }
+  .footer-copy { font-size: 13px; color: var(--muted); }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <div class="logo">
+    <div class="logo-ball">⚽</div>
+    SoccerRecruit AI
+  </div>
+  <ul>
+    <li><a href="#">Features</a></li>
+    <li><a href="#">How It Works</a></li>
+    <li><a href="#">Pricing</a></li>
+    <li><a href="#">For Coaches</a></li>
+  </ul>
+  <a href="#" class="nav-cta">Get Started Free</a>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-left">
+    <div class="hero-badge">⚽ AI-Powered Recruitment Counselor</div>
+    <h1>Get recruited.<br><span class="accent">Play college</span><br><span class="accent2">soccer.</span></h1>
+    <p class="hero-sub">The AI coach that knows every D1–NAIA program. Build your profile, match your schools, and land in coaches' inboxes with emails that actually get responses.</p>
+    <div class="hero-ctas">
+      <a href="#" class="btn-primary">Start for Free →</a>
+      <a href="#" class="btn-ghost">See how it works</a>
+    </div>
+  </div>
+  <div class="hero-right">
+    <div class="mock-card">
+      <div class="mock-card-icon g">🎯</div>
+      <div>
+        <div class="mock-card-title">School Matches Found</div>
+        <div class="mock-card-sub">12 reach · 18 target · 8 safety</div>
+      </div>
+      <div class="mock-pill green">New</div>
+    </div>
+    <div class="mock-card">
+      <div class="mock-card-icon g">✉️</div>
+      <div>
+        <div class="mock-card-title">Coach Email Generated</div>
+        <div class="mock-card-sub">Wake Forest University — D1 Women's Soccer</div>
+      </div>
+      <div class="mock-pill green">Ready</div>
+    </div>
+    <div class="mock-card">
+      <div class="mock-card-icon o">📊</div>
+      <div>
+        <div class="mock-card-title">Coach Responded!</div>
+        <div class="mock-card-sub">UNC Charlotte — interested in a campus visit</div>
+      </div>
+      <div class="mock-pill orange">Reply</div>
+    </div>
+    <div class="mock-card">
+      <div class="mock-card-icon g">🎬</div>
+      <div>
+        <div class="mock-card-title">Highlight Video Rated</div>
+        <div class="mock-card-sub">8.2/10 — Add more 1v1 clips to opening 30s</div>
+      </div>
+      <div class="mock-pill green">Done</div>
+    </div>
+  </div>
+</section>
+
+<!-- SOCIAL PROOF BAR -->
+<div class="social-proof">
+  <div class="proof-bar">
+    <div class="proof-item">
+      <div class="proof-num">1,200+</div>
+      <div class="proof-label">Athletes recruited</div>
+    </div>
+    <div class="proof-divider"></div>
+    <div class="proof-item">
+      <div class="proof-num">3x</div>
+      <div class="proof-label">More coach responses</div>
+    </div>
+    <div class="proof-divider"></div>
+    <div class="proof-item">
+      <div class="proof-num">D1–NAIA</div>
+      <div class="proof-label">All divisions covered</div>
+    </div>
+    <div class="proof-divider"></div>
+    <div class="proof-item">
+      <div class="proof-num">15+</div>
+      <div class="proof-label">Years of soccer recruiting knowledge</div>
+    </div>
+  </div>
+</div>
+
+<!-- FEATURES -->
+<div class="features-section">
+  <div class="features-inner">
+    <div class="section-label">Features</div>
+    <h2 class="section-title">Everything a recruiting<br>counselor would tell you</h2>
+    <p class="section-sub">Built from 15+ years of D1–NAIA soccer recruitment knowledge. The AI knows what coaches actually want.</p>
+
+    <div class="features-grid">
+      <div class="feature-card">
+        <div class="feature-icon">🏟️</div>
+        <div class="feature-title">Athlete Profile Builder</div>
+        <p class="feature-desc">Position, GPA, stats, club team, grad year, and highlight link — all in one profile coaches want to see.</p>
+        <span class="feature-tier">Free</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎯</div>
+        <div class="feature-title">School Matcher</div>
+        <p class="feature-desc">Reach, target, and safety schools based on your real stats and division goals — not generic rankings.</p>
+        <span class="feature-tier">Free</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">✉️</div>
+        <div class="feature-title">Coach Email Generator</div>
+        <p class="feature-desc">AI writes emails tailored to each division. D1 = stat-heavy. D2/D3 = academic fit. NAIA = playing time appeal.</p>
+        <span class="feature-tier">Free · 3 emails</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">📊</div>
+        <div class="feature-title">Outreach Tracker</div>
+        <p class="feature-desc">Dashboard to track every contact, response, and follow-up. Never let a recruiting lead go cold.</p>
+        <span class="feature-tier">Pro</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">💬</div>
+        <div class="feature-title">Follow-up Assistant</div>
+        <p class="feature-desc">AI drafts follow-ups, thank-you notes, and answers to coach questions so you always know what to say.</p>
+        <span class="feature-tier">Pro</span>
+      </div>
+      <div class="feature-card">
+        <div class="feature-icon">🎬</div>
+        <div class="feature-title">Highlight Video Rater</div>
+        <p class="feature-desc">Submit your video URL. Get a 1–10 rating + specific feedback on what to add, cut, and improve.</p>
+        <span class="feature-tier">Pro</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- DIVISION SECTION -->
+<div class="division-section">
+  <div class="section-label">Division Expertise</div>
+  <h2 class="section-title">Tailored for every level</h2>
+  <p class="section-sub">Different divisions want different things from athletes. Our AI knows the difference.</p>
+  <div class="division-grid">
+    <div class="div-card d1">
+      <div class="div-label">D1</div>
+      <div class="div-name">NCAA Division I</div>
+      <p class="div-tip">Stat-heavy emails. Club team > HS. Recruiting starts sophomore year. Register with NCAA Eligibility Center.</p>
+    </div>
+    <div class="div-card">
+      <div class="div-label">D2</div>
+      <div class="div-name">NCAA Division II</div>
+      <p class="div-tip">Balance of athletic and academic fit. Warmer tone. Solid scholarships available.</p>
+    </div>
+    <div class="div-card">
+      <div class="div-label">D3</div>
+      <div class="div-name">NCAA Division III</div>
+      <p class="div-tip">Emphasize fit, character, and versatility. No athletic scholarships — sell the whole student-athlete.</p>
+    </div>
+    <div class="div-card">
+      <div class="div-label">NAIA</div>
+      <div class="div-name">NAIA / JUCO</div>
+      <p class="div-tip">Immediate playing time. Smaller schools, bigger roster spots. Great path to transferring up.</p>
+    </div>
+  </div>
+</div>
+
+<!-- PRICING -->
+<div class="pricing-section">
+  <div class="pricing-inner">
+    <div class="section-label">Pricing</div>
+    <h2 class="section-title">No upfront commitment.</h2>
+    <p class="section-sub">Start free. Upgrade when your recruiting gets serious.</p>
+
+    <div class="pricing-grid">
+      <div class="price-card">
+        <div class="price-tier">Free</div>
+        <div class="price-amount">$0</div>
+        <div class="price-period">Forever free</div>
+        <ul class="price-features">
+          <li>Athlete profile builder</li>
+          <li>5 school matches</li>
+          <li>3 coach emails</li>
+          <li>Division guidance</li>
+        </ul>
+        <a href="#" class="price-btn price-btn-outline">Get Started</a>
+      </div>
+      <div class="price-card featured">
+        <div class="price-badge">MOST POPULAR</div>
+        <div class="price-tier">Pro</div>
+        <div class="price-amount"><sup>$</sup>19</div>
+        <div class="price-period">per month · cancel anytime</div>
+        <ul class="price-features">
+          <li>Everything in Free</li>
+          <li>Unlimited coach emails</li>
+          <li>Outreach tracker</li>
+          <li>Follow-up assistant</li>
+          <li>Highlight video rater</li>
+        </ul>
+        <a href="#" class="price-btn price-btn-dark">Start Pro</a>
+      </div>
+      <div class="price-card">
+        <div class="price-tier">Family</div>
+        <div class="price-amount"><sup>$</sup>29</div>
+        <div class="price-period">per month · cancel anytime</div>
+        <ul class="price-features">
+          <li>Everything in Pro</li>
+          <li>Parent dashboard view</li>
+          <li>Shared recruiting timeline</li>
+          <li>Progress notifications</li>
+        </ul>
+        <a href="#" class="price-btn price-btn-outline">Start Family</a>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- CTA -->
+<section class="cta-section">
+  <div class="cta-eyebrow">Start Today</div>
+  <h2 class="cta-title">Your recruiting clock<br>is ticking.</h2>
+  <p class="cta-sub">D1 coaches make most offers sophomore and junior year. Don't wait.</p>
+  <a href="#" class="btn-primary" style="font-size: 16px; padding: 16px 36px;">Create Your Free Profile →</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div class="footer-logo">
+    <div class="logo-ball">⚽</div>
+    SoccerRecruit AI
+  </div>
+  <div class="footer-copy">© 2025 SoccerRecruit AI. All rights reserved.</div>
+</footer>
+
+</body>
+</html>
