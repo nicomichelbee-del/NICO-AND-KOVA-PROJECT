@@ -69,3 +69,59 @@ export interface User {
   emailsUsed: number
   schoolMatchesUsed: number
 }
+
+export interface CoachResponse {
+  id: string
+  school: string
+  coachName: string
+  date: string
+  rating: 'hot' | 'warm' | 'cold' | 'not_interested'
+  confidence: number
+  signals: string[]
+  nextAction: string
+  rawText?: string
+}
+
+export interface CampCoach {
+  name: string
+  title: string
+}
+
+export interface IdCamp {
+  id: string
+  school: string
+  division: Division
+  campName: string
+  date: string
+  location: string
+  cost: string
+  url: string
+  coaches: CampCoach[]
+}
+
+export interface LeaderboardEntry {
+  id: string
+  athleteName: string
+  position: string
+  clubTeam: string
+  gradYear: number
+  divisionGoal: Division
+  score: number
+  videoUrl: string
+  ratedAt: string
+}
+
+export interface RosterProgram {
+  school: string
+  conference: string
+  division: Division
+  seniorsLeaving: { position: string; count: number }[]
+  predictedNeed: { position: string; level: 'High' | 'Medium' | 'Low' }[]
+  coachName: string
+}
+
+export interface PositionNeed {
+  position: string
+  demand: 'High' | 'Medium' | 'Low'
+  schoolCount: number
+}

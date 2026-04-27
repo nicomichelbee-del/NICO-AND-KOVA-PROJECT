@@ -3,6 +3,7 @@ import { AuthProvider, useAuth } from './context/AuthContext'
 import { Landing } from './pages/Landing'
 import { Login } from './pages/Login'
 import { Signup } from './pages/Signup'
+import { Leaderboard } from './pages/Leaderboard'
 import { DashboardLayout } from './components/layout/DashboardLayout'
 import { Overview } from './pages/dashboard/Overview'
 import { Profile } from './pages/dashboard/Profile'
@@ -11,6 +12,8 @@ import { Emails } from './pages/dashboard/Emails'
 import { Tracker } from './pages/dashboard/Tracker'
 import { FollowUp } from './pages/dashboard/FollowUp'
 import { VideoRater } from './pages/dashboard/VideoRater'
+import { Camps } from './pages/dashboard/Camps'
+import { RosterIntel } from './pages/dashboard/RosterIntel'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -30,6 +33,7 @@ export default function App() {
           <Route path="/" element={<Landing />} />
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          <Route path="/leaderboard" element={<Leaderboard />} />
           <Route
             path="/dashboard"
             element={
@@ -45,6 +49,8 @@ export default function App() {
             <Route path="tracker" element={<Tracker />} />
             <Route path="followup" element={<FollowUp />} />
             <Route path="video" element={<VideoRater />} />
+            <Route path="camps" element={<Camps />} />
+            <Route path="roster" element={<RosterIntel />} />
           </Route>
         </Routes>
       </BrowserRouter>

@@ -26,6 +26,7 @@ export function Schools() {
     try {
       const { schools } = await matchSchools(profile)
       setSchools(schools)
+      localStorage.setItem('matchedSchools', JSON.stringify(schools))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to match schools')
     } finally { setLoading(false) }

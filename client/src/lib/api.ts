@@ -1,4 +1,4 @@
-import type { AthleteProfile, Division, School, VideoRating } from '../types'
+import type { AthleteProfile, Division, School, VideoRating, CoachResponse, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed } from '../types'
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(path, {
@@ -28,3 +28,21 @@ export function rateVideo(videoUrl: string, profile: AthleteProfile) {
 export function generateFollowUp(profile: AthleteProfile, context: string, type: 'followup' | 'thankyou' | 'answer') {
   return post<{ body: string }>('/api/ai/followup', { profile, context, type })
 }
+
+export function rateResponse(school: string, coachName: string, text: string) {
+  return post<CoachResponse>('/api/ai/rate-response', { school, coachName, text })
+}
+
+export function findCamps(profile: AthleteProfile, schools: School[]) {
+  return post<{ camps: IdCamp[] }>('/api/ai/find-camps', { profile, schools })
+}
+
+export function generateCampEmails(profile: AthleteProfile, camp: IdCamp, coaches: CampCoach[]) {
+  return post<{ emails: { coachName: string; subject: string; body: string }[] }>('/api/ai/camp-emails', { profile, camp, coaches })
+}
+
+export function getRosterIntel(gender: 'mens' | 'womens', division: Division | 'all', athletePosition: string) {
+  return post<{ programs: RosterProgram[]; positionSummary: PositionNeed[] }>('/api/ai/roster-intel', { gender, division, athletePosition })
+}
+
+export type { LeaderboardEntry }

@@ -1,0 +1,100 @@
+<h2>Feature Placement Overview</h2>
+<p class="subtitle">Where each of the 4 new features lives in the app — click to select any you want to discuss further</p>
+
+<div class="cards" style="grid-template-columns: 1fr 1fr;">
+
+  <div class="card" data-choice="gmail" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1923;padding:16px;display:flex;flex-direction:column;gap:10px;min-height:140px;justify-content:center;">
+      <div style="background:#1a2535;border-radius:8px;padding:12px;text-align:center;font-size:13px;color:#6b7280;">
+        <div style="font-weight:600;color:#e5e7eb;margin-bottom:8px;">Sign in to Recruit IQ</div>
+        <div style="background:#111827;border:1px solid #374151;border-radius:6px;padding:8px;display:flex;align-items:center;justify-content:center;gap:8px;margin-bottom:6px;">
+          <span style="font-size:16px;">🇬</span>
+          <span style="color:#e5e7eb;font-size:12px;">Continue with Google</span>
+        </div>
+        <div style="color:#4b5563;font-size:11px;">── or ──</div>
+        <div style="color:#6b7280;font-size:11px;margin-top:6px;">Email / password below</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>1. Google Sign-In</h3>
+      <p>Added to Login &amp; Signup pages. Phase 2 adds "Connect Gmail" inside settings for inbox reading.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="schedule" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1923;padding:16px;display:flex;flex-direction:column;gap:8px;min-height:140px;justify-content:center;">
+      <div style="background:#1a2535;border-radius:8px;padding:12px;font-size:12px;">
+        <div style="color:#eab308;font-weight:600;margin-bottom:8px;font-size:11px;">📅 MY UPCOMING SCHEDULE</div>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:8px;">
+          <span style="background:#1e3a5f;border:1px solid #3b82f6;color:#93c5fd;border-radius:20px;padding:3px 10px;font-size:11px;">✓ ECNL Playoffs</span>
+          <span style="background:#1a2535;border:1px solid #374151;color:#6b7280;border-radius:20px;padding:3px 10px;font-size:11px;">MLS NEXT Fest</span>
+          <span style="background:#1e3a5f;border:1px solid #3b82f6;color:#93c5fd;border-radius:20px;padding:3px 10px;font-size:11px;">✓ MLS NEXT 2 Showcase</span>
+        </div>
+        <div style="background:#111827;border:1px solid #374151;border-radius:6px;padding:6px;color:#6b7280;font-size:11px;">+ Add custom event...</div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>2. Schedule Picker — Follow-up Assistant</h3>
+      <p>Pre-loaded ECNL / MLS NEXT / MLS NEXT 2 events + custom entry. AI weaves your schedule into the email.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="responses" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1923;padding:16px;min-height:140px;">
+      <div style="display:flex;gap:0;border-bottom:1px solid #374151;margin-bottom:10px;">
+        <div style="padding:6px 14px;font-size:12px;color:#6b7280;border-bottom:2px solid transparent;">Contacts</div>
+        <div style="padding:6px 14px;font-size:12px;color:#eab308;border-bottom:2px solid #eab308;font-weight:600;">Coach Responses</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:6px;">
+        <div style="background:#1a2535;border-radius:6px;padding:8px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="color:#e5e7eb;font-size:12px;font-weight:600;">UNC Chapel Hill</div>
+            <div style="color:#6b7280;font-size:11px;">Coach Smith · Apr 22</div>
+          </div>
+          <span style="background:#14532d;color:#4ade80;border-radius:20px;padding:3px 10px;font-size:11px;">🔥 Hot</span>
+        </div>
+        <div style="background:#1a2535;border-radius:6px;padding:8px;display:flex;align-items:center;justify-content:space-between;">
+          <div>
+            <div style="color:#e5e7eb;font-size:12px;font-weight:600;">Wake Forest</div>
+            <div style="color:#6b7280;font-size:11px;">Coach Davis · Apr 18</div>
+          </div>
+          <span style="background:#1e3a5f;color:#93c5fd;border-radius:20px;padding:3px 10px;font-size:11px;">☀️ Warm</span>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>3. Coach Responses Tab — Outreach Tracker</h3>
+      <p>New tab alongside Contacts. Paste a reply or fill quick form → AI rates interest as Hot / Warm / Cold / Not Interested.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="leaderboard" onclick="toggleSelect(this)">
+    <div class="card-image" style="background:#0f1923;padding:16px;min-height:140px;">
+      <div style="display:flex;gap:0;border-bottom:1px solid #374151;margin-bottom:10px;">
+        <div style="padding:6px 14px;font-size:12px;color:#6b7280;border-bottom:2px solid transparent;">Rate Video</div>
+        <div style="padding:6px 14px;font-size:12px;color:#eab308;border-bottom:2px solid #eab308;font-weight:600;">Leaderboard 🏆</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:5px;">
+        <div style="background:#1a2535;border-radius:6px;padding:7px 10px;display:flex;align-items:center;gap:10px;">
+          <span style="color:#eab308;font-weight:700;font-size:13px;width:20px;">#1</span>
+          <div style="flex:1;"><div style="color:#e5e7eb;font-size:12px;">Jordan M. · ST · Class 2026</div><div style="color:#6b7280;font-size:11px;">FC Dallas Academy · D1 Goal</div></div>
+          <span style="background:#14532d;color:#4ade80;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;">9.4</span>
+          <a style="color:#3b82f6;font-size:11px;text-decoration:none;">▶ Watch</a>
+        </div>
+        <div style="background:#1a2535;border-radius:6px;padding:7px 10px;display:flex;align-items:center;gap:10px;">
+          <span style="color:#9ca3af;font-weight:700;font-size:13px;width:20px;">#2</span>
+          <div style="flex:1;"><div style="color:#e5e7eb;font-size:12px;">Alex R. · CM · Class 2027</div><div style="color:#6b7280;font-size:11px;">LAFC Youth · D1 Goal</div></div>
+          <span style="background:#14532d;color:#4ade80;border-radius:6px;padding:2px 8px;font-size:12px;font-weight:700;">9.1</span>
+          <a style="color:#3b82f6;font-size:11px;text-decoration:none;">▶ Watch</a>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>4. Leaderboard Tab — Video Rater</h3>
+      <p>Top 10 rated videos. Opt-in to appear publicly. Public URL at /leaderboard — shareable without login.</p>
+    </div>
+  </div>
+
+</div>
+
+<p style="color:#6b7280;font-size:13px;margin-top:16px;text-align:center;">Click any card to select it if you want to discuss that feature further, or let me know in the terminal if the overall structure looks good.</p>

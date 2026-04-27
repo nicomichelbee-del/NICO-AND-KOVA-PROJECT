@@ -9,6 +9,8 @@ const navItems = [
   { to: '/dashboard/tracker', label: 'Outreach Tracker', icon: '📊', end: false },
   { to: '/dashboard/followup', label: 'Follow-up Assistant', icon: '💬', end: false },
   { to: '/dashboard/video', label: 'Video Rater', icon: '🎬', end: false },
+  { to: '/dashboard/camps', label: 'ID Camps', icon: '⛺', end: false },
+  { to: '/dashboard/roster', label: 'Roster Intel', icon: '🔍', end: false },
 ]
 
 export function Sidebar() {
@@ -22,7 +24,6 @@ export function Sidebar() {
 
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-60 bg-[#0c1118] border-r border-[rgba(255,255,255,0.07)] flex flex-col z-40">
-      {/* Logo */}
       <div className="px-6 py-6 border-b border-[rgba(255,255,255,0.07)]">
         <div className="flex items-center gap-2.5">
           <div className="w-7 h-7 bg-[#eab308] rounded flex items-center justify-center text-xs">⚽</div>
@@ -30,7 +31,6 @@ export function Sidebar() {
         </div>
       </div>
 
-      {/* Nav */}
       <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">
         {navItems.map((item) => (
           <NavLink
@@ -51,7 +51,6 @@ export function Sidebar() {
         ))}
       </nav>
 
-      {/* User */}
       <div className="px-3 py-4 border-t border-[rgba(255,255,255,0.07)]">
         <div className="px-3 py-2 mb-1">
           <div className="text-xs font-medium text-[#f1f5f9] truncate">{user?.email}</div>

@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/Button'
 import { Textarea } from '../../components/ui/Textarea'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
+import { Input } from '../../components/ui/Input'
 import type { AthleteProfile } from '../../types'
 
 function getProfile(): AthleteProfile | null {
@@ -17,10 +18,21 @@ const EMAIL_TYPES = [
 ]
 
 const PLACEHOLDERS: Record<string, string> = {
-  followup: 'e.g. Emailed Coach Smith at UNC Charlotte 2 weeks ago about the striker position. Haven\'t heard back.',
+  followup: "e.g. Emailed Coach Smith at UNC Charlotte 2 weeks ago about the striker position. Haven't heard back.",
   thankyou: 'e.g. Just visited Notre Dame, met with Coach Williams, toured the facilities and training center.',
-  answer: 'e.g. Coach asked about my academic interests and whether I\'m visiting other schools this fall.',
+  answer: "e.g. Coach asked about my academic interests and whether I'm visiting other schools this fall.",
 }
+
+const PRESET_EVENTS = [
+  { id: 'ecnl-playoffs', label: 'ECNL Girls Playoffs', date: 'June 2026' },
+  { id: 'ecnl-nationals', label: 'ECNL Girls Nationals', date: 'July 2026' },
+  { id: 'ecnl-boys-playoffs', label: 'ECNL Boys Playoffs', date: 'June 2026' },
+  { id: 'ecnl-boys-nationals', label: 'ECNL Boys Nationals', date: 'July 2026' },
+  { id: 'mls-next-fest', label: 'MLS NEXT Fest', date: 'June 2026' },
+  { id: 'mls-next-fall', label: 'MLS NEXT Fall Showcase', date: 'September 2026' },
+  { id: 'mls-next2-spring', label: 'MLS NEXT 2 Spring Showcase', date: 'April 2026' },
+  { id: 'mls-next2-summer', label: 'MLS NEXT 2 Summer Showcase', date: 'July 2026' },
+]
 
 export function FollowUp() {
   const [type, setType] = useState<'followup' | 'thankyou' | 'answer'>('followup')
@@ -29,13 +41,27 @@ export function FollowUp() {
   const [error, setError] = useState('')
   const [result, setResult] = useState('')
   const [copied, setCopied] = useState(false)
+  const [selectedEvents, setSelectedEvents] = useState<string[]>([])
+  const [customEvent, setCustomEvent] = useState('')
+
+  function toggleEvent(id: string) {
+    setSelectedEvents((prev) => prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id])
+  }
+
+  function buildScheduleContext() {
+    const presetLabels = PRESET_EVENTS.filter((e) => selectedEvents.includes(e.id)).map((e) => `${e.label} (${e.date})`)
+    const all = customEvent.trim() ? [...presetLabels, customEvent.trim()] : presetLabels
+    if (all.length === 0) return ''
+    return `\n\nUpcoming schedule: ${all.join(', ')}.`
+  }
 
   async function handleGenerate() {
     const profile = getProfile()
     if (!profile?.name) { setError('Please complete your athlete profile first.'); return }
     setError(''); setLoading(true)
     try {
-      const { body } = await generateFollowUp(profile, context, type)
+      const fullContext = context + buildScheduleContext()
+      const { body } = await generateFollowUp(profile, fullContext, type)
       setResult(body)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to generate email')
@@ -59,7 +85,7 @@ export function FollowUp() {
       </div>
 
       {/* Type selector */}
-      <div className="grid grid-cols-3 gap-3 mb-8">
+      <div className="grid grid-cols-3 gap-3 mb-6">
         {EMAIL_TYPES.map((t) => (
           <button
             key={t.value}
@@ -76,6 +102,32 @@ export function FollowUp() {
         ))}
       </div>
 
+      {/* Schedule Picker */}
+      <Card className="p-5 mb-6">
+        <div className="text-xs font-semibold text-[#eab308] uppercase tracking-wider mb-3">📅 My Upcoming Schedule (optional)</div>
+        <div className="flex flex-wrap gap-2 mb-3">
+          {PRESET_EVENTS.map((event) => (
+            <button
+              key={event.id}
+              onClick={() => toggleEvent(event.id)}
+              className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
+                selectedEvents.includes(event.id)
+                  ? 'bg-[rgba(234,179,8,0.1)] border-[#eab308] text-[#eab308]'
+                  : 'bg-transparent border-[rgba(255,255,255,0.1)] text-[#64748b] hover:border-[rgba(234,179,8,0.4)] hover:text-[#f1f5f9]'
+              }`}
+            >
+              {selectedEvents.includes(event.id) ? '✓ ' : ''}{event.label}
+              <span className="ml-1 opacity-60">({event.date})</span>
+            </button>
+          ))}
+        </div>
+        <Input
+          placeholder="+ Custom event (e.g. Regional Showcase in Dallas, May 2026)"
+          value={customEvent}
+          onChange={(e) => setCustomEvent(e.target.value)}
+        />
+      </Card>
+
       <div className="grid grid-cols-2 gap-6">
         <div className="flex flex-col gap-4">
           <Textarea
@@ -83,7 +135,7 @@ export function FollowUp() {
             value={context}
             onChange={(e) => setContext(e.target.value)}
             placeholder={PLACEHOLDERS[type]}
-            rows={7}
+            rows={6}
           />
           {error && <p className="text-xs text-red-400">{error}</p>}
           <Button onClick={handleGenerate} disabled={loading}>
@@ -108,7 +160,7 @@ export function FollowUp() {
             <Card className="p-12 h-full flex flex-col items-center justify-center text-center">
               <div className="text-3xl mb-3">💬</div>
               <div className="font-serif text-base font-bold text-[#f1f5f9] mb-1">Your email appears here</div>
-              <p className="text-xs text-[#64748b]">Choose a type and click Generate</p>
+              <p className="text-xs text-[#64748b]">Choose a type, pick your events, and click Generate</p>
             </Card>
           )}
         </div>
