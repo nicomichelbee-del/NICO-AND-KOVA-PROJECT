@@ -18,6 +18,7 @@ export function Sidebar() {
   const navigate = useNavigate()
 
   async function handleSignOut() {
+    localStorage.removeItem('testMode')
     await signOut()
     navigate('/')
   }
@@ -53,15 +54,24 @@ export function Sidebar() {
 
       <div className="px-3 py-4 border-t border-[rgba(255,255,255,0.07)]">
         <div className="px-3 py-2 mb-1">
-          <div className="text-xs font-medium text-[#f1f5f9] truncate">{user?.email}</div>
-          <div className="text-xs text-[#64748b] mt-0.5">Free plan</div>
+          {localStorage.getItem('testMode') === 'true' ? (
+            <>
+              <div className="text-xs font-medium text-[#eab308] truncate">Test Mode</div>
+              <div className="text-xs text-[#64748b] mt-0.5">Not signed in</div>
+            </>
+          ) : (
+            <>
+              <div className="text-xs font-medium text-[#f1f5f9] truncate">{user?.email}</div>
+              <div className="text-xs text-[#64748b] mt-0.5">Free plan</div>
+            </>
+          )}
         </div>
         <button
           onClick={handleSignOut}
           className="w-full flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm text-[#64748b] hover:text-[#f1f5f9] hover:bg-[rgba(255,255,255,0.04)] transition-colors text-left"
         >
           <span className="text-base w-5 text-center">→</span>
-          Sign out
+          {localStorage.getItem('testMode') === 'true' ? 'Exit test mode' : 'Sign out'}
         </button>
       </div>
     </aside>
