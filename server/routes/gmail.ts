@@ -4,10 +4,14 @@ import { createClient } from '@supabase/supabase-js'
 
 const router = Router()
 
-const supabase = createClient(
-  process.env.VITE_SUPABASE_URL ?? '',
-  process.env.SUPABASE_SERVICE_KEY ?? process.env.VITE_SUPABASE_ANON_KEY ?? ''
-)
+function getSupabase() {
+  const url = process.env.VITE_SUPABASE_URL ?? ''
+  const key = process.env.SUPABASE_SERVICE_KEY ?? process.env.VITE_SUPABASE_ANON_KEY ?? ''
+  if (!url || !key || key === 'placeholder_anon_key') {
+    throw new Error('Supabase not configured — set VITE_SUPABASE_URL and SUPABASE_SERVICE_KEY')
+  }
+  return createClient(url, key)
+}
 
 function getOAuth2Client() {
   return new google.auth.OAuth2(
@@ -46,7 +50,7 @@ router.get('/callback', async (req, res) => {
     const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
     const profile = await gmail.users.getProfile({ userId: 'me' })
     const email = profile.data.emailAddress ?? ''
-    await supabase.from('user_gmail_tokens').upsert({
+    await getSupabase().from('user_gmail_tokens').upsert({
       user_id: userId,
       refresh_token: tokens.refresh_token ?? '',
       email,
@@ -73,7 +77,7 @@ router.get('/callback', async (req, res) => {
 router.get('/status', async (req, res) => {
   const { userId } = req.query as { userId: string }
   if (!userId) return res.json({ connected: false, email: null })
-  const { data } = await supabase
+  const { data } = await getSupabase()
     .from('user_gmail_tokens')
     .select('email')
     .eq('user_id', userId)
@@ -86,7 +90,7 @@ router.post('/send', async (req, res) => {
   const { userId, to, subject, body } = req.body as {
     userId: string; to: string; subject: string; body: string
   }
-  const { data: tokenRow } = await supabase
+  const { data: tokenRow } = await getSupabase()
     .from('user_gmail_tokens')
     .select('refresh_token')
     .eq('user_id', userId)
@@ -112,7 +116,7 @@ router.post('/sync', async (req, res) => {
     userId: string
     contacts: { id: string; coachEmail: string }[]
   }
-  const { data: tokenRow } = await supabase
+  const { data: tokenRow } = await getSupabase()
     .from('user_gmail_tokens')
     .select('refresh_token')
     .eq('user_id', userId)
