@@ -164,4 +164,6 @@ export interface SchoolRecord {
   goalsForwardAvg: number
   goalsMidAvg: number
   programStrength: number
+  scholarships?: boolean
+  notes?: string
 }
