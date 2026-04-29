@@ -2,22 +2,36 @@ import { useState } from 'react'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Badge } from '../../components/ui/Badge'
-import type { AthleteProfile, Division } from '../../types'
+import type { AthleteProfile, Division, Region } from '../../types'
 
 const POSITIONS = ['Goalkeeper', 'Center Back', 'Right Back', 'Left Back', 'Defensive Mid', 'Central Mid', 'Attacking Mid', 'Right Wing', 'Left Wing', 'Striker']
 const DIVISIONS: Division[] = ['D1', 'D2', 'D3', 'NAIA', 'JUCO']
+const REGIONS: { value: Region; label: string }[] = [
+  { value: 'any', label: 'Any region' },
+  { value: 'West', label: 'West Coast (CA, OR, WA, NV, AK, HI)' },
+  { value: 'Southwest', label: 'Southwest (TX, AZ, NM, OK, CO, UT)' },
+  { value: 'Midwest', label: 'Midwest (IL, IN, OH, MI, WI, MN, IA, MO, KS, NE, ND, SD)' },
+  { value: 'Southeast', label: 'Southeast (FL, GA, NC, SC, VA, TN, AL, MS, LA, AR, KY, WV)' },
+  { value: 'Northeast', label: 'Northeast (NY, NJ, PA, MA, CT, RI, NH, VT, ME, MD, DE, DC)' },
+]
 
 const defaultProfile: AthleteProfile = {
   name: '', gradYear: 2026, position: '', gender: 'womens', clubTeam: '', clubLeague: '',
-  gpa: 0, satAct: '', goals: 0, assists: 0, season: '2024-25',
+  gpa: 0, satAct: '', goals: 0, assists: 0,
   intendedMajor: '', highlightUrl: '', targetDivision: 'D2',
   locationPreference: 'any', sizePreference: 'any',
 }
 
+// Display helper: show empty string for 0/falsy numerics so users don't get
+// "05" when typing into a field that defaulted to 0.
+const numDisplay = (n: number) => (n ? String(n) : '')
+
 export function Profile() {
   const [profile, setProfile] = useState<AthleteProfile>(() => {
-    try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') }
-    catch { return defaultProfile }
+    try {
+      const stored = JSON.parse(localStorage.getItem('athleteProfile') ?? '')
+      return { ...defaultProfile, ...stored }
+    } catch { return defaultProfile }
   })
   const [saved, setSaved] = useState(false)
 
@@ -50,7 +64,7 @@ export function Profile() {
           <h2 className="text-xs font-bold text-[#64748b] tracking-[2px] uppercase mb-4 pb-3 border-b border-[rgba(255,255,255,0.07)]">Personal Info</h2>
           <div className="grid grid-cols-2 gap-4">
             <Input label="Full name" value={profile.name} onChange={(e) => update('name', e.target.value)} placeholder="Alex Johnson" />
-            <Input label="Graduation year" type="number" value={profile.gradYear} onChange={(e) => update('gradYear', parseInt(e.target.value) || 2026)} placeholder="2026" />
+            <Input label="Graduation year" type="number" value={numDisplay(profile.gradYear)} onChange={(e) => update('gradYear', parseInt(e.target.value) || 2026)} placeholder="2026" />
           </div>
         </section>
 
@@ -85,13 +99,10 @@ export function Profile() {
               </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <Input label="Season (e.g. 2024-25)" value={profile.season} onChange={(e) => update('season', e.target.value)} placeholder="2024-25" />
-          </div>
           <div className="grid grid-cols-3 gap-4">
-            <Input label="Goals" type="number" value={profile.goals} onChange={(e) => update('goals', parseInt(e.target.value) || 0)} placeholder="12" />
-            <Input label="Assists" type="number" value={profile.assists} onChange={(e) => update('assists', parseInt(e.target.value) || 0)} placeholder="8" />
-            <Input label="Highlight video URL" value={profile.highlightUrl} onChange={(e) => update('highlightUrl', e.target.value)} placeholder="youtube.com/..." />
+            <Input label="Goals" type="number" min="0" value={numDisplay(profile.goals)} onChange={(e) => update('goals', parseInt(e.target.value) || 0)} placeholder="12" />
+            <Input label="Assists" type="number" min="0" value={numDisplay(profile.assists)} onChange={(e) => update('assists', parseInt(e.target.value) || 0)} placeholder="8" />
+            <Input label="Highlight video URL (optional)" value={profile.highlightUrl ?? ''} onChange={(e) => update('highlightUrl', e.target.value)} placeholder="youtube.com/..." />
           </div>
         </section>
 
@@ -108,9 +119,9 @@ export function Profile() {
         <section>
           <h2 className="text-xs font-bold text-[#64748b] tracking-[2px] uppercase mb-4 pb-3 border-b border-[rgba(255,255,255,0.07)]">Academics</h2>
           <div className="grid grid-cols-3 gap-4">
-            <Input label="GPA (unweighted)" type="number" step="0.01" min="0" max="4" value={profile.gpa} onChange={(e) => update('gpa', parseFloat(e.target.value) || 0)} placeholder="3.7" />
-            <Input label="SAT / ACT score" value={profile.satAct ?? ''} onChange={(e) => update('satAct', e.target.value)} placeholder="1280 / 29" />
-            <Input label="Intended major" value={profile.intendedMajor} onChange={(e) => update('intendedMajor', e.target.value)} placeholder="Business" />
+            <Input label="GPA (unweighted)" type="number" step="0.01" min="0" max="4" value={profile.gpa ? String(profile.gpa) : ''} onChange={(e) => update('gpa', parseFloat(e.target.value) || 0)} placeholder="3.7" />
+            <Input label="SAT / ACT (optional)" value={profile.satAct ?? ''} onChange={(e) => update('satAct', e.target.value)} placeholder="1280 / 29" />
+            <Input label="Intended major (optional)" value={profile.intendedMajor ?? ''} onChange={(e) => update('intendedMajor', e.target.value)} placeholder="Business" />
           </div>
         </section>
 
@@ -136,7 +147,12 @@ export function Profile() {
             </div>
           </div>
           <div className="grid grid-cols-2 gap-4">
-            <Input label="Location preference" value={profile.locationPreference} onChange={(e) => update('locationPreference', e.target.value)} placeholder="Southeast, Texas, any..." />
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-[#f1f5f9]">Region preference</label>
+              <select value={profile.locationPreference} onChange={(e) => update('locationPreference', e.target.value as Region)} className={selectClass}>
+                {REGIONS.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
+              </select>
+            </div>
             <div className="flex flex-col gap-1.5">
               <label className="text-sm font-medium text-[#f1f5f9]">School size</label>
               <select value={profile.sizePreference} onChange={(e) => update('sizePreference', e.target.value as AthleteProfile['sizePreference'])} className={selectClass}>

@@ -1,5 +1,7 @@
 export type Division = 'D1' | 'D2' | 'D3' | 'NAIA' | 'JUCO'
 
+export type Region = 'any' | 'West' | 'Southwest' | 'Midwest' | 'Southeast' | 'Northeast'
+
 export interface AthleteProfile {
   id?: string
   userId?: string
@@ -13,12 +15,21 @@ export interface AthleteProfile {
   satAct?: string
   goals: number
   assists: number
-  season: string
-  intendedMajor: string
-  highlightUrl: string
+  intendedMajor?: string
+  highlightUrl?: string
   targetDivision: Division
-  locationPreference: string
+  locationPreference: Region
   sizePreference: 'small' | 'medium' | 'large' | 'any'
+}
+
+export interface MatchBreakdown {
+  // Each axis is normalized 0–100. "yourValue" / "typicalValue" describe the
+  // raw inputs the comparison was made on, so the UI can show side-by-side.
+  gpa: { score: number; yourValue: number; typicalValue: number; verdict: string }
+  stats: { score: number; yourValue: number; typicalValue: number; verdict: string } | null
+  division: { score: number; yourTarget: Division; schoolDivision: Division; verdict: string }
+  region: { score: number; yourPref: string; schoolRegion: string; verdict: string }
+  size: { score: number; yourPref: string; schoolSize: string; verdict: string }
 }
 
 export interface School {
@@ -26,6 +37,8 @@ export interface School {
   name: string
   division: Division
   location: string
+  region: string
+  size: 'small' | 'medium' | 'large'
   enrollment: number
   conference: string
   coachName?: string
@@ -33,6 +46,42 @@ export interface School {
   category: 'reach' | 'target' | 'safety'
   matchScore: number
   notes?: string
+  programStrength?: number
+  scholarships?: boolean
+  gpaAvg?: number
+  goalsForwardAvg?: number
+  goalsMidAvg?: number
+  breakdown?: MatchBreakdown
+}
+
+export interface SchoolDirectoryEntry {
+  id: string
+  name: string
+  division: Division
+  conference: string
+  location: string
+  region: string
+  size: 'small' | 'medium' | 'large'
+  enrollment: number
+  notes?: string
+}
+
+export interface ProgramIntel {
+  schoolId: string
+  schoolName: string
+  gender: 'mens' | 'womens'
+  formation: string                    // e.g., "4-3-3" or "Unknown"
+  formationVariants?: string[]         // common alternate shapes
+  playstyle: string                    // 1–2 sentence summary
+  tacticalNotes: string[]              // bullet-point tendencies (3–6 items)
+  recentForm?: string                  // last-known season summary
+  staffStability?: string              // coach tenure / coaching change context
+  recruitingProfile?: string           // what they look for in recruits
+  confidence: 'high' | 'medium' | 'low'
+  caveats: string[]                    // explicit honesty about gaps
+  searchQueries: { label: string; url: string }[]  // pre-built search links (no fake URLs)
+  cachedAt: string                     // ISO timestamp
+  source: 'ai-generated'               // marker for the UI
 }
 
 export interface CoachEmail {
