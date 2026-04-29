@@ -1,8 +1,9 @@
 import { Router } from 'express'
 import Anthropic from '@anthropic-ai/sdk'
-import type { AthleteProfile, Division, RosterProgram, PositionNeed } from '../../client/src/types/index'
+import type { AthleteProfile, Division, RosterProgram, PositionNeed, SchoolRecord } from '../../client/src/types/index'
 import { matchSchools } from '../lib/schoolMatcher'
 import rosterData from '../data/rosterPrograms.json'
+import schoolsData from '../data/schools.json'
 
 const router = Router()
 

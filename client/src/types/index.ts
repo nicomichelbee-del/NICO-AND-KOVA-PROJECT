@@ -118,6 +118,8 @@ export interface RosterProgram {
   conference: string
   division: Division
   location: string
+  region: string
+  state: string
   gender: 'mens' | 'womens'
   coachName: string
   coachEmail: string
