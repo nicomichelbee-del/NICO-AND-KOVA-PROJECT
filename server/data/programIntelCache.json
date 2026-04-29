@@ -1,0 +1,134 @@
+{
+  "rutgers:mens": {
+    "schoolId": "rutgers",
+    "schoolName": "Rutgers University",
+    "gender": "mens",
+    "formation": "Unknown — see search links",
+    "formationVariants": [],
+    "playstyle": "Unknown — unable to provide specific tactical description without recent reliable information.",
+    "tacticalNotes": [],
+    "recentForm": "Unknown",
+    "staffStability": "Unknown",
+    "recruitingProfile": "Unknown",
+    "confidence": "low",
+    "caveats": [
+      "Rutgers Men's Soccer is a Big Ten program but does not have the documented tactical profile or national prominence that would allow me to confidently describe their formation, playstyle, or recent coaching approach.",
+      "I do not have specific knowledge of their head coach's current tenure, philosophy, or recent season results (2023–2024).",
+      "Formation and tactical tendencies vary year to year; verify current setup directly with the program's official roster and coaching staff.",
+      "For accurate scouting information, consult Rutgers Athletics official website, recent game film, and direct communication with the coaching staff.",
+      "Big Ten conference context alone is insufficient to infer Rutgers' specific tactics—programs in the same conference vary significantly in style."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=Rutgers%20University%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=Rutgers%20University%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=Rutgers%20University%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=Rutgers%20University%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=Big%20Ten%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-04-29T05:40:12.573Z",
+    "source": "ai-generated"
+  },
+  "setonhill:mens": {
+    "schoolId": "setonhill",
+    "schoolName": "Seton Hill University",
+    "gender": "mens",
+    "formation": "Unknown — see search links",
+    "formationVariants": [],
+    "playstyle": "Unknown — insufficient specific knowledge of recent tactical approach.",
+    "tacticalNotes": [],
+    "recentForm": "Unknown",
+    "staffStability": "Unknown",
+    "recruitingProfile": "Unknown",
+    "confidence": "low",
+    "caveats": [
+      "Seton Hill is a smaller D2 program (PSAC) with limited publicly available tactical documentation. I do not have specific, recent (2022–2024) knowledge of their formation, coaching philosophy, or match tendencies.",
+      "I cannot verify the current head coach, recent roster composition, or seasonal results without access to current program sources.",
+      "PSAC programs vary widely in resources and playing style; baseline PSAC tendencies (compact defenses, set-piece reliance, variable possession styles) may apply, but I cannot confirm Seton Hill's specific approach.",
+      "To scout this program accurately, consult the team's official website, recent game video, and direct communication with coaching staff.",
+      "Conference standings, rosters, and tactical identity should be verified through Seton Hill Athletics or PSAC official channels before making recruitment or analytical decisions."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=Seton%20Hill%20University%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=Seton%20Hill%20University%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=Seton%20Hill%20University%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=Seton%20Hill%20University%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=PSAC%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-04-29T05:40:43.991Z",
+    "source": "ai-generated"
+  },
+  "pennstate:mens": {
+    "schoolId": "pennstate",
+    "schoolName": "Penn State University",
+    "gender": "mens",
+    "formation": "Unknown — see search links",
+    "formationVariants": [],
+    "playstyle": "Unknown — see search links to verify current tactical approach",
+    "tacticalNotes": [],
+    "recentForm": "Unknown — recent season records and NCAA tournament performance not confirmed",
+    "staffStability": "Unknown — current head coach and coaching staff tenure not confirmed",
+    "recruitingProfile": "Unknown — see search links",
+    "confidence": "low",
+    "caveats": [
+      "Penn State is a Big Ten D1 program with a documented soccer history, but I lack specific, recent (2022–2024) knowledge of their men's soccer tactical system, formation preferences, or coaching staff stability.",
+      "I cannot verify the current head coach, assistant coaching structure, or whether recent staff changes have occurred.",
+      "I do not have reliable data on their 2023 or 2024 season results, NCAA tournament appearances, or recent conference standing.",
+      "Big Ten men's soccer programs typically compete at a high level with balanced possession-based or compact defensive systems, but I cannot confirm Penn State's specific approach without verification.",
+      "Verify all tactical and personnel details via Penn State Athletics official site, the coach's bio, and current roster pages before scouting decisions."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=Penn%20State%20University%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=Penn%20State%20University%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=Penn%20State%20University%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=Penn%20State%20University%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=Big%20Ten%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-04-29T05:42:58.770Z",
+    "source": "ai-generated"
+  }
+}

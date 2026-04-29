@@ -1,4 +1,4 @@
-import type { AthleteProfile, Division, School, VideoRating, CoachResponse, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed, IdEvent } from '../types'
+import type { AthleteProfile, Division, School, SchoolDirectoryEntry, ProgramIntel, VideoRating, CoachResponse, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed, IdEvent } from '../types'
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(path, {
@@ -32,6 +32,14 @@ export function findCoach(school: string, division: Division, gender: 'mens' | '
 
 export function matchSchools(profile: AthleteProfile) {
   return post<{ schools: School[] }>('/api/ai/schools', { profile })
+}
+
+export function listAllSchools() {
+  return get<{ schools: SchoolDirectoryEntry[] }>('/api/ai/schools-directory')
+}
+
+export function getProgramIntel(schoolId: string, gender: 'mens' | 'womens', refresh = false) {
+  return post<{ intel: ProgramIntel }>('/api/ai/program-intel', { schoolId, gender, refresh })
 }
 
 export function rateVideo(videoUrl: string, profile: AthleteProfile) {

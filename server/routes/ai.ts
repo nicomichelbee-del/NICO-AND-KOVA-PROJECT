@@ -1,7 +1,8 @@
 import { Router } from 'express'
 import Anthropic from '@anthropic-ai/sdk'
 import type { AthleteProfile, Division, RosterProgram, PositionNeed, SchoolRecord } from '../../client/src/types/index'
-import { matchSchools } from '../lib/schoolMatcher'
+import { matchSchools, listSchools } from '../lib/schoolMatcher'
+import { getProgramIntel } from '../lib/programIntel'
 import rosterData from '../data/rosterPrograms.json'
 import schoolsData from '../data/schools.json'
 
@@ -54,12 +55,12 @@ Athlete:
 - Grad Year: ${profile.gradYear}
 - Position: ${profile.position}
 - Club: ${profile.clubTeam} (${profile.clubLeague})
-- Stats: ${profile.goals}G / ${profile.assists}A (${profile.season})
+- Stats: ${profile.goals}G / ${profile.assists}A
 - GPA: ${profile.gpa}
-- Major: ${profile.intendedMajor}
-- Highlight: ${profile.highlightUrl}
+- Major: ${profile.intendedMajor || 'undecided'}
+- Highlight: ${profile.highlightUrl || 'not provided'}
 
-Must include: grad year, position, club+league, stats, GPA, major, highlight link, why this school, clear ask (visit/camp/call).
+Must include: grad year, position, club+league, stats, GPA, why this school, clear ask (visit/camp/call). Include major and highlight link only if provided above.
 
 Respond with JSON only: { "subject": "...", "body": "..." }`, 800)
     res.json(parseJSON(text, {}))
@@ -93,6 +94,27 @@ router.post('/schools', async (req, res) => {
     const { profile } = req.body as { profile: AthleteProfile }
     const schools = matchSchools(profile)
     res.json({ schools })
+  } catch (e) {
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
+  }
+})
+
+router.get('/schools-directory', (_req, res) => {
+  try {
+    res.json({ schools: listSchools() })
+  } catch (e) {
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
+  }
+})
+
+router.post('/program-intel', async (req, res) => {
+  try {
+    const { schoolId, gender, refresh } = req.body as {
+      schoolId: string; gender: 'mens' | 'womens'; refresh?: boolean
+    }
+    if (!schoolId) return res.status(400).json({ error: 'schoolId required' })
+    const intel = await getProgramIntel(schoolId, gender ?? 'womens', { refresh: !!refresh })
+    res.json({ intel })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
   }
