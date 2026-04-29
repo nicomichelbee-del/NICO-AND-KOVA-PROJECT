@@ -60,7 +60,7 @@ Athlete:
 
 Must include: grad year, position, club+league, stats, GPA, major, highlight link, why this school, clear ask (visit/camp/call).
 
-Respond with JSON only: { "subject": "...", "body": "..." }`, 1500)
+Respond with JSON only: { "subject": "...", "body": "..." }`, 800)
     res.json(parseJSON(text, {}))
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
@@ -90,20 +90,7 @@ Rules:
 router.post('/schools', async (req, res) => {
   try {
     const { profile } = req.body as { profile: AthleteProfile }
-    const matched = matchSchools(profile)
-
-    const schoolList = matched.map((s, i) => `${i + 1}. ${s.name} (${s.division}, ${s.category}, score ${s.matchScore})`).join('\n')
-    const notesText = await ask(`For each school below, write ONE sentence (max 15 words) explaining why it is a reach/target/safety for this athlete.
-
-Athlete: GPA ${profile.gpa}, ${profile.goals}G/${profile.assists}A, ${profile.position}, targets ${profile.targetDivision}
-
-Schools:
-${schoolList}
-
-Return JSON only: {"notes": ["sentence1", "sentence2"]} — one note per school in the same order.`, 2000)
-
-    const parsed = parseJSON<{ notes: string[] }>(notesText, { notes: [] })
-    const schools = matched.map((s, i) => ({ ...s, notes: parsed.notes[i] ?? '' }))
+    const schools = matchSchools(profile)
     res.json({ schools })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
@@ -135,7 +122,7 @@ router.post('/followup', async (req, res) => {
     const text = await ask(`Write ${typeInstruction} for: ${profile.name}, ${profile.position}, Class of ${profile.gradYear}, ${profile.clubTeam}. Target: ${profile.targetDivision}.
 Context: ${context}
 
-Respond with JSON only: { "body": "..." }`, 800)
+Respond with JSON only: { "body": "..." }`, 450)
     res.json(parseJSON(text, {}))
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
@@ -171,9 +158,9 @@ router.post('/find-camps', async (req, res) => {
     const schoolList = schools.map((s) => `${s.name} (${s.division})`).join(', ')
     const text = await ask(`Find ID camps for a ${profile.position} (Class ${profile.gradYear}, targeting ${profile.targetDivision}) at these schools: ${schoolList || 'top programs in their division'}.
 
-Return 6-10 camps across these schools plus 2-3 major open ID camps. Include realistic camp details.
+Return 4-6 camps across these schools. Include realistic camp details.
 
-Respond with JSON only: { "camps": [{ "id": "uuid", "school": "...", "division": "D1", "campName": "...", "date": "June 14-16, 2026", "location": "City, ST", "cost": "$250", "url": "https://example.edu/soccercamp", "coaches": [{ "name": "Coach Smith", "title": "Head Coach" }, { "name": "Coach Lee", "title": "Assistant Coach" }] }] }`, 2500)
+Respond with JSON only: { "camps": [{ "id": "uuid", "school": "...", "division": "D1", "campName": "...", "date": "June 14-16, 2026", "location": "City, ST", "cost": "$250", "url": "https://example.edu/soccercamp", "coaches": [{ "name": "Coach Smith", "title": "Head Coach" }] }] }`, 1200)
     res.json(parseJSON(text, { camps: [] }))
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
@@ -198,7 +185,7 @@ Coaches: ${coachList}
 
 For each coach, write a concise email (under 200 words) mentioning: attending their specific camp on the date, key stats, highlight link, why their program, and a clear ask to connect at camp.
 
-Respond with JSON only: { "emails": [{ "coachName": "...", "subject": "...", "body": "..." }] }`, 2000)
+Respond with JSON only: { "emails": [{ "coachName": "...", "subject": "...", "body": "..." }] }`, 900)
     res.json(parseJSON(text, { emails: [] }))
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })

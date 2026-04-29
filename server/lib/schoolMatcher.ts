@@ -77,7 +77,7 @@ function category(score: number): 'reach' | 'target' | 'safety' {
   return 'safety'
 }
 
-export function matchSchools(profile: AthleteProfile, topN = 25): Omit<School, 'notes'>[] {
+export function matchSchools(profile: AthleteProfile, topN = 25): School[] {
   const gender = profile.gender ?? 'womens'
   const scored = (schoolsData as SchoolRecord[]).map((s) => ({
     school: s,
@@ -109,5 +109,6 @@ export function matchSchools(profile: AthleteProfile, topN = 25): Omit<School, '
     coachEmail: s.coachEmail,
     category: safetyIds.has(s.school.id) ? 'safety' : reachIds.has(s.school.id) ? 'reach' : 'target',
     matchScore: s.score,
+    notes: s.school.notes ?? '',
   }))
 }
