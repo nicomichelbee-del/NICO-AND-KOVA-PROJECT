@@ -6,6 +6,7 @@ export interface AthleteProfile {
   name: string
   gradYear: number
   position: string
+  gender: 'mens' | 'womens'
   clubTeam: string
   clubLeague: string
   gpa: number
@@ -26,7 +27,7 @@ export interface School {
   division: Division
   location: string
   enrollment: number
-  conferece: string
+  conference: string
   coachName?: string
   coachEmail?: string
   category: 'reach' | 'target' | 'safety'
@@ -112,16 +113,55 @@ export interface LeaderboardEntry {
 }
 
 export interface RosterProgram {
+  id: string
   school: string
   conference: string
   division: Division
-  seniorsLeaving: { position: string; count: number }[]
-  predictedNeed: { position: string; level: 'High' | 'Medium' | 'Low' }[]
+  location: string
+  gender: 'mens' | 'womens'
   coachName: string
+  coachEmail: string
+  typicalRecruitingNeeds: { position: string; level: 'High' | 'Medium' | 'Low' }[]
+  formationStyle: string
+  notes: string
 }
 
 export interface PositionNeed {
   position: string
   demand: 'High' | 'Medium' | 'Low'
   schoolCount: number
+}
+
+export interface IdEvent {
+  id: string
+  name: string
+  organizer: string
+  divisions: Division[]
+  gender: 'mens' | 'womens' | 'both'
+  dateRange: string
+  location: string
+  coachAttendance: string
+  costRange: string
+  url: string
+  notes: string
+}
+
+export interface SchoolRecord {
+  id: string
+  name: string
+  division: Division
+  conference: string
+  location: string
+  region: string
+  enrollment: number
+  size: 'small' | 'medium' | 'large'
+  mensCoach: string
+  mensCoachEmail: string
+  womensCoach: string
+  womensCoachEmail: string
+  gpaMin: number
+  gpaAvg: number
+  goalsForwardAvg: number
+  goalsMidAvg: number
+  programStrength: number
 }

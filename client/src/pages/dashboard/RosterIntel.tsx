@@ -47,8 +47,7 @@ export function RosterIntel() {
     if (!positionSearch.trim()) return programs
     const q = positionSearch.toLowerCase()
     return programs.filter((prog) =>
-      prog.seniorsLeaving.some((s) => s.position.toLowerCase().includes(q)) ||
-      prog.predictedNeed.some((n) => n.position.toLowerCase().includes(q))
+      prog.typicalRecruitingNeeds.some((n) => n.position.toLowerCase().includes(q))
     )
   }, [programs, positionSearch])
 
@@ -63,13 +62,19 @@ export function RosterIntel() {
         </div>
         <h1 className="font-serif text-4xl font-black text-[#f1f5f9] tracking-[-1px]">Roster Intelligence</h1>
         <p className="text-[#64748b] mt-2 text-sm">
-          Find programs losing seniors and predict which positions they need to recruit this cycle.
+          Find programs actively recruiting your position based on their typical class needs.
+        </p>
+      </div>
+
+      <div className="mb-6 p-3 bg-[rgba(234,179,8,0.06)] border border-[rgba(234,179,8,0.2)] rounded-xl flex items-start gap-3">
+        <span className="text-[#eab308] text-sm mt-0.5">ℹ️</span>
+        <p className="text-xs text-[#64748b] leading-relaxed">
+          <span className="text-[#eab308] font-semibold">Verified program data.</span> Coach names and program info are sourced from athletic department records (Spring 2026). Recruiting needs reflect each program's typical class composition — confirm details directly with coaches.
         </p>
       </div>
 
       <Card className="p-6 mb-8">
         <div className="flex flex-wrap gap-6 mb-5">
-          {/* Gender toggle */}
           <div>
             <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-2">Gender</div>
             <div className="flex gap-2">
@@ -89,7 +94,6 @@ export function RosterIntel() {
             </div>
           </div>
 
-          {/* Division filter */}
           <div>
             <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-2">Division</div>
             <div className="flex flex-wrap gap-2">
@@ -112,7 +116,7 @@ export function RosterIntel() {
 
         {error && <p className="text-xs text-red-400 mb-3">{error}</p>}
         <Button onClick={handleSearch} disabled={loading}>
-          {loading ? 'Analyzing rosters...' : '📊 Analyze Roster Needs'}
+          {loading ? 'Loading...' : '📊 Find Recruiting Programs'}
         </Button>
       </Card>
 
@@ -139,17 +143,16 @@ export function RosterIntel() {
           <div className="p-4 border-b border-[rgba(255,255,255,0.07)] flex items-center gap-4 flex-wrap">
             <div className="flex-1 min-w-0">
               <div className="text-sm font-semibold text-[#f1f5f9]">
-                {filteredPrograms.length} of {programs.length} Programs with Roster Openings
+                {filteredPrograms.length} of {programs.length} Programs
               </div>
-              <div className="text-xs text-[#64748b] mt-0.5">Click a row to see all leaving seniors</div>
+              <div className="text-xs text-[#64748b] mt-0.5">Click a row to see full recruiting breakdown</div>
             </div>
-            {/* Position search */}
             <div className="relative">
               <input
                 type="text"
                 value={positionSearch}
                 onChange={(e) => setPositionSearch(e.target.value)}
-                placeholder="Search by position..."
+                placeholder="Filter by position..."
                 list="positions"
                 className="bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-2 text-sm text-[#f1f5f9] placeholder-[#64748b] focus:outline-none focus:border-[#eab308] w-52"
               />
@@ -157,12 +160,7 @@ export function RosterIntel() {
                 {SOCCER_POSITIONS.map((p) => <option key={p} value={p} />)}
               </datalist>
               {positionSearch && (
-                <button
-                  onClick={() => setPositionSearch('')}
-                  className="absolute right-2 top-1/2 -translate-y-1/2 text-[#64748b] hover:text-[#f1f5f9] text-xs"
-                >
-                  ✕
-                </button>
+                <button onClick={() => setPositionSearch('')} className="absolute right-2 top-1/2 -translate-y-1/2 text-[#64748b] hover:text-[#f1f5f9] text-xs">✕</button>
               )}
             </div>
           </div>
@@ -170,7 +168,7 @@ export function RosterIntel() {
             <table className="w-full text-sm">
               <thead>
                 <tr className="border-b border-[rgba(255,255,255,0.07)]">
-                  {['School', 'Conference', 'Div', 'All Leaving Seniors', 'High Need Positions', 'Coach'].map((h) => (
+                  {['School', 'Conference', 'Div', 'Formation', 'Actively Recruiting', 'Coach'].map((h) => (
                     <th key={h} className="text-left px-5 py-3.5 text-xs font-semibold text-[#64748b] uppercase tracking-wider whitespace-nowrap">{h}</th>
                   ))}
                 </tr>
@@ -179,50 +177,51 @@ export function RosterIntel() {
                 {filteredPrograms.map((prog) => (
                   <>
                     <tr
-                      key={prog.school}
-                      onClick={() => setExpandedRow(expandedRow === prog.school ? null : prog.school)}
+                      key={prog.id}
+                      onClick={() => setExpandedRow(expandedRow === prog.id ? null : prog.id)}
                       className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.02)] transition-colors cursor-pointer"
                     >
                       <td className="px-5 py-4 font-medium text-[#f1f5f9] whitespace-nowrap">{prog.school}</td>
                       <td className="px-5 py-4 text-[#64748b] text-xs whitespace-nowrap">{prog.conference}</td>
                       <td className="px-5 py-4"><Badge variant="muted">{prog.division}</Badge></td>
-                      <td className="px-5 py-4 text-[#64748b] text-xs">
-                        {prog.seniorsLeaving.map((s) => `${s.count} ${s.position}`).join(', ')}
-                      </td>
+                      <td className="px-5 py-4 text-[#64748b] text-xs">{prog.formationStyle}</td>
                       <td className="px-5 py-4">
                         <div className="flex flex-wrap gap-1">
-                          {prog.predictedNeed.filter((n) => n.level === 'High').map((n) => (
+                          {prog.typicalRecruitingNeeds.filter((n) => n.level === 'High').map((n) => (
                             <span key={n.position} className={`px-2 py-0.5 rounded text-xs border ${demandColor.High}`}>
                               {n.position}
                             </span>
                           ))}
                         </div>
                       </td>
-                      <td className="px-5 py-4 text-[#64748b] text-xs whitespace-nowrap">{prog.coachName}</td>
+                      <td className="px-5 py-4 text-xs whitespace-nowrap">
+                        <div className="text-[#f1f5f9]">{prog.coachName}</div>
+                        {prog.coachEmail && <div className="text-[#64748b]">{prog.coachEmail}</div>}
+                      </td>
                     </tr>
-                    {expandedRow === prog.school && (
-                      <tr className="border-b border-[rgba(255,255,255,0.04)] bg-[rgba(234,179,8,0.02)]">
+                    {expandedRow === prog.id && (
+                      <tr key={`${prog.id}-exp`} className="border-b border-[rgba(255,255,255,0.04)] bg-[rgba(234,179,8,0.02)]">
                         <td colSpan={6} className="px-5 py-4">
                           <div className="grid grid-cols-2 gap-6">
                             <div>
-                              <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-2">All Seniors Leaving</div>
+                              <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-2">Full Recruiting Needs</div>
                               <div className="flex flex-wrap gap-2">
-                                {prog.seniorsLeaving.map((s) => (
-                                  <span key={s.position} className="px-3 py-1 rounded-lg border border-[rgba(255,255,255,0.1)] text-xs text-[#f1f5f9]">
-                                    {s.count}× {s.position}
-                                  </span>
-                                ))}
-                              </div>
-                            </div>
-                            <div>
-                              <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-2">All Recruiting Needs</div>
-                              <div className="flex flex-wrap gap-2">
-                                {prog.predictedNeed.map((n) => (
+                                {prog.typicalRecruitingNeeds.map((n) => (
                                   <span key={n.position} className={`px-3 py-1 rounded-lg border text-xs font-medium ${demandColor[n.level]}`}>
                                     {n.position}: {n.level}
                                   </span>
                                 ))}
                               </div>
+                            </div>
+                            <div>
+                              <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-2">Program Notes</div>
+                              <p className="text-xs text-[#64748b] leading-relaxed">{prog.notes}</p>
+                              {prog.coachEmail && (
+                                <div className="mt-3">
+                                  <span className="text-xs text-[#64748b]">Coach email: </span>
+                                  <span className="text-xs text-[#60a5fa]">{prog.coachEmail}</span>
+                                </div>
+                              )}
                             </div>
                           </div>
                         </td>
@@ -235,7 +234,7 @@ export function RosterIntel() {
           </div>
           {filteredPrograms.length === 0 && positionSearch && (
             <div className="p-10 text-center text-sm text-[#64748b]">
-              No programs found needing a <span className="text-[#eab308]">{positionSearch}</span>. Try a different position.
+              No programs found recruiting a <span className="text-[#eab308]">{positionSearch}</span>. Try a different position.
             </div>
           )}
         </Card>
@@ -246,7 +245,7 @@ export function RosterIntel() {
           <div className="text-4xl mb-4">📊</div>
           <div className="font-serif text-xl font-bold text-[#f1f5f9] mb-2">Roster Intelligence</div>
           <p className="text-sm text-[#64748b] max-w-sm mx-auto">
-            Select a gender and division, then click Analyze. We'll find programs with graduating seniors and predict their recruitment needs by position.
+            Select a gender and division, then click Find Recruiting Programs to see verified programs actively recruiting your position.
           </p>
         </Card>
       )}

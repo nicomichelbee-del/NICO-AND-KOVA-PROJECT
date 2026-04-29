@@ -1,6 +1,8 @@
 import { Router } from 'express'
 import Anthropic from '@anthropic-ai/sdk'
-import type { AthleteProfile, Division } from '../../client/src/types/index'
+import type { AthleteProfile, Division, RosterProgram, PositionNeed } from '../../client/src/types/index'
+import { matchSchools } from '../lib/schoolMatcher'
+import rosterData from '../data/rosterPrograms.json'
 
 const router = Router()
 
@@ -35,8 +37,8 @@ function parseJSON<T>(text: string, fallback: T): T {
 
 router.post('/email', async (req, res) => {
   try {
-    const { profile, school, division, coachName } = req.body as {
-      profile: AthleteProfile; school: string; division: Division; coachName: string
+    const { profile, school, division, coachName, gender } = req.body as {
+      profile: AthleteProfile; school: string; division: Division; coachName: string; gender?: string
     }
     const divisionTone =
       division === 'D1' ? 'professional, concise, and stat-heavy. Club team matters more than high school.'
@@ -65,24 +67,44 @@ Respond with JSON only: { "subject": "...", "body": "..." }`, 1500)
   }
 })
 
+router.post('/find-coach', async (req, res) => {
+  try {
+    const { school, division, gender } = req.body as { school: string; division: Division; gender: 'mens' | 'womens' }
+    const genderLabel = gender === 'womens' ? "Women's" : "Men's"
+    const text = await ask(`Find the current head coach for the ${genderLabel} soccer program at ${school} (${division}).
+
+Return JSON only: { "coachName": "First Last", "coachEmail": "email@school.edu", "confidence": "high" }
+
+Rules:
+- coachEmail should follow the school's standard email format
+- Set confidence "high" only if you are certain this is current (2024-2025 season) information
+- Set confidence "low" if you are unsure or this may be outdated
+- If unknown, return { "coachName": "Head Coach", "coachEmail": "", "confidence": "low" }
+- Never fabricate a name you are not confident about`, 300)
+    res.json(parseJSON(text, { coachName: 'Head Coach', coachEmail: '', confidence: 'low' }))
+  } catch (e) {
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
+  }
+})
+
 router.post('/schools', async (req, res) => {
   try {
     const { profile } = req.body as { profile: AthleteProfile }
-    const text = await ask(`Match this athlete to 15 real college soccer programs (4 reach, 7 target, 4 safety).
+    const matched = matchSchools(profile)
 
-Athlete: ${profile.name}, ${profile.position}, Class of ${profile.gradYear}, GPA ${profile.gpa}, ${profile.goals}G/${profile.assists}A (${profile.season}), Club: ${profile.clubTeam} (${profile.clubLeague}), Major: ${profile.intendedMajor}, Target: ${profile.targetDivision}, Location: ${profile.locationPreference}, Size: ${profile.sizePreference}
+    const schoolList = matched.map((s, i) => `${i + 1}. ${s.name} (${s.division}, ${s.category}, score ${s.matchScore})`).join('\n')
+    const notesText = await ask(`For each school below, write ONE sentence (max 15 words) explaining why it is a reach/target/safety for this athlete.
 
-Division benchmarks to classify reach/target/safety:
-- D1: GPA 3.2+, 15+ goals for forwards, ECNL/MLS Next club
-- D2: GPA 2.8+, 10+ goals, strong club
-- D3: GPA 2.5+, balanced athlete
-- NAIA: GPA 2.0+, immediate impact
-- JUCO: Open, stepping stone
+Athlete: GPA ${profile.gpa}, ${profile.goals}G/${profile.assists}A, ${profile.position}, targets ${profile.targetDivision}
 
-REACH = athlete stats below program's typical recruit. TARGET = stats align well. SAFETY = athlete would be recruited immediately.
+Schools:
+${schoolList}
 
-Return JSON only, no markdown: { "schools": [{ "id": "1", "name": "School Name", "division": "D1", "location": "City, ST", "enrollment": 15000, "conferece": "ACC", "coachName": "Coach Name", "coachEmail": "coach@school.edu", "category": "reach", "matchScore": 85, "notes": "Why reach/target/safety based on their GPA and stats" }] }`, 3000)
-    res.json(parseJSON(text, { schools: [] }))
+Return JSON only: {"notes": ["sentence1", "sentence2"]} — one note per school in the same order.`, 2000)
+
+    const parsed = parseJSON<{ notes: string[] }>(notesText, { notes: [] })
+    const schools = matched.map((s, i) => ({ ...s, notes: parsed.notes[i] ?? '' }))
+    res.json({ schools })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
   }
@@ -144,9 +166,9 @@ router.post('/find-camps', async (req, res) => {
   try {
     const { profile, schools } = req.body as {
       profile: AthleteProfile
-      schools: import('../../client/src/types/index').School[]
+      schools: { name: string; division: string }[]
     }
-    const schoolList = (schools as { name: string; division: string }[]).map((s) => `${s.name} (${s.division})`).join(', ')
+    const schoolList = schools.map((s) => `${s.name} (${s.division})`).join(', ')
     const text = await ask(`Find ID camps for a ${profile.position} (Class ${profile.gradYear}, targeting ${profile.targetDivision}) at these schools: ${schoolList || 'top programs in their division'}.
 
 Return 6-10 camps across these schools plus 2-3 major open ID camps. Include realistic camp details.
@@ -186,17 +208,37 @@ Respond with JSON only: { "emails": [{ "coachName": "...", "subject": "...", "bo
 router.post('/roster-intel', async (req, res) => {
   try {
     const { gender, division, athletePosition } = req.body as { gender: 'mens' | 'womens'; division: string; athletePosition: string }
-    const divFilter = division === 'all' ? 'across D1, D2, D3, NAIA' : division
-    const genderLabel = gender === 'mens' ? "Men's" : "Women's"
-    const text = await ask(`List 20 ${genderLabel} college soccer programs ${divFilter} that have significant roster openings for the 2025-2026 recruiting cycle due to graduating seniors.
 
-Athlete position: ${athletePosition}
+    let programs = (rosterData as RosterProgram[]).filter((p) => p.gender === gender)
+    if (division !== 'all') programs = programs.filter((p) => p.division === division)
 
-For each program list ALL seniors leaving by specific position (e.g. "Defensive Mid" not just "Midfielder"). Use real programs and real conferences.
+    if (athletePosition) {
+      const pos = athletePosition.toLowerCase()
+      programs.sort((a, b) => {
+        const aHigh = a.typicalRecruitingNeeds.some((n) => n.position.toLowerCase().includes(pos) && n.level === 'High') ? 1 : 0
+        const bHigh = b.typicalRecruitingNeeds.some((n) => n.position.toLowerCase().includes(pos) && n.level === 'High') ? 1 : 0
+        return bHigh - aHigh
+      })
+    }
 
-Return JSON only, no markdown:
-{"programs":[{"school":"UNC Chapel Hill","conference":"ACC","division":"D1","seniorsLeaving":[{"position":"Striker","count":2},{"position":"Center Back","count":1}],"predictedNeed":[{"position":"Striker","level":"High"},{"position":"Center Back","level":"High"}],"coachName":"Anson Dorrance"}],"positionSummary":[{"position":"Striker","demand":"High","schoolCount":14}]}`, 3500)
-    res.json(parseJSON(text, { programs: [], positionSummary: [] }))
+    const posMap = new Map<string, { high: number; medium: number }>()
+    for (const prog of programs) {
+      for (const need of prog.typicalRecruitingNeeds) {
+        const entry = posMap.get(need.position) ?? { high: 0, medium: 0 }
+        if (need.level === 'High') entry.high++
+        else if (need.level === 'Medium') entry.medium++
+        posMap.set(need.position, entry)
+      }
+    }
+    const positionSummary: PositionNeed[] = Array.from(posMap.entries())
+      .map(([position, counts]) => ({
+        position,
+        demand: (counts.high >= 5 ? 'High' : counts.high + counts.medium >= 3 ? 'Medium' : 'Low') as 'High' | 'Medium' | 'Low',
+        schoolCount: counts.high + counts.medium,
+      }))
+      .sort((a, b) => b.schoolCount - a.schoolCount)
+
+    res.json({ programs: programs.slice(0, 20), positionSummary })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
   }

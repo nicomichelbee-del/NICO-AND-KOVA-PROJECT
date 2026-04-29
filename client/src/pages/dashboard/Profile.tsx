@@ -8,7 +8,7 @@ const POSITIONS = ['Goalkeeper', 'Center Back', 'Right Back', 'Left Back', 'Defe
 const DIVISIONS: Division[] = ['D1', 'D2', 'D3', 'NAIA', 'JUCO']
 
 const defaultProfile: AthleteProfile = {
-  name: '', gradYear: 2026, position: '', clubTeam: '', clubLeague: '',
+  name: '', gradYear: 2026, position: '', gender: 'womens', clubTeam: '', clubLeague: '',
   gpa: 0, satAct: '', goals: 0, assists: 0, season: '2024-25',
   intendedMajor: '', highlightUrl: '', targetDivision: 'D2',
   locationPreference: 'any', sizePreference: 'any',
@@ -65,6 +65,27 @@ export function Profile() {
                 {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
               </select>
             </div>
+            <div className="flex flex-col gap-1.5">
+              <label className="text-sm font-medium text-[#f1f5f9]">Program type</label>
+              <div className="flex gap-2">
+                {[{ id: 'womens', label: "Women's" }, { id: 'mens', label: "Men's" }].map((g) => (
+                  <button
+                    key={g.id}
+                    type="button"
+                    onClick={() => update('gender', g.id as 'mens' | 'womens')}
+                    className={`flex-1 py-2.5 rounded-lg text-sm font-semibold border transition-all ${
+                      profile.gender === g.id
+                        ? 'bg-[#eab308] text-black border-[#eab308]'
+                        : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
+                    }`}
+                  >
+                    {g.label}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="grid grid-cols-2 gap-4 mb-4">
             <Input label="Season (e.g. 2024-25)" value={profile.season} onChange={(e) => update('season', e.target.value)} placeholder="2024-25" />
           </div>
           <div className="grid grid-cols-3 gap-4">

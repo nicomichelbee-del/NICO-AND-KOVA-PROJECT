@@ -1,4 +1,4 @@
-import type { AthleteProfile, Division, School, VideoRating, CoachResponse, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed } from '../types'
+import type { AthleteProfile, Division, School, VideoRating, CoachResponse, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed, IdEvent } from '../types'
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(path, {
@@ -13,8 +13,21 @@ async function post<T>(path: string, body: unknown): Promise<T> {
   return res.json()
 }
 
-export function generateEmail(profile: AthleteProfile, school: string, division: Division, coachName: string) {
-  return post<{ subject: string; body: string }>('/api/ai/email', { profile, school, division, coachName })
+async function get<T>(path: string): Promise<T> {
+  const res = await fetch(path)
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Request failed' }))
+    throw new Error((err as { error: string }).error ?? 'Request failed')
+  }
+  return res.json()
+}
+
+export function generateEmail(profile: AthleteProfile, school: string, division: Division, coachName: string, gender: 'mens' | 'womens') {
+  return post<{ subject: string; body: string }>('/api/ai/email', { profile, school, division, coachName, gender })
+}
+
+export function findCoach(school: string, division: Division, gender: 'mens' | 'womens') {
+  return post<{ coachName: string; coachEmail: string; confidence: 'high' | 'low' }>('/api/ai/find-coach', { school, division, gender })
 }
 
 export function matchSchools(profile: AthleteProfile) {
@@ -33,7 +46,7 @@ export function rateResponse(school: string, coachName: string, text: string) {
   return post<CoachResponse>('/api/ai/rate-response', { school, coachName, text })
 }
 
-export function findCamps(profile: AthleteProfile, schools: School[]) {
+export function findCamps(profile: AthleteProfile, schools: { name: string; division: string }[]) {
   return post<{ camps: IdCamp[] }>('/api/ai/find-camps', { profile, schools })
 }
 
@@ -45,4 +58,16 @@ export function getRosterIntel(gender: 'mens' | 'womens', division: Division | '
   return post<{ programs: RosterProgram[]; positionSummary: PositionNeed[] }>('/api/ai/roster-intel', { gender, division, athletePosition })
 }
 
-export type { LeaderboardEntry }
+export function getGmailStatus(userId: string) {
+  return get<{ connected: boolean; email: string | null }>(`/api/gmail/status?userId=${encodeURIComponent(userId)}`)
+}
+
+export function gmailSend(userId: string, to: string, subject: string, body: string) {
+  return post<{ success: boolean }>('/api/gmail/send', { userId, to, subject, body })
+}
+
+export function gmailSync(userId: string, contacts: { id: string; coachEmail: string }[]) {
+  return post<{ results: { contactId: string; replied: boolean; snippet: string }[] }>('/api/gmail/sync', { userId, contacts })
+}
+
+export type { LeaderboardEntry, IdEvent }

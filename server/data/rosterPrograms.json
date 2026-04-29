@@ -1,0 +1,1332 @@
+[
+  {
+    "id": "unc-womens",
+    "school": "University of North Carolina",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Chapel Hill, NC",
+    "gender": "womens",
+    "coachName": "Anson Dorrance",
+    "coachEmail": "dorrance@unc.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Forward", "level": "High"},
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Historically recruits from ECNL and MLS Next top clubs"
+  },
+  {
+    "id": "stanford-womens",
+    "school": "Stanford University",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Stanford, CA",
+    "gender": "womens",
+    "coachName": "Paul Ratcliffe",
+    "coachEmail": "pratcliffe@stanford.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Forward", "level": "High"},
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Goalkeeper", "level": "Medium"},
+      {"position": "Outside Back", "level": "Low"}
+    ],
+    "formationStyle": "4-2-3-1",
+    "notes": "Emphasizes academic excellence alongside elite soccer talent"
+  },
+  {
+    "id": "ucla-womens",
+    "school": "UCLA",
+    "conference": "Pac-12",
+    "division": "D1",
+    "location": "Los Angeles, CA",
+    "gender": "womens",
+    "coachName": "Margueritte Aozasa",
+    "coachEmail": "maozasa@athletics.ucla.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Striker", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "West Coast powerhouse drawing heavily from California club programs"
+  },
+  {
+    "id": "fsu-womens",
+    "school": "Florida State University",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Tallahassee, FL",
+    "gender": "womens",
+    "coachName": "Mark Krikorian",
+    "coachEmail": "mkrikorian@fsu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Center Back", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "High"},
+      {"position": "Forward", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Defense-first program recruiting nationally from top ECNL clubs"
+  },
+  {
+    "id": "duke-womens",
+    "school": "Duke University",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Durham, NC",
+    "gender": "womens",
+    "coachName": "Robbie Church",
+    "coachEmail": "robbie.church@duke.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Forward", "level": "High"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Center Back", "level": "Low"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "High academic standards combined with elite soccer pedigree"
+  },
+  {
+    "id": "virginia-womens",
+    "school": "University of Virginia",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Charlottesville, VA",
+    "gender": "womens",
+    "coachName": "Steve Swanson",
+    "coachEmail": "sas4y@virginia.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-2-3-1",
+    "notes": "Strong academic environment with consistent ACC tournament appearances"
+  },
+  {
+    "id": "georgetown-womens",
+    "school": "Georgetown University",
+    "conference": "Big East",
+    "division": "D1",
+    "location": "Washington, DC",
+    "gender": "womens",
+    "coachName": "Dave Nolan",
+    "coachEmail": "dln8@georgetown.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Big East program valuing soccer IQ and academic ambition equally"
+  },
+  {
+    "id": "notredame-womens",
+    "school": "University of Notre Dame",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Notre Dame, IN",
+    "gender": "womens",
+    "coachName": "Nicki Adams",
+    "coachEmail": "nadams@nd.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Center Back", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "High"},
+      {"position": "Forward", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Combines elite athletics with one of the nation's top academic reputations"
+  },
+  {
+    "id": "pennstate-womens",
+    "school": "Penn State University",
+    "conference": "Big Ten",
+    "division": "D1",
+    "location": "State College, PA",
+    "gender": "womens",
+    "coachName": "Erica Dambach",
+    "coachEmail": "ekd10@psu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Winger", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Big Ten powerhouse known for player development and national championships"
+  },
+  {
+    "id": "indiana-womens",
+    "school": "Indiana University",
+    "conference": "Big Ten",
+    "division": "D1",
+    "location": "Bloomington, IN",
+    "gender": "womens",
+    "coachName": "Erwin van Bennekom",
+    "coachEmail": "evanbenn@indiana.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Striker", "level": "High"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-2-3-1",
+    "notes": "Midwest Big Ten program with strong tradition and growing national profile"
+  },
+  {
+    "id": "michigan-womens",
+    "school": "University of Michigan",
+    "conference": "Big Ten",
+    "division": "D1",
+    "location": "Ann Arbor, MI",
+    "gender": "womens",
+    "coachName": "Jennifer Klein",
+    "coachEmail": "jklein@umich.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Defensive Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Winger", "level": "Medium"},
+      {"position": "Forward", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Academically rigorous Big Ten program recruiting nationally"
+  },
+  {
+    "id": "maryland-womens",
+    "school": "University of Maryland",
+    "conference": "Big Ten",
+    "division": "D1",
+    "location": "College Park, MD",
+    "gender": "womens",
+    "coachName": "Brian Pensky",
+    "coachEmail": "bpensky@umd.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Mid-Atlantic program with strong club soccer pipeline from DC/MD/VA area"
+  },
+  {
+    "id": "wakeforest-womens",
+    "school": "Wake Forest University",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Winston-Salem, NC",
+    "gender": "womens",
+    "coachName": "Tony da Luz",
+    "coachEmail": "daluzt@wfu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Small ACC school with outsized soccer program and tight-knit team culture"
+  },
+  {
+    "id": "clemson-womens",
+    "school": "Clemson University",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Clemson, SC",
+    "gender": "womens",
+    "coachName": "Eddie Radwanski",
+    "coachEmail": "eradwanski@clemson.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Forward", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"},
+      {"position": "Central Midfielder", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Southeast ACC program with strong fanbase and athletic scholarship availability"
+  },
+  {
+    "id": "westvirginia-womens",
+    "school": "West Virginia University",
+    "conference": "Big 12",
+    "division": "D1",
+    "location": "Morgantown, WV",
+    "gender": "womens",
+    "coachName": "Nikki Izzo-Brown",
+    "coachEmail": "nizzo@wvu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Central Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "3-5-2",
+    "notes": "Big 12 program known for energetic style and strong home atmosphere"
+  },
+  {
+    "id": "unc-mens",
+    "school": "University of North Carolina",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Chapel Hill, NC",
+    "gender": "mens",
+    "coachName": "Carlos Somoano",
+    "coachEmail": "csomoano@unc.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Winger", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "One of the premier men's programs in the ACC, drawing top club talent nationally"
+  },
+  {
+    "id": "stanford-mens",
+    "school": "Stanford University",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Stanford, CA",
+    "gender": "mens",
+    "coachName": "Jeremy Gunn",
+    "coachEmail": "jgunn@stanford.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Goalkeeper", "level": "Medium"},
+      {"position": "Winger", "level": "Medium"},
+      {"position": "Outside Back", "level": "Low"}
+    ],
+    "formationStyle": "4-2-3-1",
+    "notes": "Requires academic excellence; highly selective with limited roster spots"
+  },
+  {
+    "id": "indiana-mens",
+    "school": "Indiana University",
+    "conference": "Big Ten",
+    "division": "D1",
+    "location": "Bloomington, IN",
+    "gender": "mens",
+    "coachName": "Todd Yeagley",
+    "coachEmail": "tyeagley@indiana.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Historic Big Ten program with multiple national championship pedigree"
+  },
+  {
+    "id": "pennstate-mens",
+    "school": "Penn State University",
+    "conference": "Big Ten",
+    "division": "D1",
+    "location": "State College, PA",
+    "gender": "mens",
+    "coachName": "Jeff Cook",
+    "coachEmail": "jhc17@psu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Winger", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "3-5-2",
+    "notes": "Big Ten program emphasizing defensive structure and tactical discipline"
+  },
+  {
+    "id": "michigan-mens",
+    "school": "University of Michigan",
+    "conference": "Big Ten",
+    "division": "D1",
+    "location": "Ann Arbor, MI",
+    "gender": "mens",
+    "coachName": "Chaka Daley",
+    "coachEmail": "cdaley@umich.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Striker", "level": "High"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Center Back", "level": "Low"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Resurgent program under Daley with emphasis on technical and attacking play"
+  },
+  {
+    "id": "maryland-mens",
+    "school": "University of Maryland",
+    "conference": "Big Ten",
+    "division": "D1",
+    "location": "College Park, MD",
+    "gender": "mens",
+    "coachName": "Sasho Cirovski",
+    "coachEmail": "scirovski@umd.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Winger", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Legendary program under Cirovski with deep DC/MD/VA club pipeline"
+  },
+  {
+    "id": "wakeforest-mens",
+    "school": "Wake Forest University",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Winston-Salem, NC",
+    "gender": "mens",
+    "coachName": "Bobby Muuss",
+    "coachEmail": "muussrb@wfu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-2-3-1",
+    "notes": "Consistent ACC contender known for developing professional-caliber talent"
+  },
+  {
+    "id": "virginia-mens",
+    "school": "University of Virginia",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Charlottesville, VA",
+    "gender": "mens",
+    "coachName": "George Gelnovatch",
+    "coachEmail": "geg5x@virginia.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "National championship program with rigorous academics and strong alumni network"
+  },
+  {
+    "id": "clemson-mens",
+    "school": "Clemson University",
+    "conference": "ACC",
+    "division": "D1",
+    "location": "Clemson, SC",
+    "gender": "mens",
+    "coachName": "Mike Noonan",
+    "coachEmail": "mnoonan@clemson.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Center Back", "level": "High"},
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Forward", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "ACC program building around defensive solidity and quick transitions"
+  },
+  {
+    "id": "westvirginia-mens",
+    "school": "West Virginia University",
+    "conference": "Big 12",
+    "division": "D1",
+    "location": "Morgantown, WV",
+    "gender": "mens",
+    "coachName": "Dan Stratford",
+    "coachEmail": "dstratford@wvu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "3-5-2",
+    "notes": "Big 12 program using wing-back system requiring athletic outside backs"
+  },
+  {
+    "id": "tcu-mens",
+    "school": "Texas Christian University",
+    "conference": "Big 12",
+    "division": "D1",
+    "location": "Fort Worth, TX",
+    "gender": "mens",
+    "coachName": "Russell Dodd",
+    "coachEmail": "r.dodd@tcu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Winger", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Big 12 program with strong Texas club pipeline and scholarship opportunities"
+  },
+  {
+    "id": "elon-mens",
+    "school": "Elon University",
+    "conference": "CAA",
+    "division": "D1",
+    "location": "Elon, NC",
+    "gender": "mens",
+    "coachName": "Marc Reeves",
+    "coachEmail": "mreeves@elon.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Attacking Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "CAA program with beautiful campus and emphasis on student-athlete experience"
+  },
+  {
+    "id": "highpoint-mens",
+    "school": "High Point University",
+    "conference": "Big South",
+    "division": "D1",
+    "location": "High Point, NC",
+    "gender": "mens",
+    "coachName": "Travis Pittman",
+    "coachEmail": "tpittman@highpoint.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Outside Back", "level": "Low"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Growing Big South program with top-tier campus amenities and facilities"
+  },
+  {
+    "id": "belmont-mens",
+    "school": "Belmont University",
+    "conference": "MVC",
+    "division": "D1",
+    "location": "Nashville, TN",
+    "gender": "mens",
+    "coachName": "Chris Pfau",
+    "coachEmail": "cpfau@belmont.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Forward", "level": "High"},
+      {"position": "Winger", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Nashville program in growing MVC conference, appeals to Southeast athletes"
+  },
+  {
+    "id": "appstate-mens",
+    "school": "Appalachian State University",
+    "conference": "Sun Belt",
+    "division": "D1",
+    "location": "Boone, NC",
+    "gender": "mens",
+    "coachName": "Matt Nelson",
+    "coachEmail": "nelsonmd@appstate.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Center Back", "level": "High"},
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Central Midfielder", "level": "Medium"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Sun Belt program in scenic mountain setting with strong regional recruiting"
+  },
+  {
+    "id": "lenoir-rhyne-womens",
+    "school": "Lenoir-Rhyne University",
+    "conference": "SAC",
+    "division": "D2",
+    "location": "Hickory, NC",
+    "gender": "womens",
+    "coachName": "Jeff Ramsey",
+    "coachEmail": "jramsey@lr.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Forward", "level": "High"},
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Competitive SAC program known for developing athletes from the Carolinas"
+  },
+  {
+    "id": "tampa-womens",
+    "school": "University of Tampa",
+    "conference": "SSC",
+    "division": "D2",
+    "location": "Tampa, FL",
+    "gender": "womens",
+    "coachName": "Brendan Faherty",
+    "coachEmail": "bfaherty@ut.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Premier SSC program in Tampa Bay area with strong Florida recruiting base"
+  },
+  {
+    "id": "rollins-womens",
+    "school": "Rollins College",
+    "conference": "SSC",
+    "division": "D2",
+    "location": "Winter Park, FL",
+    "gender": "womens",
+    "coachName": "Patrick Brimhall",
+    "coachEmail": "pbrimhall@rollins.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Winger", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Low"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-2-3-1",
+    "notes": "Prestigious liberal arts college with strong academics and beautiful Florida campus"
+  },
+  {
+    "id": "gvsu-womens",
+    "school": "Grand Valley State University",
+    "conference": "GLIAC",
+    "division": "D2",
+    "location": "Allendale, MI",
+    "gender": "womens",
+    "coachName": "Jeff Hosler",
+    "coachEmail": "jhosler@gvsu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Forward", "level": "High"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "D2 national championship program with consistent top-five national rankings"
+  },
+  {
+    "id": "barry-womens",
+    "school": "Barry University",
+    "conference": "SSC",
+    "division": "D2",
+    "location": "Miami Shores, FL",
+    "gender": "womens",
+    "coachName": "Steve Hamilton",
+    "coachEmail": "shamilton@barry.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Striker", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Miami area program with international recruiting and warm-weather training advantage"
+  },
+  {
+    "id": "westchester-womens",
+    "school": "West Chester University",
+    "conference": "PSAC",
+    "division": "D2",
+    "location": "West Chester, PA",
+    "gender": "womens",
+    "coachName": "Kelli Hall",
+    "coachEmail": "khall@wcupa.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Defensive Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Winger", "level": "Medium"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "PSAC powerhouse with strong Mid-Atlantic recruiting and defensive tradition"
+  },
+  {
+    "id": "drury-womens",
+    "school": "Drury University",
+    "conference": "MIAA",
+    "division": "D2",
+    "location": "Springfield, MO",
+    "gender": "womens",
+    "coachName": "Andy Harris",
+    "coachEmail": "aharris@drury.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Forward", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "3-5-2",
+    "notes": "MIAA program with wing-heavy system needing athletic outside backs annually"
+  },
+  {
+    "id": "rockhurst-womens",
+    "school": "Rockhurst University",
+    "conference": "MIAA",
+    "division": "D2",
+    "location": "Kansas City, MO",
+    "gender": "womens",
+    "coachName": "Paul Glaser",
+    "coachEmail": "pglaser@rockhurst.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Jesuit institution in Kansas City with strong academics and D2 competitive tradition"
+  },
+  {
+    "id": "wingate-womens",
+    "school": "Wingate University",
+    "conference": "SAC",
+    "division": "D2",
+    "location": "Wingate, NC",
+    "gender": "womens",
+    "coachName": "Angie Dobbe",
+    "coachEmail": "adobbe@wingate.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Forward", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Outside Back", "level": "Low"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "SAC program near Charlotte drawing from NC/SC club programs"
+  },
+  {
+    "id": "lmu-womens",
+    "school": "Lincoln Memorial University",
+    "conference": "SAC",
+    "division": "D2",
+    "location": "Harrogate, TN",
+    "gender": "womens",
+    "coachName": "Jay Entsminger",
+    "coachEmail": "jentsminger@lmunet.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Central Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Tennessee SAC program in scenic Appalachian setting with strong regional network"
+  },
+  {
+    "id": "mines-mens",
+    "school": "Colorado School of Mines",
+    "conference": "RMAC",
+    "division": "D2",
+    "location": "Golden, CO",
+    "gender": "mens",
+    "coachName": "Arthur Sheryl",
+    "coachEmail": "asheryl@mines.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Striker", "level": "High"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "STEM-focused institution with high GPA requirements and competitive RMAC soccer"
+  },
+  {
+    "id": "gvsu-mens",
+    "school": "Grand Valley State University",
+    "conference": "GLIAC",
+    "division": "D2",
+    "location": "Allendale, MI",
+    "gender": "mens",
+    "coachName": "Scot Schoolmaster",
+    "coachEmail": "sschoolmaster@gvsu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Perennial GLIAC champion with strong Midwest recruiting and national tournament presence"
+  },
+  {
+    "id": "tampa-mens",
+    "school": "University of Tampa",
+    "conference": "SSC",
+    "division": "D2",
+    "location": "Tampa, FL",
+    "gender": "mens",
+    "coachName": "John Rootes",
+    "coachEmail": "jrootes@ut.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Winger", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-2-3-1",
+    "notes": "Nationally ranked SSC program attracting talent from Florida and internationally"
+  },
+  {
+    "id": "rollins-mens",
+    "school": "Rollins College",
+    "conference": "SSC",
+    "division": "D2",
+    "location": "Winter Park, FL",
+    "gender": "mens",
+    "coachName": "James Gallagher",
+    "coachEmail": "jgallagher@rollins.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Outside Back", "level": "Low"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Liberal arts college with strong academic reputation and D2 competitive soccer"
+  },
+  {
+    "id": "lenoir-rhyne-mens",
+    "school": "Lenoir-Rhyne University",
+    "conference": "SAC",
+    "division": "D2",
+    "location": "Hickory, NC",
+    "gender": "mens",
+    "coachName": "Phillip Visconti",
+    "coachEmail": "pvisconti@lr.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Striker", "level": "High"},
+      {"position": "Central Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "3-5-2",
+    "notes": "SAC program using wing-back system requiring athletic wide defenders"
+  },
+  {
+    "id": "barry-mens",
+    "school": "Barry University",
+    "conference": "SSC",
+    "division": "D2",
+    "location": "Miami Shores, FL",
+    "gender": "mens",
+    "coachName": "Dean Wurzburger",
+    "coachEmail": "dwurzburger@barry.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "South Florida program with diverse international roster and warm-weather advantage"
+  },
+  {
+    "id": "mst-mens",
+    "school": "Missouri S&T",
+    "conference": "MIAA",
+    "division": "D2",
+    "location": "Rolla, MO",
+    "gender": "mens",
+    "coachName": "John Sutter",
+    "coachEmail": "jsutter@mst.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Engineering-focused D2 program; athletes need strong academic credentials"
+  },
+  {
+    "id": "drury-mens",
+    "school": "Drury University",
+    "conference": "MIAA",
+    "division": "D2",
+    "location": "Springfield, MO",
+    "gender": "mens",
+    "coachName": "Dennis Betts",
+    "coachEmail": "dbetts@drury.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Attacking Midfielder", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Consistent MIAA contender with balanced attacking and defensive recruiting needs"
+  },
+  {
+    "id": "rockhurst-mens",
+    "school": "Rockhurst University",
+    "conference": "MIAA",
+    "division": "D2",
+    "location": "Kansas City, MO",
+    "gender": "mens",
+    "coachName": "Jabi Iribar",
+    "coachEmail": "jiiribar@rockhurst.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Winger", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Low"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-2-3-1",
+    "notes": "Possession-based style requiring technical midfielders and creative attackers"
+  },
+  {
+    "id": "findlay-mens",
+    "school": "University of Findlay",
+    "conference": "G-MAC",
+    "division": "D2",
+    "location": "Findlay, OH",
+    "gender": "mens",
+    "coachName": "Jason McCleery",
+    "coachEmail": "mccleeryj@findlay.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Center Back", "level": "High"},
+      {"position": "Striker", "level": "High"},
+      {"position": "Central Midfielder", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "G-MAC program in Ohio with strong Midwest club pipeline and scholarship availability"
+  },
+  {
+    "id": "williams-mens",
+    "school": "Williams College",
+    "conference": "NESCAC",
+    "division": "D3",
+    "location": "Williamstown, MA",
+    "gender": "mens",
+    "coachName": "Erin Martin",
+    "coachEmail": "erin.martin@williams.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Top-ranked NESCAC program; admission-driven recruiting requiring exceptional academics"
+  },
+  {
+    "id": "williams-womens",
+    "school": "Williams College",
+    "conference": "NESCAC",
+    "division": "D3",
+    "location": "Williamstown, MA",
+    "gender": "womens",
+    "coachName": "Julie Sherret",
+    "coachEmail": "julie.sherret@williams.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Forward", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-2-3-1",
+    "notes": "NESCAC elite program integrating top academics and nationally competitive soccer"
+  },
+  {
+    "id": "middlebury-mens",
+    "school": "Middlebury College",
+    "conference": "NESCAC",
+    "division": "D3",
+    "location": "Middlebury, VT",
+    "gender": "mens",
+    "coachName": "Pete Dickison",
+    "coachEmail": "pdickison@middlebury.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Striker", "level": "Low"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "NESCAC champion program with environmental campus and elite academic culture"
+  },
+  {
+    "id": "middlebury-womens",
+    "school": "Middlebury College",
+    "conference": "NESCAC",
+    "division": "D3",
+    "location": "Middlebury, VT",
+    "gender": "womens",
+    "coachName": "Missy Foote",
+    "coachEmail": "mfoote@middlebury.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Forward", "level": "High"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Legendary D3 program under Foote with multiple national championship appearances"
+  },
+  {
+    "id": "messiah-mens",
+    "school": "Messiah University",
+    "conference": "MAC",
+    "division": "D3",
+    "location": "Mechanicsburg, PA",
+    "gender": "mens",
+    "coachName": "Brad McCarty",
+    "coachEmail": "bmccarty@messiah.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Central Midfielder", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Multiple D3 national championship program with strong faith-based community"
+  },
+  {
+    "id": "messiah-womens",
+    "school": "Messiah University",
+    "conference": "MAC",
+    "division": "D3",
+    "location": "Mechanicsburg, PA",
+    "gender": "womens",
+    "coachName": "Scott Frey",
+    "coachEmail": "sfrey@messiah.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Forward", "level": "High"},
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "3-5-2",
+    "notes": "Dominant D3 women's program with national championship hardware and Christian mission"
+  },
+  {
+    "id": "wheaton-mens",
+    "school": "Wheaton College (IL)",
+    "conference": "CCIW",
+    "division": "D3",
+    "location": "Wheaton, IL",
+    "gender": "mens",
+    "coachName": "Jon Doerr",
+    "coachEmail": "jon.doerr@wheaton.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Faith-based D3 program near Chicago with high academic and character standards"
+  },
+  {
+    "id": "wheaton-womens",
+    "school": "Wheaton College (IL)",
+    "conference": "CCIW",
+    "division": "D3",
+    "location": "Wheaton, IL",
+    "gender": "womens",
+    "coachName": "Lindsay Reimer",
+    "coachEmail": "lindsay.reimer@wheaton.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "CCIW women's program with consistent winning tradition and strong campus community"
+  },
+  {
+    "id": "calvin-mens",
+    "school": "Calvin University",
+    "conference": "MIAA",
+    "division": "D3",
+    "location": "Grand Rapids, MI",
+    "gender": "mens",
+    "coachName": "Ryan Souder",
+    "coachEmail": "rsouder@calvin.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Forward", "level": "Medium"},
+      {"position": "Center Back", "level": "Low"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Reformed Christian university with competitive MIAA soccer and strong Midwest following"
+  },
+  {
+    "id": "calvin-womens",
+    "school": "Calvin University",
+    "conference": "MIAA",
+    "division": "D3",
+    "location": "Grand Rapids, MI",
+    "gender": "womens",
+    "coachName": "Amber DeBoer",
+    "coachEmail": "adeboer@calvin.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Attacking Midfielder", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "MIAA women's program emphasizing faith integration and athletic excellence"
+  },
+  {
+    "id": "lindseywilson-mens",
+    "school": "Lindsey Wilson College",
+    "conference": "MSC",
+    "division": "NAIA",
+    "location": "Columbia, KY",
+    "gender": "mens",
+    "coachName": "Wayne Brown",
+    "coachEmail": "brownw@lindsey.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "NAIA powerhouse program with multiple national championships and full scholarship availability"
+  },
+  {
+    "id": "lindseywilson-womens",
+    "school": "Lindsey Wilson College",
+    "conference": "MSC",
+    "division": "NAIA",
+    "location": "Columbia, KY",
+    "gender": "womens",
+    "coachName": "Dean Taylor",
+    "coachEmail": "taylord@lindsey.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Forward", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Winger", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Elite NAIA women's program offering full scholarships and immediate playing time"
+  },
+  {
+    "id": "grandview-mens",
+    "school": "Grand View University",
+    "conference": "HAAC",
+    "division": "NAIA",
+    "location": "Des Moines, IA",
+    "gender": "mens",
+    "coachName": "Jared Phelps",
+    "coachEmail": "jphelps@grandview.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Attacking Midfielder", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "Top HAAC program in Des Moines offering competitive NAIA soccer with scholarship aid"
+  },
+  {
+    "id": "grandview-womens",
+    "school": "Grand View University",
+    "conference": "HAAC",
+    "division": "NAIA",
+    "location": "Des Moines, IA",
+    "gender": "womens",
+    "coachName": "Jason Brewer",
+    "coachEmail": "jbrewer@grandview.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Central Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "HAAC women's program building nationally competitive NAIA roster"
+  },
+  {
+    "id": "morningside-mens",
+    "school": "Morningside University",
+    "conference": "GPAC",
+    "division": "NAIA",
+    "location": "Sioux City, IA",
+    "gender": "mens",
+    "coachName": "Corey Semling",
+    "coachEmail": "semlingc@morningside.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Attacking Midfielder", "level": "High"},
+      {"position": "Striker", "level": "High"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Low"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-2-3-1",
+    "notes": "GPAC program with attack-minded philosophy and strong scholarship opportunities"
+  },
+  {
+    "id": "morningside-womens",
+    "school": "Morningside University",
+    "conference": "GPAC",
+    "division": "NAIA",
+    "location": "Sioux City, IA",
+    "gender": "womens",
+    "coachName": "Ashley Sherlock",
+    "coachEmail": "sherlocka@morningside.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Center Back", "level": "High"},
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Forward", "level": "Medium"},
+      {"position": "Outside Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Medium"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "GPAC women's program with growing national reputation in NAIA soccer"
+  },
+  {
+    "id": "keiser-mens",
+    "school": "Keiser University",
+    "conference": "Sun Conference",
+    "division": "NAIA",
+    "location": "Fort Lauderdale, FL",
+    "gender": "mens",
+    "coachName": "Ben McInerney",
+    "coachEmail": "bmcinerney@keiseruniversity.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Winger", "level": "High"},
+      {"position": "Striker", "level": "High"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "South Florida NAIA program with international roster and strong scholarship packages"
+  },
+  {
+    "id": "keiser-womens",
+    "school": "Keiser University",
+    "conference": "Sun Conference",
+    "division": "NAIA",
+    "location": "Fort Lauderdale, FL",
+    "gender": "womens",
+    "coachName": "Kate Young",
+    "coachEmail": "kyoung@keiseruniversity.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Forward", "level": "High"},
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Central Midfielder", "level": "Medium"},
+      {"position": "Center Back", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-4-2",
+    "notes": "Sun Conference women's program near Miami with competitive NAIA scholarship aid"
+  },
+  {
+    "id": "okcu-mens",
+    "school": "Oklahoma City University",
+    "conference": "SCAC",
+    "division": "NAIA",
+    "location": "Oklahoma City, OK",
+    "gender": "mens",
+    "coachName": "Bryan Cunningham",
+    "coachEmail": "bcunningham@okcu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Striker", "level": "High"},
+      {"position": "Outside Back", "level": "High"},
+      {"position": "Attacking Midfielder", "level": "Medium"},
+      {"position": "Defensive Midfielder", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "3-5-2",
+    "notes": "SCAC program in OKC with wing-back heavy system needing athletic wide players"
+  },
+  {
+    "id": "okcu-womens",
+    "school": "Oklahoma City University",
+    "conference": "SCAC",
+    "division": "NAIA",
+    "location": "Oklahoma City, OK",
+    "gender": "womens",
+    "coachName": "Josh Griffith",
+    "coachEmail": "jgriffith@okcu.edu",
+    "typicalRecruitingNeeds": [
+      {"position": "Central Midfielder", "level": "High"},
+      {"position": "Center Back", "level": "High"},
+      {"position": "Winger", "level": "Medium"},
+      {"position": "Striker", "level": "Medium"},
+      {"position": "Goalkeeper", "level": "Low"}
+    ],
+    "formationStyle": "4-3-3",
+    "notes": "NAIA women's program in OKC offering scholarships and immediate playing opportunities"
+  }
+]

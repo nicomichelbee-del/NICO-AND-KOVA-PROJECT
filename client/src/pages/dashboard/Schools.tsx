@@ -13,6 +13,12 @@ const catColor: Record<School['category'], 'blue' | 'gold' | 'green'> = {
   reach: 'blue', target: 'gold', safety: 'green',
 }
 
+const catDesc: Record<School['category'], string> = {
+  reach: 'Your stats are below this program\'s typical recruit — worth reaching for',
+  target: 'Your stats align well with this program\'s recruiting profile',
+  safety: 'You would be a top recruit here — strong fit',
+}
+
 export function Schools() {
   const [schools, setSchools] = useState<School[]>([])
   const [loading, setLoading] = useState(false)
@@ -22,6 +28,7 @@ export function Schools() {
   async function handleMatch() {
     const profile = getProfile()
     if (!profile?.name) { setError('Please complete your athlete profile first.'); return }
+    if (!profile.gender) { setError('Please set your gender (Men\'s/Women\'s) in your athlete profile.'); return }
     setError(''); setLoading(true)
     try {
       const { schools } = await matchSchools(profile)
@@ -43,7 +50,7 @@ export function Schools() {
             <span className="text-xs font-semibold tracking-[2px] uppercase text-[#eab308]">School Matcher</span>
           </div>
           <h1 className="font-serif text-4xl font-black text-[#f1f5f9] tracking-[-1px]">Your School Matches</h1>
-          <p className="text-[#64748b] mt-2 text-sm">AI-matched reach, target, and safety schools based on your profile.</p>
+          <p className="text-[#64748b] mt-2 text-sm">Algorithmically matched to 25 real programs based on your GPA, stats, and division target.</p>
         </div>
         <Button onClick={handleMatch} disabled={loading}>
           {loading ? 'Matching...' : schools.length ? 'Rematch' : 'Find My Schools'}
@@ -56,12 +63,15 @@ export function Schools() {
         <>
           <div className="grid grid-cols-3 gap-4 mb-8">
             {(['reach', 'target', 'safety'] as const).map((cat) => (
-              <Card key={cat} className="p-5 flex items-center gap-4">
-                <Badge variant={catColor[cat]}>{cat.toUpperCase()}</Badge>
-                <span className="font-serif text-2xl font-black text-[#f1f5f9]">
-                  {schools.filter((s) => s.category === cat).length}
-                </span>
-                <span className="text-xs text-[#64748b]">schools</span>
+              <Card key={cat} className="p-5">
+                <div className="flex items-center gap-3 mb-2">
+                  <Badge variant={catColor[cat]}>{cat.toUpperCase()}</Badge>
+                  <span className="font-serif text-2xl font-black text-[#f1f5f9]">
+                    {schools.filter((s) => s.category === cat).length}
+                  </span>
+                  <span className="text-xs text-[#64748b]">schools</span>
+                </div>
+                <p className="text-xs text-[#64748b] leading-relaxed">{catDesc[cat]}</p>
               </Card>
             ))}
           </div>
@@ -94,7 +104,7 @@ export function Schools() {
                   <div className="flex items-center gap-4 text-xs text-[#64748b] flex-wrap">
                     <span>📍 {school.location}</span>
                     <span>👥 {school.enrollment.toLocaleString()} students</span>
-                    {school.conferece && <span>🏆 {school.conferece}</span>}
+                    {school.conference && <span>🏆 {school.conference}</span>}
                     {school.coachName && <span>👤 {school.coachName}</span>}
                   </div>
                   {school.notes && <p className="text-xs text-[#64748b] mt-2 italic">{school.notes}</p>}
@@ -114,7 +124,7 @@ export function Schools() {
           <div className="text-4xl mb-4">🎯</div>
           <div className="font-serif text-xl font-bold text-[#f1f5f9] mb-2">Find your schools</div>
           <p className="text-sm text-[#64748b] mb-6 max-w-xs mx-auto">
-            Complete your athlete profile, then click "Find My Schools" to get AI-matched programs.
+            Complete your athlete profile, then click "Find My Schools" to get matched to 25 real programs based on your GPA, stats, and division goal.
           </p>
           <Button onClick={handleMatch} disabled={loading}>Find My Schools</Button>
         </Card>
