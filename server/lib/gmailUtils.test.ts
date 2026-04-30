@@ -25,7 +25,7 @@ describe('isCoachEmail', () => {
 
 describe('decodeMessageBody', () => {
   it('decodes base64 text/plain part', () => {
-    const data = Buffer.from('Hello coach', 'utf-8').toString('base64')
+    const data = Buffer.from('Hello coach', 'utf-8').toString('base64url')
     const payload = {
       parts: [{ mimeType: 'text/plain', body: { data } }],
     }
@@ -33,7 +33,7 @@ describe('decodeMessageBody', () => {
   })
 
   it('decodes top-level body data', () => {
-    const data = Buffer.from('Direct body', 'utf-8').toString('base64')
+    const data = Buffer.from('Direct body', 'utf-8').toString('base64url')
     const payload = { body: { data } }
     expect(decodeMessageBody(payload)).toBe('Direct body')
   })
@@ -43,7 +43,7 @@ describe('decodeMessageBody', () => {
   })
 
   it('strips HTML tags when only text/html part exists', () => {
-    const data = Buffer.from('<p>Hello</p>', 'utf-8').toString('base64')
+    const data = Buffer.from('<p>Hello</p>', 'utf-8').toString('base64url')
     const payload = {
       parts: [{ mimeType: 'text/html', body: { data } }],
     }
