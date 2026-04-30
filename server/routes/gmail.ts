@@ -297,7 +297,7 @@ router.get('/threads', async (req, res) => {
           last_reply_snippet: snippet,
           last_reply_at: lastReplyAt,
           status: 'replied',
-        }).eq('id', contact.id)
+        }).eq('id', contact.id).eq('user_id', userId)
         tracked.push(mapContact({ ...contact, last_reply_snippet: snippet, last_reply_at: lastReplyAt, status: 'replied' }))
       } else {
         tracked.push(mapContact(contact))
@@ -335,7 +335,9 @@ router.get('/threads', async (req, res) => {
         }
       } catch { /* skip */ }
     }
-  } catch { /* skip untracked scan */ }
+  } catch (e) {
+    console.error('untracked inbox scan failed:', e instanceof Error ? e.message : e)
+  }
 
   res.json({ tracked, untracked })
 })
@@ -379,7 +381,7 @@ router.post('/rate-and-log', async (req, res) => {
   const { userId, contactId, latestCoachMessage, coachName, school } = req.body as {
     userId: string; contactId: string; latestCoachMessage: string; coachName: string; school: string
   }
-  if (!userId || !contactId) return res.status(400).json({ error: 'userId and contactId required' })
+  if (!userId || !contactId || !latestCoachMessage) return res.status(400).json({ error: 'userId, contactId, and latestCoachMessage required' })
   try {
     const result = await rateCoachReply(school, coachName, latestCoachMessage)
     await getSupabase()
