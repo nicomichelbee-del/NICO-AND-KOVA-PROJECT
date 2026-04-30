@@ -42,7 +42,7 @@ export function ThreadView({ userId, threadId, contactId, coachEmail, coachName,
       })
       .catch(() => setMessages([]))
       .finally(() => setLoading(false))
-  }, [threadId])
+  }, [threadId, userId])
 
   const lastCoachMessage = [...messages].reverse().find((m) => m.isFromCoach)
 
@@ -57,7 +57,7 @@ export function ThreadView({ userId, threadId, contactId, coachEmail, coachName,
       {(rating || ratingLoading) && (
         <div className="mb-4 p-3 rounded-lg bg-[rgba(234,179,8,0.04)] border border-[rgba(234,179,8,0.15)]">
           {ratingLoading ? (
-            <span className="text-xs text-[#64748b]">Analyzing coach reply...</span>
+            <span className="text-xs text-[#64748b]">Analyzing...</span>
           ) : (
             <>
               <span className="text-xs font-semibold text-[#eab308]">AI Read: </span>
