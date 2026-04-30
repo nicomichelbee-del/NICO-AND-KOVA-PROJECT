@@ -1,23 +1,15 @@
-import { useState, useEffect } from 'react'
+import { useState, useEffect, useCallback } from 'react'
+import { useNavigate } from 'react-router-dom'
 import { Badge } from '../../components/ui/Badge'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
 import { Input } from '../../components/ui/Input'
 import { Textarea } from '../../components/ui/Textarea'
-import { rateResponse, getGmailStatus, gmailSend, gmailSync } from '../../lib/api'
+import { ContactRow } from '../../components/tracker/ContactRow'
+import { UntrackedSection } from '../../components/tracker/UntrackedSection'
+import { getContacts, createContact, updateContact, gmailGetThreads, getGmailStatus, rateResponse } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
-import type { CoachEmail, CoachResponse } from '../../types'
-
-const DEMO: CoachEmail[] = [
-  { id: '1', school: 'Wake Forest University', division: 'D1', coachName: 'Bobby Muuss', coachEmail: 'muussrb@wfu.edu', subject: 'Class of 2026 Striker — ECNL', body: '', status: 'responded', sentAt: '2025-04-10', respondedAt: '2025-04-14', createdAt: '2025-04-09' },
-  { id: '2', school: 'Elon University', division: 'D1', coachName: 'Marc Reeves', coachEmail: 'mreeves@elon.edu', subject: 'Class of 2026 Forward Interest', body: '', status: 'sent', sentAt: '2025-04-15', createdAt: '2025-04-14' },
-  { id: '3', school: 'High Point University', division: 'D1', coachName: 'Travis Pittman', coachEmail: 'tpittman@highpoint.edu', subject: 'Prospective Student-Athlete Inquiry', body: '', status: 'draft', createdAt: '2025-04-18' },
-  { id: '4', school: 'Appalachian State', division: 'D1', coachName: 'Matt Nelson', coachEmail: 'nelsonmd@appstate.edu', subject: 'Class of 2026 Midfielder', body: '', status: 'sent', sentAt: '2025-04-20', createdAt: '2025-04-19' },
-]
-
-const statusColor: Record<CoachEmail['status'], 'green' | 'gold' | 'muted' | 'blue'> = {
-  responded: 'green', sent: 'blue', draft: 'muted', not_interested: 'muted',
-}
+import type { OutreachContact, CoachResponse, UntrackedThread, Division } from '../../types'
 
 const ratingConfig = {
   hot: { label: '🔥 Hot', color: 'text-[#4ade80]', bg: 'bg-[rgba(74,222,128,0.1)] border-[rgba(74,222,128,0.2)]' },
@@ -35,19 +27,22 @@ function saveResponses(r: CoachResponse[]) {
 
 export function Tracker() {
   const { user } = useAuth()
+  const navigate = useNavigate()
   const [tab, setTab] = useState<'contacts' | 'responses'>('contacts')
-  const [contacts, setContacts] = useState<CoachEmail[]>(DEMO)
-  const [filter, setFilter] = useState<CoachEmail['status'] | 'all'>('all')
+  const [contacts, setContacts] = useState<OutreachContact[]>([])
+  const [untrackedThreads, setUntrackedThreads] = useState<UntrackedThread[]>([])
+  const [filter, setFilter] = useState<OutreachContact['status'] | 'all'>('all')
   const [showAdd, setShowAdd] = useState(false)
   const [newSchool, setNewSchool] = useState('')
   const [newCoach, setNewCoach] = useState('')
   const [newCoachEmail, setNewCoachEmail] = useState('')
+  const [newDivision, setNewDivision] = useState<Division>('D1')
+  const [contactsLoading, setContactsLoading] = useState(false)
 
-  // Gmail state
   const [gmailConnected, setGmailConnected] = useState(false)
   const [gmailEmail, setGmailEmail] = useState<string | null>(null)
   const [gmailLoading, setGmailLoading] = useState(false)
-  const [sendingId, setSendingId] = useState<string | null>(null)
+  const [sendingId] = useState<string | null>(null)
   const [syncLoading, setSyncLoading] = useState(false)
   const [syncMsg, setSyncMsg] = useState('')
 
@@ -62,13 +57,24 @@ export function Tracker() {
   const [ratingLoading, setRatingLoading] = useState(false)
   const [ratingError, setRatingError] = useState('')
 
+  const loadContacts = useCallback(async () => {
+    if (!user?.id) return
+    setContactsLoading(true)
+    try {
+      const { contacts: data } = await getContacts(user.id)
+      setContacts(data)
+    } catch { /* show empty state */ }
+    finally { setContactsLoading(false) }
+  }, [user?.id])
+
   useEffect(() => {
     if (!user?.id) return
+    loadContacts()
     getGmailStatus(user.id).then((s) => {
       setGmailConnected(s.connected)
       setGmailEmail(s.email)
     }).catch(() => {})
-  }, [user?.id])
+  }, [user?.id, loadContacts])
 
   useEffect(() => {
     function handleMessage(e: MessageEvent) {
@@ -76,13 +82,14 @@ export function Tracker() {
         setGmailConnected(true)
         setGmailEmail(e.data.email ?? null)
         setGmailLoading(false)
+        if (user?.id) syncThreads(user.id)
       } else if (e.data?.type === 'gmail-error') {
         setGmailLoading(false)
       }
     }
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
-  }, [])
+  }, [user?.id])
 
   function connectGmail() {
     if (!user?.id) return
@@ -90,47 +97,47 @@ export function Tracker() {
     window.open(`/api/gmail/auth?userId=${encodeURIComponent(user.id)}`, 'gmail-auth', 'width=500,height=600,left=200,top=100')
   }
 
-  async function handleSendViaGmail(contact: CoachEmail) {
-    if (!user?.id || !contact.coachEmail) return
-    setSendingId(contact.id)
-    try {
-      await gmailSend(user.id, contact.coachEmail, contact.subject, contact.body)
-      setContacts((prev) => prev.map((c) => c.id === contact.id ? { ...c, status: 'sent', sentAt: new Date().toISOString().slice(0, 10) } : c))
-    } catch (e) {
-      alert(e instanceof Error ? e.message : 'Failed to send')
-    } finally { setSendingId(null) }
-  }
-
-  async function handleSyncReplies() {
-    if (!user?.id) return
+  async function syncThreads(uid: string) {
     setSyncLoading(true); setSyncMsg('')
-    const sentContacts = contacts.filter((c) => c.status === 'sent' && c.coachEmail)
     try {
-      const { results } = await gmailSync(user.id, sentContacts.map((c) => ({ id: c.id, coachEmail: c.coachEmail })))
-      let count = 0
-      setContacts((prev) => prev.map((c) => {
-        const r = results.find((x) => x.contactId === c.id)
-        if (r?.replied && c.status === 'sent') { count++; return { ...c, status: 'responded', respondedAt: new Date().toISOString().slice(0, 10) } }
-        return c
-      }))
-      setSyncMsg(count > 0 ? `Found ${count} new repl${count === 1 ? 'y' : 'ies'}!` : 'No new replies found.')
-    } catch (e) {
+      const { tracked, untracked } = await gmailGetThreads(uid)
+      setContacts(tracked)
+      setUntrackedThreads(untracked)
+      const newReplies = tracked.filter((c) => c.status === 'replied' && c.lastReplyAt).length
+      setSyncMsg(newReplies > 0 ? `${newReplies} coach repl${newReplies === 1 ? 'y' : 'ies'} found!` : 'Up to date.')
+    } catch {
       setSyncMsg('Sync failed — check Gmail connection.')
     } finally { setSyncLoading(false) }
   }
 
-  function addContact() {
-    if (!newSchool) return
-    setContacts((prev) => [{
-      id: crypto.randomUUID(), school: newSchool, division: 'D1',
-      coachName: newCoach, coachEmail: newCoachEmail, subject: '', body: '',
-      status: 'draft', createdAt: new Date().toISOString(),
-    }, ...prev])
-    setNewSchool(''); setNewCoach(''); setNewCoachEmail(''); setShowAdd(false)
+  async function handleStatusChange(id: string, status: OutreachContact['status']) {
+    if (!user?.id) return
+    setContacts((prev) => prev.map((c) => c.id === id ? { ...c, status } : c))
+    try { await updateContact(id, user.id, { status }) } catch { loadContacts() }
   }
 
-  function updateStatus(id: string, status: CoachEmail['status']) {
-    setContacts((prev) => prev.map((c) => c.id === id ? { ...c, status } : c))
+  function handleSendEmail(contact: OutreachContact) {
+    const params = new URLSearchParams({
+      school: contact.schoolName,
+      division: contact.division,
+      coachName: contact.coachName,
+      coachEmail: contact.coachEmail,
+    })
+    navigate(`/dashboard/emails?${params.toString()}`)
+  }
+
+  async function addContact() {
+    if (!newSchool || !user?.id) return
+    try {
+      await createContact(user.id, {
+        coachName: newCoach, schoolName: newSchool,
+        coachEmail: newCoachEmail, division: newDivision,
+      })
+      await loadContacts()
+      setNewSchool(''); setNewCoach(''); setNewCoachEmail(''); setShowAdd(false)
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Failed to add contact')
+    }
   }
 
   async function handleRateResponse() {
@@ -154,9 +161,9 @@ export function Tracker() {
   const filtered = filter === 'all' ? contacts : contacts.filter((c) => c.status === filter)
   const counts = {
     all: contacts.length,
-    draft: contacts.filter((c) => c.status === 'draft').length,
-    sent: contacts.filter((c) => c.status === 'sent').length,
-    responded: contacts.filter((c) => c.status === 'responded').length,
+    contacted: contacts.filter((c) => c.status === 'contacted').length,
+    replied: contacts.filter((c) => c.status === 'replied').length,
+    scheduled_visit: contacts.filter((c) => c.status === 'scheduled_visit').length,
   }
 
   return (
@@ -170,8 +177,6 @@ export function Tracker() {
           <h1 className="font-serif text-4xl font-black text-[#f1f5f9] tracking-[-1px]">Outreach Tracker</h1>
           <p className="text-[#64748b] mt-2 text-sm">Track every contact, response, and follow-up in one place.</p>
         </div>
-
-        {/* Gmail connection */}
         <div className="flex flex-col items-end gap-2">
           {gmailConnected ? (
             <div className="flex items-center gap-3">
@@ -182,12 +187,7 @@ export function Tracker() {
                 </div>
                 {gmailEmail && <div className="text-xs text-[#64748b]">{gmailEmail}</div>}
               </div>
-              <Button
-                variant="outline"
-                size="sm"
-                onClick={handleSyncReplies}
-                disabled={syncLoading}
-              >
+              <Button variant="outline" size="sm" onClick={() => user?.id && syncThreads(user.id)} disabled={syncLoading}>
                 {syncLoading ? 'Syncing...' : '↻ Check for Replies'}
               </Button>
             </div>
@@ -201,7 +201,6 @@ export function Tracker() {
         </div>
       </div>
 
-      {/* Tabs */}
       <div className="flex gap-0 border-b border-[rgba(255,255,255,0.07)] mb-8">
         {[{ id: 'contacts', label: 'Contacts' }, { id: 'responses', label: 'Coach Responses' }].map((t) => (
           <button
@@ -218,6 +217,17 @@ export function Tracker() {
 
       {tab === 'contacts' && (
         <>
+          {!gmailConnected && (
+            <Card className="p-4 mb-6 flex items-center justify-between gap-4">
+              <div className="text-sm text-[#94a3b8]">
+                📧 Connect Gmail to see coach replies, send emails, and get AI interest ratings.
+              </div>
+              <Button size="sm" onClick={connectGmail} disabled={gmailLoading || !user?.id}>
+                {gmailLoading ? 'Connecting...' : 'Connect Gmail'}
+              </Button>
+            </Card>
+          )}
+
           <div className="flex justify-end mb-4">
             <Button onClick={() => setShowAdd(!showAdd)}>+ Add Contact</Button>
           </div>
@@ -233,6 +243,16 @@ export function Tracker() {
               <div className="flex-1 min-w-36">
                 <Input label="Coach email" value={newCoachEmail} onChange={(e) => setNewCoachEmail(e.target.value)} placeholder="coach@school.edu" />
               </div>
+              <div>
+                <label className="text-xs text-[#64748b] block mb-1.5">Division</label>
+                <select
+                  value={newDivision}
+                  onChange={(e) => setNewDivision(e.target.value as Division)}
+                  className="bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded text-xs text-[#f1f5f9] px-3 py-2 focus:outline-none focus:border-[#eab308]"
+                >
+                  {['D1', 'D2', 'D3', 'NAIA', 'JUCO'].map((d) => <option key={d} value={d}>{d}</option>)}
+                </select>
+              </div>
               <Button onClick={addContact}>Add</Button>
               <Button variant="ghost" onClick={() => setShowAdd(false)}>Cancel</Button>
             </Card>
@@ -241,9 +261,9 @@ export function Tracker() {
           <div className="grid grid-cols-4 gap-4 mb-8">
             {[
               { label: 'Total', value: counts.all, color: 'text-[#f1f5f9]' },
-              { label: 'Drafted', value: counts.draft, color: 'text-[#64748b]' },
-              { label: 'Sent', value: counts.sent, color: 'text-[#60a5fa]' },
-              { label: 'Responded', value: counts.responded, color: 'text-[#4ade80]' },
+              { label: 'Contacted', value: counts.contacted, color: 'text-[#60a5fa]' },
+              { label: 'Replied', value: counts.replied, color: 'text-[#4ade80]' },
+              { label: 'Visit Scheduled', value: counts.scheduled_visit, color: 'text-[#eab308]' },
             ].map(({ label, value, color }) => (
               <Card key={label} className="p-4 text-center">
                 <div className={`font-serif text-3xl font-black ${color}`}>{value}</div>
@@ -253,7 +273,7 @@ export function Tracker() {
           </div>
 
           <div className="flex gap-2 mb-5">
-            {(['all', 'draft', 'sent', 'responded'] as const).map((f) => (
+            {(['all', 'contacted', 'replied', 'scheduled_visit', 'no_response'] as const).map((f) => (
               <button
                 key={f}
                 onClick={() => setFilter(f)}
@@ -263,62 +283,55 @@ export function Tracker() {
                     : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
                 }`}
               >
-                {f} {f !== 'all' ? `(${counts[f as keyof typeof counts]})` : ''}
+                {f.replace('_', ' ')}
               </button>
             ))}
           </div>
 
-          <Card>
-            <div className="overflow-x-auto">
-              <table className="w-full text-sm">
-                <thead>
-                  <tr className="border-b border-[rgba(255,255,255,0.07)]">
-                    {['School', 'Coach', 'Div', 'Status', 'Sent', 'Response', 'Actions'].map((h) => (
-                      <th key={h} className="text-left px-5 py-3.5 text-xs font-semibold text-[#64748b] uppercase tracking-wider whitespace-nowrap">{h}</th>
-                    ))}
-                  </tr>
-                </thead>
-                <tbody>
-                  {filtered.map((c) => (
-                    <tr key={c.id} className="border-b border-[rgba(255,255,255,0.04)] hover:bg-[rgba(255,255,255,0.02)] transition-colors">
-                      <td className="px-5 py-4 font-medium text-[#f1f5f9] whitespace-nowrap">{c.school}</td>
-                      <td className="px-5 py-4 text-xs whitespace-nowrap">
-                        <div className="text-[#64748b]">{c.coachName}</div>
-                        {c.coachEmail && <div className="text-[#475569] text-xs">{c.coachEmail}</div>}
-                      </td>
-                      <td className="px-5 py-4"><Badge variant="muted">{c.division}</Badge></td>
-                      <td className="px-5 py-4"><Badge variant={statusColor[c.status]}>{c.status}</Badge></td>
-                      <td className="px-5 py-4 text-[#64748b] text-xs whitespace-nowrap">{c.sentAt ? new Date(c.sentAt).toLocaleDateString() : '—'}</td>
-                      <td className="px-5 py-4 text-[#64748b] text-xs whitespace-nowrap">{c.respondedAt ? new Date(c.respondedAt).toLocaleDateString() : '—'}</td>
-                      <td className="px-5 py-4">
-                        <div className="flex items-center gap-2 flex-wrap">
-                          <select
-                            value={c.status}
-                            onChange={(e) => updateStatus(c.id, e.target.value as CoachEmail['status'])}
-                            className="bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded text-xs text-[#64748b] px-2 py-1.5 focus:outline-none focus:border-[#eab308]"
-                          >
-                            <option value="draft">Draft</option>
-                            <option value="sent">Sent</option>
-                            <option value="responded">Responded</option>
-                            <option value="not_interested">Not Interested</option>
-                          </select>
-                          {gmailConnected && c.status === 'draft' && c.coachEmail && c.subject && (
-                            <button
-                              onClick={() => handleSendViaGmail(c)}
-                              disabled={sendingId === c.id}
-                              className="text-xs text-[#eab308] hover:text-[#ca9a06] px-2 py-1.5 border border-[rgba(234,179,8,0.3)] rounded whitespace-nowrap"
-                            >
-                              {sendingId === c.id ? 'Sending...' : '📧 Send'}
-                            </button>
-                          )}
-                        </div>
-                      </td>
+          {contactsLoading ? (
+            <div className="text-xs text-[#64748b] py-8 text-center">Loading contacts...</div>
+          ) : (
+            <Card>
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b border-[rgba(255,255,255,0.07)]">
+                      {['School', 'Coach', 'Div', 'Status', 'Interest', 'Last Reply', 'Actions'].map((h) => (
+                        <th key={h} className="text-left px-5 py-3.5 text-xs font-semibold text-[#64748b] uppercase tracking-wider whitespace-nowrap">{h}</th>
+                      ))}
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </Card>
+                  </thead>
+                  <tbody>
+                    {filtered.length === 0 ? (
+                      <tr>
+                        <td colSpan={7} className="px-5 py-12 text-center text-xs text-[#64748b]">
+                          No contacts yet. Add your first coach above.
+                        </td>
+                      </tr>
+                    ) : filtered.map((c) => (
+                      <ContactRow
+                        key={c.id}
+                        contact={c}
+                        userId={user?.id ?? ''}
+                        gmailConnected={gmailConnected}
+                        onStatusChange={handleStatusChange}
+                        onSendEmail={handleSendEmail}
+                        sendingId={sendingId}
+                      />
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </Card>
+          )}
+
+          {gmailConnected && user?.id && (
+            <UntrackedSection
+              userId={user.id}
+              threads={untrackedThreads}
+              onContactAdded={loadContacts}
+            />
+          )}
         </>
       )}
 
@@ -367,7 +380,6 @@ export function Tracker() {
               {ratingLoading ? 'Analyzing...' : 'Rate Interest Level'}
             </Button>
           </Card>
-
           {responses.length === 0 ? (
             <Card className="p-12 text-center">
               <div className="text-3xl mb-3">📬</div>
@@ -377,7 +389,8 @@ export function Tracker() {
           ) : (
             <div className="flex flex-col gap-3">
               {responses.map((r) => {
-                const cfg = ratingConfig[r.rating]
+                const cfg = ratingConfig[r.rating as keyof typeof ratingConfig]
+                if (!cfg) return null
                 return (
                   <Card key={r.id} className="p-5">
                     <div className="flex items-start justify-between gap-4 mb-3">

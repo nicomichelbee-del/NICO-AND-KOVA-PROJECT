@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
+import { useSearchParams } from 'react-router-dom'
 import { generateFollowUp } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Textarea } from '../../components/ui/Textarea'
@@ -43,6 +44,23 @@ export function FollowUp() {
   const [copied, setCopied] = useState(false)
   const [selectedEvents, setSelectedEvents] = useState<string[]>([])
   const [customEvent, setCustomEvent] = useState('')
+  const [searchParams] = useSearchParams()
+
+  useEffect(() => {
+    const prefillType = searchParams.get('type') as 'followup' | 'thankyou' | 'answer' | null
+    const prefillCoachName = searchParams.get('coachName')
+    const prefillSchool = searchParams.get('school')
+    const prefillMessage = searchParams.get('message')
+
+    if (prefillType && ['followup', 'thankyou', 'answer'].includes(prefillType)) {
+      setType(prefillType)
+    }
+    if (prefillMessage && prefillCoachName && prefillSchool) {
+      setContext(
+        `Coach ${prefillCoachName} at ${prefillSchool} replied:\n\n"${prefillMessage}"`
+      )
+    }
+  }, [])
 
   function toggleEvent(id: string) {
     setSelectedEvents((prev) => prev.includes(id) ? prev.filter((e) => e !== id) : [...prev, id])
