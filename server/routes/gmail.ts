@@ -129,8 +129,10 @@ router.post('/send', async (req, res) => {
     const sent = await gmail.users.messages.send({ userId: 'me', requestBody: { raw } })
     const threadId = sent.data.threadId ?? ''
     const messageId = sent.data.id ?? ''
+    res.json({ success: true, threadId, messageId })
+    // Log asynchronously — DB failure should not affect send response
     if (threadId) {
-      await supabase.from('sent_emails').insert({
+      supabase.from('sent_emails').insert({
         user_id: userId,
         contact_id: contactId ?? null,
         gmail_thread_id: threadId,
@@ -138,9 +140,10 @@ router.post('/send', async (req, res) => {
         subject,
         body,
         email_type: emailType ?? 'initial_outreach',
+      }).then().catch((err: Error) => {
+        console.error('sent_emails insert failed:', err.message)
       })
     }
-    res.json({ success: true, threadId, messageId })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed to send' })
   }
@@ -222,13 +225,23 @@ router.patch('/contacts/:id', async (req, res) => {
   const { userId, ...updates } = req.body as { userId: string; [key: string]: any }
   if (!userId) return res.status(400).json({ error: 'userId required' })
   const allowed: Record<string, string> = {
-    status: 'status', interestRating: 'interest_rating', notes: 'notes',
-    gmailThreadId: 'gmail_thread_id', lastReplyAt: 'last_reply_at',
+    status: 'status',
+    interestRating: 'interest_rating',
+    notes: 'notes',
+    gmailThreadId: 'gmail_thread_id',
+    lastReplyAt: 'last_reply_at',
     lastReplySnippet: 'last_reply_snippet',
+    coachName: 'coach_name',
+    schoolName: 'school_name',
+    coachEmail: 'coach_email',
+    division: 'division',
   }
   const patch: Record<string, any> = {}
   for (const [key, col] of Object.entries(allowed)) {
     if (key in updates) patch[col] = updates[key]
+  }
+  if (Object.keys(patch).length === 0) {
+    return res.status(400).json({ error: 'No valid fields to update' })
   }
   const { data, error } = await getSupabase()
     .from('outreach_contacts')
