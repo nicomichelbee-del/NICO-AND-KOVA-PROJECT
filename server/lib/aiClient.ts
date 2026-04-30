@@ -19,8 +19,11 @@ export async function ask(prompt: string, maxTokens = 1024): Promise<string> {
 
 export function parseJSON<T>(text: string, fallback: T): T {
   try {
-    const match = text.match(/\{[\s\S]*\}/)
-    return match ? JSON.parse(match[0]) : fallback
+    const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
+    try { return JSON.parse(cleaned) as T } catch { /* fall through */ }
+    const objMatch = cleaned.match(/\{[\s\S]*\}/)
+    if (objMatch) return JSON.parse(objMatch[0]) as T
+    return fallback
   } catch {
     return fallback
   }
