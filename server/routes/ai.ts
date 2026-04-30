@@ -4,6 +4,8 @@ import { matchSchools, listSchools } from '../lib/schoolMatcher'
 import { getProgramIntel } from '../lib/programIntel'
 import { ask, parseJSON, rateCoachReply } from '../lib/aiClient'
 import rosterData from '../data/rosterPrograms.json'
+import idEventsData from '../data/idEvents.json'
+import idCampsData from '../data/idCamps.json'
 
 const router = Router()
 
@@ -43,16 +45,19 @@ router.post('/find-coach', async (req, res) => {
   try {
     const { school, division, gender } = req.body as { school: string; division: Division; gender: 'mens' | 'womens' }
     const genderLabel = gender === 'womens' ? "Women's" : "Men's"
-    const text = await ask(`Find the current head coach for the ${genderLabel} soccer program at ${school} (${division}).
+    const text = await ask(`Find the head coach for the ${genderLabel} soccer program at ${school} (${division}).
 
 Return JSON only: { "coachName": "First Last", "coachEmail": "email@school.edu", "confidence": "high" }
 
 Rules:
-- coachEmail should follow the school's standard email format
-- Set confidence "high" only if you are certain this is current (2024-2025 season) information
-- Set confidence "low" if you are unsure or this may be outdated
-- If unknown, return { "coachName": "Head Coach", "coachEmail": "", "confidence": "low" }
-- Never fabricate a name you are not confident about`, 300)
+- Provide the head coach's name if you have any reasonable knowledge of this program. Use the most recent name you know — even from 2022 or 2023 — and let the confidence field reflect uncertainty.
+- For email: only include one if you can derive it from a known school-wide format (e.g. "firstinitial+lastname@school.edu" patterns common at most schools). If you don't know the email format, return empty string — better than guessing.
+- Confidence calibration:
+  • "high" → you are confident this is the current (within the last year) head coach AND the email follows a documented pattern.
+  • "low" → you know a name but coach turnover is possible, OR the email is uncertain. Use this for most programs; the UI badges low-confidence results so the user verifies.
+- Only return { "coachName": "Head Coach", "coachEmail": "", "confidence": "low" } if you genuinely have no recall of any coach for this specific program (rare for D1, common for small NAIA/JUCO/D3 programs).
+- Do not invent a plausible-sounding name. If you don't actually know the program, fall back to the "Head Coach" placeholder.
+- Note: longtime coaches do retire. When recalling famous names from years past, mark confidence "low" so the user verifies.`, 300)
     res.json(parseJSON(text, { coachName: 'Head Coach', coachEmail: '', confidence: 'low' }))
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
@@ -75,6 +80,14 @@ router.get('/schools-directory', (_req, res) => {
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
   }
+})
+
+router.get('/showcase-events', (_req, res) => {
+  res.json({ events: idEventsData })
+})
+
+router.get('/id-camps', (_req, res) => {
+  res.json({ camps: idCampsData })
 })
 
 router.post('/program-intel', async (req, res) => {
@@ -138,13 +151,28 @@ router.post('/find-camps', async (req, res) => {
       profile: AthleteProfile
       schools: { name: string; division: string }[]
     }
-    const schoolList = schools.map((s) => `${s.name} (${s.division})`).join(', ')
-    const text = await ask(`Find ID camps for a ${profile.position} (Class ${profile.gradYear}, targeting ${profile.targetDivision}) at these schools: ${schoolList || 'top programs in their division'}.
 
-Return 4-6 camps across these schools. Include realistic camp details.
+    // For each school the user adds, return a generic ID-camp record. We DO
+    // NOT ask the AI to invent registration URLs, dates, or coach names — those
+    // change yearly and the AI hallucinates them. Instead, every entry points
+    // to a Google search that returns the real, current registration page.
+    // The curated /id-camps directory is the source of truth for major
+    // programs; this endpoint is the fallback for arbitrary user-added schools.
+    const enc = (s: string) => encodeURIComponent(s)
+    const gender = profile.gender === 'mens' ? 'men' : 'women'
+    const camps = schools.map((s) => ({
+      id: `search-${s.name.replace(/\W+/g, '-').toLowerCase()}`,
+      school: s.name,
+      division: s.division,
+      campName: `${s.name} ${gender === 'men' ? "Men's" : "Women's"} Soccer ID Camp`,
+      date: 'Dates change yearly — check the registration page',
+      location: 'Verify on the registration page',
+      cost: 'Verify on the registration page',
+      url: `https://www.google.com/search?q=${enc(`${s.name} ${gender} soccer ID camp register`)}`,
+      coaches: [{ name: 'Head Coach', title: `${s.name} ${gender === 'men' ? "Men's" : "Women's"} Soccer` }],
+    }))
 
-Respond with JSON only: { "camps": [{ "id": "uuid", "school": "...", "division": "D1", "campName": "...", "date": "June 14-16, 2026", "location": "City, ST", "cost": "$250", "url": "https://example.edu/soccercamp", "coaches": [{ "name": "Coach Smith", "title": "Head Coach" }] }] }`, 1200)
-    res.json(parseJSON(text, { camps: [] }))
+    res.json({ camps })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
   }

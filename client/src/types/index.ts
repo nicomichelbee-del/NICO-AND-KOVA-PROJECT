@@ -197,6 +197,22 @@ export interface IdEvent {
   notes: string
 }
 
+export interface IdCampEntry {
+  id: string
+  schoolId: string
+  schoolName: string
+  gender: 'mens' | 'womens' | 'both'
+  division: Division
+  campName: string
+  format: 'residential' | 'day' | 'prospect-day' | 'elite-id'
+  typicalMonths: string
+  ageRange: string
+  estimatedCost: string
+  searchRegistrationUrl: string  // Google search → real, current registration page
+  athleticsUrl: string            // Google search → official athletics site
+  notes: string
+}
+
 export interface SchoolRecord {
   id: string
   name: string

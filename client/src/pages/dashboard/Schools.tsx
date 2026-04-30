@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { matchSchools, getProgramIntel } from '../../lib/api'
+import { matchSchools, getProgramIntel, findCoach } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
 import { Card } from '../../components/ui/Card'
@@ -349,23 +349,91 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
             {intel && <ProgramIntelView intel={intel} />}
           </section>
 
-          {/* Coach */}
-          {(school.coachName || school.coachEmail) && (
-            <section>
-              <h3 className="text-[11px] font-bold text-[#64748b] tracking-[2px] uppercase mb-3">Head Coach</h3>
-              <div className="bg-[rgba(255,255,255,0.04)] rounded-lg px-4 py-3 text-sm">
-                <div className="font-semibold text-[#f1f5f9]">{school.coachName || 'Head Coach'}</div>
-                {school.coachEmail && (
-                  <a href={`mailto:${school.coachEmail}`} className="text-xs text-[#eab308] hover:underline">
-                    {school.coachEmail}
-                  </a>
-                )}
-              </div>
-            </section>
-          )}
+          <CoachSection school={school} gender={gender} />
         </div>
       </div>
     </div>
+  )
+}
+
+function CoachSection({ school, gender }: { school: School; gender: 'mens' | 'womens' }) {
+  // Stored coach data is unreliable — coaches change jobs and stale entries
+  // erode trust. We hit the live /api/ai/find-coach endpoint on demand instead.
+  const [lookup, setLookup] = useState<{ coachName: string; coachEmail: string; confidence: 'high' | 'low' } | null>(null)
+  const [loading, setLoading] = useState(false)
+  const [error, setError] = useState('')
+
+  async function handleLookup() {
+    setLoading(true); setError('')
+    try {
+      const res = await findCoach(school.name, school.division, gender)
+      setLookup(res)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Lookup failed')
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  return (
+    <section>
+      <h3 className="text-[11px] font-bold text-[#64748b] tracking-[2px] uppercase mb-3">Head Coach</h3>
+      {!lookup ? (
+        <div className="bg-[rgba(255,255,255,0.04)] rounded-lg px-4 py-3 text-sm flex items-center justify-between gap-3 flex-wrap">
+          <div>
+            <div className="text-xs text-[#94a3b8] leading-relaxed">
+              We don't store coach contact info — coaches change jobs and stored data goes stale.
+              Look up the current head coach for the {gender === 'womens' ? "women's" : "men's"} program below.
+            </div>
+            {error && <div className="text-xs text-red-400 mt-1">{error}</div>}
+          </div>
+          <button
+            onClick={handleLookup}
+            disabled={loading}
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[rgba(234,179,8,0.12)] border border-[rgba(234,179,8,0.4)] text-[#eab308] hover:bg-[rgba(234,179,8,0.18)] disabled:opacity-50 flex-shrink-0"
+          >
+            {loading ? 'Looking up…' : '🔍 Look up coach'}
+          </button>
+        </div>
+      ) : (
+        <div className={`rounded-lg px-4 py-3 text-sm border ${
+          lookup.confidence === 'high'
+            ? 'bg-[rgba(74,222,128,0.05)] border-[rgba(74,222,128,0.25)]'
+            : 'bg-[rgba(251,191,36,0.05)] border-[rgba(251,191,36,0.25)]'
+        }`}>
+          <div className="flex items-center justify-between gap-2 mb-1">
+            <div className="font-semibold text-[#f1f5f9]">{lookup.coachName || 'Head Coach'}</div>
+            {lookup.confidence === 'low' && (
+              <span className="text-[10px] uppercase tracking-widest text-[#fbbf24]">⚠️ Verify before sending</span>
+            )}
+            {lookup.confidence === 'high' && (
+              <span className="text-[10px] uppercase tracking-widest text-[#4ade80]">High confidence</span>
+            )}
+          </div>
+          {lookup.coachEmail ? (
+            <a href={`mailto:${lookup.coachEmail}`} className="text-xs text-[#eab308] hover:underline">
+              {lookup.coachEmail}
+            </a>
+          ) : (
+            <a
+              href={`https://www.google.com/search?q=${encodeURIComponent(`${school.name} ${gender === 'womens' ? "women's" : "men's"} soccer head coach email`)}`}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-xs text-[#60a5fa] hover:underline"
+            >
+              Email unknown — search the official roster page ↗
+            </a>
+          )}
+          <button
+            onClick={handleLookup}
+            disabled={loading}
+            className="text-[10px] uppercase tracking-widest text-[#64748b] hover:text-[#eab308] mt-2 disabled:opacity-50"
+          >
+            {loading ? '…' : '↻ Re-check'}
+          </button>
+        </div>
+      )}
+    </section>
   )
 }
 
