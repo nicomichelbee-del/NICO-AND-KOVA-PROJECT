@@ -89,19 +89,17 @@ export function createContact(userId: string, data: {
   return post<{ contact: OutreachContact }>('/api/gmail/contacts', { userId, ...data })
 }
 
-export function updateContact(id: string, userId: string, updates: Partial<OutreachContact>) {
-  return new Promise<{ contact: OutreachContact }>(async (resolve, reject) => {
-    const res = await fetch(`/api/gmail/contacts/${id}`, {
-      method: 'PATCH',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId, ...updates }),
-    })
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({ error: 'Request failed' }))
-      return reject(new Error((err as any).error ?? 'Request failed'))
-    }
-    resolve(res.json())
+export async function updateContact(id: string, userId: string, updates: Partial<OutreachContact>) {
+  const res = await fetch(`/api/gmail/contacts/${id}`, {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, ...updates }),
   })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Request failed' }))
+    throw new Error((err as { error: string }).error ?? 'Request failed')
+  }
+  return res.json() as Promise<{ contact: OutreachContact }>
 }
 
 export function gmailGetThreads(userId: string) {
