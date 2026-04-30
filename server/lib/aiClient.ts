@@ -33,7 +33,7 @@ export async function rateCoachReply(
   school: string,
   coachName: string,
   replyText: string,
-): Promise<{ rating: string; confidence: number; signals: string[]; nextAction: string }> {
+): Promise<{ rating: 'hot' | 'warm' | 'cold' | 'not_interested'; confidence: number; signals: string[]; nextAction: string }> {
   const text = await ask(
     `Analyze this coach reply and rate their interest level in the athlete.
 

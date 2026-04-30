@@ -4,7 +4,6 @@ import { matchSchools, listSchools } from '../lib/schoolMatcher'
 import { getProgramIntel } from '../lib/programIntel'
 import { ask, parseJSON, rateCoachReply } from '../lib/aiClient'
 import rosterData from '../data/rosterPrograms.json'
-import schoolsData from '../data/schools.json'
 
 const router = Router()
 
