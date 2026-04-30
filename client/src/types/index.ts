@@ -218,3 +218,48 @@ export interface SchoolRecord {
   scholarships?: boolean
   notes?: string
 }
+
+export interface OutreachContact {
+  id: string
+  userId: string
+  coachName: string
+  schoolName: string
+  coachEmail: string
+  position?: string
+  division: Division
+  gmailThreadId?: string
+  interestRating: 'hot' | 'warm' | 'cold' | 'not_interested' | 'pending'
+  lastReplyAt?: string
+  lastReplySnippet?: string
+  status: 'contacted' | 'replied' | 'scheduled_visit' | 'committed' | 'no_response'
+  notes?: string
+  createdAt: string
+}
+
+export interface SentEmail {
+  id: string
+  userId: string
+  contactId: string
+  gmailThreadId: string
+  gmailMessageId: string
+  subject: string
+  body: string
+  sentAt: string
+  emailType: 'initial_outreach' | 'followup' | 'thank_you' | 'camp_inquiry'
+}
+
+export interface ThreadMessage {
+  id: string
+  sender: string
+  timestamp: string
+  body: string
+  isFromCoach: boolean
+}
+
+export interface UntrackedThread {
+  threadId: string
+  senderEmail: string
+  senderName: string
+  subject: string
+  snippet: string
+}
