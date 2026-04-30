@@ -14,6 +14,7 @@ import { FollowUp } from './pages/dashboard/FollowUp'
 import { VideoRater } from './pages/dashboard/VideoRater'
 import { Camps } from './pages/dashboard/Camps'
 import { RosterIntel } from './pages/dashboard/RosterIntel'
+import { AuthCallback } from './pages/AuthCallback'
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
@@ -35,6 +36,7 @@ export default function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           <Route path="/leaderboard" element={<Leaderboard />} />
+          <Route path="/auth/callback" element={<AuthCallback />} />
           <Route
             path="/dashboard"
             element={

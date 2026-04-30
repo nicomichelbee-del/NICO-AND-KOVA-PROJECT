@@ -2,3 +2,7 @@ node_modules/
 dist/
 .env
 .env.local
+server.log
+.playwright-mcp/
+.superpowers/
+.claude/settings.local.json
