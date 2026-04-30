@@ -254,4 +254,143 @@ router.patch('/contacts/:id', async (req, res) => {
   res.json({ contact: mapContact(data) })
 })
 
+// GET /api/gmail/threads?userId=<uid>
+router.get('/threads', async (req, res) => {
+  const { userId } = req.query as { userId: string }
+  if (!userId) return res.status(400).json({ error: 'userId required' })
+  const supabase = getSupabase()
+  const { data: tokenRow } = await supabase
+    .from('user_gmail_tokens')
+    .select('refresh_token')
+    .eq('user_id', userId)
+    .single()
+  if (!tokenRow?.refresh_token) return res.status(403).json({ error: 'Gmail not connected' })
+  const oauth2Client = getOAuth2Client()
+  oauth2Client.setCredentials({ refresh_token: tokenRow.refresh_token })
+  const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
+
+  const { data: contacts } = await supabase
+    .from('outreach_contacts')
+    .select('*')
+    .eq('user_id', userId)
+
+  // Sync reply data for tracked contacts
+  const tracked = []
+  for (const contact of contacts ?? []) {
+    if (!contact.gmail_thread_id) { tracked.push(mapContact(contact)); continue }
+    try {
+      const thread = await gmail.users.threads.get({
+        userId: 'me',
+        id: contact.gmail_thread_id,
+        format: 'metadata',
+        metadataHeaders: ['From', 'Date'],
+      })
+      const messages = thread.data.messages ?? []
+      const lastMsg = messages[messages.length - 1]
+      const fromHeader = lastMsg?.payload?.headers?.find((h: any) => h.name === 'From')?.value ?? ''
+      const isFromCoach = contact.coach_email && fromHeader.toLowerCase().includes(contact.coach_email.toLowerCase())
+      if (isFromCoach) {
+        const snippet = (thread.data.snippet ?? '').slice(0, 150)
+        const dateHeader = lastMsg?.payload?.headers?.find((h: any) => h.name === 'Date')?.value
+        const lastReplyAt = dateHeader ? new Date(dateHeader).toISOString() : null
+        await supabase.from('outreach_contacts').update({
+          last_reply_snippet: snippet,
+          last_reply_at: lastReplyAt,
+          status: 'replied',
+        }).eq('id', contact.id)
+        tracked.push(mapContact({ ...contact, last_reply_snippet: snippet, last_reply_at: lastReplyAt, status: 'replied' }))
+      } else {
+        tracked.push(mapContact(contact))
+      }
+    } catch {
+      tracked.push(mapContact(contact))
+    }
+  }
+
+  // Scan inbox for untracked potential coach replies
+  const trackedEmails = new Set((contacts ?? []).map((c: any) => c.coach_email?.toLowerCase()).filter(Boolean))
+  const untracked: any[] = []
+  try {
+    const inbox = await gmail.users.threads.list({ userId: 'me', q: 'in:inbox', maxResults: 30 })
+    for (const thread of inbox.data.threads ?? []) {
+      try {
+        const td = await gmail.users.threads.get({
+          userId: 'me', id: thread.id!,
+          format: 'metadata', metadataHeaders: ['From', 'Subject'],
+        })
+        const firstMsg = td.data.messages?.[0]
+        const fromHeader = firstMsg?.payload?.headers?.find((h: any) => h.name === 'From')?.value ?? ''
+        const subject = firstMsg?.payload?.headers?.find((h: any) => h.name === 'Subject')?.value ?? ''
+        const emailMatch = fromHeader.match(/<([^>]+)>/) ?? fromHeader.match(/([^\s]+@[^\s]+)/)
+        const senderEmail = emailMatch?.[1]?.toLowerCase() ?? ''
+        if (!senderEmail || trackedEmails.has(senderEmail)) continue
+        if (isCoachEmail(senderEmail, subject)) {
+          untracked.push({
+            threadId: thread.id,
+            senderEmail,
+            senderName: fromHeader.replace(/<[^>]+>/, '').trim().replace(/^"|"$/g, ''),
+            subject,
+            snippet: thread.snippet ?? '',
+          })
+        }
+      } catch { /* skip */ }
+    }
+  } catch { /* skip untracked scan */ }
+
+  res.json({ tracked, untracked })
+})
+
+// GET /api/gmail/thread/:threadId?userId=<uid>
+router.get('/thread/:threadId', async (req, res) => {
+  const { threadId } = req.params
+  const { userId } = req.query as { userId: string }
+  if (!userId) return res.status(400).json({ error: 'userId required' })
+  const { data: tokenRow } = await getSupabase()
+    .from('user_gmail_tokens')
+    .select('refresh_token')
+    .eq('user_id', userId)
+    .single()
+  if (!tokenRow?.refresh_token) return res.status(403).json({ error: 'Gmail not connected' })
+  const oauth2Client = getOAuth2Client()
+  oauth2Client.setCredentials({ refresh_token: tokenRow.refresh_token })
+  const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
+  try {
+    const thread = await gmail.users.threads.get({ userId: 'me', id: threadId, format: 'full' })
+    const messages = (thread.data.messages ?? []).map((msg: any) => {
+      const headers = msg.payload?.headers ?? []
+      const from = headers.find((h: any) => h.name === 'From')?.value ?? ''
+      const date = headers.find((h: any) => h.name === 'Date')?.value ?? ''
+      return {
+        id: msg.id,
+        sender: from,
+        timestamp: date ? new Date(date).toISOString() : new Date().toISOString(),
+        body: decodeMessageBody(msg.payload),
+        isFromCoach: false,
+      }
+    })
+    res.json({ messages })
+  } catch (e) {
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Failed to fetch thread' })
+  }
+})
+
+// POST /api/gmail/rate-and-log
+router.post('/rate-and-log', async (req, res) => {
+  const { userId, contactId, latestCoachMessage, coachName, school } = req.body as {
+    userId: string; contactId: string; latestCoachMessage: string; coachName: string; school: string
+  }
+  if (!userId || !contactId) return res.status(400).json({ error: 'userId and contactId required' })
+  try {
+    const result = await rateCoachReply(school, coachName, latestCoachMessage)
+    await getSupabase()
+      .from('outreach_contacts')
+      .update({ interest_rating: result.rating })
+      .eq('id', contactId)
+      .eq('user_id', userId)
+    res.json({ rating: result.rating, signals: result.signals, nextAction: result.nextAction })
+  } catch (e) {
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Rating failed' })
+  }
+})
+
 export default router
