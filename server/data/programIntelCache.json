@@ -130,5 +130,172 @@
     ],
     "cachedAt": "2026-04-29T05:42:58.770Z",
     "source": "ai-generated"
+  },
+  "northtexas:mens": {
+    "schoolId": "northtexas",
+    "schoolName": "University of North Texas",
+    "gender": "mens",
+    "formation": "Unknown — see search links",
+    "formationVariants": [],
+    "playstyle": "Unknown — insufficient specific recent knowledge of UNT men's soccer tactical approach.",
+    "tacticalNotes": [],
+    "confidence": "low",
+    "caveats": [
+      "UNT is a Group of Five (American Athletic Conference) D1 program with limited media coverage relative to Power Five schools. I do not have reliable recent (2022–2024) tactical or formation data.",
+      "I cannot verify current head coach tenure, recent match results, or specific playing philosophy without risking inaccuracy.",
+      "For tactical analysis and program direction, consult the official UNT athletics website, current roster pages, and recent match footage.",
+      "Conference-level context: the American Athletic Conference is competitive mid-tier D1, but individual program strengths vary; do not assume UNT's tactics or recruiting profile without verification.",
+      "Recommend contacting the coaching staff directly or reviewing game film from the current season for reliable scouting intelligence."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=University%20of%20North%20Texas%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=University%20of%20North%20Texas%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=University%20of%20North%20Texas%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=University%20of%20North%20Texas%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=American%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-04-30T03:51:47.678Z",
+    "source": "ai-generated"
+  },
+  "baylor:mens": {
+    "schoolId": "baylor",
+    "schoolName": "Baylor University",
+    "gender": "mens",
+    "formation": "Unknown — see search links to verify",
+    "formationVariants": [],
+    "playstyle": "Unknown — insufficient specific knowledge of current tactical approach.",
+    "tacticalNotes": [],
+    "confidence": "low",
+    "caveats": [
+      "Baylor Men's Soccer is a Big 12 D1 program, but I do not have specific, recent (2022–2024) tactical or roster knowledge to confidently describe their formation, pressing style, or offensive shape.",
+      "I cannot verify the current head coach, coaching tenure, or recent season results without risking outdated or incorrect information.",
+      "Do not rely on this response for recruitment or tactical evaluation — verify all information directly with Baylor Athletics official channels, the coaching staff, and current roster pages.",
+      "Big 12 men's soccer programs vary widely in tactical philosophy; generic conference-level guidance would be misleading here.",
+      "For accurate scouting, contact Baylor's coaching staff directly or consult recent match footage and official program documentation."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=Baylor%20University%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=Baylor%20University%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=Baylor%20University%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=Baylor%20University%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=Big%2012%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-04-30T03:51:51.020Z",
+    "source": "ai-generated"
+  },
+  "fsu:mens": {
+    "schoolId": "fsu",
+    "schoolName": "Florida State University",
+    "gender": "mens",
+    "formation": "Unknown — see search links",
+    "formationVariants": [],
+    "playstyle": "Unknown — specific tactical approach for recent seasons not available in my knowledge base.",
+    "tacticalNotes": [],
+    "recentForm": "Unknown — unable to verify recent season records or tournament performance with confidence.",
+    "staffStability": "Unknown — current head coach and coaching staff tenure not confirmed in my knowledge base.",
+    "recruitingProfile": "Unknown — no specific recruiting profile information available.",
+    "confidence": "low",
+    "caveats": [
+      "FSU Men's Soccer is a documented ACC program, but I lack specific tactical knowledge of their recent (2022–2024) formations, playstyle, or personnel.",
+      "Coaching staff changes, roster turnover, and tactical shifts in recent years are not reliably known to me.",
+      "Verify all information directly with FSU Athletics website, current roster page, and head coach's public statements.",
+      "ACC conference context suggests competitive D1 play, but this program's specific tactical identity requires verification from primary sources.",
+      "Recent match footage and coaching interviews would clarify formation preferences and pressing intensity — not confirmed here."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=Florida%20State%20University%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=Florida%20State%20University%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=Florida%20State%20University%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=Florida%20State%20University%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=ACC%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-04-30T03:51:54.544Z",
+    "source": "ai-generated"
+  },
+  "stanford:mens": {
+    "schoolId": "stanford",
+    "schoolName": "Stanford University",
+    "gender": "mens",
+    "formation": "Unknown — see search links to verify",
+    "formationVariants": [],
+    "playstyle": "Unknown — unable to provide specific tactical description without recent, verified knowledge.",
+    "tacticalNotes": [],
+    "confidence": "low",
+    "caveats": [
+      "Stanford men's soccer is a smaller-market D1 program in the ACC (relatively recent join); I lack specific tactical knowledge of their current system, formation preferences, or recent match patterns.",
+      "I do not have reliable information about their head coach's tenure, tactical philosophy, or recent seasonal records. Do not rely on any inferences I might make.",
+      "You must verify current coaching staff, roster composition, and 2023–2024 tactical tendencies directly via Stanford Athletics or the team's official roster page.",
+      "ACC conference context and Stanford's specific role within it requires current verification; coaching changes or tactical shifts may have occurred outside my knowledge window.",
+      "For scouting purposes, contact the program directly or consult recent game footage and official team materials."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=Stanford%20University%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=Stanford%20University%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=Stanford%20University%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=Stanford%20University%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=ACC%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-04-30T03:52:02.934Z",
+    "source": "ai-generated"
   }
 }
