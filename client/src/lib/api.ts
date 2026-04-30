@@ -1,4 +1,4 @@
-import type { AthleteProfile, Division, School, SchoolDirectoryEntry, ProgramIntel, VideoRating, CoachResponse, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed, IdEvent } from '../types'
+import type { AthleteProfile, Division, School, SchoolDirectoryEntry, ProgramIntel, VideoRating, CoachResponse, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed, IdEvent, OutreachContact, SentEmail, ThreadMessage, UntrackedThread } from '../types'
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(path, {
@@ -76,6 +76,51 @@ export function gmailSend(userId: string, to: string, subject: string, body: str
 
 export function gmailSync(userId: string, contacts: { id: string; coachEmail: string }[]) {
   return post<{ results: { contactId: string; replied: boolean; snippet: string }[] }>('/api/gmail/sync', { userId, contacts })
+}
+
+export function getContacts(userId: string) {
+  return get<{ contacts: OutreachContact[] }>(`/api/gmail/contacts?userId=${encodeURIComponent(userId)}`)
+}
+
+export function createContact(userId: string, data: {
+  coachName: string; schoolName: string; coachEmail: string
+  division: string; position?: string; gmailThreadId?: string
+}) {
+  return post<{ contact: OutreachContact }>('/api/gmail/contacts', { userId, ...data })
+}
+
+export function updateContact(id: string, userId: string, updates: Partial<OutreachContact>) {
+  return new Promise<{ contact: OutreachContact }>(async (resolve, reject) => {
+    const res = await fetch(`/api/gmail/contacts/${id}`, {
+      method: 'PATCH',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId, ...updates }),
+    })
+    if (!res.ok) {
+      const err = await res.json().catch(() => ({ error: 'Request failed' }))
+      return reject(new Error((err as any).error ?? 'Request failed'))
+    }
+    resolve(res.json())
+  })
+}
+
+export function gmailGetThreads(userId: string) {
+  return get<{ tracked: OutreachContact[]; untracked: UntrackedThread[] }>(
+    `/api/gmail/threads?userId=${encodeURIComponent(userId)}`
+  )
+}
+
+export function gmailGetThread(userId: string, threadId: string) {
+  return get<{ messages: ThreadMessage[] }>(
+    `/api/gmail/thread/${encodeURIComponent(threadId)}?userId=${encodeURIComponent(userId)}`
+  )
+}
+
+export function gmailRateAndLog(userId: string, contactId: string, latestCoachMessage: string, coachName: string, school: string) {
+  return post<{ rating: string; signals: string[]; nextAction: string }>(
+    '/api/gmail/rate-and-log',
+    { userId, contactId, latestCoachMessage, coachName, school }
+  )
 }
 
 export type { LeaderboardEntry, IdEvent }
