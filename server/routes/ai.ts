@@ -2,6 +2,7 @@ import { Router } from 'express'
 import type { AthleteProfile, Division, RosterProgram, PositionNeed, SchoolRecord } from '../../client/src/types/index'
 import { matchSchools, listSchools } from '../lib/schoolMatcher'
 import { getProgramIntel } from '../lib/programIntel'
+import { getScrapedCoach } from '../lib/scrapedCoaches'
 import { ask, parseJSON, rateCoachReply } from '../lib/aiClient'
 import rosterData from '../data/rosterPrograms.json'
 import idEventsData from '../data/idEvents.json'
@@ -44,6 +45,22 @@ Respond with JSON only: { "subject": "...", "body": "..." }`, 800)
 router.post('/find-coach', async (req, res) => {
   try {
     const { school, division, gender } = req.body as { school: string; division: Division; gender: 'mens' | 'womens' }
+
+    // Scraped data from official athletics sites takes priority over AI recall.
+    const scraped = getScrapedCoach(school, gender)
+    if (scraped?.coachName) {
+      const isFullHit = scraped.status === 'success' && scraped.coachEmail
+      return res.json({
+        coachName: scraped.coachName,
+        coachEmail: isFullHit ? scraped.coachEmail : '',
+        confidence: isFullHit ? 'high' : 'low',
+        source: isFullHit ? 'scraped' : 'scraped-partial',
+        sourceUrl: scraped.sourceUrl,
+        scrapedAt: scraped.scrapedAt,
+      })
+    }
+
+    // Fall back to AI inference for schools the scraper couldn't reach.
     const genderLabel = gender === 'womens' ? "Women's" : "Men's"
     const text = await ask(`Find the head coach for the ${genderLabel} soccer program at ${school} (${division}).
 
@@ -58,7 +75,8 @@ Rules:
 - Only return { "coachName": "Head Coach", "coachEmail": "", "confidence": "low" } if you genuinely have no recall of any coach for this specific program (rare for D1, common for small NAIA/JUCO/D3 programs).
 - Do not invent a plausible-sounding name. If you don't actually know the program, fall back to the "Head Coach" placeholder.
 - Note: longtime coaches do retire. When recalling famous names from years past, mark confidence "low" so the user verifies.`, 300)
-    res.json(parseJSON(text, { coachName: 'Head Coach', coachEmail: '', confidence: 'low' }))
+    const aiResult = parseJSON(text, { coachName: 'Head Coach', coachEmail: '', confidence: 'low' })
+    res.json({ ...aiResult, source: 'ai-recall' })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
   }

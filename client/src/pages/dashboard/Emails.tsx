@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from 'react'
-import { generateEmail, findCoach, listAllSchools } from '../../lib/api'
+import { generateEmail, findCoach, listAllSchools, type FindCoachResult } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Card } from '../../components/ui/Card'
@@ -21,7 +21,7 @@ export function Emails() {
   const [gender, setGender] = useState<'mens' | 'womens'>('womens')
   const [coachName, setCoachName] = useState('')
   const [coachEmail, setCoachEmail] = useState('')
-  const [coachConfidence, setCoachConfidence] = useState<'high' | 'low' | null>(null)
+  const [coachSource, setCoachSource] = useState<FindCoachResult['source'] | null>(null)
   const [findingCoach, setFindingCoach] = useState(false)
   const [coachFound, setCoachFound] = useState(false)
   const [loading, setLoading] = useState(false)
@@ -86,12 +86,12 @@ export function Emails() {
   async function handleFindCoach() {
     if (!school) { setError('Enter a school name first.'); return }
     setError(''); setFindingCoach(true); setCoachFound(false)
-    setCoachName(''); setCoachEmail(''); setCoachConfidence(null)
+    setCoachName(''); setCoachEmail(''); setCoachSource(null)
     try {
       const result = await findCoach(school, division, gender)
       setCoachName(result.coachName)
       setCoachEmail(result.coachEmail)
-      setCoachConfidence(result.confidence)
+      setCoachSource(result.source ?? null)
       setCoachFound(true)
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to find coach')
@@ -123,7 +123,7 @@ export function Emails() {
   }
 
   function resetCoach() {
-    setCoachFound(false); setCoachName(''); setCoachEmail(''); setCoachConfidence(null)
+    setCoachFound(false); setCoachName(''); setCoachEmail(''); setCoachSource(null)
   }
 
   return (
@@ -268,14 +268,17 @@ export function Emails() {
                 {findingCoach ? 'Looking up coach...' : '🔍 Find Coach'}
               </Button>
             ) : (
-              <div className={`p-3 rounded-xl border ${coachConfidence === 'high' ? 'border-[rgba(74,222,128,0.3)] bg-[rgba(74,222,128,0.05)]' : 'border-[rgba(251,191,36,0.3)] bg-[rgba(251,191,36,0.05)]'}`}>
+              <div className={`p-3 rounded-xl border ${coachSource === 'scraped' ? 'border-[rgba(74,222,128,0.3)] bg-[rgba(74,222,128,0.05)]' : 'border-[rgba(251,191,36,0.3)] bg-[rgba(251,191,36,0.05)]'}`}>
                 <div className="flex items-center justify-between mb-2">
                   <span className="text-xs font-semibold text-[#f1f5f9]">Coach Found</span>
-                  {coachConfidence === 'low' && (
-                    <span className="text-xs text-[#fbbf24]">⚠️ Verify before sending</span>
+                  {coachSource === 'scraped' && (
+                    <span className="text-xs text-[#4ade80]">✓ Official site</span>
                   )}
-                  {coachConfidence === 'high' && (
-                    <span className="text-xs text-[#4ade80]">✓ Verified</span>
+                  {coachSource === 'scraped-partial' && (
+                    <span className="text-xs text-[#fbbf24]">⚠️ Verify email</span>
+                  )}
+                  {coachSource === 'ai-recall' && (
+                    <span className="text-xs text-[#fbbf24]">⚠️ Verify before sending</span>
                   )}
                 </div>
                 <Input

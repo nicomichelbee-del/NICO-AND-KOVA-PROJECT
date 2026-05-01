@@ -11,8 +11,10 @@
       "Bash(export PATH=\"/c/Program Files/nodejs:$PATH\")",
       "Bash(npm --version)",
       "Bash(npm install *)",
-      "Bash(git push origin main)"
-      "WebFetch"
+      "Bash(git push origin main)",
+      "Bash(npx tsx server/scripts/*)",
+      "Bash(node server/scripts/*)",
+      "WebFetch(*)"
     ],
     "additionalDirectories": [
       "C:\\Users\\nicom\\OneDrive\\Desktop\\AI Soccer College Couselor"
