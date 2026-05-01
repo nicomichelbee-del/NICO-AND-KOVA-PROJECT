@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react'
-import { matchSchools, getProgramIntel, findCoach } from '../../lib/api'
+import { matchSchools, getProgramIntel, findCoach, type FindCoachResult } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
 import { Card } from '../../components/ui/Card'
@@ -356,10 +356,19 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
   )
 }
 
+const SOURCE_BADGE: Record<string, { label: string; color: string }> = {
+  scraped:         { label: '✓ Official site',        color: 'text-[#4ade80]' },
+  'scraped-partial': { label: '⚠️ Verify email',      color: 'text-[#fbbf24]' },
+  'ai-recall':     { label: '⚠️ Verify before sending', color: 'text-[#fbbf24]' },
+}
+
+function getHostname(url: string): string {
+  try { return new URL(url).hostname } catch { return url }
+}
+
 function CoachSection({ school, gender }: { school: School; gender: 'mens' | 'womens' }) {
-  // Stored coach data is unreliable — coaches change jobs and stale entries
-  // erode trust. We hit the live /api/ai/find-coach endpoint on demand instead.
-  const [lookup, setLookup] = useState<{ coachName: string; coachEmail: string; confidence: 'high' | 'low' } | null>(null)
+  // Coaches change frequently — fetch live on demand, scraped DB first then AI.
+  const [lookup, setLookup] = useState<FindCoachResult | null>(null)
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
 
@@ -397,17 +406,16 @@ function CoachSection({ school, gender }: { school: School; gender: 'mens' | 'wo
         </div>
       ) : (
         <div className={`rounded-lg px-4 py-3 text-sm border ${
-          lookup.confidence === 'high'
+          lookup.source === 'scraped'
             ? 'bg-[rgba(74,222,128,0.05)] border-[rgba(74,222,128,0.25)]'
             : 'bg-[rgba(251,191,36,0.05)] border-[rgba(251,191,36,0.25)]'
         }`}>
           <div className="flex items-center justify-between gap-2 mb-1">
             <div className="font-semibold text-[#f1f5f9]">{lookup.coachName || 'Head Coach'}</div>
-            {lookup.confidence === 'low' && (
-              <span className="text-[10px] uppercase tracking-widest text-[#fbbf24]">⚠️ Verify before sending</span>
-            )}
-            {lookup.confidence === 'high' && (
-              <span className="text-[10px] uppercase tracking-widest text-[#4ade80]">High confidence</span>
+            {lookup.source && SOURCE_BADGE[lookup.source] && (
+              <span className={`text-[10px] uppercase tracking-widest ${SOURCE_BADGE[lookup.source].color}`}>
+                {SOURCE_BADGE[lookup.source].label}
+              </span>
             )}
           </div>
           {lookup.coachEmail ? (
@@ -416,13 +424,25 @@ function CoachSection({ school, gender }: { school: School; gender: 'mens' | 'wo
             </a>
           ) : (
             <a
-              href={`https://www.google.com/search?q=${encodeURIComponent(`${school.name} ${gender === 'womens' ? "women's" : "men's"} soccer head coach email`)}`}
+              href={lookup.sourceUrl ?? `https://www.google.com/search?q=${encodeURIComponent(`${school.name} ${gender === 'womens' ? "women's" : "men's"} soccer head coach email`)}`}
               target="_blank"
               rel="noopener noreferrer"
               className="text-xs text-[#60a5fa] hover:underline"
             >
-              Email unknown — search the official roster page ↗
+              {lookup.sourceUrl ? 'Find email on official roster page ↗' : 'Email unknown — search the official roster page ↗'}
             </a>
+          )}
+          {lookup.sourceUrl && (
+            <div className="mt-1">
+              <a
+                href={lookup.sourceUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="text-[10px] text-[#475569] hover:text-[#94a3b8]"
+              >
+                Source: {getHostname(lookup.sourceUrl!)} ↗
+              </a>
+            </div>
           )}
           <button
             onClick={handleLookup}

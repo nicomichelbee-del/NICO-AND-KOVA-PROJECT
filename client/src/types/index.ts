@@ -98,6 +98,15 @@ export interface CoachEmail {
   createdAt: string
 }
 
+export interface FindCoachResult {
+  coachName: string
+  coachEmail: string
+  confidence: 'high' | 'low'
+  source?: 'scraped' | 'scraped-partial' | 'ai-recall'
+  sourceUrl?: string
+  scrapedAt?: string
+}
+
 export interface VideoRating {
   score: number
   summary: string
