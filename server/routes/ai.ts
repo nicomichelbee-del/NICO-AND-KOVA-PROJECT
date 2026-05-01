@@ -2,7 +2,7 @@ import { Router } from 'express'
 import type { AthleteProfile, Division, RosterProgram, PositionNeed, SchoolRecord } from '../../client/src/types/index'
 import { matchSchools, listSchools } from '../lib/schoolMatcher'
 import { getProgramIntel } from '../lib/programIntel'
-import { ask, parseJSON, rateCoachReply } from '../lib/aiClient'
+import { ask, chat, parseJSON, rateCoachReply } from '../lib/aiClient'
 import rosterData from '../data/rosterPrograms.json'
 import idEventsData from '../data/idEvents.json'
 import idCampsData from '../data/idCamps.json'
@@ -237,6 +237,22 @@ router.post('/roster-intel', async (req, res) => {
       .sort((a, b) => b.schoolCount - a.schoolCount)
 
     res.json({ programs: programs.slice(0, 20), positionSummary })
+  } catch (e) {
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
+  }
+})
+
+router.post('/chat', async (req, res) => {
+  try {
+    const { messages, profile } = req.body as {
+      messages: { role: 'user' | 'assistant'; content: string }[]
+      profile?: AthleteProfile
+    }
+    const profileContext = profile
+      ? `\n\nAthlete context: ${profile.name}, ${profile.position}, Class of ${profile.gradYear}, ${profile.clubTeam} (${profile.clubLeague}), ${profile.goals}G/${profile.assists}A, GPA ${profile.gpa}, targeting ${profile.targetDivision}.`
+      : ''
+    const reply = await chat(messages, profileContext, 500)
+    res.json({ reply })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
   }

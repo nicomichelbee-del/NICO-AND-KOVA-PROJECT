@@ -133,4 +133,11 @@ export function gmailRateAndLog(userId: string, contactId: string, latestCoachMe
   )
 }
 
+export function chatWithBeeko(
+  messages: { role: 'user' | 'assistant'; content: string }[],
+  profile?: AthleteProfile,
+) {
+  return post<{ reply: string }>('/api/ai/chat', { messages, profile })
+}
+
 export type { LeaderboardEntry, IdEvent }
