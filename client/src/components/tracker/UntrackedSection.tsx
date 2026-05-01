@@ -22,6 +22,11 @@ export function UntrackedSection({ userId, threads, onContactAdded }: Props) {
   const visible = threads.filter((t) => !dismissed.has(t.threadId))
   if (visible.length === 0) return null
 
+  const categoryConfig = {
+    id_camp: { label: 'ID Camp', style: 'bg-[rgba(139,92,246,0.15)] border-[rgba(139,92,246,0.3)] text-[#a78bfa]' },
+    coach: { label: 'Coach Email', style: 'bg-[rgba(96,165,250,0.1)] border-[rgba(96,165,250,0.2)] text-[#60a5fa]' },
+  }
+
   async function handleAdd(thread: UntrackedThread) {
     if (!schoolName) return
     setLoading(true)
@@ -47,15 +52,22 @@ export function UntrackedSection({ userId, threads, onContactAdded }: Props) {
   return (
     <div className="mt-8">
       <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-3">
-        Possible Coach Replies ({visible.length})
+        Detected Emails — Coaches &amp; ID Camps ({visible.length})
       </div>
       <div className="flex flex-col gap-3">
         {visible.map((thread) => (
           <Card key={thread.threadId} className="p-4">
             <div className="flex items-start justify-between gap-4 flex-wrap">
               <div>
-                <div className="text-sm text-[#f1f5f9] font-medium">
-                  {thread.senderName || thread.senderEmail}
+                <div className="flex items-center gap-2 mb-0.5">
+                  <div className="text-sm text-[#f1f5f9] font-medium">
+                    {thread.senderName || thread.senderEmail}
+                  </div>
+                  {thread.category && categoryConfig[thread.category] && (
+                    <span className={`px-2 py-0.5 rounded text-[10px] font-bold border ${categoryConfig[thread.category].style}`}>
+                      {categoryConfig[thread.category].label}
+                    </span>
+                  )}
                 </div>
                 <div className="text-xs text-[#64748b]">{thread.senderEmail}</div>
                 <div className="text-xs text-[#475569] mt-0.5 italic">"{thread.subject}"</div>

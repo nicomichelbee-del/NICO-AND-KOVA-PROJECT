@@ -126,9 +126,14 @@ export interface CoachResponse {
   coachName: string
   date: string
   rating: 'hot' | 'warm' | 'cold' | 'not_interested'
+  score: number          // 1–10
+  interestLevel: string  // e.g. "Very Interested"
   confidence: number
   signals: string[]
   nextAction: string
+  genuineness: number
+  genuinenessReason: string
+  scoreReason: string
   rawText?: string
 }
 
@@ -278,4 +283,26 @@ export interface UntrackedThread {
   senderName: string
   subject: string
   snippet: string
+  category: 'id_camp' | 'coach'
+}
+
+export interface HistoryEmail {
+  threadId: string
+  senderEmail: string
+  senderName: string
+  subject: string
+  snippet: string             // from the coach's own message (not thread snippet)
+  date: string                // ISO timestamp of the coach's latest message
+  category: 'id_camp' | 'coach'
+  isTracked: boolean
+  personalizationNote: string
+  messageCount: number        // total messages in thread
+  coachMessageCount: number   // how many times coach has messaged
+  // AI interest analysis
+  score: number               // 1–10
+  rating: 'hot' | 'warm' | 'cold' | 'not_interested'
+  interestLevel: string
+  genuineness: number         // 1–10
+  ratingNote: string          // one-sentence summary of what the coach said
+  nextAction: string
 }

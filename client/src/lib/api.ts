@@ -1,4 +1,4 @@
-import type { AthleteProfile, Division, School, SchoolDirectoryEntry, ProgramIntel, VideoRating, CoachResponse, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed, IdEvent, IdCampEntry, OutreachContact, SentEmail, ThreadMessage, UntrackedThread } from '../types'
+import type { AthleteProfile, Division, School, SchoolDirectoryEntry, ProgramIntel, VideoRating, CoachResponse, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed, IdEvent, IdCampEntry, OutreachContact, SentEmail, ThreadMessage, UntrackedThread, HistoryEmail } from '../types'
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(path, {
@@ -114,6 +114,10 @@ export function gmailGetThreads(userId: string) {
   return get<{ tracked: OutreachContact[]; untracked: UntrackedThread[] }>(
     `/api/gmail/threads?userId=${encodeURIComponent(userId)}`
   )
+}
+
+export function gmailHistoryScan(userId: string) {
+  return get<{ emails: HistoryEmail[] }>(`/api/gmail/history-scan?userId=${encodeURIComponent(userId)}`)
 }
 
 export function gmailGetThread(userId: string, threadId: string) {

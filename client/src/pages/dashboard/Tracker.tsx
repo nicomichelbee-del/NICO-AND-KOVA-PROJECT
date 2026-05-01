@@ -7,6 +7,7 @@ import { Input } from '../../components/ui/Input'
 import { Textarea } from '../../components/ui/Textarea'
 import { ContactRow } from '../../components/tracker/ContactRow'
 import { UntrackedSection } from '../../components/tracker/UntrackedSection'
+import { HistoryScanTab } from '../../components/tracker/HistoryScanTab'
 import { getContacts, createContact, updateContact, gmailGetThreads, getGmailStatus, rateResponse } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
 import type { OutreachContact, CoachResponse, UntrackedThread, Division } from '../../types'
@@ -28,7 +29,7 @@ function saveResponses(r: CoachResponse[]) {
 export function Tracker() {
   const { user } = useAuth()
   const navigate = useNavigate()
-  const [tab, setTab] = useState<'contacts' | 'responses'>('contacts')
+  const [tab, setTab] = useState<'contacts' | 'responses' | 'discovered'>('contacts')
   const [contacts, setContacts] = useState<OutreachContact[]>([])
   const [untrackedThreads, setUntrackedThreads] = useState<UntrackedThread[]>([])
   const [filter, setFilter] = useState<OutreachContact['status'] | 'all'>('all')
@@ -91,10 +92,18 @@ export function Tracker() {
     return () => window.removeEventListener('message', handleMessage)
   }, [user?.id])
 
-  function connectGmail() {
+  async function connectGmail() {
     if (!user?.id) return
     setGmailLoading(true)
-    window.open(`/api/gmail/auth?userId=${encodeURIComponent(user.id)}`, 'gmail-auth', 'width=500,height=600,left=200,top=100')
+    try {
+      const res = await fetch(`/api/gmail/auth?userId=${encodeURIComponent(user.id)}`)
+      const data = await res.json()
+      if (!res.ok || !data.url) throw new Error(data.error ?? 'Failed to get auth URL')
+      window.open(data.url, 'gmail-auth', 'width=500,height=600,left=200,top=100')
+    } catch (e) {
+      alert(e instanceof Error ? e.message : 'Failed to start Gmail auth')
+      setGmailLoading(false)
+    }
   }
 
   async function syncThreads(uid: string) {
@@ -202,10 +211,14 @@ export function Tracker() {
       </div>
 
       <div className="flex gap-0 border-b border-[rgba(255,255,255,0.07)] mb-8">
-        {[{ id: 'contacts', label: 'Contacts' }, { id: 'responses', label: 'Coach Responses' }].map((t) => (
+        {[
+          { id: 'contacts', label: 'Contacts' },
+          { id: 'responses', label: 'Coach Responses' },
+          { id: 'discovered', label: '🔍 Discovered Emails' },
+        ].map((t) => (
           <button
             key={t.id}
-            onClick={() => setTab(t.id as 'contacts' | 'responses')}
+            onClick={() => setTab(t.id as 'contacts' | 'responses' | 'discovered')}
             className={`px-6 py-3 text-sm font-semibold border-b-2 transition-colors ${
               tab === t.id ? 'border-[#eab308] text-[#eab308]' : 'border-transparent text-[#64748b] hover:text-[#f1f5f9]'
             }`}
@@ -335,6 +348,14 @@ export function Tracker() {
         </>
       )}
 
+      {tab === 'discovered' && user?.id && (
+        <HistoryScanTab
+          userId={user.id}
+          gmailConnected={gmailConnected}
+          onContactAdded={loadContacts}
+        />
+      )}
+
       {tab === 'responses' && (
         <div className="flex flex-col gap-6">
           <Card className="p-6">
@@ -391,9 +412,11 @@ export function Tracker() {
               {responses.map((r) => {
                 const cfg = ratingConfig[r.rating as keyof typeof ratingConfig]
                 if (!cfg) return null
+                const scoreColor = (r.score ?? 0) >= 8 ? 'text-[#4ade80]' : (r.score ?? 0) >= 5 ? 'text-[#fbbf24]' : 'text-[#60a5fa]'
+                const genuinenessColor = (r.genuineness ?? 0) >= 8 ? 'text-[#4ade80]' : (r.genuineness ?? 0) >= 5 ? 'text-[#fbbf24]' : 'text-[#60a5fa]'
                 return (
                   <Card key={r.id} className="p-5">
-                    <div className="flex items-start justify-between gap-4 mb-3">
+                    <div className="flex items-start justify-between gap-4 mb-4 flex-wrap">
                       <div>
                         <div className="font-medium text-[#f1f5f9]">{r.school}</div>
                         <div className="text-xs text-[#64748b]">{r.coachName} · {new Date(r.date).toLocaleDateString()}</div>
@@ -403,6 +426,28 @@ export function Tracker() {
                         <span className="ml-2 text-xs font-normal opacity-70">{r.confidence}% confident</span>
                       </div>
                     </div>
+
+                    {/* Score row */}
+                    <div className="grid grid-cols-2 gap-3 mb-4">
+                      <div className="p-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.07)] rounded-lg">
+                        <div className="text-xs text-[#64748b] font-semibold uppercase tracking-wider mb-1">Interest Score</div>
+                        <div className="flex items-baseline gap-2">
+                          <span className={`text-2xl font-black font-serif ${scoreColor}`}>{r.score ?? '—'}</span>
+                          <span className="text-xs text-[#475569]">/ 10</span>
+                        </div>
+                        <div className="text-xs text-[#94a3b8] mt-0.5 font-medium">{r.interestLevel ?? ''}</div>
+                        {r.scoreReason && <div className="text-xs text-[#64748b] mt-1 leading-relaxed">{r.scoreReason}</div>}
+                      </div>
+                      <div className="p-3 bg-[rgba(255,255,255,0.03)] border border-[rgba(255,255,255,0.07)] rounded-lg">
+                        <div className="text-xs text-[#64748b] font-semibold uppercase tracking-wider mb-1">Genuineness</div>
+                        <div className="flex items-baseline gap-2">
+                          <span className={`text-2xl font-black font-serif ${genuinenessColor}`}>{r.genuineness ?? '—'}</span>
+                          <span className="text-xs text-[#475569]">/ 10</span>
+                        </div>
+                        {r.genuinenessReason && <div className="text-xs text-[#64748b] mt-1 leading-relaxed">{r.genuinenessReason}</div>}
+                      </div>
+                    </div>
+
                     {r.signals.length > 0 && (
                       <div className="flex flex-wrap gap-2 mb-3">
                         {r.signals.map((s, i) => (

@@ -1,14 +1,14 @@
 import { Router } from 'express'
 import { google } from 'googleapis'
 import { createClient } from '@supabase/supabase-js'
-import { isCoachEmail, decodeMessageBody } from '../lib/gmailUtils'
-import { rateCoachReply } from '../lib/aiClient'
+import { categorizeEmail, isBulkMessage, classifyCoachMessage, getHeader, decodeMessageBody } from '../lib/gmailUtils'
+import { rateCoachReply, filterRealCoachEmails, batchRateCoachEmails } from '../lib/aiClient'
 
 const router = Router()
 
 function getSupabase() {
   const url = process.env.VITE_SUPABASE_URL ?? ''
-  const key = process.env.SUPABASE_SERVICE_KEY ?? process.env.VITE_SUPABASE_ANON_KEY ?? ''
+  const key = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY || ''
   if (!url || !key || key === 'placeholder_anon_key') {
     throw new Error('Supabase not configured — set VITE_SUPABASE_URL and SUPABASE_SERVICE_KEY')
   }
@@ -48,17 +48,26 @@ function mapContact(row: any) {
 router.get('/auth', (req, res) => {
   const { userId } = req.query as { userId: string }
   if (!userId) return res.status(400).json({ error: 'userId required' })
-  const oauth2Client = getOAuth2Client()
-  const url = oauth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: [
-      'https://www.googleapis.com/auth/gmail.send',
-      'https://www.googleapis.com/auth/gmail.readonly',
-    ],
-    state: userId,
-    prompt: 'consent',
-  })
-  res.redirect(url)
+  try {
+    const clientId = process.env.GOOGLE_CLIENT_ID
+    const clientSecret = process.env.GOOGLE_CLIENT_SECRET
+    if (!clientId || !clientSecret) {
+      return res.status(500).json({ error: `Missing env vars: ${!clientId ? 'GOOGLE_CLIENT_ID ' : ''}${!clientSecret ? 'GOOGLE_CLIENT_SECRET' : ''}` })
+    }
+    const oauth2Client = getOAuth2Client()
+    const url = oauth2Client.generateAuthUrl({
+      access_type: 'offline',
+      scope: [
+        'https://www.googleapis.com/auth/gmail.send',
+        'https://www.googleapis.com/auth/gmail.readonly',
+      ],
+      state: userId,
+      prompt: 'consent',
+    })
+    res.json({ url })
+  } catch (e) {
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Failed to start Gmail auth' })
+  }
 })
 
 // GET /api/gmail/callback
@@ -258,6 +267,7 @@ router.patch('/contacts/:id', async (req, res) => {
 router.get('/threads', async (req, res) => {
   const { userId } = req.query as { userId: string }
   if (!userId) return res.status(400).json({ error: 'userId required' })
+  try {
   const supabase = getSupabase()
   const { data: tokenRow } = await supabase
     .from('user_gmail_tokens')
@@ -324,13 +334,15 @@ router.get('/threads', async (req, res) => {
         const emailMatch = fromHeader.match(/<([^>]+)>/) ?? fromHeader.match(/([^\s]+@[^\s]+)/)
         const senderEmail = emailMatch?.[1]?.toLowerCase() ?? ''
         if (!senderEmail || trackedEmails.has(senderEmail)) continue
-        if (isCoachEmail(senderEmail, subject)) {
+        const category = categorizeEmail(senderEmail, subject)
+        if (category === 'id_camp' || category === 'coach') {
           untracked.push({
             threadId: thread.id,
             senderEmail,
             senderName: fromHeader.replace(/<[^>]+>/, '').trim().replace(/^"|"$/g, ''),
             subject,
             snippet: thread.snippet ?? '',
+            category,
           })
         }
       } catch { /* skip */ }
@@ -340,6 +352,189 @@ router.get('/threads', async (req, res) => {
   }
 
   res.json({ tracked, untracked })
+  } catch (e) {
+    console.error('threads error:', e instanceof Error ? e.message : e)
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Sync failed' })
+  }
+})
+
+// GET /api/gmail/history-scan?userId=<uid>
+// Elite 2-year inbox scan — three-tier classifier + batch AI rating.
+//  Search  : 3 parallel Gmail queries (max recall)
+//  Tier 1  : hard reject via headers/domains — zero AI cost
+//  Tier 2  : hard accept via deterministic signals — zero AI cost
+//  Tier 3  : Claude batch verify uncertain cases — one compact call
+//  Rating  : Claude batch rates ALL confirmed emails — one call, full analysis
+router.get('/history-scan', async (req, res) => {
+  const { userId } = req.query as { userId: string }
+  if (!userId) return res.status(400).json({ error: 'userId required' })
+  try {
+    const supabase = getSupabase()
+    const { data: tokenRow } = await supabase
+      .from('user_gmail_tokens')
+      .select('refresh_token, email')
+      .eq('user_id', userId)
+      .single()
+    if (!tokenRow?.refresh_token) return res.status(403).json({ error: 'Gmail not connected' })
+
+    const athleteEmail = (tokenRow.email ?? '').toLowerCase()
+
+    const oauth2Client = getOAuth2Client()
+    oauth2Client.setCredentials({ refresh_token: tokenRow.refresh_token })
+    const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
+
+    const [contactsResult, ...searchResults] = await Promise.allSettled([
+      supabase.from('outreach_contacts').select('gmail_thread_id, coach_email').eq('user_id', userId),
+      // Search 1: any .edu sender — covers coach-initiated AND coach-replied threads
+      gmail.users.threads.list({ userId: 'me', q: 'newer_than:730d from:.edu', maxResults: 150 }),
+      // Search 2: non-.edu coaches with recruiting subjects (coaches using Gmail, etc.)
+      gmail.users.threads.list({ userId: 'me', q: 'newer_than:730d -from:.edu {subject:"head coach" subject:"assistant coach" subject:scholarship subject:recruiting subject:"soccer coach" subject:"college soccer" subject:"college recruit"}', maxResults: 50 }),
+      // Search 3: sent-to-.edu threads where coach may have replied from a non-.edu address
+      gmail.users.threads.list({ userId: 'me', q: 'newer_than:730d to:.edu in:sent', maxResults: 75 }),
+    ])
+
+    const contacts = contactsResult.status === 'fulfilled' ? (contactsResult.value.data ?? []) : []
+    const trackedThreadIds = new Set(contacts.map((c: any) => c.gmail_thread_id).filter(Boolean))
+    const trackedEmails = new Set(contacts.map((c: any) => c.coach_email?.toLowerCase()).filter(Boolean))
+
+    // Deduplicate threads across all three searches
+    const seenIds = new Set<string>()
+    const allThreads: any[] = []
+    for (const r of searchResults) {
+      if (r.status !== 'fulfilled') continue
+      for (const t of r.value.data.threads ?? []) {
+        if (t.id && !seenIds.has(t.id)) { seenIds.add(t.id); allThreads.push(t) }
+      }
+    }
+
+    // Process threads in parallel batches of 10 for speed
+    const BATCH = 10
+    const accepted: any[] = []
+    const uncertain: any[] = []
+
+    for (let i = 0; i < allThreads.length; i += BATCH) {
+      const batch = allThreads.slice(i, i + BATCH)
+      const batchResults = await Promise.allSettled(batch.map(async (t) => {
+        const td = await gmail.users.threads.get({
+          userId: 'me', id: t.id!,
+          format: 'metadata',
+          metadataHeaders: [
+            'From', 'Subject', 'Date',
+            'List-Unsubscribe', 'Precedence', 'X-Mailer',
+            'X-Campaign-Id', 'X-Mailchimp-Campaign', 'X-Bulk-Signature',
+          ],
+        })
+        const messages = td.data.messages ?? []
+        const totalMsgs = messages.length
+
+        // Collect every non-bulk coach message in the thread
+        const coachMsgs: { from: string; email: string; displayName: string; subject: string; msg: any; msgSnippet: string }[] = []
+
+        for (const msg of messages) {
+          const headers: any[] = msg.payload?.headers ?? []
+          const from = getHeader(headers, 'From')
+          const emailMatch = from.match(/<([^>]+)>/) ?? from.match(/([^\s]+@[^\s]+)/)
+          const email = emailMatch?.[1]?.toLowerCase() ?? ''
+          if (!email || email === athleteEmail) continue  // skip athlete's own messages
+
+          const subject = getHeader(headers, 'Subject')
+          const isEdu = email.endsWith('.edu')
+          // .edu = always a coach candidate; non-.edu needs keyword match
+          const cat = isEdu ? 'coach' : categorizeEmail(email, subject)
+          if (cat === 'other') continue
+          if (isBulkMessage(headers, email, subject)) continue
+
+          const displayName = from.replace(/<[^>]+>/, '').replace(/['"]/g, '').trim()
+          // Use the message's own snippet (200 chars of its content) not the thread snippet
+          const msgSnippet = (msg as any).snippet ?? ''
+          coachMsgs.push({ from, email, displayName, subject, msg, msgSnippet })
+        }
+
+        if (coachMsgs.length === 0) return null
+
+        const latest = coachMsgs[coachMsgs.length - 1]
+        const dateVal = getHeader(latest.msg.payload?.headers ?? [], 'Date')
+        const date = dateVal ? new Date(dateVal).toISOString() : new Date().toISOString()
+
+        return {
+          entry: {
+            threadId: t.id!,
+            senderEmail: latest.email,
+            senderName: latest.displayName || latest.email,
+            subject: latest.subject,
+            snippet: latest.msgSnippet || td.data.snippet || '',
+            date,
+            category: categorizeEmail(latest.email, latest.subject) as 'id_camp' | 'coach',
+            isTracked: trackedThreadIds.has(t.id!) || trackedEmails.has(latest.email),
+            messageCount: totalMsgs,
+            coachMessageCount: coachMsgs.length,
+            personalizationNote: '',
+          },
+          confidence: classifyCoachMessage(latest.displayName, latest.email, latest.subject),
+        }
+      }))
+
+      for (const r of batchResults) {
+        if (r.status !== 'fulfilled' || !r.value) continue
+        if (r.value.confidence === 'accept') accepted.push(r.value.entry)
+        else uncertain.push(r.value.entry)
+      }
+    }
+
+    // Tier 3: Claude batch verify uncertain — one compact call
+    const verifyNoteMap = new Map<string, string>()
+    if (uncertain.length > 0) {
+      try {
+        const analysis = await filterRealCoachEmails(
+          uncertain.map((c) => ({ threadId: c.threadId, senderEmail: c.senderEmail, subject: c.subject, snippet: c.snippet }))
+        )
+        for (const r of analysis) {
+          if (r.isReal) verifyNoteMap.set(r.threadId, r.note)
+        }
+      } catch {
+        for (const c of uncertain) verifyNoteMap.set(c.threadId, '')
+      }
+    }
+
+    const verifiedUncertain = uncertain
+      .filter((c) => verifyNoteMap.has(c.threadId))
+      .map((c) => ({ ...c, personalizationNote: verifyNoteMap.get(c.threadId) ?? '' }))
+
+    const confirmed = [...accepted, ...verifiedUncertain]
+
+    // Batch AI rating — ONE call rates every confirmed email
+    const ratingMap = new Map<string, any>()
+    if (confirmed.length > 0) {
+      try {
+        const ratings = await batchRateCoachEmails(
+          confirmed.map((c) => ({ threadId: c.threadId, senderName: c.senderName, subject: c.subject, snippet: c.snippet }))
+        )
+        for (const r of ratings) ratingMap.set(r.threadId, r)
+      } catch {
+        // Ratings optional — emails still surface without them
+      }
+    }
+
+    const results = confirmed
+      .map((c) => {
+        const r = ratingMap.get(c.threadId)
+        return {
+          ...c,
+          score: r?.score ?? 5,
+          rating: r?.rating ?? 'cold',
+          interestLevel: r?.interestLevel ?? 'Unknown',
+          genuineness: r?.genuineness ?? 5,
+          ratingNote: r?.ratingNote ?? '',
+          nextAction: r?.nextAction ?? 'Send a follow-up within two weeks.',
+        }
+      })
+      .sort((a, b) => b.score - a.score || new Date(b.date).getTime() - new Date(a.date).getTime())
+
+    res.json({ emails: results })
+  } catch (e) {
+    console.error('history-scan error:', e instanceof Error ? e.message : e)
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Scan failed' })
+  }
 })
 
 // GET /api/gmail/thread/:threadId?userId=<uid>

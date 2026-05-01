@@ -10,7 +10,9 @@
       "PowerShell(New-Item -ItemType Directory -Path \"C:\\\\Users\\\\nicom\\\\OneDrive\\\\Desktop\\\\AI Soccer College Couselor\\\\docs\\\\superpowers\\\\plans\" -Force)",
       "Bash(export PATH=\"/c/Program Files/nodejs:$PATH\")",
       "Bash(npm --version)",
-      "Bash(npm install *)"
+      "Bash(npm install *)",
+      "Bash(git push origin main)"
+      "WebFetch"
     ],
     "additionalDirectories": [
       "C:\\Users\\nicom\\OneDrive\\Desktop\\AI Soccer College Couselor"

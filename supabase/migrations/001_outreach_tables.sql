@@ -24,7 +24,6 @@ create table if not exists outreach_contacts (
 create index if not exists outreach_contacts_user_id_idx on outreach_contacts(user_id);
 create index if not exists outreach_contacts_coach_email_idx on outreach_contacts(coach_email) where coach_email <> '';
 create index if not exists outreach_contacts_gmail_thread_id_idx on outreach_contacts(gmail_thread_id) where gmail_thread_id is not null;
-create index if not exists sent_emails_gmail_thread_id_idx on sent_emails(gmail_thread_id) where gmail_thread_id is not null;
 
 alter table outreach_contacts enable row level security;
 create policy "Users manage own contacts"
@@ -47,8 +46,23 @@ create table if not exists sent_emails (
 
 create index if not exists sent_emails_user_id_idx on sent_emails(user_id);
 create index if not exists sent_emails_contact_id_idx on sent_emails(contact_id);
+create index if not exists sent_emails_gmail_thread_id_idx on sent_emails(gmail_thread_id) where gmail_thread_id is not null;
 
 alter table sent_emails enable row level security;
 create policy "Users read own sent emails"
   on sent_emails for select
   using (auth.uid() = user_id);
+
+create table if not exists user_gmail_tokens (
+  user_id       uuid primary key references auth.users(id) on delete cascade,
+  refresh_token text not null default '',
+  email         text not null default '',
+  created_at    timestamptz not null default now(),
+  updated_at    timestamptz not null default now()
+);
+
+alter table user_gmail_tokens enable row level security;
+create policy "Users manage own gmail tokens"
+  on user_gmail_tokens for all
+  using (auth.uid() = user_id)
+  with check (auth.uid() = user_id);

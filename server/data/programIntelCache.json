@@ -297,5 +297,87 @@
     ],
     "cachedAt": "2026-04-30T03:52:02.934Z",
     "source": "ai-generated"
+  },
+  "mwstate:mens": {
+    "schoolId": "mwstate",
+    "schoolName": "Midwestern State University",
+    "gender": "mens",
+    "formation": "Unknown — see search links",
+    "formationVariants": [],
+    "playstyle": "Unknown — insufficient specific knowledge of current tactical approach.",
+    "tacticalNotes": [],
+    "confidence": "low",
+    "caveats": [
+      "Midwestern State University is a smaller D2 program in the Lone Star Conference (LSC). I do not have specific, recent (2022–2024) tactical or formation knowledge for this program.",
+      "I cannot reliably describe their playing style, set-piece tendencies, pressing triggers, or personnel without current roster and coaching staff information.",
+      "Head coach identity, tenure, and tactical philosophy should be verified directly with the athletic department or official roster pages.",
+      "Recent season records, tournament results, and competitive standing in LSC should be confirmed via current MSU athletics website or LSC conference standings.",
+      "For recruitment profile and player development approach, contact the coaching staff directly — this information is not reliably documented in public sources I have access to."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=Midwestern%20State%20University%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=Midwestern%20State%20University%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=Midwestern%20State%20University%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=Midwestern%20State%20University%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=LSC%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-04-30T23:31:28.500Z",
+    "source": "ai-generated"
+  },
+  "wtamu:mens": {
+    "schoolId": "wtamu",
+    "schoolName": "West Texas A&M University",
+    "gender": "mens",
+    "formation": "Unknown — see search links",
+    "formationVariants": [],
+    "playstyle": "Unknown — insufficient specific knowledge of current tactical approach.",
+    "tacticalNotes": [],
+    "confidence": "low",
+    "caveats": [
+      "West Texas A&M is a smaller D2 LSC program with limited publicly available tactical documentation. I do not have specific, verified knowledge of their formation, playstyle, or recent coaching philosophy.",
+      "I cannot confirm current head coach identity, tenure, or tactical preferences without risk of providing outdated information.",
+      "Recent season records (2022–2024) are not reliably known to me; verify via LSC official site or the program's roster/schedule pages.",
+      "To evaluate this program accurately, contact the coaching staff directly or review their official athletic department website, recent game footage, and current roster composition.",
+      "D2 programs at this level often shift tactics significantly year-to-year based on roster turnover and coaching changes — any general statements would require current verification."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=West%20Texas%20A%26M%20University%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=West%20Texas%20A%26M%20University%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=West%20Texas%20A%26M%20University%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=West%20Texas%20A%26M%20University%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=LSC%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-04-30T23:31:42.242Z",
+    "source": "ai-generated"
   }
 }
