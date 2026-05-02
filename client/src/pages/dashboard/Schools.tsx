@@ -34,7 +34,7 @@ function formatAdmissionRate(rate: number): string {
   return `${pct}% — ${label}`
 }
 
-type SortKey = 'match' | 'size' | 'program' | 'gpa' | 'division' | 'name'
+type SortKey = 'match' | 'athletic' | 'academic' | 'cost' | 'size' | 'program' | 'gpa' | 'division' | 'name'
 
 const SIZE_RANK: Record<NonNullable<School['size']>, number> = { small: 0, medium: 1, large: 2 }
 const DIV_RANK: Record<School['division'], number> = { D1: 0, D2: 1, D3: 2, NAIA: 3, JUCO: 4 }
@@ -72,12 +72,21 @@ export function Schools() {
   const sorted = [...filtered].sort((a, b) => {
     const dir = sortDir === 'desc' ? -1 : 1
     switch (sort) {
-      case 'match': return dir * (a.matchScore - b.matchScore)
-      case 'size':  return dir * (SIZE_RANK[a.size] - SIZE_RANK[b.size]) || (a.enrollment - b.enrollment)
-      case 'program': return dir * ((a.programStrength ?? 0) - (b.programStrength ?? 0))
-      case 'gpa':   return dir * ((a.gpaAvg ?? 0) - (b.gpaAvg ?? 0))
+      case 'match':    return dir * (a.matchScore - b.matchScore)
+      case 'athletic': return dir * ((a.athleticFit ?? 0) - (b.athleticFit ?? 0))
+      case 'academic': return dir * ((a.academicFit ?? 0) - (b.academicFit ?? 0))
+      // Cost: ascending direction = cheapest first. Schools without Scorecard
+      // data sort to the end regardless of direction.
+      case 'cost': {
+        const aCost = a.costOfAttendance ?? Number.MAX_SAFE_INTEGER
+        const bCost = b.costOfAttendance ?? Number.MAX_SAFE_INTEGER
+        return dir * (aCost - bCost)
+      }
+      case 'size':     return dir * (SIZE_RANK[a.size] - SIZE_RANK[b.size]) || (a.enrollment - b.enrollment)
+      case 'program':  return dir * ((a.programStrength ?? 0) - (b.programStrength ?? 0))
+      case 'gpa':      return dir * ((a.gpaAvg ?? 0) - (b.gpaAvg ?? 0))
       case 'division': return dir * (DIV_RANK[a.division] - DIV_RANK[b.division]) || a.name.localeCompare(b.name)
-      case 'name':  return dir * a.name.localeCompare(b.name)
+      case 'name':     return dir * a.name.localeCompare(b.name)
     }
   })
 
@@ -86,18 +95,23 @@ export function Schools() {
       setSortDir((d) => (d === 'desc' ? 'asc' : 'desc'))
     } else {
       setSort(k)
-      // Sensible default direction per axis (e.g. match score: high→low; name: A→Z).
-      setSortDir(k === 'name' || k === 'division' ? 'asc' : 'desc')
+      // Sensible default direction per axis: cost / name / division go
+      // ascending (cheapest, A–Z); fits/scores/strength go descending.
+      const ascByDefault = k === 'name' || k === 'division' || k === 'cost'
+      setSortDir(ascByDefault ? 'asc' : 'desc')
     }
   }
 
   const SORT_OPTIONS: { key: SortKey; label: string }[] = [
-    { key: 'match', label: 'Match score' },
-    { key: 'program', label: 'Program strength' },
-    { key: 'gpa', label: 'Typical GPA' },
-    { key: 'size', label: 'School size' },
+    { key: 'match',    label: 'Match score' },
+    { key: 'athletic', label: 'Athletic fit' },
+    { key: 'academic', label: 'Academic fit' },
+    { key: 'cost',     label: 'Cost' },
+    { key: 'program',  label: 'Program strength' },
+    { key: 'gpa',      label: 'Typical GPA' },
+    { key: 'size',     label: 'School size' },
     { key: 'division', label: 'Division' },
-    { key: 'name', label: 'Name' },
+    { key: 'name',     label: 'Name' },
   ]
 
   return (
