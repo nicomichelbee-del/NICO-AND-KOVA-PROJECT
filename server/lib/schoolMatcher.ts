@@ -312,9 +312,24 @@ export function matchSchools(profile: AthleteProfile, topN = 25): School[] {
     })
     .filter((c): c is Candidate => c !== null)
 
-  // Sort each bucket by matchScore desc, then take the per-bucket cap.
+  // Sort each bucket by matchScore desc, then break ties so ties don't
+  // collapse the visual ordering. Many safeties cap at matchScore=100; we
+  // surface the more competitive program first (higher programStrength),
+  // then prefer schools matching the athlete's region/size preferences,
+  // then the higher athletic fit.
+  function bucketCompare(a: Candidate, b: Candidate): number {
+    if (a.matchScore !== b.matchScore) return b.matchScore - a.matchScore
+    const aProg = a.school.programStrength ?? 0
+    const bProg = b.school.programStrength ?? 0
+    if (aProg !== bProg) return bProg - aProg
+    const aRegion = profile.locationPreference !== 'any' && a.school.region === profile.locationPreference ? 1 : 0
+    const bRegion = profile.locationPreference !== 'any' && b.school.region === profile.locationPreference ? 1 : 0
+    if (aRegion !== bRegion) return bRegion - aRegion
+    return b.athletic - a.athletic
+  }
+
   const byBucket = (b: Bucket) =>
-    scored.filter((c) => c.bucket === b).sort((a, b2) => b2.matchScore - a.matchScore)
+    scored.filter((c) => c.bucket === b).sort(bucketCompare)
 
   const safety = byBucket('safety')
   const target = byBucket('target')

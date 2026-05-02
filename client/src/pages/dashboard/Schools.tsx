@@ -50,8 +50,13 @@ export function Schools() {
 
   async function handleMatch() {
     const profile = getProfile()
+    // Required fields. Without GPA + position the matcher returns garbage
+    // (academic axis defaults to 0, position-based stats can't compute).
     if (!profile?.name) { setError('Please complete your athlete profile first.'); return }
     if (!profile.gender) { setError('Please set your gender (Men\'s/Women\'s) in your athlete profile.'); return }
+    if (!profile.position) { setError('Please pick a position in your athlete profile — the matcher needs it for athletic fit.'); return }
+    if (!profile.gpa || profile.gpa <= 0) { setError('Please enter your GPA in your athlete profile — it drives the academic fit calculation.'); return }
+    if (!profile.targetDivision) { setError('Please pick a target division (D1/D2/D3/NAIA/JUCO) in your athlete profile.'); return }
     setError(''); setLoading(true)
     try {
       const { schools } = await matchSchools(profile)
