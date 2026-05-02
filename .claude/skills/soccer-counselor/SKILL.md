@@ -72,16 +72,107 @@ Every generated email must include:
 - D1/D2 athletes must register with NCAA Eligibility Center
 - Key stats: goals, assists, position, club team, tournament experience, GPA, SAT/ACT
 
-## Key Skills to Reach For
+---
 
+## Skills to Reach For — Full Reference
+
+### Planning & Architecture
 | Task | Skill |
 |---|---|
-| UI design / polish / mobile layout | `$impeccable` |
-| Animations / micro-interactions | `$emil-design-eng` |
-| New feature planning | `$agent-planner` or `$sparc-methodology` |
-| Security audit (auth, payments, data) | `$security-audit` |
-| Test coverage gaps | `$test-gaps` |
-| Scraping college program pages | Exa MCP + Firecrawl MCP |
-| GitHub PRs / releases | `$agent-github-pr-manager` |
-| Performance issues | `$agent-performance-optimizer` |
-| Background scheduled tasks | `$cron-schedule` |
+| New feature — brainstorm options before building | `superpowers:brainstorm` |
+| New feature — write a structured implementation plan | `superpowers:write-plan` |
+| New feature — execute an existing plan step by step | `superpowers:execute-plan` |
+| Large feature — full SPARC spec → architect → code cycle | `sparc-methodology` |
+| Large feature — write the SPARC spec doc | `sparc-spec` |
+| Large feature — SPARC implementation phase | `sparc-implement` |
+| Large feature — SPARC refinement/polish | `sparc-refine` |
+| Complex multi-agent task orchestration | `agent-queen-coordinator` |
+| Whole-project autonomous swarm | `hive-mind` or `hive-mind-advanced` |
+| Task broken into subtasks with agent delegation | `agent-orchestrator-task` |
+| ADR (Architecture Decision Record) | `adr-create` |
+
+### Frontend / UI
+| Task | Skill |
+|---|---|
+| Mobile-first UI design, layout, Tailwind polish | `frontend-design:frontend-design` |
+| UI quality + visual polish pass | `impeccable` |
+| Animations, micro-interactions, transitions | `emil-design-eng` |
+| Component/page design in canvas | `canvas-design` |
+| Brand colors, typography, design tokens | `brand-guidelines` |
+| Theme system (dark/light/custom) | `theme-factory` |
+| Onboarding flow conversion optimization | `onboarding-cro` |
+| Signup/registration flow CRO | `signup-flow-cro` |
+| Upgrade-to-Pro paywall CRO | `paywall-upgrade-cro` |
+| Form UX and conversion | `form-cro` |
+| Landing page CRO | `page-cro` |
+| Pop-up/modal CRO | `popup-cro` |
+
+### AI & Claude API
+| Task | Skill |
+|---|---|
+| Claude API optimization — prompt caching, batching, model selection | `claude-api` |
+| Build embeddings for school/athlete matching | `embeddings` |
+| Vector search for school recommendations | `vector-search` |
+| Semantic cluster analysis (school grouping) | `vector-cluster` |
+| Knowledge graph for recruiter relationships | `kg-extract` |
+
+### Backend & Data
+| Task | Skill |
+|---|---|
+| Supabase migration design | `migrate-create` |
+| Validate a Supabase migration before running | `migrate-validate` |
+| Background/scheduled tasks (email reminders, follow-up nudges) | `cron-schedule` or `schedule` |
+| Scrape college program pages for school data | Exa MCP + `browser-scrape` |
+| Web scraping with Firecrawl | Firecrawl MCP |
+| Parse PDFs (NCAA guides, school brochures) | `pdf` |
+| Export data to Excel/CSV | `xlsx` |
+
+### Payments & Growth
+| Task | Skill |
+|---|---|
+| Stripe integration, pricing tiers, webhooks | `agent-payments` |
+| Pricing strategy for Pro/Family tiers | `pricing-strategy` |
+| A/B test setup for pricing or onboarding | `ab-test-setup` |
+| Referral program for athlete word-of-mouth | `referral-program` |
+| Analytics event tracking (Mixpanel/Segment/PostHog) | `analytics-tracking` |
+| Churn prevention — detect at-risk users | `churn-prevention` |
+
+### Marketing & SEO
+| Task | Skill |
+|---|---|
+| SEO audit for landing/marketing pages | `seo-audit` |
+| Programmatic SEO (school pages, division pages) | `programmatic-seo` |
+| Content strategy for recruit/parent blog | `content-strategy` |
+| Social media content for recruiting tips | `social-content` |
+| Cold email sequences (parent outreach, coach partnerships) | `cold-email` |
+| Launch strategy for new features | `launch-strategy` |
+| Ad creative for Facebook/Instagram | `ad-creative` |
+
+### Quality & Security
+| Task | Skill |
+|---|---|
+| Code review after completing a feature | `simplify` or `superpowers:requesting-code-review` |
+| Verify implementation before marking done | `superpowers:verification-before-completion` |
+| Security audit — auth, payments, RLS policies, data | `security-audit` or `security-review` |
+| Security scan — OWASP, injection, XSS | `security-scan` |
+| Find test coverage gaps | `test-gaps` |
+| TDD workflow for new features | `superpowers:test-driven-development` or `tdd-workflow` |
+| Systematic debugging | `superpowers:systematic-debugging` |
+| Dependency vulnerabilities | `dependency-check` |
+
+### DevOps & GitHub
+| Task | Skill |
+|---|---|
+| Create/manage GitHub PRs | `agent-github-pr-manager` |
+| GitHub automation (labels, workflows, CI) | `github-automation` |
+| CI/CD pipeline | `agent-ops-cicd-github` |
+| Release management | `agent-release-manager` |
+| Performance profiling | `agent-performance-optimizer` or `performance-analysis` |
+
+### Documents & Exports
+| Task | Skill |
+|---|---|
+| Generate recruiting guide PDF for athletes | `pdf` |
+| Build recruiting tracker spreadsheet export | `xlsx` |
+| Create presentation/pitch deck | `pptx` |
+| API documentation | `agent-docs-api-openapi` |

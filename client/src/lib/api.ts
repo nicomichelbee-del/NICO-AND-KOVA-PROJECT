@@ -57,7 +57,7 @@ export function rateVideo(videoUrl: string, profile: AthleteProfile) {
 }
 
 export function generateFollowUp(profile: AthleteProfile, context: string, type: 'followup' | 'thankyou' | 'answer') {
-  return post<{ body: string }>('/api/ai/followup', { profile, context, type })
+  return post<{ body: string; advice?: string }>('/api/ai/followup', { profile, context, type })
 }
 
 export function rateResponse(school: string, coachName: string, text: string) {

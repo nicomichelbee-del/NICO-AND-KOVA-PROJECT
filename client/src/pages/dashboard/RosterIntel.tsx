@@ -3,7 +3,8 @@ import { getRosterIntel } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
-import type { Division, RosterProgram, PositionNeed, AthleteProfile } from '../../types'
+import { REGIONS, regionFromLocation } from '../../lib/region'
+import type { Division, Region, RosterProgram, PositionNeed, AthleteProfile } from '../../types'
 
 function getProfile(): AthleteProfile | null {
   try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
@@ -24,6 +25,7 @@ export function RosterIntel() {
   const profile = getProfile()
   const [gender, setGender] = useState<'mens' | 'womens'>('womens')
   const [division, setDivision] = useState<Division | 'all'>('all')
+  const [regionFilter, setRegionFilter] = useState<Region>('any')
   const [positionSearch, setPositionSearch] = useState('')
   const [programs, setPrograms] = useState<RosterProgram[]>([])
   const [positionSummary, setPositionSummary] = useState<PositionNeed[]>([])
@@ -44,12 +46,14 @@ export function RosterIntel() {
   }
 
   const filteredPrograms = useMemo(() => {
-    if (!positionSearch.trim()) return programs
-    const q = positionSearch.toLowerCase()
-    return programs.filter((prog) =>
-      prog.typicalRecruitingNeeds.some((n) => n.position.toLowerCase().includes(q))
-    )
-  }, [programs, positionSearch])
+    return programs.filter((prog) => {
+      const matchesRegion = regionFilter === 'any' || regionFromLocation(prog.location) === regionFilter
+      if (!matchesRegion) return false
+      if (!positionSearch.trim()) return true
+      const q = positionSearch.toLowerCase()
+      return prog.typicalRecruitingNeeds.some((n) => n.position.toLowerCase().includes(q))
+    })
+  }, [programs, positionSearch, regionFilter])
 
   const divisions: (Division | 'all')[] = ['all', 'D1', 'D2', 'D3', 'NAIA', 'JUCO']
 
@@ -108,6 +112,25 @@ export function RosterIntel() {
                   }`}
                 >
                   {d}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-2">Region</div>
+            <div className="flex flex-wrap gap-2">
+              {REGIONS.map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRegionFilter(r)}
+                  className={`px-3 py-1.5 rounded-lg text-xs font-semibold border transition-all capitalize ${
+                    regionFilter === r
+                      ? 'bg-[#eab308] text-black border-[#eab308]'
+                      : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
+                  }`}
+                >
+                  {r === 'any' ? 'All' : r}
                 </button>
               ))}
             </div>

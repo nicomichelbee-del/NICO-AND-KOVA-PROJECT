@@ -33,6 +33,7 @@ export function Emails() {
   // Browser state
   const [directory, setDirectory] = useState<SchoolDirectoryEntry[]>([])
   const [region, setRegion] = useState<RegionTab>('All')
+  const [divisionFilter, setDivisionFilter] = useState<Division | 'All'>('All')
   const [conference, setConference] = useState<string>('all')
   const [search, setSearch] = useState('')
 
@@ -65,6 +66,7 @@ export function Emails() {
   const filteredSchools = useMemo(() => {
     let pool = directory
     if (region !== 'All') pool = pool.filter((s) => s.region === region)
+    if (divisionFilter !== 'All') pool = pool.filter((s) => s.division === divisionFilter)
     if (conference !== 'all') pool = pool.filter((s) => s.conference === conference)
     if (search.trim()) {
       const q = search.toLowerCase()
@@ -75,7 +77,7 @@ export function Emails() {
       )
     }
     return pool.sort((a, b) => a.name.localeCompare(b.name))
-  }, [directory, region, conference, search])
+  }, [directory, region, divisionFilter, conference, search])
 
   function pickSchoolFromDirectory(entry: SchoolDirectoryEntry) {
     setSchool(entry.name)
@@ -139,39 +141,56 @@ export function Emails() {
 
       {/* School browser: region tabs → optional conference filter → school list */}
       <Card className="p-6 mb-8">
-        <div className="flex items-center justify-between gap-4 mb-5 flex-wrap">
+        <div className="flex flex-col gap-3 mb-5">
+          <div className="flex items-center justify-between gap-4 flex-wrap">
+            <div className="flex flex-wrap gap-2">
+              {REGION_TABS.map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRegion(r)}
+                  className={`px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
+                    region === r
+                      ? 'bg-[#eab308] text-black border-[#eab308]'
+                      : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
+                  }`}
+                >
+                  {r}
+                </button>
+              ))}
+            </div>
+            <div className="flex items-center gap-3 ml-auto">
+              <select
+                value={conference}
+                onChange={(e) => setConference(e.target.value)}
+                className="bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-1.5 text-xs text-[#f1f5f9] focus:outline-none focus:border-[#eab308]"
+              >
+                <option value="all">All conferences (optional)</option>
+                {conferenceOptions.map((c) => (
+                  <option key={c.name} value={c.name}>{c.name} ({c.count})</option>
+                ))}
+              </select>
+              <input
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                placeholder="Search school..."
+                className="bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-1.5 text-xs text-[#f1f5f9] placeholder-[#64748b] focus:outline-none focus:border-[#eab308] w-44"
+              />
+            </div>
+          </div>
           <div className="flex flex-wrap gap-2">
-            {REGION_TABS.map((r) => (
+            {(['All', ...DIVISIONS] as const).map((d) => (
               <button
-                key={r}
-                onClick={() => setRegion(r)}
-                className={`px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
-                  region === r
-                    ? 'bg-[#eab308] text-black border-[#eab308]'
-                    : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
+                key={d}
+                onClick={() => setDivisionFilter(d)}
+                className={`px-3 py-1 rounded text-xs font-semibold border transition-all ${
+                  divisionFilter === d
+                    ? 'bg-[rgba(234,179,8,0.15)] text-[#eab308] border-[#eab308]'
+                    : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.08)] hover:border-[rgba(234,179,8,0.4)] hover:text-[#f1f5f9]'
                 }`}
               >
-                {r}
+                {d === 'All' ? 'All Divisions' : d}
               </button>
             ))}
-          </div>
-          <div className="flex items-center gap-3 ml-auto">
-            <select
-              value={conference}
-              onChange={(e) => setConference(e.target.value)}
-              className="bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-1.5 text-xs text-[#f1f5f9] focus:outline-none focus:border-[#eab308]"
-            >
-              <option value="all">All conferences (optional)</option>
-              {conferenceOptions.map((c) => (
-                <option key={c.name} value={c.name}>{c.name} ({c.count})</option>
-              ))}
-            </select>
-            <input
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-              placeholder="Search school..."
-              className="bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-1.5 text-xs text-[#f1f5f9] placeholder-[#64748b] focus:outline-none focus:border-[#eab308] w-44"
-            />
           </div>
         </div>
 

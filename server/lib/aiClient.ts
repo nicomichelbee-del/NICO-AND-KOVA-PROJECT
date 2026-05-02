@@ -69,8 +69,21 @@ export async function filterRealCoachEmails(
     preview: c.snippet.slice(0, 90),
   }))
   const text = await ask(
-    `Soccer recruit inbox. For each: real human at a college (coach/staff)?\nINCLUDE any reply even generic. EXCLUDE platforms (NCSA/BeRecruited/etc), auto-notifications, mass blasts.\n${JSON.stringify(compact)}\nJSON only: [{"threadId":"..","isReal":true,"note":"one sentence"}]`,
-    Math.min(150 + candidates.length * 45, 1800),
+    `Soccer recruit inbox. For each email, decide: was this PERSONALLY sent by a real college coach or assistant coach directly to this athlete?
+
+ACCEPT only if: a real human coach/assistant coach wrote this directly to this specific athlete (even if slightly templated, it must feel directed at them).
+
+REJECT if ANY of these apply:
+- Sent from or forwarded through a recruiting platform (NCSA, TopDrawer, BeRecruited, FieldLevel, 247Sports, Rivals, etc.)
+- A platform notification ("a coach viewed your profile", "coach wants to connect", "recruiting update")
+- A mass/bulk ID camp blast sent to hundreds of athletes with no personal details about THIS athlete
+- An automated system notification or auto-generated email
+- Spam or promotional email
+- The sender does not appear to know who this athlete is specifically (no name, no stats, no club reference)
+
+${JSON.stringify(compact)}
+JSON only: [{"threadId":"..","isReal":true,"note":"one sentence"}]`,
+    Math.min(200 + candidates.length * 55, 1800),
   )
   const fallback: CoachEmailCheckResult[] = candidates.map((c) => ({ threadId: c.threadId, isReal: false, note: '' }))
   return parseJSON<CoachEmailCheckResult[]>(text, fallback)
@@ -78,18 +91,27 @@ export async function filterRealCoachEmails(
 
 export interface BatchEmailRating {
   threadId: string
-  score: number          // 1–10 interest
+  score: number          // 1–10 interest: forward momentum / concrete asks toward THIS athlete
   rating: 'hot' | 'warm' | 'cold' | 'not_interested'
   interestLevel: string
-  genuineness: number    // 1–10
+  genuineness: number    // 1–10 genuineness: personal engagement vs. mass-send quality
   ratingNote: string     // one-sentence summary of the email
   nextAction: string
 }
 
 // ONE Claude call rates every confirmed coach email in the scan.
 // Uses the coach message's own snippet for accurate analysis.
+//
+// INTEREST factors: concrete asks (film/transcript/scores/visit/call/questionnaire),
+//   proposed next steps or timelines, direct expressions of interest in THIS specific player,
+//   prompt and sustained replies over time.
+//
+// GENUINENESS factors: thread reply depth (back-and-forth > 1 reply = real engagement),
+//   uses athlete name/club/stats/position, asks personal follow-up questions about them,
+//   conversational vs. boilerplate tone, length+specificity suggesting a human wrote it,
+//   head coach's real name in From vs. generic/department address.
 export async function batchRateCoachEmails(
-  emails: { threadId: string; senderName: string; subject: string; snippet: string }[]
+  emails: { threadId: string; senderName: string; subject: string; snippet: string; messageCount?: number; isIdCamp?: boolean }[]
 ): Promise<BatchEmailRating[]> {
   if (emails.length === 0) return []
   const compact = emails.map((e) => ({
@@ -97,18 +119,43 @@ export async function batchRateCoachEmails(
     from: e.senderName,
     subj: e.subject,
     msg: e.snippet.slice(0, 150),
+    // replies > 1 means real back-and-forth occurred — weight heavily in genuineness
+    replies: e.messageCount ?? 1,
+    idcamp: e.isIdCamp ?? false,
   }))
   const text = await ask(
-    `HS soccer recruit inbox. Rate each coach email. All fields required per item.
-score 1-10: 10=scholarship/visit offered,8-9=strong interest,6-7=genuine interest,4-5=mild/form letter,2-3=polite pass,1=rejection
-genuineness 1-10: 10=knows athlete specifically,7-9=personal,5-6=some personalization,3-4=mostly template,1-2=mass blast
-rating: hot(8-10)/warm(5-7)/cold(3-4)/not_interested(1-2)
+    `HS soccer recruit inbox. Rate each email on TWO INDEPENDENT scores. Scores MUST diverge when signals differ.
+
+INTEREST (1-10) — forward momentum: does this coach want THIS athlete on their roster?
+  High signals: requests film/transcript/test scores/visit/call/questionnaire; proposes timelines or decision points; directly says they want this player; replies field > 1 (sustained back-and-forth)
+  Low signals: informational only, no concrete ask, acknowledgement without next step, single send with no follow-through
+  10=scholarship/visit offered  8-9=strong explicit asks+interest  6-7=forward momentum/questionnaire  4-5=mild/no concrete ask  2-3=no forward ask  1=rejection
+
+GENUINENESS (1-10) — personal engagement vs. mass-send quality:
+  High signals: replies > 1 (REAL back-and-forth — weight this heavily); uses athlete name/club/stats/position; asks personal follow-up questions specifically about them; conversational not boilerplate; length+specificity suggests a human typed it; head coach's real name in From field
+  Low signals: replies=1 (single blast, never engaged again); generic opener (Dear Athlete/Player); no personal details; form-letter language; department/generic address in From
+  10=deep personal thread (replies>2, highly specific)  7-9=clearly personal or personalized  5-6=mixed  3-4=mostly template  1-2=mass blast/bulk send
+
+DIVERGENCE REQUIRED — examples of correct scoring:
+  Mass camp blast asking for film → interest=5, genuineness=1  (has ask but zero personalization)
+  Warm personal reply with no next steps → interest=3, genuineness=7
+  Multi-reply thread, no offer yet → interest=5, genuineness=8  (replies carry genuineness)
+  Templated "we're interested" with visit offer → interest=9, genuineness=3
+
+RULES (apply before scoring):
+  idcamp=true with no athlete name/stats/club: score max 3, genuineness=1, rating="not_interested"
+  Generic "Dear Athlete/Player": score max 3, genuineness max 2
+  Only interest 7+: coach demonstrates they know this specific athlete (name/club/stats/prior interaction)
+  Personalized ID camp invite (uses name, references play): interest max 6, genuineness 5-7
+
+rating: hot(8-10)/warm(5-7)/cold(3-4)/not_interested(1-2)  — based on interest score
 interestLevel: "Actively Recruiting"|"Very Interested"|"High Interest"|"Moderate Interest"|"Mild Interest"|"Low Interest"|"Not Interested"
 ratingNote: one sentence describing what the coach said
 nextAction: one sentence telling the athlete what to do next
+
 ${JSON.stringify(compact)}
-JSON only:[{"threadId":"..","score":7,"rating":"warm","interestLevel":"High Interest","genuineness":6,"ratingNote":"..","nextAction":".."}]`,
-    Math.min(250 + emails.length * 50, 2500),
+JSON only:[{"threadId":"..","score":7,"rating":"warm","interestLevel":"High Interest","genuineness":3,"ratingNote":"..","nextAction":".."}]`,
+    Math.min(350 + emails.length * 65, 3000),
   )
   const fallback: BatchEmailRating[] = emails.map((e) => ({
     threadId: e.threadId, score: 5, rating: 'cold', interestLevel: 'Mild Interest',
@@ -155,11 +202,21 @@ Return JSON only (no markdown):
   "scoreReason": "Invited a campus visit and mentioned roster needs — strong buying signals."
 }
 
-Scoring guides:
-- score 1–10: 1–2=clear rejection, 3–4=polite form letter, 5–6=mildly interested, 7–8=genuinely interested, 9–10=hot pursuit (visit/scholarship mentioned)
-- interestLevel: "Not Interested" | "Low Interest" | "Mild Interest" | "Moderate Interest" | "High Interest" | "Very Interested" | "Actively Recruiting"
-- rating: hot=9–10 (visit invite, scholarship mention), warm=6–8 (positive, asked questions), cold=3–5 (noncommittal), not_interested=1–2 (explicit no or form rejection)
-- genuineness 1–10: 1–3=obvious mass email with no personalization, 4–6=some personalization, 7–9=clearly read the athlete's profile, 10=highly personal and specific`,
+Scoring — two INDEPENDENT scores (they must diverge when signals differ):
+
+score (INTEREST 1-10) — forward momentum toward recruiting THIS athlete:
+  High: requests film/transcript/test scores/visit/call/questionnaire; proposes timelines; directly expresses interest in this player
+  Low: informational only, no concrete ask, single acknowledge with no next step
+  1-2=rejection  3-4=polite pass  5-6=mild/no concrete ask  7-8=forward asks+interest  9-10=visit/scholarship offered
+
+genuineness (PERSONAL ENGAGEMENT 1-10) — how personally engaged vs. mass-send:
+  High: thread has multiple exchanges (sustained replies); uses athlete name/club/stats/position; asks personal follow-up questions; conversational not boilerplate; real coach name in From
+  Low: first contact only; generic opener; no personal details; form-letter language; department/generic address
+  1-2=mass blast  3-4=mostly template  5-6=mixed  7-9=clearly personal  10=deep personal ongoing thread
+
+DIVERGENCE REQUIRED: e.g. mass blast asking for film → score=5, genuineness=1
+- rating: hot=9-10 (visit/scholarship), warm=6-8 (positive, forward asks), cold=3-5 (noncommittal), not_interested=1-2 (no/form rejection)
+- interestLevel: "Not Interested"|"Low Interest"|"Mild Interest"|"Moderate Interest"|"High Interest"|"Very Interested"|"Actively Recruiting"`,
     700,
   )
   return parseJSON<CoachReplyAnalysis>(text, {

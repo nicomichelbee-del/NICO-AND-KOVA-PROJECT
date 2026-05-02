@@ -2,7 +2,8 @@ import { useEffect, useMemo, useState } from 'react'
 import { findCamps, generateCampEmails, getShowcaseEvents, getIdCamps } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
-import type { AthleteProfile, IdCamp, CampCoach, Division, IdEvent, IdCampEntry } from '../../types'
+import { REGIONS, regionFromLocation } from '../../lib/region'
+import type { AthleteProfile, IdCamp, CampCoach, Division, IdEvent, IdCampEntry, Region } from '../../types'
 
 function getProfile(): AthleteProfile | null {
   try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
@@ -84,6 +85,7 @@ function ShowcaseTab() {
   const [loading, setLoading] = useState(true)
   const [divFilter, setDivFilter] = useState<Division | 'all'>('all')
   const [genderFilter, setGenderFilter] = useState<'both' | 'mens' | 'womens'>('both')
+  const [regionFilter, setRegionFilter] = useState<Region>('any')
 
   useEffect(() => {
     getShowcaseEvents()
@@ -94,8 +96,9 @@ function ShowcaseTab() {
   const filtered = useMemo(() => events.filter((e) => {
     const d = divFilter === 'all' || e.divisions.includes(divFilter)
     const g = genderFilter === 'both' || e.gender === 'both' || e.gender === genderFilter
-    return d && g
-  }), [events, divFilter, genderFilter])
+    const r = regionFilter === 'any' || regionFromLocation(e.location) === regionFilter
+    return d && g && r
+  }), [events, divFilter, genderFilter, regionFilter])
 
   return (
     <>
@@ -133,6 +136,25 @@ function ShowcaseTab() {
                   }`}
                 >
                   {g.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-2">Region</div>
+            <div className="flex flex-wrap gap-2">
+              {REGIONS.map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRegionFilter(r)}
+                  className={`px-3 py-1.5 rounded text-xs font-semibold border transition-all capitalize ${
+                    regionFilter === r
+                      ? 'bg-[#eab308] text-black border-[#eab308]'
+                      : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
+                  }`}
+                >
+                  {r === 'any' ? 'All' : r}
                 </button>
               ))}
             </div>
@@ -199,6 +221,7 @@ function IdCampsTab() {
   const [loading, setLoading] = useState(true)
   const [divFilter, setDivFilter] = useState<Division | 'all'>('all')
   const [genderFilter, setGenderFilter] = useState<'both' | 'mens' | 'womens'>('both')
+  const [regionFilter, setRegionFilter] = useState<Region>('any')
   const [search, setSearch] = useState('')
 
   useEffect(() => {
@@ -211,11 +234,12 @@ function IdCampsTab() {
     return camps.filter((c) => {
       const d = divFilter === 'all' || c.division === divFilter
       const g = genderFilter === 'both' || c.gender === 'both' || c.gender === genderFilter
+      const r = regionFilter === 'any' || c.region === regionFilter
       const q = search.trim().toLowerCase()
       const s = !q || c.schoolName.toLowerCase().includes(q) || c.campName.toLowerCase().includes(q)
-      return d && g && s
+      return d && g && r && s
     }).sort((a, b) => a.schoolName.localeCompare(b.schoolName))
-  }, [camps, divFilter, genderFilter, search])
+  }, [camps, divFilter, genderFilter, regionFilter, search])
 
   return (
     <>
@@ -257,6 +281,26 @@ function IdCampsTab() {
               ))}
             </div>
           </div>
+
+          <div>
+            <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-2">Region</div>
+            <div className="flex flex-wrap gap-2">
+              {REGIONS.map((r) => (
+                <button
+                  key={r}
+                  onClick={() => setRegionFilter(r)}
+                  className={`px-3 py-1.5 rounded text-xs font-semibold border transition-all capitalize ${
+                    regionFilter === r
+                      ? 'bg-[#eab308] text-black border-[#eab308]'
+                      : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
+                  }`}
+                >
+                  {r === 'any' ? 'All' : r}
+                </button>
+              ))}
+            </div>
+          </div>
+
           <div className="ml-auto">
             <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-2">Search</div>
             <input

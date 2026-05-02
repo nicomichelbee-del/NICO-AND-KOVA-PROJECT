@@ -217,6 +217,7 @@ export interface IdCampEntry {
   schoolName: string
   gender: 'mens' | 'womens' | 'both'
   division: Division
+  region: string
   campName: string
   format: 'residential' | 'day' | 'prospect-day' | 'elite-id'
   typicalMonths: string

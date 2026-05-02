@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { google } from 'googleapis'
 import { createClient } from '@supabase/supabase-js'
-import { categorizeEmail, isBulkMessage, classifyCoachMessage, getHeader, decodeMessageBody } from '../lib/gmailUtils'
+import { categorizeEmail, isBulkMessage, classifyCoachMessage, isNewsletterEmail, getHeader, decodeMessageBody } from '../lib/gmailUtils'
 import { rateCoachReply, filterRealCoachEmails, batchRateCoachEmails } from '../lib/aiClient'
 
 const router = Router()
@@ -502,12 +502,21 @@ router.get('/history-scan', async (req, res) => {
 
     const confirmed = [...accepted, ...verifiedUncertain]
 
-    // Batch AI rating — ONE call rates every confirmed email
+    // Batch AI rating — ONE call rates every confirmed email.
+    // Pass messageCount + isIdCamp so the AI can weight genuineness by thread depth
+    // and apply stricter caps on mass ID camp blasts.
     const ratingMap = new Map<string, any>()
     if (confirmed.length > 0) {
       try {
         const ratings = await batchRateCoachEmails(
-          confirmed.map((c) => ({ threadId: c.threadId, senderName: c.senderName, subject: c.subject, snippet: c.snippet }))
+          confirmed.map((c) => ({
+            threadId: c.threadId,
+            senderName: c.senderName,
+            subject: c.subject,
+            snippet: c.snippet,
+            messageCount: c.messageCount,
+            isIdCamp: c.category === 'id_camp',
+          }))
         )
         for (const r of ratings) ratingMap.set(r.threadId, r)
       } catch {
@@ -518,14 +527,27 @@ router.get('/history-scan', async (req, res) => {
     const results = confirmed
       .map((c) => {
         const r = ratingMap.get(c.threadId)
+        const score = r?.score ?? 5
+        const genuineness = r?.genuineness ?? 5
+        // Noise classification:
+        //   - Mass ID camp blast: id_camp category + AI rated genuineness ≤ 2 (no personalization)
+        //   - Newsletter-style subject that passed header checks but reads like a subscription update
+        const isNoise =
+          (c.category === 'id_camp' && genuineness <= 2 && score <= 3) ||
+          isNewsletterEmail(c.subject)
+        const noiseReason = isNoise
+          ? c.category === 'id_camp' ? 'Mass ID camp blast' : 'Newsletter / subscription content'
+          : undefined
         return {
           ...c,
-          score: r?.score ?? 5,
+          score,
           rating: r?.rating ?? 'cold',
           interestLevel: r?.interestLevel ?? 'Unknown',
-          genuineness: r?.genuineness ?? 5,
+          genuineness,
           ratingNote: r?.ratingNote ?? '',
           nextAction: r?.nextAction ?? 'Send a follow-up within two weeks.',
+          isNoise,
+          noiseReason,
         }
       })
       .sort((a, b) => b.score - a.score || new Date(b.date).getTime() - new Date(a.date).getTime())

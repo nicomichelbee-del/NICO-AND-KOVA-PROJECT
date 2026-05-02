@@ -143,10 +143,14 @@ router.post('/followup', async (req, res) => {
     const typeInstruction = type === 'followup' ? 'a follow-up email to a coach who has not responded in 2 weeks'
       : type === 'thankyou' ? 'a thank-you email after a campus visit or call'
       : 'a response to a coach question or inquiry'
-    const text = await ask(`Write ${typeInstruction} for: ${profile.name}, ${profile.position}, Class of ${profile.gradYear}, ${profile.clubTeam}. Target: ${profile.targetDivision}.
-Context: ${context}
+    const text = await ask(`You are a college soccer recruitment counselor with 15+ years of experience.
 
-Respond with JSON only: { "body": "..." }`, 450)
+Write ${typeInstruction} for: ${profile.name}, ${profile.position}, Class of ${profile.gradYear}, ${profile.clubTeam}. Target: ${profile.targetDivision}.
+Context: ${context || 'No additional context provided.'}
+
+Also provide brief counselor advice (2–3 sentences) on strategy, timing, or tone the athlete should know about this specific situation — not generic tips, but insight specific to the context above.
+
+Respond with JSON only: { "body": "...", "advice": "..." }`, 600)
     res.json(parseJSON(text, {}))
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
