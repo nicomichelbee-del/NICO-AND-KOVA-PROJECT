@@ -55,6 +55,7 @@ function getSupabase() {
 // ── JSON flat-file fallback (dev / offline) ───────────────────────────────
 
 const CACHE_PATH = path.join(__dirname, '..', 'data', 'coachesScraped.json')
+const MANUAL_PATH = path.join(__dirname, '..', 'data', 'coachesManual.json')
 
 interface FlatCache {
   byId:   Record<string, ScrapedCoach>
@@ -63,28 +64,63 @@ interface FlatCache {
 }
 
 let flatCache: FlatCache | null = null
+let manualCache: FlatCache | null = null
+
+function readFlatFile(filePath: string): FlatCache {
+  const mtime = fs.statSync(filePath).mtimeMs
+  const raw: Record<string, ScrapedCoach | { _README?: string }> =
+    JSON.parse(fs.readFileSync(filePath, 'utf8'))
+  const byId: Record<string, ScrapedCoach> = {}
+  const byName: Record<string, ScrapedCoach> = {}
+  for (const [key, entry] of Object.entries(raw)) {
+    // Skip metadata keys (e.g. _README in coachesManual.json)
+    if (key.startsWith('_')) continue
+    const e = entry as ScrapedCoach
+    if (!e || !e.schoolId || !e.gender) continue
+    byId[key] = e
+    if (e.schoolName) byName[`${e.schoolName.toLowerCase()}:${e.gender}`] = e
+  }
+  return { byId, byName, mtime }
+}
 
 function loadFlat(): FlatCache {
   try {
     const mtime = fs.statSync(CACHE_PATH).mtimeMs
     if (flatCache && mtime === flatCache.mtime) return flatCache
-    const byId: Record<string, ScrapedCoach> = JSON.parse(fs.readFileSync(CACHE_PATH, 'utf8'))
-    const byName: Record<string, ScrapedCoach> = {}
-    for (const entry of Object.values(byId)) {
-      byName[`${entry.schoolName.toLowerCase()}:${entry.gender}`] = entry
-    }
-    flatCache = { byId, byName, mtime }
+    flatCache = readFlatFile(CACHE_PATH)
     return flatCache
   } catch {
     return { byId: {}, byName: {}, mtime: 0 }
   }
 }
 
-function getFromFlat(schoolNameOrId: string, gender: 'mens' | 'womens'): ScrapedCoach | null {
-  const { byId, byName } = loadFlat()
-  return byId[`${schoolNameOrId}:${gender}`]
-    ?? byName[`${schoolNameOrId.toLowerCase()}:${gender}`]
+function loadManual(): FlatCache {
+  try {
+    const mtime = fs.statSync(MANUAL_PATH).mtimeMs
+    if (manualCache && mtime === manualCache.mtime) return manualCache
+    manualCache = readFlatFile(MANUAL_PATH)
+    return manualCache
+  } catch {
+    return { byId: {}, byName: {}, mtime: 0 }
+  }
+}
+
+function getFromCache(cache: FlatCache, schoolNameOrId: string, gender: 'mens' | 'womens'): ScrapedCoach | null {
+  return cache.byId[`${schoolNameOrId}:${gender}`]
+    ?? cache.byName[`${schoolNameOrId.toLowerCase()}:${gender}`]
     ?? null
+}
+
+function getFromManual(schoolNameOrId: string, gender: 'mens' | 'womens'): ScrapedCoach | null {
+  const entry = getFromCache(loadManual(), schoolNameOrId, gender)
+  if (!entry) return null
+  // Force status to 'success' so callers don't gate on it. Manual entries are
+  // the most-trusted source in the system.
+  return { ...entry, status: 'success' }
+}
+
+function getFromFlat(schoolNameOrId: string, gender: 'mens' | 'womens'): ScrapedCoach | null {
+  return getFromCache(loadFlat(), schoolNameOrId, gender)
 }
 
 // ── Public API ────────────────────────────────────────────────────────────
@@ -99,6 +135,12 @@ export async function getScrapedCoach(
   schoolNameOrId: string,
   gender: 'mens' | 'womens',
 ): Promise<ScrapedCoach | null> {
+  // Manual overrides take precedence over Supabase and the scraped flat file.
+  // These are hand-verified entries for high-priority schools where automation
+  // failed; humans always beat the scraper.
+  const manual = getFromManual(schoolNameOrId, gender)
+  if (manual) return manual
+
   const supabase = getSupabase()
 
   if (supabase) {
@@ -125,4 +167,5 @@ export async function getScrapedCoach(
 
 export function _resetMemo() {
   flatCache = null
+  manualCache = null
 }

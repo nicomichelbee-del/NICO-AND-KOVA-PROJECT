@@ -41,12 +41,26 @@
     return true
   }
 
+  // Off-sport title rejector. The audit found the parser was returning baseball,
+  // cheer, gymnastics, and spirit-squad coaches for soccer queries because the
+  // "Head X Coach" regex matches any "Head <sport> Coach". Reject any title that
+  // names a non-soccer sport / spirit-program role unless it ALSO says soccer.
+  // Examples this rejects: "Head Baseball Coach", "Head Cheer Coach",
+  // "Spirit Squad Coordinator", "Director of Spirit Squads", "Gymnastics Head Coach".
+  var OFF_SPORT_TITLE_RE = /\b(baseball|softball|football|basketball|volleyball|hockey|lacrosse|tennis|golf|swimming|wrestling|track|cross\s*country|rugby|cricket|fencing|gymnastics|rowing|crew|skiing|sailing|water\s*polo|bowling|equestrian|cheer|cheerleading|dance|spirit|squad|squads|mascot|pep\s*band|marching\s*band|esports?)\b/i
+  var isOffSportTitle = function (s) {
+    if (!s) return false
+    if (!OFF_SPORT_TITLE_RE.test(s)) return false
+    return !/\bsoccer\b/i.test(s)
+  }
+
   // Matches any "top-of-staff" title. Wider than bare "Head Coach" to cover:
   //   "Head Soccer Coach", "Head Women's Soccer Coach",
   //   "Director of Women's Soccer", "Director of Soccer", etc.
   // Associate / interim / assistant titles are excluded at the call site.
   var isHeadCoachTitle = function (s) {
     if (!s) return false
+    if (isOffSportTitle(s)) return false
     // "Head ... Coach" — catches "Head Coach", "Head Soccer Coach",
     // "Head Men's/Women's Soccer Coach", "Head Men's/Women's Coach"
     if (/\bhead\b.*\bcoach\b/i.test(s)) return true
@@ -65,8 +79,8 @@
   // tokens must start uppercase; middle tokens may be lowercase if short
   // (common name particles: da, de, del, van, von, la, le, di, dos, der, op).
   // Rejects section headings, sport names, role labels, and column headers.
-  var NAME_BLOCKLIST = /^(NAME|TITLE|PHONE|EMAIL(?: ADDRESS)?|ALMA MATER|YEAR|HOMETOWN|POSITION|MEN'S|WOMEN'S|SOCCER|HEAD|COACH|STAFF|COACHING|ROSTER|DIRECTORY|SUPPORT|VIEW|BIO|READ|MORE|FULL|INFO|SEE|SHOW|CLICK|CONTACT|PROFILE|ABOUT|TOGGLE|EXPAND|CLOSE|OPEN|HIDE|LEARN|VISIT|FIND|GET|FOLLOW|SHARE|SEND|SUBMIT)\b/i
-  var SPORT_OR_ROLE_WORDS = /\b(SOCCER|FOOTBALL|BASEBALL|BASKETBALL|HOCKEY|LACROSSE|TENNIS|GOLF|VOLLEYBALL|SWIMMING|TRACK|RUGBY|WRESTLING|CRICKET|FENCING|GYMNASTICS|ROWING|CHEERLEADING|COACH|STAFF|DIRECTORY|MANAGER|COORDINATOR|TRAINER|DEPARTMENT|PROGRAM|ATHLETIC|ATHLETICS|SPORTS|SPORT|TEAM|OVERSIGHT|OPERATIONS|COMPLIANCE|COMMUNICATIONS|DEVELOPMENT)\b/i
+  var NAME_BLOCKLIST = /^(NAME|TITLE|PHONE|EMAIL(?: ADDRESS)?|ALMA MATER|YEAR|HOMETOWN|POSITION|MEN'S|WOMEN'S|SOCCER|HEAD|COACH|STAFF|COACHING|ROSTER|DIRECTORY|SUPPORT|VIEW|BIO|READ|MORE|FULL|INFO|SEE|SHOW|CLICK|CONTACT|PROFILE|ABOUT|TOGGLE|EXPAND|CLOSE|OPEN|HIDE|LEARN|VISIT|FIND|GET|FOLLOW|SHARE|SEND|SUBMIT|SPIRIT|SQUAD|SQUADS|GROUPS|CHEER|DANCE|MASCOT|TIGHT|RECEIVERS|LINEMEN|ENDS|BACKS)\b/i
+  var SPORT_OR_ROLE_WORDS = /\b(SOCCER|FOOTBALL|BASEBALL|SOFTBALL|BASKETBALL|HOCKEY|LACROSSE|TENNIS|GOLF|VOLLEYBALL|SWIMMING|TRACK|RUGBY|WRESTLING|CRICKET|FENCING|GYMNASTICS|ROWING|CREW|CHEERLEADING|CHEER|DANCE|SPIRIT|SQUAD|SQUADS|GROUPS|MASCOT|BAND|ESPORTS|COACH|STAFF|DIRECTORY|MANAGER|COORDINATOR|TRAINER|DEPARTMENT|PROGRAM|ATHLETIC|ATHLETICS|SPORTS|SPORT|TEAM|OVERSIGHT|OPERATIONS|COMPLIANCE|COMMUNICATIONS|DEVELOPMENT)\b/i
   var isPersonName = function (s) {
     if (!s || typeof s !== 'string') return false
     if (s.length < 4 || s.length > 60) return false
@@ -88,6 +102,76 @@
     return true
   }
   var fullText = (document.body && document.body.innerText) || ''
+
+  // ── Lastname-email lookup ────────────────────────────────────────────────
+  // Many sites list the coach's name in a card but stash the email in a sibling
+  // staff directory (or only on the broader athletics-staff page). When we
+  // already have a name from one of the strategies below but no email, scan
+  // every email on the page for one whose local part contains the lastname
+  // (and ideally the firstname). Lastname must be ≥ 4 chars to avoid false
+  // positives like "lee" matching every email with "lee" in it.
+  var findEmailByLastname = function (name) {
+    if (!name) return ''
+    var nt = name.trim().split(/\s+/).filter(Boolean)
+    if (nt.length < 2) return ''
+    var last = nt[nt.length - 1].toLowerCase().replace(/[^a-z]/g, '')
+    if (last.length < 4) return ''
+    var first = nt[0].toLowerCase().replace(/[^a-z]/g, '')
+    var seen = {}
+    var pool = []
+    var ml = document.querySelectorAll('a[href^="mailto:"]')
+    for (var mlI = 0; mlI < ml.length; mlI++) {
+      var ad = ml[mlI].href.replace(/^mailto:/, '').split('?')[0].toLowerCase()
+      if (ad && !seen[ad]) { seen[ad] = 1; pool.push(ad) }
+    }
+    var te = fullText.match(/[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/g) || []
+    for (var teI = 0; teI < te.length; teI++) {
+      var t = te[teI].toLowerCase()
+      if (!seen[t]) { seen[t] = 1; pool.push(t) }
+    }
+    var best = ''
+    var bestScore = 0
+    for (var pi = 0; pi < pool.length; pi++) {
+      var addr = pool[pi]
+      var local = addr.split('@')[0]
+      if (local.indexOf(last) === -1) continue
+      var score = 1
+      if (first && first.length >= 3 && local.indexOf(first) !== -1) score += 2
+      // Penalize shared inboxes — recruiting@, info@, etc. should not match a person name.
+      if (!/^(soccer|msoc|wsoc|athletic|athletics|info|contact|webmaster|admin|recruiting|office|noreply|press|media)$/.test(local)) score += 1
+      if (score > bestScore) { bestScore = score; best = addr }
+    }
+    return best
+  }
+
+  // Resolve email priority: explicit email from the strategy > lastname match > program inbox.
+  var resolveEmail = function (email, name) {
+    return email || findEmailByLastname(name) || programEmail
+  }
+
+  // ── Program-level email pre-scan ──────────────────────────────────────────
+  // Computed once and used as fallback when no direct coach email is found.
+  // Priority: gendered soccer address > generic soccer > athletics@ > nothing.
+  var programEmail = (function () {
+    var links = document.querySelectorAll('a[href^="mailto:"]')
+    var athleticsAddr = ''
+    for (var pi = 0; pi < links.length; pi++) {
+      var addr = links[pi].href.replace(/^mailto:/, '').split('?')[0].toLowerCase()
+      var local = addr.split('@')[0]
+      if (/soccer|msoc|wsoc/i.test(addr)) {
+        var isMensAddr  = /^m(en'?s?)?soc|msoc|mensoc/i.test(local)
+        var isWomensAddr = /^w(omen'?s?)?soc|wsoc|womensoc/i.test(local)
+        if (requireMens  && isWomensAddr && !isMensAddr)  continue
+        if (requireWomens && isMensAddr  && !isWomensAddr) continue
+        return addr
+      }
+      if (!athleticsAddr && /^athletic/i.test(local)) athleticsAddr = addr
+    }
+    // Scan raw text for soccer-pattern emails not wrapped in mailto:
+    var tm = fullText.match(/[a-zA-Z0-9._%+-]*(?:soccer|msoc|wsoc)[a-zA-Z0-9._%+-]*@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}/i)
+    if (tm) return tm[0].toLowerCase()
+    return athleticsAddr
+  })()
 
   // ── Strategy 1: SIDEARM-style tab/multi-space row: Name <TAB> Head Coach ──
 
@@ -116,7 +200,7 @@
     if (!titleMatchesGender(titleCol)) continue
     var emailMatch = emailCol.match(emailRegex)
     var email = emailMatch ? emailMatch[0].toLowerCase() : ''
-    return { coachName: name, coachTitle: titleCol, coachEmail: email }
+    return { coachName: name, coachTitle: titleCol, coachEmail: resolveEmail(email, name) }
   }
 
   // ── Strategy 2: name → head-coach title within next 4 lines ──────────────
@@ -154,7 +238,7 @@
       var m2 = lines[k].match(emailRegex)
       if (m2) { email2 = m2[0].toLowerCase(); break }
     }
-    return { coachName: a, coachTitle: titleLine, coachEmail: email2 }
+    return { coachName: a, coachTitle: titleLine, coachEmail: resolveEmail(email2, a) }
   }
 
   // ── Strategy 3: head-coach title → name within next 3 lines ──────────────
@@ -195,7 +279,7 @@
         if (m3) { email3 = m3[0].toLowerCase(); break }
       }
     }
-    return { coachName: name3, coachTitle: tl, coachEmail: email3 }
+    return { coachName: name3, coachTitle: tl, coachEmail: resolveEmail(email3, name3) }
   }
 
   // ── Strategy 4: CSS card selectors ────────────────────────────────────────
@@ -236,7 +320,7 @@
       var m4 = text.match(emailRegex)
       if (m4) email4 = m4[0].toLowerCase()
     }
-    return { coachName: foundName, coachTitle: 'Head Coach', coachEmail: email4 }
+    return { coachName: foundName, coachTitle: 'Head Coach', coachEmail: resolveEmail(email4, foundName) }
   }
 
   // ── Strategy 5: mailto: proximity DOM walk ────────────────────────────────
@@ -262,11 +346,18 @@
           if (isPersonName(elLines[LL])) { foundName5 = elLines[LL]; break }
         }
         if (foundName5) {
-          return { coachName: foundName5, coachTitle: 'Head Coach', coachEmail: email5 }
+          return { coachName: foundName5, coachTitle: 'Head Coach', coachEmail: resolveEmail(email5, foundName5) }
         }
       }
       el = el.parentElement
     }
+  }
+
+  // ── Strategy 6: program email only ───────────────────────────────────────
+  // All coach-finding strategies failed but we found a program inbox.
+  // Return it so callers can at least email the soccer office.
+  if (programEmail) {
+    return { coachName: '', coachTitle: '', coachEmail: programEmail }
   }
 
   return null

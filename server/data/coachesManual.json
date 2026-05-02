@@ -1,0 +1,3 @@
+{
+  "_README": "Manual coach overrides. Takes precedence over scraped data and Supabase. Key format: '<schoolId>:<gender>' (e.g. 'unc:mens'). Each entry must have schoolId, schoolName, gender, coachName, coachEmail; coachTitle, sourceUrl, scrapedAt are optional. Status is forced to 'success'. Drop the leading underscore on the README key once real entries exist if you want to keep notes."
+}

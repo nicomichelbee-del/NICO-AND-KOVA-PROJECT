@@ -275,12 +275,6 @@ async function discoverCoachPages(
   return ranked.slice(0, maxResults)
 }
 
-// Back-compat shim — some callers want a single URL.
-async function discoverCoachPage(page: Page, schoolName: string, gender: 'mens' | 'womens'): Promise<string | null> {
-  const list = await discoverCoachPages(page, schoolName, gender, 1)
-  return list[0] ?? null
-}
-
 // ── per-school scrape ─────────────────────────────────────────────────────
 
 async function scrapeOne(
@@ -355,13 +349,20 @@ async function scrapeOne(
     }
     if (process.env.DEBUG_SCRAPE) console.log(`  ↳ ${school.id}:${gender} attempts:`, JSON.stringify(urlAttempts))
 
-    // If domain was known but no URL pattern matched, try discovery as fallback
+    // If domain was known but no URL pattern matched, try discovery as fallback.
+    // Top 3 ranked results are tried in order; first to parse wins.
     if (domain) {
-      const discovered = await discoverCoachPage(page, school.name, gender)
-      if (discovered) {
+      const discovered = await discoverCoachPages(page, school.name, gender, 3)
+      for (const url of discovered) {
         try {
-          await page.goto(discovered, { waitUntil: 'domcontentloaded', timeout: 10000 })
+          const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 })
+          const status = response?.status() ?? 'no-response'
+          if (!response || response.status() >= 400) {
+            urlAttempts.push({ url, status, parsed: false })
+            continue
+          }
           const parsed = await parseStaffFromPage(page, gender)
+          urlAttempts.push({ url, status, parsed: !!(parsed?.coachName || parsed?.coachEmail) })
           if (parsed && (parsed.coachName || parsed.coachEmail)) {
             return {
               ...base,
@@ -373,9 +374,13 @@ async function scrapeOne(
               reason: !parsed.coachName ? 'program email only via search'
                     : !parsed.coachEmail ? 'name extracted via search; email not found'
                     : 'discovered via search',
+              urlAttempts,
             }
           }
-        } catch { /* fall through */ }
+        } catch (e) {
+          const err = e as Error
+          urlAttempts.push({ url, status: `error: ${err.message.slice(0, 60)}`, parsed: false })
+        }
       }
     }
 
