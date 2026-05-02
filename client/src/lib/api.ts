@@ -1,4 +1,5 @@
-import type { AthleteProfile, Division, School, SchoolDirectoryEntry, ProgramIntel, VideoRating, CoachResponse, FindCoachResult, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed, IdEvent, IdCampEntry, OutreachContact, SentEmail, ThreadMessage, UntrackedThread, HistoryEmail } from '../types'
+import { supabase } from './supabase'
+import type { AthleteProfile, Division, School, SchoolDirectoryEntry, ProgramIntel, VideoRating, CoachResponse, FindCoachResult, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed, IdEvent, IdCampEntry, OutreachContact, SentEmail, ThreadMessage, UntrackedThread, HistoryEmail, CampRatingSummary, CampComment } from '../types'
 
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(path, {
@@ -147,6 +148,63 @@ export function chatWithBeeko(
   profile?: AthleteProfile,
 ) {
   return post<{ reply: string }>('/api/ai/chat', { messages, profile })
+}
+
+// ── Camp ratings + comments ─────────────────────────────────────────
+
+async function authHeaders(): Promise<Record<string, string>> {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+export async function getCampSummary(campId: string): Promise<CampRatingSummary> {
+  const headers = await authHeaders()
+  const res = await fetch(`/api/camps/${encodeURIComponent(campId)}/summary`, { headers })
+  if (!res.ok) throw new Error('Failed to load summary')
+  return res.json()
+}
+
+export async function getCampComments(campId: string): Promise<{ comments: CampComment[] }> {
+  const res = await fetch(`/api/camps/${encodeURIComponent(campId)}/comments`)
+  if (!res.ok) throw new Error('Failed to load comments')
+  return res.json()
+}
+
+export async function rateCamp(campId: string, rating: number): Promise<void> {
+  const headers = { ...(await authHeaders()), 'Content-Type': 'application/json' }
+  const res = await fetch(`/api/camps/${encodeURIComponent(campId)}/rate`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ rating }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Failed to rate' }))
+    throw new Error((err as { error?: string }).error ?? 'Failed to rate')
+  }
+}
+
+export async function postCampComment(campId: string, body: string, displayName: string): Promise<{ comment: CampComment }> {
+  const headers = { ...(await authHeaders()), 'Content-Type': 'application/json' }
+  const res = await fetch(`/api/camps/${encodeURIComponent(campId)}/comment`, {
+    method: 'POST',
+    headers,
+    body: JSON.stringify({ body, displayName }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Failed to post comment' }))
+    throw new Error((err as { error?: string }).error ?? 'Failed to post comment')
+  }
+  return res.json()
+}
+
+export async function deleteCampComment(commentId: string): Promise<void> {
+  const headers = await authHeaders()
+  const res = await fetch(`/api/camps/comments/${encodeURIComponent(commentId)}`, {
+    method: 'DELETE',
+    headers,
+  })
+  if (!res.ok) throw new Error('Failed to delete comment')
 }
 
 export type { LeaderboardEntry, IdEvent }

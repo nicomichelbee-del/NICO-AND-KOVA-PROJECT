@@ -224,6 +224,8 @@ export interface PositionNeed {
   schoolCount: number
 }
 
+export type StaffTier = 'S' | 'A' | 'B' | 'C' | 'D'
+
 export interface IdEvent {
   id: string
   name: string
@@ -234,8 +236,12 @@ export interface IdEvent {
   location: string
   coachAttendance: string
   costRange: string
-  url: string
+  url: string                       // Direct registration / event page
+  searchFallbackUrl: string         // Google search fallback if direct URL rots
+  staffTier: StaffTier              // Counselor's editorial rating
+  staffTierReason: string           // One-line why
   notes: string
+  lastReviewedAt: string            // ISO date — supports refresh workflows
 }
 
 export interface IdCampEntry {
@@ -250,9 +256,29 @@ export interface IdCampEntry {
   typicalMonths: string
   ageRange: string
   estimatedCost: string
-  searchRegistrationUrl: string  // Google search → real, current registration page
-  athleticsUrl: string            // Google search → official athletics site
+  registrationUrl: string           // Direct registration / camp page (best known)
+  searchFallbackUrl: string         // Google search fallback if direct URL rots
+  athleticsUrl: string              // Direct official athletics site
+  staffTier: StaffTier
+  staffTierReason: string
   notes: string
+  lastReviewedAt: string
+}
+
+export interface CampRatingSummary {
+  campId: string
+  averageRating: number             // 0 if no ratings
+  ratingCount: number
+  userRating: number | null         // The current user's existing rating, if any
+}
+
+export interface CampComment {
+  id: string
+  campId: string
+  userId: string
+  displayName: string
+  body: string
+  createdAt: string
 }
 
 export interface SchoolRecord {

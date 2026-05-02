@@ -2,8 +2,9 @@ import { useEffect, useMemo, useState } from 'react'
 import { findCamps, generateCampEmails, getShowcaseEvents, getIdCamps } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
+import { CampDetailModal } from '../../components/camps/CampDetailModal'
 import { REGIONS, regionFromLocation } from '../../lib/region'
-import type { AthleteProfile, IdCamp, CampCoach, Division, IdEvent, IdCampEntry, Region } from '../../types'
+import type { AthleteProfile, IdCamp, CampCoach, Division, IdEvent, IdCampEntry, Region, StaffTier } from '../../types'
 
 function getProfile(): AthleteProfile | null {
   try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
@@ -11,6 +12,9 @@ function getProfile(): AthleteProfile | null {
 
 type GeneratedEmail = { coachName: string; subject: string; body: string }
 type Tab = 'showcase' | 'idcamps' | 'find'
+type SelectedItem =
+  | { kind: 'event'; data: IdEvent }
+  | { kind: 'camp'; data: IdCampEntry }
 
 const ALL_DIVISIONS: Division[] = ['D1', 'D2', 'D3', 'NAIA', 'JUCO']
 
@@ -24,6 +28,22 @@ const formatLabel: Record<IdCampEntry['format'], string> = {
   'day': 'Day ID Camp',
   'prospect-day': 'Prospect Day',
   'elite-id': 'Elite ID Camp (invitation)',
+}
+
+const tierBadge: Record<StaffTier, string> = {
+  S: 'bg-[rgba(251,191,36,0.15)] text-[#fbbf24] border-[rgba(251,191,36,0.4)]',
+  A: 'bg-[rgba(74,222,128,0.12)] text-[#4ade80] border-[rgba(74,222,128,0.35)]',
+  B: 'bg-[rgba(96,165,250,0.12)] text-[#60a5fa] border-[rgba(96,165,250,0.35)]',
+  C: 'bg-[rgba(167,139,250,0.12)] text-[#a78bfa] border-[rgba(167,139,250,0.35)]',
+  D: 'bg-[rgba(148,163,184,0.12)] text-[#94a3b8] border-[rgba(148,163,184,0.35)]',
+}
+
+function TierBadge({ tier }: { tier: StaffTier }) {
+  return (
+    <span className={`text-[10px] font-bold uppercase tracking-widest border rounded px-1.5 py-0.5 ${tierBadge[tier]}`}>
+      {tier}-tier
+    </span>
+  )
 }
 
 export function Camps() {
@@ -45,7 +65,7 @@ export function Camps() {
         <div className="flex items-start gap-3">
           <span className="text-base">⚠️</span>
           <div className="text-xs text-[#cbd5e1] leading-relaxed">
-            <strong className="text-[#fbbf24]">Dates and registration links change every year.</strong> Each entry below points to a Google search for the program's current registration page — that always returns real, up-to-date results. We do not store fabricated registration URLs.
+            <strong className="text-[#fbbf24]">Dates and registration links change every year.</strong> We link directly to each program's official registration page where possible, and provide a Google search fallback if a link goes stale. Click any card for details, ratings, and what other athletes said.
           </div>
         </div>
       </Card>
@@ -86,6 +106,7 @@ function ShowcaseTab() {
   const [divFilter, setDivFilter] = useState<Division | 'all'>('all')
   const [genderFilter, setGenderFilter] = useState<'both' | 'mens' | 'womens'>('both')
   const [regionFilter, setRegionFilter] = useState<Region>('any')
+  const [selected, setSelected] = useState<SelectedItem | null>(null)
 
   useEffect(() => {
     getShowcaseEvents()
@@ -169,37 +190,39 @@ function ShowcaseTab() {
       <div className="flex flex-col gap-4">
         {filtered.map((event) => (
           <Card key={event.id} hover className="p-5">
-            <div className="flex items-start justify-between gap-4 mb-3">
-              <div>
-                <div className="font-bold text-[#f1f5f9] text-sm mb-1">{event.name}</div>
-                <div className="text-xs text-[#64748b]">{event.organizer}</div>
+            <button
+              type="button"
+              onClick={() => setSelected({ kind: 'event', data: event })}
+              className="text-left w-full"
+            >
+              <div className="flex items-start justify-between gap-4 mb-3">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="font-bold text-[#f1f5f9] text-sm">{event.name}</span>
+                    <TierBadge tier={event.staffTier} />
+                  </div>
+                  <div className="text-xs text-[#64748b]">{event.organizer}</div>
+                </div>
+                <div className="flex gap-1.5 flex-shrink-0 flex-wrap justify-end">
+                  {event.divisions.map((d) => (
+                    <span key={d} className={`text-xs font-bold ${divisionColor[d] ?? 'text-[#64748b]'}`}>{d}</span>
+                  ))}
+                </div>
               </div>
-              <div className="flex gap-1.5 flex-shrink-0 flex-wrap justify-end">
-                {event.divisions.map((d) => (
-                  <span key={d} className={`text-xs font-bold ${divisionColor[d] ?? 'text-[#64748b]'}`}>{d}</span>
-                ))}
+              <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 mb-3 text-xs text-[#64748b]">
+                <div>📅 {event.dateRange}</div>
+                <div>📍 {event.location}</div>
+                <div>👥 {event.coachAttendance}</div>
+                <div>💰 {event.costRange}</div>
               </div>
-            </div>
-            <div className="grid grid-cols-2 gap-x-6 gap-y-1.5 mb-3 text-xs text-[#64748b]">
-              <div>📅 {event.dateRange}</div>
-              <div>📍 {event.location}</div>
-              <div>👥 {event.coachAttendance}</div>
-              <div>💰 {event.costRange}</div>
-            </div>
-            <p className="text-xs text-[#64748b] italic mb-3 leading-relaxed">{event.notes}</p>
-            <div className="flex items-center gap-4 flex-wrap">
-              <a
-                href={event.url}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-[#60a5fa] hover:underline"
-              >
-                🔗 Register / Learn More
-              </a>
-              <span className="text-xs text-[#64748b]">
-                {event.gender === 'both' ? "Men's & Women's" : event.gender === 'womens' ? "Women's only" : "Men's only"}
-              </span>
-            </div>
+              <p className="text-xs text-[#64748b] italic mb-3 leading-relaxed">{event.notes}</p>
+              <div className="flex items-center gap-4 flex-wrap">
+                <span className="text-xs text-[#eab308] font-semibold">Click for details, ratings & comments →</span>
+                <span className="text-xs text-[#64748b]">
+                  {event.gender === 'both' ? "Men's & Women's" : event.gender === 'womens' ? "Women's only" : "Men's only"}
+                </span>
+              </div>
+            </button>
           </Card>
         ))}
       </div>
@@ -210,6 +233,8 @@ function ShowcaseTab() {
           <p className="text-sm text-[#64748b]">No events match the selected filters.</p>
         </Card>
       )}
+
+      <CampDetailModal item={selected} onClose={() => setSelected(null)} />
     </>
   )
 }
@@ -223,6 +248,7 @@ function IdCampsTab() {
   const [genderFilter, setGenderFilter] = useState<'both' | 'mens' | 'womens'>('both')
   const [regionFilter, setRegionFilter] = useState<Region>('any')
   const [search, setSearch] = useState('')
+  const [selected, setSelected] = useState<SelectedItem | null>(null)
 
   useEffect(() => {
     getIdCamps()
@@ -320,45 +346,37 @@ function IdCampsTab() {
       <div className="flex flex-col gap-3">
         {filtered.map((camp) => (
           <Card key={camp.id} hover className="p-5">
-            <div className="flex items-start justify-between gap-4 mb-2 flex-wrap">
-              <div className="min-w-0">
-                <div className="flex items-center gap-2 mb-1 flex-wrap">
-                  <span className="font-bold text-[#f1f5f9] text-sm">{camp.campName}</span>
-                  <span className={`text-[10px] font-bold uppercase tracking-widest ${divisionColor[camp.division]}`}>{camp.division}</span>
-                  <span className="text-[10px] text-[#64748b] uppercase tracking-widest">
-                    {camp.gender === 'both' ? 'Both' : camp.gender === 'womens' ? "Women's" : "Men's"}
-                  </span>
+            <button
+              type="button"
+              onClick={() => setSelected({ kind: 'camp', data: camp })}
+              className="text-left w-full"
+            >
+              <div className="flex items-start justify-between gap-4 mb-2 flex-wrap">
+                <div className="min-w-0">
+                  <div className="flex items-center gap-2 mb-1 flex-wrap">
+                    <span className="font-bold text-[#f1f5f9] text-sm">{camp.campName}</span>
+                    <TierBadge tier={camp.staffTier} />
+                    <span className={`text-[10px] font-bold uppercase tracking-widest ${divisionColor[camp.division]}`}>{camp.division}</span>
+                    <span className="text-[10px] text-[#64748b] uppercase tracking-widest">
+                      {camp.gender === 'both' ? 'Both' : camp.gender === 'womens' ? "Women's" : "Men's"}
+                    </span>
+                  </div>
+                  <div className="text-xs text-[#eab308] font-medium">{camp.schoolName}</div>
                 </div>
-                <div className="text-xs text-[#eab308] font-medium">{camp.schoolName}</div>
+                <span className="text-[10px] uppercase tracking-widest text-[#64748b] bg-[rgba(255,255,255,0.04)] px-2 py-1 rounded">
+                  {formatLabel[camp.format]}
+                </span>
               </div>
-              <span className="text-[10px] uppercase tracking-widest text-[#64748b] bg-[rgba(255,255,255,0.04)] px-2 py-1 rounded">
-                {formatLabel[camp.format]}
-              </span>
-            </div>
-            <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-1 mt-3 text-xs text-[#64748b]">
-              <div>📅 Typically: {camp.typicalMonths}</div>
-              <div>👥 {camp.ageRange}</div>
-              <div>💰 {camp.estimatedCost}</div>
-            </div>
-            <p className="text-xs text-[#64748b] italic mt-3 leading-relaxed">{camp.notes}</p>
-            <div className="flex items-center gap-4 mt-3 flex-wrap">
-              <a
-                href={camp.searchRegistrationUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-[#eab308] hover:underline font-semibold"
-              >
-                🔗 Register
-              </a>
-              <a
-                href={camp.athleticsUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="text-xs text-[#60a5fa] hover:underline"
-              >
-                Official athletics site ↗
-              </a>
-            </div>
+              <div className="grid grid-cols-2 md:grid-cols-3 gap-x-6 gap-y-1 mt-3 text-xs text-[#64748b]">
+                <div>📅 Typically: {camp.typicalMonths}</div>
+                <div>👥 {camp.ageRange}</div>
+                <div>💰 {camp.estimatedCost}</div>
+              </div>
+              <p className="text-xs text-[#64748b] italic mt-3 leading-relaxed">{camp.notes}</p>
+              <div className="flex items-center gap-4 mt-3 flex-wrap">
+                <span className="text-xs text-[#eab308] font-semibold">Click for details, ratings & comments →</span>
+              </div>
+            </button>
           </Card>
         ))}
       </div>
@@ -369,6 +387,8 @@ function IdCampsTab() {
           <p className="text-sm text-[#64748b]">No camps match these filters. Try the "Find Camps at Your Schools" tab to look up any program.</p>
         </Card>
       )}
+
+      <CampDetailModal item={selected} onClose={() => setSelected(null)} />
     </>
   )
 }
