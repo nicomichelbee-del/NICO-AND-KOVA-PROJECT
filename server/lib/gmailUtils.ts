@@ -148,6 +148,82 @@ export function isCoachEmail(senderEmail: string, subject: string): boolean {
   return categorizeEmail(senderEmail, subject) !== 'other'
 }
 
+/**
+ * Best-effort school-name resolver from a coach email + sender display name.
+ * Strategy:
+ *   1. Strip subdomains, take the bare domain root (e.g. mail.athletics.harvard.edu → harvard)
+ *   2. Match against schools.json by `id` or fuzzy name containment
+ *   3. Look at the sender's display name for embedded school references ("UNC Soccer", "Harvard Athletics")
+ *   4. Fallback: title-case the domain root
+ * Returns the best-guess school name; empty string only if nothing usable was found.
+ */
+export function resolveSchoolFromEmail(
+  senderEmail: string,
+  senderName: string,
+  schools: { id: string; name: string }[],
+): string {
+  const email = senderEmail.toLowerCase().trim()
+  const domain = email.split('@')[1] ?? ''
+  if (!domain) return ''
+
+  const parts = domain.split('.').filter(Boolean)
+  // For .edu, root = second-to-last (harvard.edu → "harvard"). For other TLDs, same logic works.
+  const root = parts.length >= 2 ? parts[parts.length - 2] : domain
+  const rootLower = root.toLowerCase()
+
+  // Direct id match — schools.json ids like "harvard", "unc", "stanford"
+  const byId = schools.find((s) => s.id.toLowerCase() === rootLower)
+  if (byId) return byId.name
+
+  // Fuzzy: school id is contained in domain root (e.g. unc.edu vs id "unc-charlotte")
+  // or domain root is contained in school name (without spaces/punctuation)
+  const cleanedRoot = rootLower.replace(/[^a-z]/g, '')
+  if (cleanedRoot.length >= 3) {
+    const fuzzy = schools.find((s) => {
+      const idClean = s.id.toLowerCase().replace(/[^a-z]/g, '')
+      const nameClean = s.name.toLowerCase().replace(/[^a-z]/g, '')
+      return idClean === cleanedRoot || nameClean.includes(cleanedRoot) || cleanedRoot.includes(idClean)
+    })
+    if (fuzzy) return fuzzy.name
+  }
+
+  // Sender display name often carries the school: "Coach Smith — UNC Soccer", "Harvard Athletics"
+  const cleanedName = senderName.replace(/<[^>]+>/, '').replace(/['"]/g, '').trim()
+  if (cleanedName) {
+    const lower = cleanedName.toLowerCase()
+    const byName = schools.find((s) => {
+      const idLower = s.id.toLowerCase()
+      const nameLower = s.name.toLowerCase()
+      return lower.includes(idLower) || lower.includes(nameLower)
+    })
+    if (byName) return byName.name
+  }
+
+  // Last resort: title-case the domain root so the user sees something recognizable
+  return root.charAt(0).toUpperCase() + root.slice(1)
+}
+
+/**
+ * Best-guess coach name from sender display name.
+ * Strips quotes, angle brackets, and common institutional suffixes.
+ * Returns empty string if the name looks institutional (e.g. "Harvard Athletics").
+ */
+export function resolveCoachName(senderName: string, senderEmail: string): string {
+  const cleaned = senderName.replace(/<[^>]+>/, '').replace(/['"]/g, '').trim()
+  if (!cleaned) return ''
+  // Reject pure institutional names — caller can leave coach blank for the user to fill in
+  if (/\b(athletics|athletic|soccer|university|college|recruiting|admissions|department)\b/i.test(cleaned)) {
+    // But if there's a personal name BEFORE the institutional word, keep it
+    const beforeInstitutional = cleaned.split(/[-—|·,]/)[0].trim()
+    if (beforeInstitutional && beforeInstitutional !== cleaned && !/\b(athletics|soccer|university|college)\b/i.test(beforeInstitutional)) {
+      return beforeInstitutional
+    }
+    return ''
+  }
+  // Strip a trailing email if it leaked into the display name
+  return cleaned.replace(/<.*$/, '').trim() || senderEmail.split('@')[0]
+}
+
 export function decodeMessageBody(payload: any): string {
   if (!payload) return ''
   if (payload.parts) {

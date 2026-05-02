@@ -1,8 +1,9 @@
 import { Router } from 'express'
 import { google } from 'googleapis'
 import { createClient } from '@supabase/supabase-js'
-import { categorizeEmail, isBulkMessage, classifyCoachMessage, isNewsletterEmail, getHeader, decodeMessageBody } from '../lib/gmailUtils'
+import { categorizeEmail, isBulkMessage, classifyCoachMessage, isNewsletterEmail, getHeader, decodeMessageBody, resolveSchoolFromEmail, resolveCoachName } from '../lib/gmailUtils'
 import { rateCoachReply, filterRealCoachEmails, batchRateCoachEmails } from '../lib/aiClient'
+import schoolsData from '../data/schools.json'
 
 const router = Router()
 
@@ -423,6 +424,164 @@ router.get('/threads', async (req, res) => {
   } catch (e) {
     console.error('threads error:', e instanceof Error ? e.message : e)
     res.status(500).json({ error: e instanceof Error ? e.message : 'Sync failed' })
+  }
+})
+
+// POST /api/gmail/auto-import
+// One-shot: scan the connected Gmail for coach emails and bulk-create outreach_contacts
+// rows for every confirmed coach the user isn't already tracking. School name is resolved
+// from the sender's .edu domain via schools.json; coach name from the display header.
+// Returns { imported, skipped, contacts } so the UI can refresh the list.
+router.post('/auto-import', async (req, res) => {
+  const { userId } = req.body as { userId: string }
+  if (!userId) return res.status(400).json({ error: 'userId required' })
+  try {
+    const supabase = getSupabase()
+    const { data: tokenRow } = await supabase
+      .from('user_gmail_tokens')
+      .select('refresh_token')
+      .eq('user_id', userId)
+      .single()
+    if (!tokenRow?.refresh_token) return res.status(403).json({ error: 'Gmail not connected' })
+    const oauth2Client = getOAuth2Client()
+    oauth2Client.setCredentials({ refresh_token: tokenRow.refresh_token })
+    const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
+
+    const { data: existing } = await supabase
+      .from('outreach_contacts')
+      .select('coach_email, gmail_thread_id')
+      .eq('user_id', userId)
+    const existingEmails = new Set((existing ?? []).map((r: any) => r.coach_email?.toLowerCase()).filter(Boolean))
+    const existingThreads = new Set((existing ?? []).map((r: any) => r.gmail_thread_id).filter(Boolean))
+
+    // Same three-query scan used by /threads — maximum recall on real coach emails.
+    const searchResults = await Promise.allSettled([
+      listAllThreads(gmail, 'newer_than:1095d from:.edu', 200),
+      listAllThreads(gmail, 'newer_than:1095d -from:.edu {subject:"head coach" subject:"assistant coach" subject:scholarship subject:recruiting subject:"soccer coach" subject:"college soccer" subject:"college recruit"}', 200),
+      listAllThreads(gmail, 'newer_than:1095d to:.edu in:sent', 200),
+    ])
+    const seenIds = new Set<string>()
+    const allThreads: any[] = []
+    for (const r of searchResults) {
+      if (r.status !== 'fulfilled') continue
+      for (const t of r.value) {
+        if (t.id && !seenIds.has(t.id)) { seenIds.add(t.id); allThreads.push(t) }
+      }
+    }
+
+    // Process in parallel batches of 10. For each thread, find the latest coach message
+    // that passes deterministic filters (no AI cost — same bar as the Discovered tab).
+    const BATCH = 10
+    const candidates: { threadId: string; senderEmail: string; senderName: string; subject: string; lastReplyAt: string | null; snippet: string; category: 'coach' | 'id_camp' }[] = []
+    for (let i = 0; i < allThreads.length; i += BATCH) {
+      const batch = allThreads.slice(i, i + BATCH)
+      const batchResults = await Promise.allSettled(batch.map(async (thread) => {
+        const td = await gmail.users.threads.get({
+          userId: 'me', id: thread.id!,
+          format: 'metadata',
+          metadataHeaders: [
+            'From', 'Subject', 'Date',
+            'List-Unsubscribe', 'Precedence', 'X-Mailer',
+            'X-Campaign-Id', 'X-Mailchimp-Campaign', 'X-Bulk-Signature',
+            'X-Spam-Flag', 'X-Spam-Status',
+          ],
+        })
+        // Iterate every message and pick the latest non-bulk coach message in the thread.
+        let latest: any = null
+        for (const msg of td.data.messages ?? []) {
+          const headers: any[] = msg.payload?.headers ?? []
+          const fromHeader = getHeader(headers, 'From')
+          const subject = getHeader(headers, 'Subject')
+          const emailMatch = fromHeader.match(/<([^>]+)>/) ?? fromHeader.match(/([^\s]+@[^\s]+)/)
+          const senderEmail = emailMatch?.[1]?.toLowerCase() ?? ''
+          if (!senderEmail) continue
+          if (isBulkMessage(headers, senderEmail, subject)) continue
+          if (isNewsletterEmail(subject)) continue
+          const category = categorizeEmail(senderEmail, subject)
+          if (category !== 'id_camp' && category !== 'coach') continue
+          const displayName = fromHeader.replace(/<[^>]+>/, '').trim().replace(/^"|"$/g, '')
+          const confidence = classifyCoachMessage(displayName, senderEmail, subject)
+          if (confidence !== 'accept') continue
+          const dateVal = getHeader(headers, 'Date')
+          latest = {
+            threadId: thread.id,
+            senderEmail,
+            senderName: displayName,
+            subject,
+            lastReplyAt: dateVal ? new Date(dateVal).toISOString() : null,
+            snippet: ((msg as any).snippet ?? td.data.snippet ?? '').slice(0, 300),
+            category,
+          }
+        }
+        return latest
+      }))
+      for (const r of batchResults) {
+        if (r.status === 'fulfilled' && r.value) candidates.push(r.value)
+      }
+    }
+
+    // De-duplicate by senderEmail — one contact per coach, keep the most recent thread.
+    const byEmail = new Map<string, typeof candidates[number]>()
+    for (const c of candidates) {
+      const prev = byEmail.get(c.senderEmail)
+      if (!prev) { byEmail.set(c.senderEmail, c); continue }
+      const a = c.lastReplyAt ? Date.parse(c.lastReplyAt) : 0
+      const b = prev.lastReplyAt ? Date.parse(prev.lastReplyAt) : 0
+      if (a > b) byEmail.set(c.senderEmail, c)
+    }
+
+    // Build insert rows for everything not yet tracked.
+    const toInsert: any[] = []
+    let skipped = 0
+    for (const c of byEmail.values()) {
+      if (existingEmails.has(c.senderEmail) || existingThreads.has(c.threadId)) {
+        skipped++
+        continue
+      }
+      const schoolName = resolveSchoolFromEmail(c.senderEmail, c.senderName, schoolsData as any[])
+      const coachName = resolveCoachName(c.senderName, c.senderEmail)
+      // Status defaults to 'replied' when there's a recent message — auto-imports
+      // are coming from existing inbox threads, so the user has already been contacted.
+      toInsert.push({
+        user_id: userId,
+        coach_name: coachName,
+        school_name: schoolName,
+        coach_email: c.senderEmail,
+        division: 'D1', // best default; user can edit per row
+        gmail_thread_id: c.threadId,
+        last_reply_at: c.lastReplyAt,
+        last_reply_snippet: c.snippet,
+        status: 'replied',
+      })
+    }
+
+    let imported = 0
+    if (toInsert.length > 0) {
+      const { data, error } = await supabase
+        .from('outreach_contacts')
+        .insert(toInsert)
+        .select()
+      if (error) {
+        console.error('auto-import insert failed:', error.message)
+        return res.status(500).json({ error: error.message })
+      }
+      imported = data?.length ?? 0
+    }
+
+    const { data: allContacts } = await supabase
+      .from('outreach_contacts')
+      .select('*')
+      .eq('user_id', userId)
+      .order('created_at', { ascending: false })
+
+    res.json({
+      imported,
+      skipped,
+      contacts: (allContacts ?? []).map(mapContact),
+    })
+  } catch (e) {
+    console.error('auto-import error:', e instanceof Error ? e.message : e)
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Auto-import failed' })
   }
 })
 

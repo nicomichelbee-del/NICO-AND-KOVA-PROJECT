@@ -122,6 +122,13 @@ export function gmailHistoryScan(userId: string) {
   return get<{ emails: HistoryEmail[] }>(`/api/gmail/history-scan?userId=${encodeURIComponent(userId)}`)
 }
 
+export function gmailAutoImport(userId: string) {
+  return post<{ imported: number; skipped: number; contacts: OutreachContact[] }>(
+    '/api/gmail/auto-import',
+    { userId },
+  )
+}
+
 export function gmailGetThread(userId: string, threadId: string) {
   return get<{ messages: ThreadMessage[] }>(
     `/api/gmail/thread/${encodeURIComponent(threadId)}?userId=${encodeURIComponent(userId)}`

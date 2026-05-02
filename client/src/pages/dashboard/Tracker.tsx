@@ -8,7 +8,7 @@ import { Textarea } from '../../components/ui/Textarea'
 import { ContactRow } from '../../components/tracker/ContactRow'
 import { UntrackedSection } from '../../components/tracker/UntrackedSection'
 import { HistoryScanTab } from '../../components/tracker/HistoryScanTab'
-import { getContacts, createContact, updateContact, gmailGetThreads, getGmailStatus, rateResponse } from '../../lib/api'
+import { getContacts, createContact, updateContact, gmailGetThreads, getGmailStatus, rateResponse, gmailAutoImport } from '../../lib/api'
 import { useAuth } from '../../context/AuthContext'
 import type { OutreachContact, CoachResponse, UntrackedThread, Division } from '../../types'
 
@@ -46,6 +46,8 @@ export function Tracker() {
   const [sendingId] = useState<string | null>(null)
   const [syncLoading, setSyncLoading] = useState(false)
   const [syncMsg, setSyncMsg] = useState('')
+  const [importLoading, setImportLoading] = useState(false)
+  const [autoImportTried, setAutoImportTried] = useState(false)
 
   const [responses, setResponses] = useState<CoachResponse[]>(loadResponses)
   const [inputMode, setInputMode] = useState<'paste' | 'quick'>('paste')
@@ -64,17 +66,34 @@ export function Tracker() {
     try {
       const { contacts: data } = await getContacts(user.id)
       setContacts(data)
+      return data
     } catch { /* show empty state */ }
     finally { setContactsLoading(false) }
   }, [user?.id])
 
   useEffect(() => {
     if (!user?.id) return
-    loadContacts()
-    getGmailStatus(user.id).then((s) => {
-      setGmailConnected(s.connected)
-      setGmailEmail(s.email)
-    }).catch(() => {})
+    const uid = user.id
+    ;(async () => {
+      const data = await loadContacts()
+      try {
+        const s = await getGmailStatus(uid)
+        setGmailConnected(s.connected)
+        setGmailEmail(s.email)
+        if (!s.connected) return
+        // First-load behavior with Gmail connected:
+        //   - Tracker empty → run a one-shot auto-import that bulk-creates contacts from
+        //     every confirmed coach email already in the inbox. Fixes the "Gmail is
+        //     connected but tracker is blank" experience.
+        //   - Tracker non-empty → just sync replies, same as before.
+        if ((data?.length ?? 0) === 0 && !autoImportTried) {
+          setAutoImportTried(true)
+          await autoImport(uid)
+        } else {
+          syncThreads(uid)
+        }
+      } catch { /* silent — user can retry via the buttons */ }
+    })()
   }, [user?.id, loadContacts])
 
   useEffect(() => {
@@ -83,14 +102,24 @@ export function Tracker() {
         setGmailConnected(true)
         setGmailEmail(e.data.email ?? null)
         setGmailLoading(false)
-        if (user?.id) syncThreads(user.id)
+        // Brand-new Gmail connection → bulk-import every coach already in the inbox so
+        // the Tracker isn't empty. If the user already has tracked contacts (rare on a
+        // fresh connect), fall back to a normal sync.
+        if (user?.id) {
+          if (contacts.length === 0 && !autoImportTried) {
+            setAutoImportTried(true)
+            autoImport(user.id)
+          } else {
+            syncThreads(user.id)
+          }
+        }
       } else if (e.data?.type === 'gmail-error') {
         setGmailLoading(false)
       }
     }
     window.addEventListener('message', handleMessage)
     return () => window.removeEventListener('message', handleMessage)
-  }, [user?.id])
+  }, [user?.id, contacts.length, autoImportTried])
 
   async function connectGmail() {
     if (!user?.id) return
@@ -117,6 +146,21 @@ export function Tracker() {
     } catch {
       setSyncMsg('Sync failed — check Gmail connection.')
     } finally { setSyncLoading(false) }
+  }
+
+  async function autoImport(uid: string) {
+    setImportLoading(true); setSyncMsg('')
+    try {
+      const { imported, skipped, contacts: imported_contacts } = await gmailAutoImport(uid)
+      setContacts(imported_contacts)
+      setSyncMsg(
+        imported > 0
+          ? `Imported ${imported} coach${imported === 1 ? '' : 'es'} from your inbox.${skipped > 0 ? ` (${skipped} already tracked)` : ''}`
+          : 'No new coach emails to import.',
+      )
+    } catch (e) {
+      setSyncMsg(e instanceof Error ? e.message : 'Import failed — check Gmail connection.')
+    } finally { setImportLoading(false) }
   }
 
   async function handleStatusChange(id: string, status: OutreachContact['status']) {
@@ -196,7 +240,10 @@ export function Tracker() {
                 </div>
                 {gmailEmail && <div className="text-xs text-[#64748b]">{gmailEmail}</div>}
               </div>
-              <Button variant="outline" size="sm" onClick={() => user?.id && syncThreads(user.id)} disabled={syncLoading}>
+              <Button variant="outline" size="sm" onClick={() => user?.id && autoImport(user.id)} disabled={importLoading || syncLoading}>
+                {importLoading ? 'Importing...' : '⬇ Import from Gmail'}
+              </Button>
+              <Button variant="outline" size="sm" onClick={() => user?.id && syncThreads(user.id)} disabled={syncLoading || importLoading}>
                 {syncLoading ? 'Syncing...' : '↻ Check for Replies'}
               </Button>
             </div>
