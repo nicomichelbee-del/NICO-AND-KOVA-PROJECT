@@ -31,6 +31,12 @@ interface SchoolRecord {
   conference: string
 }
 
+interface UrlAttempt {
+  url: string
+  status: number | string
+  parsed: boolean
+}
+
 interface ScrapedCoach {
   schoolId: string
   schoolName: string
@@ -40,8 +46,9 @@ interface ScrapedCoach {
   coachEmail: string
   sourceUrl: string
   scrapedAt: string
-  status: 'success' | 'no-program' | 'failed' | 'partial'
+  status: 'success' | 'no-program' | 'failed' | 'partial' | 'ai-inferred' | 'email-inferred'
   reason?: string
+  urlAttempts?: UrlAttempt[]
 }
 
 type Cache = Record<string, ScrapedCoach>
@@ -87,8 +94,15 @@ function urlPatterns(domain: string, gender: 'mens' | 'womens'): string[] {
   const slug = gender === 'mens' ? 'mens-soccer' : 'womens-soccer'
   const slugShort = gender === 'mens' ? 'm-soccer' : 'w-soccer'
   const slugCompact = gender === 'mens' ? 'msoc' : 'wsoc'
+  // Bare-noun slug. JUCO Presto/Site-Improve sites use "msoccer"/"wsoccer".
+  const slugNoun = gender === 'mens' ? 'msoccer' : 'wsoccer'
+  // Hyphen-noun slug. Some institutional .edu sites use "men-soccer".
+  const slugHyphen = gender === 'mens' ? 'men-soccer' : 'women-soccer'
+  // Presto sport= query value.
+  const prestoSport = gender === 'mens' ? "men's+soccer" : "women's+soccer"
   const base = domain.startsWith('http') ? domain : `https://${domain}`
   return [
+    // ── SIDEARM (highest hit rate; .com athletic sites) ──
     `${base}/sports/${slug}/coaches`,
     `${base}/sports/${slugShort}/coaches`,
     `${base}/sports/${slug}/staff`,
@@ -97,6 +111,23 @@ function urlPatterns(domain: string, gender: 'mens' | 'womens'): string[] {
     `${base}/sports/${slug}/roster`,
     `${base}/sports/${slug}`,
     `${base}/sports/${slugShort}`,
+    // ── Presto Sports (JUCO + smaller D3/NAIA programs) ──
+    // Presto encodes the sport as a path or query param. Both variants seen.
+    `${base}/coaches.aspx?path=${slugCompact}`,
+    `${base}/coaches.aspx?sport=${prestoSport}`,
+    `${base}/sports/${slugNoun}/coaches`,
+    `${base}/staff.aspx?path=${slugCompact}`,
+    // ── WordPress / Site Improve / institutional .edu CMSes ──
+    // Common on D3 and NAIA where athletics sits under a department URL.
+    `${base}/athletics/${slug}/coaches`,
+    `${base}/athletics/${slug}/staff`,
+    `${base}/athletics/sports/${slug}/coaches`,
+    `${base}/programs/${slug}/staff`,
+    `${base}/programs/${slug}/coaches`,
+    `${base}/${slug}/coaches`,
+    `${base}/${slug}/staff`,
+    `${base}/${slugHyphen}/coaches`,
+    `${base}/${slugHyphen}/staff`,
   ]
 }
 
@@ -114,31 +145,75 @@ interface ParseResult {
 const PARSER_SOURCE = fs.readFileSync(path.join(__dirname, 'parserBody.js'), 'utf8')
 
 async function parseStaffFromPage(page: Page, gender: 'mens' | 'womens'): Promise<ParseResult | null> {
-  // Wait briefly for SIDEARM JS frameworks to hydrate. Use string form to dodge
-  // tsx __name injection (same reason we load the parser body from a .js file).
   await page.waitForFunction('document.readyState === "complete"', { timeout: 8000 }).catch(() => {})
-  await new Promise((r) => setTimeout(r, 1800))
 
-  // Tell the parser which gender we're scraping so it can reject mismatched
-  // staff entries when scraping a generic staff-directory page.
+  // Wait for SIDEARM AJAX coach cards to render, with a 5s timeout fallback.
+  // Without this, the 1800ms fixed wait often fires before the XHR completes.
+  await page.waitForSelector(
+    '.sidearm-staff-member, .s-person-card, .person-card, [class*="staff-card"], [class*="coach-card"]',
+    { timeout: 3000 }
+  ).catch(() => {})
+
+  // Minimum floor so non-SIDEARM sites also get time to hydrate.
+  await new Promise((r) => setTimeout(r, 300))
+
   await page.evaluate(`window.__TARGET_GENDER__ = ${JSON.stringify(gender)};`)
 
   const result = (await page.evaluate(PARSER_SOURCE)) as ParseResult | null
   return result
 }
 
-// ── Google search fallback for unknown domains ────────────────────────────
+// ── Search-engine fallback for unknown domains ────────────────────────────
+//
+// Returns up to 3 ranked candidate URLs. The caller tries them in order and
+// uses the first one that parses. Single-result returns hurt small-school
+// recall: Phase 3 of the scraper plan.
 
-async function discoverCoachPage(page: Page, schoolName: string, gender: 'mens' | 'womens'): Promise<string | null> {
+const SOCIAL_RE = /twitter|x\.com|youtube|wikipedia|facebook|instagram|linkedin|tiktok|reddit|pinterest/i
+
+function rankSearchResults(links: string[], schoolName: string): string[] {
+  // Build a normalized school root: "University of Notre Dame" → "notredame".
+  const root = schoolName
+    .toLowerCase()
+    .replace(/\b(university|college|institute|of|the|state|community|technical|polytechnic|saint|st\.?)\b/g, ' ')
+    .replace(/[^a-z]/g, '')
+    .slice(0, 12)
+
+  const seen = new Set<string>()
+  const unique = links.filter((l) => {
+    if (!l || SOCIAL_RE.test(l)) return false
+    if (seen.has(l)) return false
+    seen.add(l)
+    return true
+  })
+
+  return unique
+    .map((l) => {
+      let score = 0
+      if (/\bcoach(es)?\b|\bstaff\b|\broster\b/i.test(l)) score += 3
+      if (/soccer|msoc|wsoc/i.test(l)) score += 3
+      if (root && root.length >= 4 && l.toLowerCase().includes(root)) score += 2
+      if (/\.edu(\/|$)/i.test(l)) score += 1
+      // Penalize obvious news / press / podcast hits
+      if (/\b(news|story|article|press|podcast|youtube|video|gallery|photo)\b/i.test(l)) score -= 2
+      return { url: l, score }
+    })
+    .sort((a, b) => b.score - a.score)
+    .map((r) => r.url)
+}
+
+function looksLikeAthleticsPage(url: string, schoolName: string): boolean {
+  if (!url || SOCIAL_RE.test(url)) return false
+  if (!/coach|staff|roster|sports|athletic/i.test(url)) return false
+  return true
+}
+
+async function searchDDG(page: Page, schoolName: string, gender: 'mens' | 'womens'): Promise<string[]> {
   const q = encodeURIComponent(`${schoolName} ${gender === 'mens' ? "men's" : "women's"} soccer head coach site:edu OR site:com`)
-  // DuckDuckGo HTML results are scrape-friendly — Google blocks WebFetch and
-  // is iffy from headless Chrome. DDG is consistent.
   const url = `https://duckduckgo.com/html/?q=${q}`
-
   try {
-    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 })
-    await new Promise((r) => setTimeout(r, 800))
-    // Pass as a string to avoid tsx esbuild __name injection.
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 })
+    await new Promise((r) => setTimeout(r, 300))
     const links = (await page.evaluate(`(function(){
       var out = [];
       document.querySelectorAll('a.result__a, a.result__url, .result__title a').forEach(function(a){
@@ -147,20 +222,63 @@ async function discoverCoachPage(page: Page, schoolName: string, gender: 'mens' 
       });
       return out;
     })()`)) as string[]
-
-    // Prefer URLs that look like coach/staff pages
-    const ranked = links
-      .filter((l) => !/twitter|youtube|wikipedia|facebook|instagram|linkedin/i.test(l))
-      .sort((a, b) => {
-        const aScore = (/coach|staff|roster/i.test(a) ? 1 : 0) + (/soccer/i.test(a) ? 1 : 0)
-        const bScore = (/coach|staff|roster/i.test(b) ? 1 : 0) + (/soccer/i.test(b) ? 1 : 0)
-        return bScore - aScore
-      })
-
-    return ranked[0] ?? null
+    return links
   } catch {
-    return null
+    return []
   }
+}
+
+async function searchBing(page: Page, schoolName: string, gender: 'mens' | 'womens'): Promise<string[]> {
+  const q = encodeURIComponent(`${schoolName} ${gender === 'mens' ? "men's" : "women's"} soccer head coach`)
+  const url = `https://www.bing.com/search?q=${q}`
+  try {
+    await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 })
+    await new Promise((r) => setTimeout(r, 300))
+    const links = (await page.evaluate(`(function(){
+      var out = [];
+      document.querySelectorAll('#b_results li.b_algo h2 a, #b_results .b_title a').forEach(function(a){
+        var href = a.href;
+        if (href && /^https?:\\/\\//.test(href) && href.indexOf('bing.com') === -1) out.push(href);
+      });
+      return out;
+    })()`)) as string[]
+    return links
+  } catch {
+    return []
+  }
+}
+
+async function discoverCoachPages(
+  page: Page,
+  schoolName: string,
+  gender: 'mens' | 'womens',
+  maxResults = 3,
+): Promise<string[]> {
+  const ddgLinks = await searchDDG(page, schoolName, gender)
+  let ranked = rankSearchResults(ddgLinks, schoolName).filter((u) => looksLikeAthleticsPage(u, schoolName))
+
+  // Bing fallback when DDG returns nothing usable. DDG is sparser for very
+  // small schools (JUCO, NAIA), and Bing's small-site coverage tends to be
+  // better there.
+  if (ranked.length < maxResults) {
+    const bingLinks = await searchBing(page, schoolName, gender)
+    const bingRanked = rankSearchResults(bingLinks, schoolName).filter((u) => looksLikeAthleticsPage(u, schoolName))
+    const seen = new Set(ranked)
+    for (const u of bingRanked) {
+      if (!seen.has(u)) {
+        ranked.push(u)
+        seen.add(u)
+      }
+    }
+  }
+
+  return ranked.slice(0, maxResults)
+}
+
+// Back-compat shim — some callers want a single URL.
+async function discoverCoachPage(page: Page, schoolName: string, gender: 'mens' | 'womens'): Promise<string | null> {
+  const list = await discoverCoachPages(page, schoolName, gender, 1)
+  return list[0] ?? null
 }
 
 // ── per-school scrape ─────────────────────────────────────────────────────
@@ -188,17 +306,18 @@ async function scrapeOne(
     const domain = ATHLETICS_DOMAINS[school.id]
     const candidateUrls: string[] = domain ? urlPatterns(domain, gender) : []
 
-    // If we don't have a domain in our map, try discovery first.
+    // If we don't have a domain in our map, try discovery first. Top 3 results
+    // are queued in rank order; the first to parse wins.
     if (!domain) {
-      const discovered = await discoverCoachPage(page, school.name, gender)
-      if (discovered) candidateUrls.push(discovered)
+      const discovered = await discoverCoachPages(page, school.name, gender, 3)
+      candidateUrls.push(...discovered)
     }
 
-    const urlAttempts: { url: string; status: number | string; parsed: boolean }[] = []
+    const urlAttempts: UrlAttempt[] = []
     const oppositeSlug = gender === 'mens' ? /\/(womens-soccer|w-soccer|wsoc)\b/i : /\/(mens-soccer|m-soccer|msoc)\b/i
     for (const url of candidateUrls) {
       try {
-        const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 15000 })
+        const response = await page.goto(url, { waitUntil: 'domcontentloaded', timeout: 10000 })
         const status = response?.status() ?? 'no-response'
         if (!response || response.status() >= 400) {
           urlAttempts.push({ url, status, parsed: false })
@@ -214,16 +333,18 @@ async function scrapeOne(
         }
 
         const parsed = await parseStaffFromPage(page, gender)
-        urlAttempts.push({ url, status, parsed: !!parsed?.coachName })
-        if (parsed && parsed.coachName) {
+        urlAttempts.push({ url, status, parsed: !!(parsed?.coachName || parsed?.coachEmail) })
+        if (parsed && (parsed.coachName || parsed.coachEmail)) {
           return {
             ...base,
             coachName: parsed.coachName,
             coachTitle: parsed.coachTitle,
             coachEmail: parsed.coachEmail,
             sourceUrl: finalUrl,
-            status: parsed.coachEmail ? 'success' : 'partial',
-            reason: parsed.coachEmail ? undefined : 'name extracted, email not found',
+            status: parsed.coachName && parsed.coachEmail ? 'success' : 'partial',
+            reason: !parsed.coachName ? 'program email only; coach name not found'
+                  : !parsed.coachEmail ? 'name extracted, email not found'
+                  : undefined,
           }
         }
       } catch (e) {
@@ -239,17 +360,19 @@ async function scrapeOne(
       const discovered = await discoverCoachPage(page, school.name, gender)
       if (discovered) {
         try {
-          await page.goto(discovered, { waitUntil: 'domcontentloaded', timeout: 15000 })
+          await page.goto(discovered, { waitUntil: 'domcontentloaded', timeout: 10000 })
           const parsed = await parseStaffFromPage(page, gender)
-          if (parsed && parsed.coachName) {
+          if (parsed && (parsed.coachName || parsed.coachEmail)) {
             return {
               ...base,
               coachName: parsed.coachName,
               coachTitle: parsed.coachTitle,
               coachEmail: parsed.coachEmail,
               sourceUrl: page.url(),
-              status: parsed.coachEmail ? 'success' : 'partial',
-              reason: parsed.coachEmail ? 'discovered via search' : 'name extracted via search; email not found',
+              status: parsed.coachName && parsed.coachEmail ? 'success' : 'partial',
+              reason: !parsed.coachName ? 'program email only via search'
+                    : !parsed.coachEmail ? 'name extracted via search; email not found'
+                    : 'discovered via search',
             }
           }
         } catch { /* fall through */ }
@@ -264,6 +387,7 @@ async function scrapeOne(
       sourceUrl: '',
       status: 'failed',
       reason: domain ? 'no URL pattern returned a parseable head-coach card' : 'no domain mapping and search discovery failed',
+      urlAttempts,
     }
   } finally {
     await page.close().catch(() => {})
@@ -297,19 +421,43 @@ async function main() {
     if (ARG_SCHOOL && school.id !== ARG_SCHOOL) continue
     for (const gender of ['mens', 'womens'] as const) {
       const key = `${school.id}:${gender}`
-      if (ARG_RESUME && cache[key] && cache[key].status === 'success') continue
+      // Skip terminal-good states on --resume. `email-inferred` is preserved
+      // because re-scraping the same site is what produced the partial in the
+      // first place — it would just clobber the Haiku-inferred email back to
+      // empty. To force-refresh inferred entries, run without --resume.
+      if (ARG_RESUME && cache[key] && (cache[key].status === 'success' || cache[key].status === 'email-inferred')) continue
       tasks.push({ school, gender })
     }
   }
+
+  // Recruiting priority: D1 > D3 > D2 > NAIA > JUCO. D1 has the most users
+  // and the strictest data freshness needs; D3 second because parents care a
+  // lot about academic-fit schools. D2/NAIA/JUCO are smaller user segments.
+  const DIVISION_PRIORITY: Record<string, number> = { D1: 0, D3: 1, D2: 2, NAIA: 3, JUCO: 4 }
+  tasks.sort((a, b) => {
+    const ap = DIVISION_PRIORITY[a.school.division] ?? 99
+    const bp = DIVISION_PRIORITY[b.school.division] ?? 99
+    return ap - bp
+  })
+
   const limited = tasks.slice(0, ARG_LIMIT)
 
   console.log(`Scraping ${limited.length} (school, gender) pairs with concurrency=${ARG_CONCURRENCY}`)
   console.log(`Schools in DB: ${allSchools.length}, cached: ${Object.keys(cache).length}`)
 
-  const browser = await puppeteer.launch({
+  const LAUNCH_OPTS = {
     headless: true,
     args: ['--no-sandbox', '--disable-dev-shm-usage'],
-  })
+    protocolTimeout: 60000,
+  }
+
+  let browser = await puppeteer.launch(LAUNCH_OPTS)
+
+  const launchBrowser = async () => {
+    try { await browser.close() } catch { /* already dead */ }
+    browser = await puppeteer.launch(LAUNCH_OPTS)
+    console.log('  ↺ browser restarted')
+  }
 
   let success = 0
   let partial = 0
@@ -319,7 +467,18 @@ async function main() {
   try {
     await runWithLimit(limited, ARG_CONCURRENCY, async ({ school, gender }) => {
       const key = `${school.id}:${gender}`
-      const result = await scrapeOne(browser, school, gender)
+      let result: ScrapedCoach
+      try {
+        result = await scrapeOne(browser, school, gender)
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e)
+        if (/connection closed|protocol error|session closed|timed out|target closed/i.test(msg)) {
+          await launchBrowser()
+          result = await scrapeOne(browser, school, gender)
+        } else {
+          throw e
+        }
+      }
       cache[key] = result
 
       counter++

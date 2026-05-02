@@ -1,0 +1,70 @@
+name: Scrape coaches (monthly)
+
+# Re-runs the coach scraper on the 1st of every month and opens a PR with any
+# changes to server/data/coachesScraped.json. Manual trigger is also enabled.
+#
+# Required secrets:
+#   ANTHROPIC_API_KEY  — used by inferEmails.ts to guess email format from
+#                        coach name + school domain after the scrape.
+
+on:
+  schedule:
+    - cron: '0 0 1 * *'  # 00:00 UTC, 1st of each month
+  workflow_dispatch:
+    inputs:
+      concurrency:
+        description: 'Puppeteer concurrency (CI default: 5)'
+        required: false
+        default: '5'
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    timeout-minutes: 300  # scrape can take ~60–90 min; pad for retries
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Install Chrome for Puppeteer
+        run: npx puppeteer browsers install chrome
+
+      - name: Run scraper (--resume)
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: |
+          CONCURRENCY="${{ github.event.inputs.concurrency || '5' }}"
+          npx tsx server/scripts/scrapeCoaches.ts --resume --concurrency=$CONCURRENCY
+
+      - name: Infer emails for name-only entries
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npx tsx server/scripts/inferEmails.ts
+
+      - name: Open PR with cache changes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: 'chore: monthly coach scrape refresh'
+          title: 'Monthly coach scrape refresh'
+          body: |
+            Automated monthly refresh of `server/data/coachesScraped.json`.
+
+            - Re-scraped non-success entries via `scrapeCoaches.ts --resume`
+            - Filled name-only entries via `inferEmails.ts`
+
+            Review changed entries before merging — flips from `email-inferred`
+            back to `partial` may indicate the inference run had no new names
+            to work with, while flips to `success` mean the site got fixed.
+          branch: bot/coach-scrape-refresh
+          delete-branch: true
+          add-paths: server/data/coachesScraped.json
