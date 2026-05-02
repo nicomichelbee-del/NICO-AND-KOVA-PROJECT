@@ -68,6 +68,15 @@ export interface School {
   tuitionOutOfState?: number | null
   pellGrantRate?: number | null     // 0–1
   graduationRate?: number | null    // 0–1
+  // Roster signal (optional, present when rostersScraped.json has the school).
+  // Lets the UI surface "open spots at your position" without re-computing.
+  rosterSignal?: {
+    totalAtPosition:   number
+    graduatingByYear:  number
+    juniorsAtPosition: number
+    openSpots:         number
+    totalRoster:       number
+  }
 }
 
 export interface SchoolDirectoryEntry {

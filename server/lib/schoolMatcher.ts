@@ -35,6 +35,78 @@ function getAcademic(schoolId: string): AcademicRecord | undefined {
   return academicCache[schoolId]
 }
 
+// ── Roster data (open spots) ──────────────────────────────────────────────
+// Sources from server/data/rostersScraped.json (built by scrapeRosters.ts).
+// Used to estimate how many spots open up at the athlete's position
+// over the next 1–2 graduating classes.
+
+interface RosterPlayer {
+  name: string
+  position: 'GK' | 'D' | 'M' | 'F' | 'U'
+  classYear: string  // 'Fr' | 'So' | 'Jr' | 'Sr' | 'Gr' | '2027' | ''
+}
+
+interface RosterRecord {
+  players: RosterPlayer[]
+  status: 'success' | 'failed' | 'no-program'
+}
+
+let rosterCache: Record<string, RosterRecord> | null = null
+function getRoster(schoolId: string, gender: 'mens' | 'womens'): RosterRecord | undefined {
+  if (rosterCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'rostersScraped.json')
+      rosterCache = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, RosterRecord>
+    } catch {
+      rosterCache = {}
+    }
+  }
+  return rosterCache[`${schoolId}:${gender}`]
+}
+
+// Map athlete profile.position string → roster position bucket.
+function profilePositionBucket(position: string): 'GK' | 'D' | 'M' | 'F' | null {
+  const p = position.toLowerCase()
+  if (p.includes('goal') || p === 'gk' || p === 'keeper') return 'GK'
+  if (p.includes('back') || p === 'cb' || p === 'lb' || p === 'rb' || p === 'fb') return 'D'
+  if (p.includes('mid') || p === 'cm' || p === 'cdm' || p === 'cam' || p === 'dm' || p === 'am') return 'M'
+  if (p.includes('forward') || p.includes('striker') || p.includes('wing')
+      || p === 'cf' || p === 'lw' || p === 'rw' || p === 'st') return 'F'
+  return null
+}
+
+// Roster signal for the athlete at this school: how many at her position
+// graduate by her grad year, and how many compete with her.
+interface RosterSignal {
+  totalAtPosition:    number    // current roster count at athlete's position
+  graduatingByYear:   number    // seniors + grads currently — gone before athlete arrives
+  juniorsAtPosition:  number    // juniors currently — gone the year after athlete arrives
+  openSpots:          number    // estimated openings = graduating + juniors (next 2 yrs)
+  totalRoster:        number    // total players for context
+}
+
+function computeRosterSignal(profile: AthleteProfile, schoolId: string): RosterSignal | null {
+  const r = getRoster(schoolId, profile.gender ?? 'womens')
+  if (!r || r.status !== 'success' || !r.players?.length) return null
+  const bucket = profilePositionBucket(profile.position)
+  if (!bucket) return null
+
+  const atPos = r.players.filter((p) => p.position === bucket)
+  const isSenior = (yr: string) => yr === 'Sr' || yr === 'Gr'
+  const isJunior = (yr: string) => yr === 'Jr'
+
+  const graduating = atPos.filter((p) => isSenior(p.classYear)).length
+  const juniors = atPos.filter((p) => isJunior(p.classYear)).length
+
+  return {
+    totalAtPosition:   atPos.length,
+    graduatingByYear:  graduating,
+    juniorsAtPosition: juniors,
+    openSpots:         graduating + juniors,  // simple proxy for next 2 yrs
+    totalRoster:       r.players.length,
+  }
+}
+
 interface SchoolRecord {
   id: string
   name: string
@@ -182,6 +254,7 @@ function buildReasons(
   academic: number,
   bucket: Bucket,
   acad: AcademicRecord | undefined,
+  roster: RosterSignal | undefined,
 ): string[] {
   const reasons: string[] = []
   const gk  = isGoalkeeper(profile.position)
@@ -202,6 +275,26 @@ function buildReasons(
     else if (athletic <= 40) reasons.push('Their program plays a level above your current profile — athletic stretch.')
     else if (academic <= 40) reasons.push('Their typical recruit is above your current academic profile — push the GPA/SAT.')
     else reasons.push('Stretch fit — worth applying if it\'s a dream school.')
+  }
+
+  // ── Roster / open spots (live-scraped) ──────────────────────────────
+  // Surface this RIGHT AFTER the top-line summary because "open spots at
+  // my position" is the user's #1 stated factor and the most actionable
+  // signal we have. Drops to bottom if no roster data on file.
+  if (roster) {
+    const positionLabel = isGoalkeeper(profile.position) ? 'keepers'
+                       : isForward(profile.position) ? 'forwards'
+                       : 'midfielders'
+    const positionSing = positionLabel.replace(/s$/, '')
+    if (roster.openSpots >= 3) {
+      reasons.push(`${roster.graduatingByYear} graduating + ${roster.juniorsAtPosition} juniors at your position — ~${roster.openSpots} spots opening up.`)
+    } else if (roster.totalAtPosition >= 7) {
+      reasons.push(`Stocked at your position (${roster.totalAtPosition} ${positionLabel}) — competitive for playing time.`)
+    } else if (roster.graduatingByYear >= 1) {
+      reasons.push(`${roster.graduatingByYear} ${pluralize(roster.graduatingByYear, positionSing)} graduating from this program.`)
+    } else if (roster.totalAtPosition >= 1) {
+      reasons.push(`Currently ${roster.totalAtPosition} ${pluralize(roster.totalAtPosition, positionSing)} on roster.`)
+    }
   }
 
   // ── Selectivity (Scorecard data, when available) ─────────────────────
@@ -252,8 +345,8 @@ function buildReasons(
     reasons.push(`In your preferred ${profile.locationPreference} region.`)
   }
 
-  // Cap at 4 reasons total. The first is always the top-line summary.
-  return reasons.slice(0, 4)
+  // Cap at 5 reasons total. The first is always the top-line summary.
+  return reasons.slice(0, 5)
 }
 
 // Absolute bucketing thresholds. A school is a safety only if the athlete is
@@ -353,6 +446,7 @@ export function matchSchools(profile: AthleteProfile, topN = 25): School[] {
 
   return ordered.map((c) => {
     const academic = getAcademic(c.school.id)
+    const rosterSignal = computeRosterSignal(profile, c.school.id) ?? undefined
     return {
       id: c.school.id,
       name: c.school.name,
@@ -368,7 +462,7 @@ export function matchSchools(profile: AthleteProfile, topN = 25): School[] {
       matchScore: c.matchScore,
       athleticFit: c.athletic,
       academicFit: c.academic,
-      reasons: buildReasons(profile, c.school, c.athletic, c.academic, c.bucket, academic),
+      reasons: buildReasons(profile, c.school, c.athletic, c.academic, c.bucket, academic, rosterSignal),
       notes: c.school.notes ?? '',
       programStrength: c.school.programStrength,
       scholarships: c.school.scholarships,
@@ -386,6 +480,7 @@ export function matchSchools(profile: AthleteProfile, topN = 25): School[] {
       tuitionOutOfState:  academic?.tuitionOutOfState,
       pellGrantRate:      academic?.pellGrantRate,
       graduationRate:     academic?.graduationRate,
+      rosterSignal,
     }
   })
 }

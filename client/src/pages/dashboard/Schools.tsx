@@ -383,6 +383,9 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
             )}
           </section>
 
+          {/* Roster signal: live-scraped open spots at the athlete's position */}
+          {school.rosterSignal && <RosterSection signal={school.rosterSignal} />}
+
           {/* Match breakdown */}
           {school.breakdown && (
             <section>
@@ -718,6 +721,43 @@ function ProfileAssessment({ schools }: { schools: School[] }) {
         </div>
       </div>
     </Card>
+  )
+}
+
+function RosterSection({ signal }: { signal: NonNullable<School['rosterSignal']> }) {
+  // Color the open-spots count by signal strength so the user gets an
+  // at-a-glance read on how recruitable the position is.
+  const opens = signal.openSpots
+  const color = opens >= 4 ? 'text-[#4ade80]' : opens >= 2 ? 'text-[#eab308]' : 'text-[#f87171]'
+  return (
+    <section>
+      <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
+        <h3 className="text-[11px] font-bold text-[#64748b] tracking-[2px] uppercase">Roster &amp; Open Spots</h3>
+        <span className="text-[10px] text-[#64748b]">live-scraped from the team's roster page</span>
+      </div>
+      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[10px] uppercase tracking-widest text-[#64748b]">At your position</span>
+          <span className="text-xl font-serif font-black text-[#f1f5f9]">{signal.totalAtPosition}</span>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[10px] uppercase tracking-widest text-[#64748b]">Graduating</span>
+          <span className="text-xl font-serif font-black text-[#f1f5f9]">{signal.graduatingByYear}</span>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[10px] uppercase tracking-widest text-[#64748b]">Juniors</span>
+          <span className="text-xl font-serif font-black text-[#f1f5f9]">{signal.juniorsAtPosition}</span>
+        </div>
+        <div className="flex flex-col gap-0.5">
+          <span className="text-[10px] uppercase tracking-widest text-[#64748b]">Est. open spots</span>
+          <span className={`text-xl font-serif font-black ${color}`}>{signal.openSpots}</span>
+        </div>
+      </div>
+      <p className="text-[11px] text-[#64748b] italic mt-3 leading-relaxed">
+        Estimated openings = current seniors + juniors at your position (will graduate within ~2 years).
+        Total roster: {signal.totalRoster} players. Coaches actively recruit positions where players are aging out.
+      </p>
+    </section>
   )
 }
 

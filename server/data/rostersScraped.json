@@ -1,0 +1,8672 @@
+{
+  "ucla:mens": {
+    "schoolId": "ucla",
+    "schoolName": "UCLA",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:02.149Z",
+    "players": [
+      {
+        "name": "Wyatt Nelson",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Shakir Nixon",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Tre Wright",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ian Charles",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Drew Brown",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Tarun Karumanchi",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Philip Naef",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Tamir Ratoviz",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Sergi Solans Ormo",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Konstantinos Georgallides",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Oliver Roche",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Sean Sent",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Kian Concepcion",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Zach Mastrodimos",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Allan Legaspi",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Sebastian Rincon",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Sam Scott",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Kevin Box",
+        "position": "GK",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Blake Bayless",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ander Marticorena",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Francis Bonsu",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ryan Tiltack",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Schinieder Mimy",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Ethan Pendleton",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Dylan Cantafio",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Bridger Baltes",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Artem Vovk",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Adrian Aguilar",
+        "position": "M",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://uclabruins.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "ucla:womens": {
+    "schoolId": "ucla",
+    "schoolName": "UCLA",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:02.149Z",
+    "players": [
+      {
+        "name": "Daphne Nakfoor",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Layla Armas",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Jordyn Dunn",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Laila Edris",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sammy Sanchez",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Asa Yamazaki",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Grace Shank",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Paloma Daubert",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Sofia Atehortua",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Marli Galdamez",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Cassidy Doogan",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Bela Araújo",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Julia Molnar",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Leena Powell",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Siena Meyer",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Avery Robinson",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Oruha Hayashi",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Mariangela Medina",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Kara Croone",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Payten Cooper",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Nicki Fraser",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Fiona McGeough",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Bridgette Marin-Valencia",
+        "position": "F",
+        "classYear": "Sr"
+      }
+    ],
+    "sourceUrl": "https://uclabruins.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "unc:mens": {
+    "schoolId": "unc",
+    "schoolName": "University of North Carolina",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:02.149Z",
+    "players": [
+      {
+        "name": "Coleman Catlett",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Alan Rutkowski",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Myles Carson",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Nick Lockermann",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Charlie Antonelius",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Jace Donawa",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Nico Loebus",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Dan Klink",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Joschi Schelb",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ryan Dugan",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Luca Nikolai",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Max Fisher",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Drew Waller",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Jonathan Luna Sabando",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Bertil Rygaard Hansen",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Etienne Veillard",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Alejandro Saborio-Perez",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Martin Mai",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ryan Zellefrow",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Cristian Milazzo",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Riley Berge",
+        "position": "D",
+        "classYear": "Gr"
+      }
+    ],
+    "sourceUrl": "https://goheels.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "fsu:womens": {
+    "schoolId": "fsu",
+    "schoolName": "Florida State University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:02.149Z",
+    "players": [
+      {
+        "name": "Addie Todd",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Evan O'Steen",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jaida McGrew",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kai Price",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Giana Riley",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Lara Dantas",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Nyanya Touray",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Janet Okeke",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Taylor Suarez",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Peyton Nourse",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Jordynn Dudley",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Peyton McGovern",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Mya Brandon",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Yuna McCormack",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Sophia Nguyen",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Mimi Van Zanten",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kate Ockene",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kameron Simmonds",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Heather Gilchrist",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Nawreen Ahmad",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Claire Rain",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Enasia Colon",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ashlyn Anderson",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Solai Washington",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Marianyela Jiménez",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Wrianna Hudson",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Omotara Junaid",
+        "position": "M",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://seminoles.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "duke:mens": {
+    "schoolId": "duke",
+    "schoolName": "Duke University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:02.149Z",
+    "players": [
+      {
+        "name": "Ryan Gallagher",
+        "position": "GK",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Eryk Dymora",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jamie Kabuusu",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Kamran Acito",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Trevor Burns",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Alex Hauschild",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Aleksandar Vukovic",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Alessandro Arlotti",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Nikolai Ronaldo Bull Jorgensen",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ulfur Bjornsson",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Drew Kerr",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Leonardo D'Ambrosio",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Thomas Vold",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jose Ortega",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Aridon Racaj",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Max Simpson",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Adrian Byasiima",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Julius Suber",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Ian Hecker",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Preston Zabinko",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Hugo Hill",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Caleb Donaldson",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kenan Hot",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Axel Gudbjornsson",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Casey Bag",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jackson Blakeney",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Tucker Smith",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Nathan Gaviser",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Sol Arbib",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Jackson Lagos",
+        "position": "M",
+        "classYear": "Sr"
+      }
+    ],
+    "sourceUrl": "https://goduke.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "stanford:mens": {
+    "schoolId": "stanford",
+    "schoolName": "Stanford University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:02.149Z",
+    "players": [
+      {
+        "name": "ROWAN SCHNEBLY",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "PALMER BANK",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "TIM LOGAN",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "JOE MOYER",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "TREVOR ISLAM",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "ERIC FRINTU",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "JORDAN VICTOR",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "LASZLO BOLLYKY",
+        "position": "GK",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://gostanford.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "stanford:womens": {
+    "schoolId": "stanford",
+    "schoolName": "Stanford University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:02.149Z",
+    "players": [
+      {
+        "name": "CAROLINE BIRKEL",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "LONDON YOUNG",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "SOPHIE MURDOCK",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "LIZZIE BOAMAH",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "MIA BHUTA",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "JADEN THOMAS",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "CHARLOTTE KOHLER",
+        "position": "U",
+        "classYear": "Jr"
+      },
+      {
+        "name": "ELEANOR KLINGER",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "BELLA WINN",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "SAMMY SMITH",
+        "position": "U",
+        "classYear": "Jr"
+      },
+      {
+        "name": "ALEX TAY",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "ELLA EMRI",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "MILLY BRAY",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "ERICA GRILIONE",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Y-LAN NGUYEN",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "KAIYA JOTA",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "LILY FREER",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "NOE JOHNSON",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "AVA HARRISON",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "BROOKE HOLDEN",
+        "position": "U",
+        "classYear": "So"
+      },
+      {
+        "name": "ANIYA WILLIAMS",
+        "position": "D",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://gostanford.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "duke:womens": {
+    "schoolId": "duke",
+    "schoolName": "Duke University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:02.149Z",
+    "players": [
+      {
+        "name": "Molly Vapensky",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Daya King",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Jocelyn Travers",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Phoebe Goldthwaite",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Natalie Chudowsky",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Cameron Roller",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Elle Piper",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Lauren Martinho",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Avery Oder",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Rylee McLanahan",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Mia Minestrella",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sophia Recupero",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Mia Oliaro",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sam Courtwright",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Katie Shea Collins",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Sofia Nuñez",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kosette Koons-Perdikis",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Lexi Coughlin",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Sam Bodensteiner",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Kaeden Koons-Perdikis",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Madison Foxhoven",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Bianca Dominguez",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kaylee Kim",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Caroline Dysart",
+        "position": "GK",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://goduke.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "unc:womens": {
+    "schoolId": "unc",
+    "schoolName": "University of North Carolina",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:02.149Z",
+    "players": [
+      {
+        "name": "Liya Brooks",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Hannah Johann",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Cali O'Neill",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jenny Dearie",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Aven Alvarez",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Riley Kennedy",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Bella Gaetino",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Hope Munson",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Bella Devey",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Peyton Trayer",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lilliah Blum",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Summer Denigan",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Camie Maynor",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Caitlin Mara",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Lauren Malsom",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Leah Kuklick",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ashley Pennie",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Deus Stanislaus",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Raegan Williams",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Izzi Stratton",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Logan Tongberg",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Scottie Antonucci",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ella Smith",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Chloe Shroff",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Abby Gundry",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Shaela Bradley",
+        "position": "M",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://goheels.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "virginia:womens": {
+    "schoolId": "virginia",
+    "schoolName": "University of Virginia",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:15.379Z",
+    "players": [
+      {
+        "name": "Victoria Safradin",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kira Waller",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sophia Bradley",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Kiki Maki",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Laughlin Ryan",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Addison Halpern",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Marin McCormack",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Allie Ross",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Meredith McDermott",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Maggie Cagle",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Linda Mittermair",
+        "position": "U",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Aniyah Collier",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Loretta Talbott",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jordyn Hardeman",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sarah Flammia",
+        "position": "U",
+        "classYear": "So"
+      },
+      {
+        "name": "Ella Carter",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Tatum Galvin",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Liv Rademaker",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jill Flammia",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Carrie Helfrich",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Helen Olszewski",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lia Godfrey",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Laney Rouse",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Kathryn Kelly",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Annamarie Williams",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Maya Carter",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Pearl Cecil",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Molly Carlson",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Wicki Dunlap",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ellie Sommers",
+        "position": "GK",
+        "classYear": "Gr"
+      }
+    ],
+    "sourceUrl": "https://virginiasports.com/sports/wsoc/roster",
+    "status": "success"
+  },
+  "georgetown:mens": {
+    "schoolId": "georgetown",
+    "schoolName": "Georgetown University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:15.625Z",
+    "players": [
+      {
+        "name": "Tenzing Manske",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jack Lindimore",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Eric Howard",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Oliver Stafford",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Miles Avery",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Diego Letayf",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Max Viera",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Matthew Van Horn",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Mitchell Baker",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Mateo Ponce Ocampo",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "David Urrutia",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Casey Milliken",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Aidan Godinho",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Noah Satriano",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Loukas Maroutsis",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jack Brown",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Julian Barrios Cristales",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Tim Logan",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Zach Zengue",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Matthew Helfrich",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Zayan Ahmed",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Jack Heaps",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Charlie Rosenthal",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Charlie DeMarco",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Tate Lampman",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Will Caldwell",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jordi Sada-Paz",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Dmytro Torubara",
+        "position": "GK",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://guhoyas.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "georgetown:womens": {
+    "schoolId": "georgetown",
+    "schoolName": "Georgetown University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:15.827Z",
+    "players": [
+      {
+        "name": "Alexa Hadley",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Cara Martin",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Mary Cochran",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Liv Villella",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Katie Keefe",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Cassie Delinsky",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Natalie Means",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jamie Covitz",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Aliza Mannon",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Maja Lardner",
+        "position": "F",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Aaliyah Pitts",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lizzie Heller",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Esme Brayshaw",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Kaya Hanson",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Isabel Boodell",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Maya Wiese",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Abby Droner",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Maddy Nylen",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Caroline Spengler",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Lily Froehlich",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ellen Carter",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jocelyn Lohmeyer",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Henley Tippins",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Shay Montgomery",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sophia Kavulich",
+        "position": "GK",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Evelyn Casadaban",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Cameron Gabrielson",
+        "position": "GK",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://guhoyas.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "pennstate:mens": {
+    "schoolId": "pennstate",
+    "schoolName": "Penn State University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:15.991Z",
+    "players": [
+      {
+        "name": "University Hill",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Larkhall Academy",
+        "position": "U",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Fossil Ridge",
+        "position": "U",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sackville School",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ontario Virtual School",
+        "position": "U",
+        "classYear": "So"
+      },
+      {
+        "name": "Tornbjerg Gymnasium",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Redshirt Junior",
+        "position": "U",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Northampton Area",
+        "position": "U",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Henry Clay",
+        "position": "U",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Montverde Academy",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Munkensdam Gymnasium",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Graduate Student",
+        "position": "U",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Redshirt Sophomore",
+        "position": "U",
+        "classYear": "So"
+      },
+      {
+        "name": "Mount Saint Joseph",
+        "position": "U",
+        "classYear": "Sr"
+      },
+      {
+        "name": "La Salle",
+        "position": "U",
+        "classYear": "So"
+      },
+      {
+        "name": "Cypress Bay",
+        "position": "U",
+        "classYear": "So"
+      },
+      {
+        "name": "Redshirt Freshman",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Loyola Blakefield",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Battlefield High School",
+        "position": "U",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://gopsusports.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "fsu:mens": {
+    "schoolId": "fsu",
+    "schoolName": "Florida State University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:02.149Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "pennstate:womens": {
+    "schoolId": "pennstate",
+    "schoolName": "Penn State University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:16.032Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "washington:mens": {
+    "schoolId": "washington",
+    "schoolName": "University of Washington",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:55.645Z",
+    "players": [
+      {
+        "name": "Levi Bieber",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Kenny Pierpoint",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jadon Bowton",
+        "position": "GK",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Philip Kleemann",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Harrison Bertos",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Egor Akulov",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Asher Hestad",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Zach Ramsey",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Alex Hall",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Clarens Dollin",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Charlie Kosakoff",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Richie Aman",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Nick O'Brien",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Carter Gay",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Kevin Hernandez",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Joe Dale",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Mani Diop",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Zack Meier",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Cameron Cruz",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Nani Deperro",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Mikey Sherlock",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Osato Enabulele",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Conner Leber",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sheehan Ganguly",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Connor Lofy",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Jaeger Felton",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Brecken Bowers",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Chad Sovde",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Gabe Fernandez",
+        "position": "D",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://gohuskies.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "notredame:womens": {
+    "schoolId": "notredame",
+    "schoolName": "University of Notre Dame",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:15.973Z",
+    "players": [
+      {
+        "name": "Jackie Hollomon",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Clare Logan",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Izzy Engle",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Marley Adams",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Paige Buchner",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Annabelle Chukwu",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Randie Foor",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Charlie Codd",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ellie Hodsden",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Tessa Knapp",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Mel Hathaway",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Gianna Scott",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Charlee Siria",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Meg Mrowicki",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Riley DeMartino",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ally Pinto",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Abby Mills",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Chayse Ying",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Tatiana Tagne",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Morgan Roy",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Grace Restovich",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Reese Canada",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Gracie Milam",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lily Joseph",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Sonoma Kasica",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Rowan Pearl",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Madeleine Agee",
+        "position": "GK",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://fightingirish.com/sports/wsoc/roster/",
+    "status": "success"
+  },
+  "notredame:mens": {
+    "schoolId": "notredame",
+    "schoolName": "University of Notre Dame",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:15.953Z",
+    "players": [
+      {
+        "name": "Cole Kowalski",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Blake Kelly",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Mitch Ferguson",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sean McDowd",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jack Ross",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Wyatt Lewis",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Nate Zimmermann",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Nico Bartlett",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Wyatt Borso",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "KK Baffour",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jack Flanagan",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Daniel Boateng",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Martin Von Thun",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Will Schroeder",
+        "position": "U",
+        "classYear": "So"
+      },
+      {
+        "name": "Ian Shaul",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Leo Brummell",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Alex Rosin",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Diego Ochoa",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Ren Sylvester",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Brady Hilden",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Karson Baquero",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Nolan Spicer",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Stevie Dunphy",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Sebastian Green",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Diego Green",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Luke Burton",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Liam Egan",
+        "position": "GK",
+        "classYear": ""
+      }
+    ],
+    "sourceUrl": "https://fightingirish.com/sports/msoc/roster/",
+    "status": "success"
+  },
+  "virginia:mens": {
+    "schoolId": "virginia",
+    "schoolName": "University of Virginia",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:15.375Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "portland:mens": {
+    "schoolId": "portland",
+    "schoolName": "University of Portland",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:16.046Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "washington:womens": {
+    "schoolId": "washington",
+    "schoolName": "University of Washington",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:01.888Z",
+    "players": [
+      {
+        "name": "Malie Chamberland",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Tanner Ijams",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Anna Menti",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Enora Matté",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Maya Loudd",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sophie Blake",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ryan Boehm",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Angelica Chou",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ava Morton",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Andrea Leyva",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Mary Camp Newton",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Maylen Montoya",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Samiah Shell",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Elle Durham",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Alex Buck",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Grace Duncan",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jadyn Holdenried",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Vanessa Aguilar",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Ava De Filippo",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lucy Newlin",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Maggie Dutra",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Cecelia Egan",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Avery Nguyen",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Rory Murry",
+        "position": "GK",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://gohuskies.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "santaclara:mens": {
+    "schoolId": "santaclara",
+    "schoolName": "Santa Clara University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:29.084Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "santaclara:womens": {
+    "schoolId": "santaclara",
+    "schoolName": "Santa Clara University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:29.091Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "michigan:mens": {
+    "schoolId": "michigan",
+    "schoolName": "University of Michigan",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:12.897Z",
+    "players": [
+      {
+        "name": "Beau Barren",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Isaiah Goldson",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Patrick O'Toole",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Matthew Fisher",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Nolan Miller",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Will Baker",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Quin Rogers",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Shuma Sasaki",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Mitar Mitrovic",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Grayson Elmquist",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Duilio Herrera",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Michael Ramirez",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Nicholas Cassiday",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Joah Reyna",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Rocky Perez",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Oliver Martin",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Murphy Parker",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Joao Paulo Ramos",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Zach Martens",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Kyle Pierson",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Patrick Los",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jake Tatch",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kamau Brame",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Guy Michaeli",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Nick Nobles",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Drew Diebolt",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Tamer Ibsais",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Dylan Davis",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Alen Bean",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Raymundo Mendez",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Jonathan Nabaka",
+        "position": "D",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://mgoblue.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "portland:womens": {
+    "schoolId": "portland",
+    "schoolName": "University of Portland",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:28.944Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "indiana:mens": {
+    "schoolId": "indiana",
+    "schoolName": "Indiana University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:11.046Z",
+    "players": [
+      {
+        "name": "AJ Piela",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Judewellin Michel",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Nolan Kinsella",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Josh Maher",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Nick McHenry",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Alex Matthews",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jacopo Fedrizzi",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Seth Stewart",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Bennett Painter",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Collins Oduro",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Grant Paskus",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Alex Barger",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Easton Bogard",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Luka Bezerra",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Charlie Heuer",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Justin Shreffler",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Breckin Minzey",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Clay Murador",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "EJ Dreher",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Noah Joseph",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Owen Sloan",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Luke Reidell",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Drew Gaydosh",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Cooper Johnsen",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Michal Mroz",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Holden Brown",
+        "position": "GK",
+        "classYear": "Gr"
+      }
+    ],
+    "sourceUrl": "https://iuhoosiers.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "indiana:womens": {
+    "schoolId": "indiana",
+    "schoolName": "Indiana University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:11.975Z",
+    "players": [
+      {
+        "name": "Kennedy Neighbors",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Bella Haggerty",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Arianna Rose",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Summer Fishel",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Emily Graham",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Aleyna Quinn",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Ella Stanley",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jenna Chatterton",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Paige Droner",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Mary Kate Sullivan",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Tori Brewer",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Blair Satterfield",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Krista Murphy",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Riley Boyd",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Haden Vlcek",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Grace Hamm",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Piper Coffield",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Josie Pratl",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Maggie Ledwith",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Emma Payton",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Tyler Roberts",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Dani Jacobson",
+        "position": "GK",
+        "classYear": "Sr"
+      }
+    ],
+    "sourceUrl": "https://iuhoosiers.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "northwestern:mens": {
+    "schoolId": "northwestern",
+    "schoolName": "Northwestern University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:24.117Z",
+    "players": [
+      {
+        "name": "Josue Hangi",
+        "position": "GK",
+        "classYear": ""
+      },
+      {
+        "name": "Dominic Pereira",
+        "position": "GK",
+        "classYear": ""
+      },
+      {
+        "name": "Rafael Ponce de León",
+        "position": "GK",
+        "classYear": ""
+      },
+      {
+        "name": "Sam Nagano",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Andrew Johnson",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Dalton Bulowski",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Dimas van der Heide",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Jason Gajadhar",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Tyler Glassberg",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Joe Suchecki",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Yuval Nimrodi",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Jayvin Van Deventer",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Nigel Prince",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Baraka Tarleton",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Omar Jallow",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Doug Hainer",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Peter Riesz",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Alejandro Martinez Santamaria",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Aaron O'Reilly",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Fritz Volmar",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Henri Richter",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "James Spatzek",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Aidan O'Neill",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Italo Addimandi",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Gregory Cook",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Bryant Mayer",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Jude Bosshardt",
+        "position": "GK",
+        "classYear": ""
+      },
+      {
+        "name": "Tre Barrett",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Evrit Fisher",
+        "position": "M",
+        "classYear": ""
+      }
+    ],
+    "sourceUrl": "https://nusports.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "michigan:womens": {
+    "schoolId": "michigan",
+    "schoolName": "University of Michigan",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:15.699Z",
+    "players": [
+      {
+        "name": "Allison Karpovich",
+        "position": "GK",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Sophie Homan",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Abby Zugay",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Coda Jones",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lilley Bosley",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kali Burrell",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Adi Walick",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Beanie Harshe",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Taylor Brennan",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Chloe Nugent",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Campbell Jewell",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Elle Ervin",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Claire Hammill",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Josie Owen-Kren",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Ella Jablinskey",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Gabrielle Prych",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ella Sims",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Júlia Ingadóttir",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sam Suplee",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Vickie Jones",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Maya Raghunandanan",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sierra Sargent",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ellie Fife",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Jenna Lang",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Stella Tapia",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Rubie Deaville",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Erin Junkmann",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Aniyah League",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sienna Smart",
+        "position": "GK",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://mgoblue.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "gonzaga:mens": {
+    "schoolId": "gonzaga",
+    "schoolName": "Gonzaga University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:21:29.740Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "wisconsin:mens": {
+    "schoolId": "wisconsin",
+    "schoolName": "University of Wisconsin",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:20.449Z",
+    "players": [
+      {
+        "name": "Robert Kaemmerer",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Isaac Brown-Samper",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Julian Kuhr",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Aden Green",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Matthew Zachemski",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Markie Hrvojevic",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Cristobal Porter",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Julian Banks",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Arien van Mol",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Roman Eisa",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Owen Hornig",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Aidan Martinez",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Gianluca Del Priore",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Will Smith",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Caleb Capone",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ellis Jones",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Andrew Chavez",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Luke Shrivers",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Joon Han",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Emile Kisse",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Charlie Smith",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Luke van Heukelum",
+        "position": "F",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://uwbadgers.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "ohiostate:mens": {
+    "schoolId": "ohiostate",
+    "schoolName": "Ohio State University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:15.735Z",
+    "players": [
+      {
+        "name": "Max Trejo",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Dyland Onwona-Agyeman",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Nathan Demian",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Nick McHenry",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Johnny Rush",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Thomas Gilej",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Marko Borkovic",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Andre Roberts",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ashton Bilow",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Luciano Pechota",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Joel Demian",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Aaron Hurge",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Nick Skubis",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Will Arnesen",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Anthony Faupel",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Nyle Waugh",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jacob Maisonneuve",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Martin McLaughlin",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Donovan Williams",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "RJ Stoller",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Michael Ndiweni",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Cole Evans",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Luke Laramore",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Zsombor Onodi",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Justis Olorunto",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Tanner Creech",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Patrick McLaughlin",
+        "position": "GK",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://ohiostatebuckeyes.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "ohiostate:womens": {
+    "schoolId": "ohiostate",
+    "schoolName": "Ohio State University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:20.161Z",
+    "players": [
+      {
+        "name": "Lizzie Rozmajzl",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Pavitra Karnati",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Peighton Northrup",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Amanda Schlueter",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Mia McSweeney",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ava Bramblett",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Alexis Knisely",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Nette-Nina Hiltunen",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Lily Danner",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ava Greco",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jadin Bonham",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Elle Britt",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jacinda Bonham",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Micayla Decker",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Ella Giannola",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Mai Ly Marella",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Berkley Mape",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Natalie Garcia",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Maliyah Morrison",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Anika Poremba",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Andrea Lu",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Riley Lijewski",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Isla Eaton",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Reese Brown",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Callie Tumilty",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Sydney Bering",
+        "position": "F",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://ohiostatebuckeyes.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "wisconsin:womens": {
+    "schoolId": "wisconsin",
+    "schoolName": "University of Wisconsin",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:20.608Z",
+    "players": [
+      {
+        "name": "Mira Issar",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Reese Elzen",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Drew Stover",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jadea Collin",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Abby Ballek",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Taylor Gordon",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "KK Panella",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jane Rogers",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Margaret Sisk",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Delaney Cox",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Brooke Allen",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kiara Gilmore",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ella Ottey",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Sascha Beasley",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Megan Cornell",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Taylor Schad",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Abbey Stanton",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Grace Dykstra",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Tyler Rolf",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Calypso Rolly",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Anya Gulbrandsen",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Jenna Baumann",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Izy Traub",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Brooke Nelson",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Erin Connolly",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Tuscany Khachab",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Hailey Baumann",
+        "position": "D",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://uwbadgers.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "rutgers:mens": {
+    "schoolId": "rutgers",
+    "schoolName": "Rutgers University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:20.635Z",
+    "players": [
+      {
+        "name": "Graham Kois",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Rafa Ponce de León",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Braxton Montgomery",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Devon Stopek",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Nick Collins",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Charlie Kitch",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Puis Ssebulime",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Timo Jansen",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "William Pierce",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Andrew Kitch",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Dan Karsten",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Lenny Aviles",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Thomas Angelone",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jude Essuman",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Simon Gorczowski",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Dylan Carlson",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jaeden Gordon",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Joshua Jerome",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Amer Lukovic",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Camron Boumsong",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jan Ziewiec",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Francesco Di Ponzio",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jeffrey Bryjak",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Matty Lynch",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Cedric Lemaire",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Erick Ruiz",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jack Andrus",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Logan Brown",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ailan Panton",
+        "position": "GK",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://scarletknights.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "maryland:mens": {
+    "schoolId": "maryland",
+    "schoolName": "University of Maryland",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:28.621Z",
+    "players": [
+      {
+        "name": "Saxon Wolcott",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Luke Burdett",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Luca Costabile",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Mack DeVries",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Lasse Kelp",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Leon Koehl",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Sadam Masereka",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Albi Ndrenika",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Colin Griffith",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Joseph Umberto Picotto",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Mateo Caride",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Max Riley",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Joel Brown",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jameson Michel",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Kenny Quist-Therson",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jace Clark",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Casey Price",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Chris Steinleitner",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Rocket Ritarita",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Henry Bernstein",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Brian St. Martin",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Matias De Jesus",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Tristen Rose",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Laurin Mack",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Luke van Heukelum",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Aidan Sheppela",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Alexander Milosevic",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Emil Nymann Anderson",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Stephane Njike",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Farouk Cisse",
+        "position": "D",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://umterps.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "rutgers:womens": {
+    "schoolId": "rutgers",
+    "schoolName": "Rutgers University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:24.115Z",
+    "players": [
+      {
+        "name": "Olivia Bodmer",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Julia Joseph",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sophia Stiles",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Reilly McGlinn",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Kennedi Cotter",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Gabriela Gil",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Charlotte Garcia",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Olivia Russomanno",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Audrey Cain",
+        "position": "U",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jayme Malanda",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ashley Baran",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Gianna Delgado",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sarah Martinez",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Mikayla Mandleur",
+        "position": "U",
+        "classYear": "So"
+      },
+      {
+        "name": "Madelyn O'Neill",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Morgan Hippeli",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Lindsey Hailey",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Gaby Sanchez",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Shannon Reiser",
+        "position": "U",
+        "classYear": "So"
+      },
+      {
+        "name": "Riley Morris",
+        "position": "U",
+        "classYear": "So"
+      },
+      {
+        "name": "Patricia Tsokos",
+        "position": "U",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Lauren Swafford",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Adela Vasakova",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Emma Johns",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Lilia Calvert",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Marian Dunne",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Gigi Omwenga",
+        "position": "M",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://scarletknights.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "northwestern:womens": {
+    "schoolId": "northwestern",
+    "schoolName": "Northwestern University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:28.368Z",
+    "players": [
+      {
+        "name": "Nyamma Nelson",
+        "position": "GK",
+        "classYear": ""
+      },
+      {
+        "name": "Reiley Fitzpatrick",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Liz Cardwell",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Maddie Finnerty",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Hayley Newman",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Quinn Erim",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Keira Kemmerley",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Mary Stroebel",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Audrey Alberts",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Megan Norkett",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Keira Wagner",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kelsey Kwon",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Caterina Regazzoni",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Alisha Ware",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Alex Fallon",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Selma Sol Sigurjonsdottir",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Presley Nevadomsky",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Holland Carey",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ramira Ambrose",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Kennedy Roesch",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Kate Hennen",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Olivia Elliott",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Brooke Miller",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Gabby Anderson",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "CJ Roy",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ava Goodin",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Sarah O'Donnell",
+        "position": "M",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://nusports.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "pitt:womens": {
+    "schoolId": "pitt",
+    "schoolName": "University of Pittsburgh",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:38.123Z",
+    "players": [
+      {
+        "name": "Mya Archibald",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Maya Bright",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Mariama Dabo",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sofia Doheny",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Lola Abraham",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Lucia Wells",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sage Stelzer",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Maya Bruce",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Olivia Lee",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Adi Bianchin",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Hannah Minogue",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Alia Jaidi",
+        "position": "F",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Celine Ottah",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Katie Zailski",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Krystina Wolf",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Katie Ellermeyer",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Adoo Philomina Yina",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Ellie Rowlands",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Sophie Rourke",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Talyn Guthrie",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Weslee Istone-Haupt",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Elli Johnson",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Claire Jones",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Eden Jones",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Addison Roemer",
+        "position": "GK",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://pittsburghpanthers.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "maryland:womens": {
+    "schoolId": "maryland",
+    "schoolName": "University of Maryland",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:30.878Z",
+    "players": [
+      {
+        "name": "Maya Cheeseboro",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Meredith Fisher",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ava Morales",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Peyton Bernard",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kate Hawley",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Mia Mitchell",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Alyssa Abramson",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Faith Luckey",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Emily Lenhard",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Drew Bernard",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Mikayla Gray",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Delaney DeMartino",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Kelsey Smith",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Mckinley Heaven",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Symone Jenson",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Gemma Davitian",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lisa McIntyre",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Tahirah Turnage-Morales",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Eva Mowery",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ella Bulava",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Sam Winer",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Taryn Raibon",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Ellie Egeland",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Dani Gichner",
+        "position": "D",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://umterps.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "gonzaga:womens": {
+    "schoolId": "gonzaga",
+    "schoolName": "Gonzaga University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:21:51.188Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "pitt:mens": {
+    "schoolId": "pitt",
+    "schoolName": "University of Pittsburgh",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:33.604Z",
+    "players": [
+      {
+        "name": "Jack Moxom",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ferran Baqué",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Niklas Soerensen",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Logan Oliver",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Albert Thorsen",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Miguel Bertran",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Josh Hardin",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Zahir Dyke",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Grayson Carter",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Gavin Wetzel",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Anders Bordoy",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Alex Hauskrecht",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Santiago Ferreira",
+        "position": "M",
+        "classYear": "Sr"
+      }
+    ],
+    "sourceUrl": "https://pittsburghpanthers.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "wakeforest:mens": {
+    "schoolId": "wakeforest",
+    "schoolName": "Wake Forest University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:31.544Z",
+    "players": [
+      {
+        "name": "Jonah Mednard",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "John Di Stefano",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Miles Hadley",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Travis Smith Jr.",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Amoni Thomas",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Daniel Krueger",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Lorenze Currie",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Nico Rabiu",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "David Nguema",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Pariss Mitchell",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Marcos Miranda",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jose Perez",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jeffrey White",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Joby Reid",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Joel Torbic",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Pierce Bateson",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Henry Rosenfeld",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Alfred Debah",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Ethan Subachan",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Chandler Young",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Mason Sullivan",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Will Jackson",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Copeland Berkley",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Owen Barnett",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Tate Lorentz",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Bret Russell",
+        "position": "D",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://godeacs.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "wakeforest:womens": {
+    "schoolId": "wakeforest",
+    "schoolName": "Wake Forest University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:31.554Z",
+    "players": [
+      {
+        "name": "Lizzie Thornton",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Valentina Amaral",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Amaya Dawkins",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Addison Roberts",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Tahlia Zadeyan",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "MJ Osborne",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Dempsey Brown",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Alejandra Gomez",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Chloe Burst",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Elliana Ramirez",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Riley Cross",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Sonoma Bever",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Aislynn Maguire",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Rachael Wright",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lola Ressler",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Eva Forster",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Avery Fisher",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Allie Flanagan",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sierra Sythe",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Sammi Wiemann",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "BraqElle Raisey",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Allie Schmidt",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Simone Basey",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Alicia Meincke",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kylie Maxwell",
+        "position": "F",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://godeacs.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "ncstate:womens": {
+    "schoolId": "ncstate",
+    "schoolName": "NC State University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:33.142Z",
+    "players": [
+      {
+        "name": "Ellie Breech",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Yuna Aoki",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Maia Lazaro",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Alex Mohr",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Mana Nakata",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Erica Roberts",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Rosalie Olou",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Madison Casteen",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Antonella Mazziotto",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Eliza Rich",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Jade Bordeleau",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Madie Miller",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Daisy Duda",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Emily Wong",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Chloe Stanley",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Mary Frances Symmes",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Mackenzie Harris",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lilly Soltz",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Avery Richards",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Emily Earles",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Mackenzie Smith",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sophia Hernandez",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Fien Leijdekker",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Nina Dukette",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kipenzi Perry",
+        "position": "D",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://gopack.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "ncstate:mens": {
+    "schoolId": "ncstate",
+    "schoolName": "NC State University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:33.072Z",
+    "players": [
+      {
+        "name": "Mattheus Rhormens",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ervin Cruz",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Riley Moloney",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Josh Gordon",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Frankie DeFrancesco",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Tyler Caton",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Moritz Weber",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Aidan Payne",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Mohamed Kallon",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Caden Tolentino",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Hayato Takayama",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Austin Bush",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Isaac Busenze",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Adam Abdouh",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Samuel Terranova",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Nakai Antoine",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Brendan Peeples",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Jackson Smith",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "John Pottle",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Gianni Rosario",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Mikell Barnes",
+        "position": "M",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://gopack.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "clemson:mens": {
+    "schoolId": "clemson",
+    "schoolName": "Clemson University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:31.626Z",
+    "players": [
+      {
+        "name": "Aiden Hampton",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Joseph Andema",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Lukas Magnason",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Arthur Duquenne",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Olafur Floki Stephensen",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Augustine Asante",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Daniel Bunk",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Wahabu Musah",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Kwaku Agyabeng",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ransford Gyan",
+        "position": "U",
+        "classYear": "So"
+      },
+      {
+        "name": "Misei Yoshizawa",
+        "position": "U",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Justin Ross",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Cooper Hineline",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Abdou Mane",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Mason Jimenez",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Caleb George",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Matthias Leib",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "James Kelly",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Andres Beirute",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Gabriel Santuari",
+        "position": "U",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Kyle Mattis",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Duncan Wilson",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Vitor Geromel",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Nathan Richmond",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Marco Garcia",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Seamus Streelman",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Xander Sevian",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Remi Okunlola",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ivan Schmid",
+        "position": "GK",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://clemsontigers.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "clemson:womens": {
+    "schoolId": "clemson",
+    "schoolName": "Clemson University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:31.740Z",
+    "players": [
+      {
+        "name": "Nona Reason",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kendall Bodak",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Maddie Costello",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Neely Kerr",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Emily Brough",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Dani Davis",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jenna Tobia",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Mackenzie Duff",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Renee Lyles",
+        "position": "M",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Tatum Short",
+        "position": "U",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Natalie Brooks",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Baleigh Bruster",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Ella Johnson",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Jolie Jenkins",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Anna Castenfelt",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Maria Manousos",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Juju Harris",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Taylor Leib",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Carla Small",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Gabby Gambino",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Reese Klein",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Elle Bissinger",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Addy Holgorsen",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Erin Sherden",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Alessandra Washington",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jordan Thompson",
+        "position": "F",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Christian Brathwaite",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Maddie Parrott",
+        "position": "GK",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://clemsontigers.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "louisville:mens": {
+    "schoolId": "louisville",
+    "schoolName": "University of Louisville",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:40.976Z",
+    "players": [
+      {
+        "name": "Nathaniel Abraham",
+        "position": "GK",
+        "classYear": ""
+      },
+      {
+        "name": "Silas Damm",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Olayinka Ogunleye",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Noah De Blasis",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Jack Boring",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "TJ Kahoalii",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Ryan Quintos",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Ephram Amones",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Felix Masson",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Elijah Brijbasi",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Quinton Wilson",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Nicholas Parham",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Ashton Flowers",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Fernando Sanchez",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Daniel Grider",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Jack Lewis",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Johnny Petruso",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Liam McClen",
+        "position": "GK",
+        "classYear": ""
+      },
+      {
+        "name": "Andrew Seavers",
+        "position": "GK",
+        "classYear": ""
+      },
+      {
+        "name": "Håkon Edstrøm",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Andres Escudero",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Brody Mayer",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Cooper Olson",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Braydon Sellers",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Giacomo Zizza",
+        "position": "M",
+        "classYear": ""
+      }
+    ],
+    "sourceUrl": "https://gocards.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "bostoncollege:mens": {
+    "schoolId": "bostoncollege",
+    "schoolName": "Boston College",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:40.800Z",
+    "players": [
+      {
+        "name": "Patrick Donovan",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Patrick Reddy",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Christian Bejar",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Moritz Gundelach",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Fynn Henze",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Bryan Toro",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Ask Ekeland",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ziad Abdul-Malak",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Nikolai Rojel",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sander Martinsen-Wold",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Alexi Karalis",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Leo Seidel",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Michael Asare",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Marci Killeen",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Russell Brown",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Max Andrews",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Connor Gibson",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Mitchell Shevchenko-Rogers",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Harald Race",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Erick Almendares",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jack Burkhardt",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Devon Galluzzo",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "CJ Williams",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Henry Wassarman",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Watts Richmond",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Dylan Mafong",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Aidan Farwell",
+        "position": "F",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Bryce Copeland-Del Toro",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Andrej Borak",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Johannes Hanken Tjostheim",
+        "position": "F",
+        "classYear": "Sr"
+      }
+    ],
+    "sourceUrl": "https://bceagles.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "baylor:womens": {
+    "schoolId": "baylor",
+    "schoolName": "Baylor University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:46.565Z",
+    "players": [
+      {
+        "name": "Sierra Gallant",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Hailey Smith",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Azul Alvarez",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Alysiah Lockette",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Natalie Vatter",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Olivia Hess",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lauren Omholt",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Noelle Sather",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Adriana Merriam",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Taylor Evans",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Callie Conrad",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Aryanna Jimison",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Emerson Garcia",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Keira Martin",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Theresa McCullough",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Grace White",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Tatum Greensage",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Chloe Adams",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kendall Mason",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Nyela Calnek",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Skylar Zinnecker",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ava Slay",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Ava Verplancke",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kaitlin Swann",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Caroline Staubach",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ashlee Zirkel",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Riley Franklin",
+        "position": "GK",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://baylorbears.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "texas:womens": {
+    "schoolId": "texas",
+    "schoolName": "University of Texas",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:45.015Z",
+    "players": [
+      {
+        "name": "Kendall Sproat",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ava McDonald",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Cameron Byrd",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Arianna Brothers",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Olivia Ahern",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ava Cashman",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Audrey Bryant",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Carly Montgomery",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Sadie Hoch",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Chloe Shimkin",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Brooke Martinez",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lola Foley",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Molly MacMillan",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kendell Williams",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Vivian Geesbreght",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Toni Lopez",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Breana Thompson",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "EmJ Cox",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Mateya Dessieux",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Cambry Patrick",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Amaya Haley",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Amalia Villarreal",
+        "position": "M",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://texaslonghorns.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "bostoncollege:womens": {
+    "schoolId": "bostoncollege",
+    "schoolName": "Boston College",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:40.904Z",
+    "players": [
+      {
+        "name": "Alexandria Lofton",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Olivia Shippee",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Natalie Grosse",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Delaney Van Pelt",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Emily Mara",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Milla Lee",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Annie Gnidula",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Georgina Clarke",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Aasha McLyn",
+        "position": "U",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Sydney Segalla",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Tess Barrett",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sadie Mathis",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Amalia Dray",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Ada Henschien",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ashley Roberts",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Elly Slensky",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Sohana Spencer",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Baylor Goldthwaite",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Anndi Wright",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Dylan Lochhead",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sophie Reale",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Emmy Easterly",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lydia Poulin",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Este Tejpaul",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Faith Fenwick",
+        "position": "GK",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://bceagles.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "tcu:womens": {
+    "schoolId": "tcu",
+    "schoolName": "Texas Christian University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:54.877Z",
+    "players": [
+      {
+        "name": "Claireese Foley",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Olivia Geller",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Amelie Darey",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Peyton Nourse",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Zoe Cuneio",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Breahn Fisher",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Kaela Martinez",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Addison DeJoseph",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Alexa DeJoseph",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kamdyn Fuller",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Bella Diorio",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Leah Negeri",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Hannah Harms",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Mackenzie Hilderman",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Cameron Patton",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Emma Yolinsky",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Morgan Brown",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Eres Freifeld",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Ally Brown",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Evie Baker",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Grace Vest",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Eliza Collings",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Camille Banks",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Camden Cosich",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Giovanna Costanzo",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Emery Jean",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Makenzie Majors",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Madison Taylor",
+        "position": "F",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://gofrogs.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "wvu:womens": {
+    "schoolId": "wvu",
+    "schoolName": "West Virginia University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:52.305Z",
+    "players": [
+      {
+        "name": "Campbell Wolff",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Bailey Herfurth",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ezra Wright",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jacey Rase",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Saige Wimes",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Rylee Felton",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Maya Leoni",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Alexis Pashales",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Abbey Olexa",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Maddie Levy",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jordyn Wilson",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Olivia Shertzer",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Anna Hauer",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Kailyn Effah",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Ava Arnold",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Alexis Ré",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Layla Thompson",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Christina Salama",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Nyema Ingleton",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Hannah Heimuli",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sophia Nickel",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Isabel Ceaser",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Josie Johnson",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Mia Lough",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Mia Paugh",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Gianna Koss",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Parker Dieck",
+        "position": "D",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://wvusports.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "wvu:mens": {
+    "schoolId": "wvu",
+    "schoolName": "West Virginia University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:52.191Z",
+    "players": [
+      {
+        "name": "Tristan Pusztahegyi",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Thijs Veldhorst",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Constantinos Christou",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Pablo Pozos",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Steel Bayer",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Tyler Londono Zapata",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Brayden Macomber",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Tyler Bush",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Toby Mawer",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Braedon Smith",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Thomas Bowe",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Isaac Scheer",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Nacho Martinez",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Sammie Walker",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sebastian Burke",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Juan Alvarez",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Chase Collins",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jett Atkan",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Civan De Jesus Ferreira",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Harry Hogben",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Joshua Jones",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Grafton Kahl",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jacob Redenfors",
+        "position": "D",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://wvusports.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "virginiatech:mens": {
+    "schoolId": "virginiatech",
+    "schoolName": "Virginia Tech",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:43.185Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "byu:mens": {
+    "schoolId": "byu",
+    "schoolName": "Brigham Young University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:55.252Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "virginiatech:womens": {
+    "schoolId": "virginiatech",
+    "schoolName": "Virginia Tech",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:22:43.192Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "byu:womens": {
+    "schoolId": "byu",
+    "schoolName": "Brigham Young University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:23:07.825Z",
+    "players": [
+      {
+        "name": "Goalkeeper",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Goalkeeper",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Goalkeeper",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward/Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder/Forward",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward/Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward/Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder/Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward/Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Goalkeeper",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      }
+    ],
+    "sourceUrl": "https://byucougars.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "kansas:womens": {
+    "schoolId": "kansas",
+    "schoolName": "University of Kansas",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:23:09.961Z",
+    "players": [
+      {
+        "name": "Sophie Dawe",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Olivia Page",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Brooke Otto",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Saige Wimes",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Becca Smith",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Emika Kawagishi",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Faith Johnston",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kate Langfelder",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Molly Shepherd",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jordan Rowan",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jordan Fjelstad",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Marit McLaughlin",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lydia Viets",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Caroline Castans",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Emily Tobin",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Lexi Watts",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Mary Sola",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sophia Mir",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Clara Roche",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jocelyn Herrema",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Mackenzie Hammontree",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Avery Rasmussen",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Emily Minard",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Fiona Skwierawski",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Maya Mathis",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jillian Gregorski",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Addison Tauscher",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Livvy Moore",
+        "position": "M",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://kuathletics.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "texas:mens": {
+    "schoolId": "texas",
+    "schoolName": "University of Texas",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:44.327Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "colorado:womens": {
+    "schoolId": "colorado",
+    "schoolName": "University of Colorado",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:23:25.992Z",
+    "players": [
+      {
+        "name": "Chloe Zipprich",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jordan Nytes",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ava Priest",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Emerson Layne",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jordan Whiteaker",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Riley MacDonald",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Caley Swierenga",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jace Holley",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Mallory Allen",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Lexi Meyer",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Ruby Hayward",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Hannah Puff",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Vivi Zacarias",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Greer Maguire",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Maddie Sharrer",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sophia Zboyan",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sami Fisher",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Kenzi Gillispie",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Josie Master",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Lilian Zamorano",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jamie Campbell",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Reagan Kotschau",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Faith Leyba",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Hope Leyba",
+        "position": "F",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://cubuffs.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "tamu:womens": {
+    "schoolId": "tamu",
+    "schoolName": "Texas A&M University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:23:26.888Z",
+    "players": [
+      {
+        "name": "Sydney Fuller",
+        "position": "GK",
+        "classYear": ""
+      },
+      {
+        "name": "Erica Defferding",
+        "position": "GK",
+        "classYear": ""
+      },
+      {
+        "name": "Makenna August",
+        "position": "GK",
+        "classYear": ""
+      },
+      {
+        "name": "Emma Hoang",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Bella James",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Bailey Cate",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Kaylee Noble",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Kat Campbell",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Finley Lacher",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Kennedy Clark",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Riley Crooks",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Hattie Patterson",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Trinity Buchanan",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "Mia Scranton",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Lucy Landherr",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Leah Diaz",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Holly Storer",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Kieana Smith",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Ella Goodwin",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Taylor Jernigan",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Savannah Hutchins",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Hayden Wilson",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Mary Claire Torn",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "Ireland Churchill",
+        "position": "F",
+        "classYear": ""
+      },
+      {
+        "name": "Shea Ryan",
+        "position": "F",
+        "classYear": ""
+      }
+    ],
+    "sourceUrl": "https://12thman.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "baylor:mens": {
+    "schoolId": "baylor",
+    "schoolName": "Baylor University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:46.534Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "georgia:womens": {
+    "schoolId": "georgia",
+    "schoolName": "University of Georgia",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:23:32.106Z",
+    "players": [
+      {
+        "name": "Nicole Bidun",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Victoria Saah",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jordan Brown",
+        "position": "GK",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Hailey Gordon",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Virginia Odom",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Maddy Herniter",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Sage Glover",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Juliauna Hayward",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sophia Brelage",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Kamryn Winger",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Ayda Pannell",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Ava Stack",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Kiera Staude",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Assa Kante",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Gabbi Ceballos",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Hannah Folliard",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Leila Avila",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Grayson Rogers",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "BK Harris",
+        "position": "D",
+        "classYear": "Gr"
+      },
+      {
+        "name": "Lily Kate Elphick",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Honoka Hamano",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Kyra Swart",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Devon Winters",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Kieryn Jeter",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Mya Townes",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Mary Hartofilis",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Mona Childs",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lola Manuel",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "London Crawford",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Tyler Kaseta",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Lilly Osifodunrin",
+        "position": "D",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://georgiadogs.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "tcu:mens": {
+    "schoolId": "tcu",
+    "schoolName": "Texas Christian University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:22:52.404Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "arkansas:womens": {
+    "schoolId": "arkansas",
+    "schoolName": "University of Arkansas",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:23:38.373Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "alabama:womens": {
+    "schoolId": "alabama",
+    "schoolName": "University of Alabama",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:23:46.097Z",
+    "players": [
+      {
+        "name": "Madi Munguia",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Coralie Lallier",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Presley Williams",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Avery Brown",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Maison Smith",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Soph Martelli",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Kiley Kukan",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Larkin Thomason",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Olivia Belcher",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Ashley Roni",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Zamorah Malinoski",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Cali Brewer",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Melina Rebimbas",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Chelsea Rogers",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kennedy Garcia",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Alexa Barker",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Kierson McDonald",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Reece Ward",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Fiona Mahan",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Ulla Sharp",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Paige Thompson",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Olivia Herrera",
+        "position": "GK",
+        "classYear": "Sr"
+      }
+    ],
+    "sourceUrl": "https://rolltide.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "arkansas:mens": {
+    "schoolId": "arkansas",
+    "schoolName": "University of Arkansas",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:23:37.927Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "auburn:womens": {
+    "schoolId": "auburn",
+    "schoolName": "Auburn University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:24:06.053Z",
+    "players": [
+      {
+        "name": "Malia Loadwick",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ayana Yapo",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Torrey Polk",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Teigan Cunnane",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Chloe Taylor",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ellie Rebmann",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Holly Engelking",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ava Caldwell",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Gracie Brown",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Layla Sirdah",
+        "position": "U",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Grace Ivey",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Eva Pattison",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Izzy Whitaker",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Clara Casajuana",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Tamar McKey",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Dylan Driver",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Allison Goodwin",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jenna Sapong",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kennedy Husbands",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kylie Snell",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Emma Musiek",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Aurora Gaines",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Fizz Hutton",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Emily Edwards",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Lily Devereaux",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Tahirah Turnage-Morales",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jordyn Crosby",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Kelly Gordon",
+        "position": "M",
+        "classYear": "Jr"
+      }
+    ],
+    "sourceUrl": "https://auburntigers.com/sports/soccer/roster",
+    "status": "success"
+  },
+  "tennessee:womens": {
+    "schoolId": "tennessee",
+    "schoolName": "University of Tennessee",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:23:59.399Z",
+    "players": [
+      {
+        "name": "Ella Wiederaenders",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Cayden Norris",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Shae O'Rourke",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Devin Davis",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Bella Smith",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Skylar Miller",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Abby Batts",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Kate Runyon",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Luciana Latino",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Kai Tsakiris",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Taylor Cheatham",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Kameran Bluette",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Keaton Mitchell",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Milee Zych",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Olivia Feagin",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sydney Miller",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ali Howard",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ines Derrien",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Tesia Mikuta",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Claire DeCook",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ayva Jordan",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kylee Simmons",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Dakota Brown",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Sophia Prime",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Cora Fry",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Nyla Blue",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jayla Blue",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Morgan Weaver",
+        "position": "GK",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://utsports.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "auburn:mens": {
+    "schoolId": "auburn",
+    "schoolName": "Auburn University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:24:03.341Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "georgia:mens": {
+    "schoolId": "georgia",
+    "schoolName": "University of Georgia",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:23:29.013Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "kansas:mens": {
+    "schoolId": "kansas",
+    "schoolName": "University of Kansas",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:23:07.996Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "colorado:mens": {
+    "schoolId": "colorado",
+    "schoolName": "University of Colorado",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:23:25.714Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "tamu:mens": {
+    "schoolId": "tamu",
+    "schoolName": "Texas A&M University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:23:26.095Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "ucf:mens": {
+    "schoolId": "ucf",
+    "schoolName": "University of Central Florida",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:24:26.263Z",
+    "players": [
+      {
+        "name": "HIGH SCHOOL",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Gwendal Degorce",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Jem Hewlett",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Younes Boudinar",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Joey Mueller",
+        "position": "U",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Petter Wingsternaes",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Gabi Velez",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Abraham Monsee",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Timothy Arias",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Drew Hansen",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Seiryu Ono",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Finn Calloway",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Arne Michaelis",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Yordan Torres",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kenn Muendo",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Marcelo Lacayo",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Mateus Dejesus",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Mikael Pulkkinen",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Hugo Vien",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Joachim Kyei",
+        "position": "M",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://ucfknights.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "ucf:womens": {
+    "schoolId": "ucf",
+    "schoolName": "University of Central Florida",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:24:32.383Z",
+    "players": [
+      {
+        "name": "Goalkeeper",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward/Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward/Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Forward",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Midfielder",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Defender",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Goalkeeper",
+        "position": "U",
+        "classYear": ""
+      },
+      {
+        "name": "Goalkeeper",
+        "position": "U",
+        "classYear": ""
+      }
+    ],
+    "sourceUrl": "https://ucfknights.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "alabama:mens": {
+    "schoolId": "alabama",
+    "schoolName": "University of Alabama",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:23:45.409Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "smu:mens": {
+    "schoolId": "smu",
+    "schoolName": "Southern Methodist University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:24:25.560Z",
+    "players": [
+      {
+        "name": "1 Jonathan Evans",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "2 Ryan Clanton-Pimentel",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "3 Villads Landsperg",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "4 Mason Grimm",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "5 Noah Holmstrøm",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "6 Alex Salvo",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "7 Jaylinn Mitchell",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "10 Milton Lopez",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "11 Franco Ocana",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "12 TJ Dilley",
+        "position": "D",
+        "classYear": ""
+      },
+      {
+        "name": "14 Enzo Panozzo",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "15 Nick Harshaw",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "16 Landon Hickam",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "20 Mukisa Emmanuel",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "21 Andre Philibbosian",
+        "position": "M",
+        "classYear": ""
+      },
+      {
+        "name": "23 Oliver Knotek",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "24 Chris Deamon",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "26 Caleb Bronold",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "28 Anden Ellis",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "29 Nathan Kinser",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "30 Stephan Soghomonian",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "33 Spencer Zachgo",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "34 Trey Clements",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "37 Daniel Wozniak",
+        "position": "GK",
+        "classYear": "Fr"
+      }
+    ],
+    "sourceUrl": "https://smumustangs.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "southcarolina:womens": {
+    "schoolId": "southcarolina",
+    "schoolName": "University of South Carolina",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:24:22.523Z",
+    "players": [
+      {
+        "name": "Emma Kirlin",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Maggie Taitano",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Sophie Johnson",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Maryn Wolf",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Dempsey McMahon",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Amanda Patrick",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Ava Tutas",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Mackenzie Johnson",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Reagan Schubach",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Helen Ghertner",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Kinley Brown",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Katie Russo",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Taylor Bloom",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Ashley Connolly",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Autumn Cayelli",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Wynn Generally",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Harper Donovan",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Avery Galante",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Sydney Middaugh",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Laney Keith",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Emilie Castagna",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jyvanna Harris",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Cuyler Zulauf",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Maria Kemp",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Christina Tsaousis",
+        "position": "GK",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Dubem Dike",
+        "position": "F",
+        "classYear": "Sr"
+      }
+    ],
+    "sourceUrl": "https://gamecocksonline.com/sports/wsoc/roster/",
+    "status": "success"
+  },
+  "southcarolina:mens": {
+    "schoolId": "southcarolina",
+    "schoolName": "University of South Carolina",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:24:19.222Z",
+    "players": [
+      {
+        "name": "Noah Scheidweiler",
+        "position": "GK",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Daniel Lang",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Arnar Adalsteinsson",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Ben Wallis",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Mika Habel",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Isaiah Whittaker-Francis",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Samy Kolby",
+        "position": "U",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Loïc Sany Kong",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Emil Seedorff",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Alejandro Velazquez-Lopez",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Matthew DeJianne",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Adolfo Feoli",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Gustavo Feoli",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Reid Raintree",
+        "position": "U",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Yvan Malarte",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Kieran Karp",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Matthew Vigor",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Shawn Lanza",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Jack Kilstrom",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Gabriel Nickerson",
+        "position": "F",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://gamecocksonline.com/sports/msoc/roster/",
+    "status": "success"
+  },
+  "tennessee:mens": {
+    "schoolId": "tennessee",
+    "schoolName": "University of Tennessee",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:23:48.906Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "jamesmadison:mens": {
+    "schoolId": "jamesmadison",
+    "schoolName": "James Madison University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:24:46.308Z",
+    "players": [
+      {
+        "name": "Erik Jaspers",
+        "position": "GK",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Brock Frasier",
+        "position": "D",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Jonas Griesbauer",
+        "position": "F",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Agustín Donoso",
+        "position": "D",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jeffrey Aguilar",
+        "position": "M",
+        "classYear": "Sr"
+      },
+      {
+        "name": "Smith Halloran",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Diego Ossa",
+        "position": "F",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Luis Fuentes",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Ryan Walsh",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Manuel Lolas",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Tyler Miller",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Henok Tilahun",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Cooper Noseworthy",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Jack Doogue",
+        "position": "GK",
+        "classYear": "Sr"
+      }
+    ],
+    "sourceUrl": "https://jmusports.com/sports/mens-soccer/roster",
+    "status": "success"
+  },
+  "jamesmadison:womens": {
+    "schoolId": "jamesmadison",
+    "schoolName": "James Madison University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:24:54.427Z",
+    "players": [
+      {
+        "name": "Lili White",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Audrey Orrock",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Emily Graeca",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Olivia Del Toro",
+        "position": "F",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Ellie Farrell",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Bailey Coston",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Chloe Nelson",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Lena Dahms",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Sophie Stroud",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Sofia DeCerb",
+        "position": "GK",
+        "classYear": "So"
+      },
+      {
+        "name": "Kata Szombati",
+        "position": "M",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Selma Rajakangas",
+        "position": "D",
+        "classYear": "Fr"
+      },
+      {
+        "name": "Makenna Kirk",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Ginny Lackey",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Aleigha Arndt",
+        "position": "M",
+        "classYear": "So"
+      },
+      {
+        "name": "Tali Rovner",
+        "position": "D",
+        "classYear": "So"
+      },
+      {
+        "name": "Lauren Carpenter",
+        "position": "F",
+        "classYear": "So"
+      },
+      {
+        "name": "Samantha DeGuzman",
+        "position": "M",
+        "classYear": "Jr"
+      },
+      {
+        "name": "Hailey Martinez",
+        "position": "M",
+        "classYear": "So"
+      }
+    ],
+    "sourceUrl": "https://jmusports.com/sports/womens-soccer/roster",
+    "status": "success"
+  },
+  "denver:mens": {
+    "schoolId": "denver",
+    "schoolName": "University of Denver",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:24:25.992Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "denver:womens": {
+    "schoolId": "denver",
+    "schoolName": "University of Denver",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:24:26.152Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "smu:womens": {
+    "schoolId": "smu",
+    "schoolName": "Southern Methodist University",
+    "gender": "womens",
+    "scrapedAt": "2026-05-02T23:24:25.876Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  },
+  "highpoint:mens": {
+    "schoolId": "highpoint",
+    "schoolName": "High Point University",
+    "gender": "mens",
+    "scrapedAt": "2026-05-02T23:24:39.869Z",
+    "players": [],
+    "sourceUrl": "",
+    "status": "failed",
+    "reason": "no URL pattern returned a parseable roster"
+  }
+}
