@@ -173,7 +173,7 @@ export function Schools() {
               <button
                 key={school.id}
                 onClick={() => setSelected(school)}
-                className="text-left bg-[rgba(255,255,255,0.03)] border border-[rgba(234,179,8,0.15)] rounded-2xl p-5 flex items-center gap-5 transition-all hover:border-[rgba(234,179,8,0.4)] hover:bg-[rgba(234,179,8,0.05)] cursor-pointer"
+                className="text-left bg-[rgba(255,255,255,0.03)] border border-[rgba(234,179,8,0.15)] rounded-2xl p-5 flex items-start gap-5 transition-all hover:border-[rgba(234,179,8,0.4)] hover:bg-[rgba(234,179,8,0.05)] cursor-pointer"
               >
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-3 mb-1 flex-wrap">
@@ -181,17 +181,37 @@ export function Schools() {
                     <Badge variant={catColor[school.category]}>{school.category}</Badge>
                     <Badge variant="muted">{school.division}</Badge>
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-[#64748b] flex-wrap">
+                  <div className="flex items-center gap-4 text-xs text-[#64748b] flex-wrap mb-2.5">
                     <span>📍 {school.location}</span>
                     <span>👥 {school.enrollment.toLocaleString()} students</span>
                     {school.conference && <span>🏆 {school.conference}</span>}
                   </div>
+
+                  {/* Two-axis fit bars: lets the user see at a glance *why* this is reach/target/safety */}
+                  {(school.athleticFit != null || school.academicFit != null) && (
+                    <div className="flex gap-4 mb-2.5 max-w-md">
+                      <FitBar label="Athletic" value={school.athleticFit ?? 50} />
+                      <FitBar label="Academic" value={school.academicFit ?? 50} />
+                    </div>
+                  )}
+
+                  {/* Top 2 reasons — the rest live in the modal */}
+                  {school.reasons && school.reasons.length > 0 && (
+                    <ul className="flex flex-col gap-0.5 mt-1">
+                      {school.reasons.slice(0, 2).map((r, i) => (
+                        <li key={i} className="text-xs text-[#94a3b8] leading-relaxed flex gap-1.5">
+                          <span className="text-[#eab308] flex-shrink-0">›</span>
+                          <span>{r}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
                 </div>
-                <div className="text-right flex-shrink-0">
+                <div className="text-right flex-shrink-0 pt-1">
                   <div className="font-serif text-2xl font-black text-[#eab308]">{school.matchScore}</div>
                   <div className="text-xs text-[#64748b]">match score</div>
                 </div>
-                <div className="text-[#64748b] text-lg flex-shrink-0">›</div>
+                <div className="text-[#64748b] text-lg flex-shrink-0 pt-1">›</div>
               </button>
             ))}
           </div>
@@ -277,6 +297,23 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
         </div>
 
         <div className="px-7 py-6 flex flex-col gap-6">
+          {/* Why this is a {bucket} — full reasons list */}
+          {school.reasons && school.reasons.length > 0 && (
+            <section>
+              <h3 className="text-[11px] font-bold text-[#64748b] tracking-[2px] uppercase mb-3">
+                Why this is a {school.category}
+              </h3>
+              <ul className="flex flex-col gap-1.5">
+                {school.reasons.map((r, i) => (
+                  <li key={i} className="text-sm text-[#cbd5e1] leading-relaxed flex gap-2">
+                    <span className="text-[#eab308] flex-shrink-0">›</span>
+                    <span>{r}</span>
+                  </li>
+                ))}
+              </ul>
+            </section>
+          )}
+
           {/* General info */}
           <section>
             <h3 className="text-[11px] font-bold text-[#64748b] tracking-[2px] uppercase mb-3">Program Info</h3>
@@ -609,6 +646,23 @@ function InfoRow({ label, value }: { label: string; value: string }) {
     <div className="flex flex-col gap-0.5">
       <span className="text-[10px] uppercase tracking-widest text-[#64748b]">{label}</span>
       <span className="text-sm text-[#f1f5f9] capitalize">{value}</span>
+    </div>
+  )
+}
+
+function FitBar({ label, value }: { label: string; value: number }) {
+  // Color thresholds match the buckets:
+  //   ≥70 = green (safety zone)  ≥45 = yellow (target)  else red (reach)
+  const color = value >= 70 ? 'bg-[#4ade80]' : value >= 45 ? 'bg-[#eab308]' : 'bg-[#f87171]'
+  return (
+    <div className="flex-1 min-w-0">
+      <div className="flex items-baseline justify-between gap-2 mb-1">
+        <span className="text-[10px] uppercase tracking-widest text-[#64748b]">{label}</span>
+        <span className="text-[11px] font-semibold text-[#cbd5e1] tabular-nums">{value}</span>
+      </div>
+      <div className="h-1 bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
+        <div className={`h-full ${color} transition-all`} style={{ width: `${value}%` }} />
+      </div>
     </div>
   )
 }

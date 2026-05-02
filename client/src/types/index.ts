@@ -50,6 +50,7 @@ export interface School {
   matchScore: number
   athleticFit?: number
   academicFit?: number
+  reasons?: string[]  // 2–4 short bullets explaining the bucket; top 2 shown on card
   notes?: string
   programStrength?: number
   scholarships?: boolean
@@ -129,6 +130,7 @@ export interface VideoFrame {
 
 export interface VideoRating {
   score: number              // overall 1-10, computed as average of 5 sub-scores
+  detectedPosition?: string  // position the AI inferred from the footage (independent of profile)
   summary: string
   technical: string          // first touch, ball control, passing, finishing
   technicalScore: number     // 1-10

@@ -97,9 +97,28 @@ function saveCache(cache: Cache) {
 
 // ── Name normalization for fuzzy matching ─────────────────────────────────
 
+// Common state-abbrev expansions. Schools.json uses "NC State", "VA Tech",
+// etc.; Scorecard uses "North Carolina State", "Virginia Tech." These pairs
+// fall apart on token-overlap matching unless we expand.
+const STATE_ABBR_EXPANSIONS: Array<[RegExp, string]> = [
+  [/\bnc\b/gi, 'north carolina'],
+  [/\bva\b/gi, 'virginia'],
+  [/\bsc\b/gi, 'south carolina'],
+  [/\bnj\b/gi, 'new jersey'],
+  [/\bny\b/gi, 'new york'],
+  [/\bla\b/gi, 'louisiana'],
+  [/\bma\b/gi, 'massachusetts'],
+  [/\bct\b/gi, 'connecticut'],
+  [/\bnm\b/gi, 'new mexico'],
+  [/\bnh\b/gi, 'new hampshire'],
+]
+
+const STOP_WORDS = new Set(['the', 'of', 'at', 'in', 'on', 'and', 'for', 'to'])
+
 function normalizeName(s: string): string {
-  return s
-    .toLowerCase()
+  let out = s.toLowerCase()
+  for (const [re, replacement] of STATE_ABBR_EXPANSIONS) out = out.replace(re, replacement)
+  return out
     .replace(/\buniversity of\b/g, '')
     .replace(/\bu of\b/g, '')
     .replace(/\bcollege\b/g, '')
@@ -110,11 +129,19 @@ function normalizeName(s: string): string {
     .trim()
 }
 
+function tokenize(s: string): Set<string> {
+  return new Set(
+    normalizeName(s)
+      .split(' ')
+      .filter((t) => t.length > 1 && !STOP_WORDS.has(t))
+  )
+}
+
 function nameDistance(a: string, b: string): number {
   // Cheap "shared-token" distance — counts how many normalized tokens overlap.
   // 0 = perfect, higher = worse.
-  const tokensA = new Set(normalizeName(a).split(' ').filter((t) => t.length > 1))
-  const tokensB = new Set(normalizeName(b).split(' ').filter((t) => t.length > 1))
+  const tokensA = tokenize(a)
+  const tokensB = tokenize(b)
   if (tokensA.size === 0 || tokensB.size === 0) return 999
   let shared = 0
   for (const t of tokensA) if (tokensB.has(t)) shared++
@@ -187,13 +214,36 @@ const FIELDS = [
   'latest.student.size',
 ].join(',')
 
+// Build a clean search term: drop punctuation, "the", "of college university"
+// scaffolding, and trim. "West Texas A&M University" → "west texas am", which
+// Scorecard's full-text matcher handles cleanly. The raw form returns junk
+// because `&` gets URL-encoded weirdly inside school.search.
+function searchTerm(name: string): string {
+  // Scorecard's school.search is finicky:
+  //   • "west texas a and m university" → 0 hits
+  //   • "west texas am" → 4 hits (correct school is #1)
+  //   • "college of william mary" → only Richard Bland College (W&M missing!)
+  //   • "william mary" → William & Mary (correct) + Richard Bland
+  // So we drop `&`, apostrophes, and the institutional scaffolding words
+  // ("college", "university", "the", "of"). The proper-noun core is what
+  // Scorecard's full-text matcher works on.
+  return name
+    .toLowerCase()
+    .replace(/['"`’]/g, '')
+    .replace(/\b(the|of|college|university|institute)\b/g, '')
+    .replace(/[^a-z0-9 ]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim()
+}
+
 async function searchScorecard(name: string, state: string | null, city: string | null): Promise<ScorecardResult[]> {
+  const cleanName = searchTerm(name)
   // Try name + state + city first; fall back to name + state only if no hits.
   // The strict query is best for disambiguating multi-campus systems.
   async function fetchOnce(narrow: boolean): Promise<ScorecardResult[]> {
     const params = new URLSearchParams({
       'api_key': API_KEY!,
-      'school.search':  name,
+      'school.search':  cleanName,
       'school.operating': '1',
       'fields': FIELDS,
       'per_page': '20',
@@ -217,15 +267,43 @@ async function searchScorecard(name: string, state: string | null, city: string 
 
 // ── Match scorecard result to our school ───────────────────────────────────
 
-function pickBest(name: string, results: ScorecardResult[]): ScorecardResult | null {
+function pickBest(name: string, results: ScorecardResult[], narrowedByCity: boolean): ScorecardResult | null {
   if (results.length === 0) return null
   // Rank by name token distance — lowest wins.
   const ranked = results
     .map((r) => ({ r, d: nameDistance(name, r['school.name']) }))
     .sort((a, b) => a.d - b.d)
-  // Reject if even the best match shares almost no tokens.
-  if (ranked[0].d > 4) return null
-  return ranked[0].r
+  const best = ranked[0]
+
+  // Sanity check: at least 1 shared token. Without this, the city+state
+  // narrow-trust rule misfires — e.g., "College of William & Mary" in
+  // Williamsburg VA returned only "Richard Bland College" (its 2-year
+  // affiliate in nearby Petersburg). Zero shared tokens = different school.
+  const tokensA = tokenize(name)
+  const tokensB = tokenize(best.r['school.name'])
+  let shared = 0
+  for (const t of tokensA) if (tokensB.has(t)) shared++
+
+  // Narrow-by-city + at least 1 shared token = trust it. Catches things like
+  // "NC State University" → "North Carolina State University at Raleigh".
+  if (narrowedByCity && results.length === 1 && shared >= 1) return best.r
+
+  // Substring check: catches "Virginia Tech" → "Virginia Polytechnic
+  // Institute and State University" (no shared token after stop-word filter,
+  // but full normalized name embeds).
+  const nA = normalizeName(name)
+  const nB = normalizeName(best.r['school.name'])
+  if (nA.length >= 4 && nB.includes(nA)) return best.r
+  if (nB.length >= 4 && nA.includes(nB)) return best.r
+
+  // Hard reject: zero shared tokens after stop-word filtering = different
+  // schools, even if state+city happen to match (e.g. William & Mary vs.
+  // Richard Bland — both around Williamsburg VA, no name overlap).
+  if (shared === 0) return null
+
+  // Otherwise apply the distance threshold.
+  if (best.d > 6) return null
+  return best.r
 }
 
 function toRecord(schoolId: string, r: ScorecardResult): AcademicRecord {
@@ -296,8 +374,15 @@ async function main() {
     const state = extractState(school.location)
     const city = extractCity(school.location)
     try {
-      const results = await searchScorecard(school.name, state, city)
-      const best = pickBest(school.name, results)
+      // Try narrow first; if narrow returned results, those are city-filtered
+      // and we should trust 1-of-1 hits even on name mismatch.
+      let results = await searchScorecard(school.name, state, city)
+      const narrowed = results.length > 0 && city != null
+      if (results.length === 0 && city) {
+        // Fallback: drop the city filter entirely.
+        results = await searchScorecard(school.name, state, null)
+      }
+      const best = pickBest(school.name, results, narrowed)
       if (!best) {
         unmatched.push({ schoolId: school.id, name: school.name, state, reason: results.length === 0 ? 'no results' : 'no good name match' })
         missed++

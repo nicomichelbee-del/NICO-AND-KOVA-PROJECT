@@ -166,6 +166,96 @@ function preferenceBoost(profile: AthleteProfile, school: SchoolRecord): number 
   return boost
 }
 
+// ── reason generation ─────────────────────────────────────────────────────
+// Produces 2–4 short, specific bullet points explaining *why* the school
+// landed in its bucket. Rule-based — no AI cost. The athlete's card uses
+// the top 2; the modal can show all of them.
+
+function pluralize(n: number, singular: string, plural?: string): string {
+  return n === 1 ? singular : (plural ?? `${singular}s`)
+}
+
+function buildReasons(
+  profile: AthleteProfile,
+  school: SchoolRecord,
+  athletic: number,
+  academic: number,
+  bucket: Bucket,
+  acad: AcademicRecord | undefined,
+): string[] {
+  const reasons: string[] = []
+  const gk  = isGoalkeeper(profile.position)
+  const fwd = isForward(profile.position)
+  const positionLabel = gk ? 'keepers' : fwd ? 'forwards' : 'midfielders'
+
+  // ── Top-line fit summary (always first) ──────────────────────────────
+  if (bucket === 'safety') {
+    reasons.push(athletic >= 90 && academic >= 90
+      ? 'You\'re a top recruit on paper — comfortable fit on both axes.'
+      : 'Both your athletic and academic profile clear this program\'s typical recruit.')
+  } else if (bucket === 'target') {
+    if (athletic >= 70 && academic <= 60) reasons.push('Athletically a strong fit; academics will be the stretch.')
+    else if (academic >= 70 && athletic <= 60) reasons.push('Academic fit is strong; you\'ll need to compete athletically to play.')
+    else reasons.push('You\'re in the conversation on both axes — a real target school.')
+  } else {
+    if (athletic <= 35 && academic <= 35) reasons.push('A genuine reach — aspirational on both sides.')
+    else if (athletic <= 40) reasons.push('Their program plays a level above your current profile — athletic stretch.')
+    else if (academic <= 40) reasons.push('Their typical recruit is above your current academic profile — push the GPA/SAT.')
+    else reasons.push('Stretch fit — worth applying if it\'s a dream school.')
+  }
+
+  // ── Selectivity (Scorecard data, when available) ─────────────────────
+  if (acad?.admissionRate != null) {
+    const pct = Math.round(acad.admissionRate * 100)
+    if (pct < 10) reasons.push(`Extremely selective — only ${pct}% of applicants are admitted.`)
+    else if (pct < 25) reasons.push(`Very selective — ${pct}% acceptance rate.`)
+    else if (pct >= 80) reasons.push(`Open admissions — ${pct}% acceptance rate.`)
+  }
+
+  // ── Athletic specifics ──────────────────────────────────────────────
+  if (!gk && profile.goals > 0) {
+    const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
+    if (expected > 0) {
+      if (profile.goals >= expected + 4) reasons.push(`Your ${profile.goals} goals exceed this program's typical ${positionLabel} (avg ${expected}).`)
+      else if (profile.goals < Math.max(2, expected - 4)) reasons.push(`Your ${profile.goals} ${pluralize(profile.goals, 'goal')} is below typical ${positionLabel} here (avg ${expected}).`)
+    }
+  }
+
+  // ── Academic specifics ──────────────────────────────────────────────
+  const gpaAvg = school.gpaAvg ?? 0
+  if (gpaAvg > 0 && profile.gpa > 0) {
+    const delta = profile.gpa - gpaAvg
+    if (delta >= 0.4) reasons.push(`Your ${profile.gpa.toFixed(2)} GPA is well above the typical recruit's ${gpaAvg.toFixed(1)}.`)
+    else if (delta <= -0.4) reasons.push(`Your ${profile.gpa.toFixed(2)} GPA is below the typical ${gpaAvg.toFixed(1)} — bring up academics.`)
+  }
+
+  // ── Cost / scholarship signal (Scorecard) ────────────────────────────
+  if (acad?.costOfAttendance != null) {
+    const k = Math.round(acad.costOfAttendance / 1000)
+    if (k <= 25) reasons.push(`Affordable — about $${k}k/yr cost of attendance.`)
+    else if (k >= 70) reasons.push(`Expensive — about $${k}k/yr; check scholarships and financial aid.`)
+  }
+  if (school.scholarships && school.division !== 'D3') {
+    // Athletic scholarships exist at this division — useful for the card.
+    if (!reasons.some((r) => r.includes('scholarship') || r.includes('aid'))) {
+      reasons.push(`Athletic scholarships available (${school.division}).`)
+    }
+  } else if (school.division === 'D3') {
+    if (!reasons.some((r) => r.includes('aid') || r.includes('scholarship'))) {
+      reasons.push('No athletic scholarships (D3); academic + need-based aid only.')
+    }
+  }
+
+  // ── Geography preference ────────────────────────────────────────────
+  if (profile.locationPreference && profile.locationPreference !== 'any'
+      && school.region === profile.locationPreference) {
+    reasons.push(`In your preferred ${profile.locationPreference} region.`)
+  }
+
+  // Cap at 4 reasons total. The first is always the top-line summary.
+  return reasons.slice(0, 4)
+}
+
 // Absolute bucketing thresholds. A school is a safety only if the athlete is
 // genuinely comfortable on both axes; a target if they're in the conversation
 // on both; a reach if there's at least a credible path on either.
@@ -263,6 +353,7 @@ export function matchSchools(profile: AthleteProfile, topN = 25): School[] {
       matchScore: c.matchScore,
       athleticFit: c.athletic,
       academicFit: c.academic,
+      reasons: buildReasons(profile, c.school, c.athletic, c.academic, c.bucket, academic),
       notes: c.school.notes ?? '',
       programStrength: c.school.programStrength,
       scholarships: c.school.scholarships,
