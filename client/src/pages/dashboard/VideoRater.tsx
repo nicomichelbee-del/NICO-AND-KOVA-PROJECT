@@ -28,7 +28,7 @@ const PROGRESS_STEPS = [
 // Approximate seconds at which each step starts
 const STEP_AT = [0, 10, 35, 75]
 
-function ProgressBar({ loading }: { loading: boolean }) {
+function LoadingModal({ loading }: { loading: boolean }) {
   const [step, setStep] = useState(0)
   const [elapsed, setElapsed] = useState(0)
   const startRef = useRef<number>(0)
@@ -54,26 +54,50 @@ function ProgressBar({ loading }: { loading: boolean }) {
   if (!loading) return null
 
   return (
-    <Card className="p-6 mb-6">
-      <div className="flex items-center gap-3 mb-5">
-        <div className="w-2 h-2 rounded-full bg-[#eab308] animate-pulse" />
-        <span className="text-sm font-semibold text-[#f1f5f9]">{PROGRESS_STEPS[step].label}</span>
-        <span className="text-xs text-[#475569] ml-auto">{elapsed}s</span>
-      </div>
-      <p className="text-xs text-[#475569] mb-4">{PROGRESS_STEPS[step].detail}</p>
-      <div className="flex gap-2">
-        {PROGRESS_STEPS.map((s, i) => (
-          <div key={i} className="flex-1 flex flex-col gap-1.5">
-            <div className={`h-1 rounded-full transition-all duration-500 ${
-              i < step ? 'bg-[#eab308]' : i === step ? 'bg-[#eab308] opacity-60' : 'bg-[rgba(255,255,255,0.07)]'
-            }`} />
-            <span className={`text-[10px] leading-tight ${i <= step ? 'text-[#94a3b8]' : 'text-[#334155]'}`}>
-              {s.label.replace('...', '')}
-            </span>
+    <div className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+      <Card className="p-8 max-w-md w-full">
+        <div className="flex flex-col items-center text-center">
+          <div className="relative w-24 h-24 mb-6">
+            <svg className="w-full h-full animate-spin" viewBox="0 0 50 50">
+              <circle
+                cx="25" cy="25" r="20"
+                fill="none"
+                stroke="rgba(255,255,255,0.07)"
+                strokeWidth="4"
+              />
+              <circle
+                cx="25" cy="25" r="20"
+                fill="none"
+                stroke="#eab308"
+                strokeWidth="4"
+                strokeLinecap="round"
+                strokeDasharray="90 200"
+              />
+            </svg>
+            <div className="absolute inset-0 flex items-center justify-center text-xs font-mono text-[#eab308]">
+              {elapsed}s
+            </div>
           </div>
-        ))}
-      </div>
-    </Card>
+          <div className="font-serif text-xl font-bold text-[#f1f5f9] mb-1">
+            Analyzing your highlight reel
+          </div>
+          <p className="text-sm text-[#94a3b8] mb-1">{PROGRESS_STEPS[step].label}</p>
+          <p className="text-xs text-[#475569] mb-6">{PROGRESS_STEPS[step].detail}</p>
+          <div className="flex gap-2 w-full">
+            {PROGRESS_STEPS.map((s, i) => (
+              <div key={i} className="flex-1 flex flex-col gap-1.5">
+                <div className={`h-1 rounded-full transition-all duration-500 ${
+                  i < step ? 'bg-[#eab308]' : i === step ? 'bg-[#eab308] opacity-60' : 'bg-[rgba(255,255,255,0.07)]'
+                }`} />
+                <span className={`text-[10px] leading-tight ${i <= step ? 'text-[#94a3b8]' : 'text-[#334155]'}`}>
+                  {s.label.replace('...', '')}
+                </span>
+              </div>
+            ))}
+          </div>
+        </div>
+      </Card>
+    </div>
   )
 }
 
@@ -154,7 +178,7 @@ function ScoreRing({ score }: { score: number }) {
           strokeDasharray={`${filled} ${circ}`} strokeLinecap="round" />
       </svg>
       <div className="text-center z-10">
-        <div className="font-serif text-3xl font-black leading-none" style={{ color }}>{score}</div>
+        <div className="font-serif text-3xl font-black leading-none" style={{ color }}>{score.toFixed(1)}</div>
         <div className="text-xs text-[#64748b]">/ 10</div>
       </div>
     </div>
@@ -269,7 +293,7 @@ export function VideoRater() {
               </Button>
             </div>
             <p className="text-xs text-[#475569]">
-              AI opens your video, captures a screenshot every 3 seconds across the whole thing (up to 80 frames), and sends every one to Claude Vision for a full breakdown — so no clip gets missed. Takes ~2–3 minutes. YouTube only.
+              AI opens your video, captures up to 48 screenshots across the whole thing, stitches them into grid montages, and sends them to Claude Vision for a full breakdown — so no clip gets missed. Takes ~1–2 minutes. YouTube only.
             </p>
             <div className="mt-4">
               <label className="flex items-center gap-3 cursor-pointer">
@@ -287,7 +311,7 @@ export function VideoRater() {
             {error && <p className="text-xs text-red-400 mt-3">{error}</p>}
           </Card>
 
-          <ProgressBar loading={loading} />
+          <LoadingModal loading={loading} />
 
           {rating && (
             <div className="flex flex-col gap-6">
@@ -308,6 +332,12 @@ export function VideoRater() {
                   )}
                   <div className="flex-1 min-w-48">
                     <div className="font-serif text-xl font-bold text-[#f1f5f9] mb-2">Overall Assessment</div>
+                    {rating.detectedPosition && (
+                      <div className="mb-2 inline-flex items-center gap-2 px-2.5 py-1 bg-[rgba(234,179,8,0.08)] border border-[rgba(234,179,8,0.2)] rounded-lg">
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-[#eab308]">Detected on tape</span>
+                        <span className="text-xs text-[#f1f5f9]">{rating.detectedPosition}</span>
+                      </div>
+                    )}
                     <p className="text-sm text-[#64748b] leading-relaxed">{rating.summary}</p>
                     {rating.duration && rating.duration > 0 && (
                       <div className="mt-2 text-xs text-[#475569]">
@@ -366,7 +396,7 @@ export function VideoRater() {
               <div className="text-4xl mb-4">🎬</div>
               <div className="font-serif text-xl font-bold text-[#f1f5f9] mb-2">Submit your video</div>
               <p className="text-sm text-[#64748b] max-w-xs mx-auto">
-                Paste a YouTube link. AI watches the actual video, captures a frame every 3 seconds (up to 80), and gives you real coach-level feedback.
+                Paste a YouTube link. AI watches the actual video, captures up to 48 frames across it as grid montages, and gives you real coach-level feedback.
               </p>
             </Card>
           )}

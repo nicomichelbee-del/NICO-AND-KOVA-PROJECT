@@ -12,104 +12,9 @@ import idCampsData from '../data/idCamps.json'
 const router = Router()
 
 // ── Video rating helpers ────────────────────────────────────────────────────
-
-function getPositionSkills(position: string): string {
-  const p = position.toLowerCase()
-  if (p.includes('goalkeeper') || p.includes('gk')) return 'distribution, shot-stopping angles, dealing with crosses, footwork with the ball'
-  if (p.includes('center back') || p.includes('cb')) return 'aerial duels, 1v1 defending, stepping to win the ball, composure in possession, switching the field'
-  if (p.includes('fullback') || p.includes('outside back') || p.includes('rb') || p.includes('lb')) return 'overlapping runs, crossing quality, 1v1 defending, recovery runs'
-  if (p.includes('defensive mid') || p.includes('cdm') || p.includes('dm')) return 'winning balls, range of passing, pressing triggers, positional discipline'
-  if (p.includes('central mid') || p.includes('cm') || p.includes('midfielder')) return 'technical ability in tight spaces, vision, range of passing, runs off the ball'
-  if (p.includes('attacking mid') || p.includes('cam') || p.includes('10')) return 'combination play, dribbling in tight spaces, through balls, shots from range'
-  if (p.includes('winger') || p.includes('wide') || p.includes('lw') || p.includes('rw')) return '1v1 dribbling, crossing, cutting inside, pace in behind, tracking back'
-  if (p.includes('striker') || p.includes('forward') || p.includes('st') || p.includes('cf')) return 'finishing technique, movement off the ball, hold-up play, link-up, pressing from front'
-  return 'technical quality, composure on the ball, positioning, decision-making under pressure'
-}
-
-interface PositionRubric {
-  role: string
-  technical: string
-  tactical: string
-  composure: string
-  positionPlay: string
-  ignore: string
-}
-
-function getPositionRubric(position: string): PositionRubric {
-  const p = position.toLowerCase()
-  if (p.includes('goalkeeper') || p.includes('gk')) return {
-    role: 'Goalkeeper',
-    technical: 'handling (collecting and parrying cleanly), shot-stopping technique (set position, hand selection), distribution accuracy on short rolls AND long kicks, footwork with the ball under press',
-    tactical: 'command of area on crosses, when to come off the line vs. stay, organizing the back line (visible by gestures/body language), positioning relative to ball and goal, reading through balls',
-    composure: 'staying set under shots, calm playing out from the back when pressed, no panic clearances, body language commanding the area',
-    positionPlay: 'do they look like a modern keeper — comfortable with the ball, brave on crosses, set on shots — or a line-keeper who only stops shots?',
-    ignore: 'do NOT score them on dribbling, finishing, recovery runs, or anything an outfield player would do',
-  }
-  if (p.includes('center back') || p.includes('cb')) return {
-    role: 'Center back',
-    technical: 'passing range and weight (short retention + switches), first touch in deep buildup, aerial technique on jumps and headers, clean tackling technique without lunging',
-    tactical: 'when to step vs. drop, marking responsibilities, denying passing lanes, coordinating the back line, reading through balls early, switching play to break pressure',
-    composure: 'calm on the ball when pressed, no panic clearances under pressure, body shape open to receive, confidence in 1v1 defending duels',
-    positionPlay: 'are they a modern ball-playing CB or a "just clear it" defender? Do they win duels without diving in?',
-    ignore: 'do NOT score them on attacking 1v1 dribbles, finishing, or wing play. Recovery pace matters less than reading the game early',
-  }
-  if (p.includes('fullback') || p.includes('outside back') || p.includes('rb') || p.includes('lb')) return {
-    role: 'Fullback / Outside back',
-    technical: 'crossing technique (whip, target), 1v1 defending technique, first touch on the touchline, passing into the half-space',
-    tactical: 'when to overlap vs. hold shape, defensive recovery angles, marking the winger 1v1 vs. tucking inside, balance with the center backs',
-    composure: 'composed receiving on the touchline, not rushed when pressed near the corner, calm on the ball in transition',
-    positionPlay: 'do they contribute both ways — defend their side AND deliver attacking value (overlaps, crosses, cut-ins)?',
-    ignore: 'do NOT expect striker-level finishing or central playmaking. Recovery runs DO matter',
-  }
-  if (p.includes('defensive mid') || p.includes('cdm') || p.includes('dm')) return {
-    role: 'Defensive midfielder',
-    technical: 'passing in tight spaces, ball-winning technique without fouling, first touch with back to goal, range of passing',
-    tactical: 'screening the back four, pressing triggers, breaking lines with vertical passes, covering for advancing fullbacks, scanning before receiving',
-    composure: 'calm with back to goal when pressed, no rushed passes, body shape open between the lines, doesn\'t hide from the ball',
-    positionPlay: 'do they protect the defense AND start attacks? Or only one of those?',
-    ignore: 'do NOT score them on attacking dribbling or finishing. Defensive reading > duel-winning aggression',
-  }
-  if (p.includes('central mid') || p.includes('cm') || p.includes('midfielder')) return {
-    role: 'Central midfielder',
-    technical: 'first touch in tight spaces, range of passing (short and long), dribbling out of pressure, finishing from distance',
-    tactical: 'scanning before receiving, box-to-box rhythm, supporting attack AND defense, third-man runs, body shape to play forward',
-    composure: 'calm receiving under pressure, doesn\'t rush, body shape open to play forward, picks the right pass',
-    positionPlay: 'are they a true 8 — contributing in both boxes — or just defensive or just attacking?',
-    ignore: 'judge them on two-way contribution, not just goals or just tackles',
-  }
-  if (p.includes('attacking mid') || p.includes('cam') || p.includes('10')) return {
-    role: 'Attacking midfielder / #10',
-    technical: 'tight-space dribbling, through-ball weight and timing, finishing from the edge of the box, set-piece quality',
-    tactical: 'finding pockets between lines, timing runs into the box, combination play in the final third, when to shoot vs. release',
-    composure: 'composed in tight spaces with multiple defenders close, doesn\'t panic when pressed, picks the right moment',
-    positionPlay: 'are they the creative pivot — turning, finding runners, finishing — or just a goalscorer who hangs forward?',
-    ignore: 'do NOT score them heavily on tracking back or defensive duels. Creativity > work rate for this role',
-  }
-  if (p.includes('winger') || p.includes('wide') || p.includes('lw') || p.includes('rw')) return {
-    role: 'Winger',
-    technical: '1v1 dribbling, crossing technique, cutting inside and finishing, change of pace, first touch at speed',
-    tactical: 'starting wide and arriving central, isolating defenders 1v1, tracking back to support the fullback, recognizing when to commit vs. recycle',
-    composure: 'composed in 1v1 isolations, doesn\'t panic when doubled, picks the right end-product (cross, shot, cut-back)',
-    positionPlay: 'do they actually beat their fullback consistently and produce end-product? Or run into trouble?',
-    ignore: 'do NOT expect midfield-level retention or central #10 creativity. Beating the fullback is the job',
-  }
-  if (p.includes('striker') || p.includes('forward') || p.includes('st') || p.includes('cf')) return {
-    role: 'Striker / Forward',
-    technical: 'finishing technique (one-touch, far post, headers), hold-up play with back to goal, first touch on long balls, link-up touches',
-    tactical: 'movement off the ball (timing offside line, near-post runs, dropping in), pressing from the front, run selection, when to peel vs. attack the cross',
-    composure: 'composed in front of goal, doesn\'t rush finishes, holds the ball calmly with back to goal, decisive in the box',
-    positionPlay: 'are they a true 9 — finishing AND linking AND pressing — or one-dimensional?',
-    ignore: 'do NOT score them on tracking back to defend or central playmaking. Goals + movement + hold-up matter most',
-  }
-  return {
-    role: position,
-    technical: 'first touch, passing weight and accuracy, finishing/shooting if applicable, dribbling under pressure',
-    tactical: 'decision-making, off-ball movement, scanning, positional discipline, defensive reads',
-    composure: 'first touch when pressed, calm decisions in tight spaces, body language in challenges',
-    positionPlay: `are they doing what a ${position} is supposed to do, or playing it like a different role?`,
-    ignore: 'judge them on what their position demands, not what other positions do',
-  }
-}
+// Position rubric is embedded directly in the prompt now. The AI detects the
+// player's position from the footage instead of relying on the profile, so the
+// listed `profile.position` does not bias the evaluation.
 
 interface CachedRating { result: Record<string, unknown>; cachedAt: number }
 const videoCache = new Map<string, CachedRating>()
@@ -243,76 +148,129 @@ router.post('/video', async (req, res) => {
     }
 
     // Check cache. The "v" prefix is a schema version — bump it whenever the
-    // rating output shape changes so old cached entries (e.g. athleticism →
-    // composure migration) cannot be returned with the wrong shape.
-    const cacheKey = `v2::${videoUrl}::${profile.position}::${profile.targetDivision}`
+    // rating output shape changes. v3 dropped profile.position from the cache
+    // key; v9 switched the AI from individual frames to grid composites.
+    const cacheKey = `v9::${videoUrl}::${profile.targetDivision}`
     const cached = videoCache.get(cacheKey)
     if (cached && Date.now() - cached.cachedAt < CACHE_TTL_MS) {
       return res.json(cached.result)
     }
 
-    // Capture actual video frames via Puppeteer
-    const { frames, duration, title } = await captureYouTubeFrames(videoUrl)
+    // Capture actual video frames via Puppeteer, then composite them into
+    // grid montages so the AI can see ~48 frames worth of footage at the
+    // token cost of just 4 images.
+    console.log(`[video] starting capture for ${videoUrl} (target: ${profile.targetDivision})`)
+    const { frames, grids, duration, title } = await captureYouTubeFrames(videoUrl)
+    console.log(`[video] captured ${frames.length} frames, ${grids.length} grids, duration=${duration}s`)
 
     if (!frames || frames.length === 0) {
       console.error('[video] puppeteer returned 0 frames for', videoUrl)
       return res.status(500).json({ error: 'Could not capture frames from this video — make sure it is a public, non-age-restricted YouTube video and try again.' })
     }
-
-    const posSkills = getPositionSkills(profile.position)
-    const rubric = getPositionRubric(profile.position)
+    if (!grids || grids.length === 0) {
+      console.error('[video] grid composer produced 0 grids for', videoUrl)
+      return res.status(500).json({ error: 'Could not assemble video frames for analysis — please try again.' })
+    }
 
     const divisionNote =
       profile.targetDivision === 'D1' ? 'D1: coaches skip videos in 10 seconds — opening clip must be elite. Stat overlay required. Club > HS footage.' :
       profile.targetDivision === 'D2' || profile.targetDivision === 'D3' ? `${profile.targetDivision}: show fit + versatility, not just goals. Academic info on overlay is a plus.` :
       'NAIA/JUCO: show physical and tactical readiness for immediate playing time.'
 
-    const prompt = `You are an experienced college soccer recruiting coordinator with 15+ years of evaluating player tape. You have ${frames.length} screenshots labeled with their timestamps, spanning the ENTIRE video.
+    const prompt = `You are an experienced college soccer recruiting coordinator with 15+ years of evaluating player tape. You have ${grids.length} grid montages, each one a 4-column × 3-row composite of up to 12 video frames. Across all grids you are seeing ${frames.length} frames spanning the ENTIRE video.
 
-Your job is to evaluate THE PLAYER — their position, how they play, and the quality of their play. You are NOT a video producer. Do not grade the editing, the camera angle, the title card, the music, the stat overlay, or the video length. Coaches care about the soccer; that is what you are here to assess.
+GRID FORMAT — read this carefully:
+Each grid image is a 4×3 grid of frames. Read them left-to-right, top-to-bottom. Every cell has a yellow timestamp badge in the top-left corner (formatted M:SS) so you can identify which moment is which. Frames are in chronological order across all grids — earliest in the first cell of the first grid, latest in the last cell of the last grid. When you cite an observation, reference it with the timestamp from that cell's badge (e.g., "at 1:24 the player drives the byline").
 
-Athlete being evaluated:
-- Position: ${profile.position}
-- Target division: ${profile.targetDivision}
-- Grad year: ${profile.gradYear}
-- Club: ${profile.clubTeam}${profile.clubLeague ? ` (${profile.clubLeague})` : ''}
-- Self-reported stats: ${profile.goals ?? '?'}G / ${profile.assists ?? '?'}A
+Your job is to evaluate THE PLAYER — what position they play on tape, how they play it, and the quality of their play. You are NOT a video producer. Do not grade the editing, the camera angle, the title card, the music, the stat overlay, or the video length. Coaches care about the soccer; that is what you are here to assess.
+
+Target division (the level you are calibrating against): ${profile.targetDivision}
+Grad year: ${profile.gradYear}
+
+CRITICAL — IGNORE ANY OFF-TAPE PROFILE:
+You are NOT told the player's listed position, club, or stats. Even if you have prior context that says otherwise, do NOT use it. The recruit's listed position can be wrong, outdated, or from a different team. Your evaluation must come ONLY from what is visible in these frames. Trust the tape, not a profile.
 
 WHAT TO IGNORE (do not mention, do not score, do not include in improvements):
-- Camera angle (high-angle / drone / sideline / Veo / Trace / Pixellot — all fine)
+- Camera angle of any kind (high-angle / drone / sideline / Veo / Trace / Pixellot / handheld / phone — ALL FINE, ALL EQUIVALENT)
+- Video resolution, sharpness, lighting, motion blur, or compression artifacts
 - Production polish (editing, pacing, music, transitions, title card)
 - Whether there's a stat overlay
 - Video length
 
-IDENTIFY THE PLAYER YOURSELF: assume the recruit is whoever is consistently the focus of the action across clips. Pick them out by play pattern. Do NOT score, score-down, or center your evaluation on whether they are circled.
+CAMERA / VIDEO-QUALITY RULE — non-negotiable:
+The camera angle and image quality have ZERO influence on the score. A blurry sideline phone clip and a crisp drone shot are evaluated identically. Do NOT mention the camera. Do NOT mention the angle. Do NOT mention image clarity. Do NOT downgrade a score because a clip is hard to see — if you genuinely can't tell what happened in a frame, just rely on the frames you CAN read. The player's qualities at their position are the ONLY thing being scored.
 
-WHAT TO EVALUATE — soccer only:
-You are watching the player work. Across the full set of frames (earliest to latest), pick out the recruit by who is consistently at the center of the action. Then judge their soccer.
+STEP 1 — IDENTIFY THE RECRUIT FROM THE TAPE:
+Across the full set of frames (earliest to latest), pick out the recruit by who is consistently at the center of the action. Use circles/arrows/spotlights only as a tiebreaker — the primary signal is which player the camera and clip selection follow. Do NOT score-down because of marker presence.
 
-Frame of reference — what ${profile.targetDivision} coaches expect from a ${profile.position}: ${posSkills}
+STEP 2 — DETECT THEIR ACTUAL ON-FIELD POSITION FROM THE TAPE:
+Watch what they do. Where do they start each clip? Where do the actions happen on the pitch? What roles do the touches imply? Pick the SINGLE position that best matches what they actually do in the footage. Choose from:
+  - Goalkeeper
+  - Center back
+  - Fullback / Outside back
+  - Defensive midfielder
+  - Central midfielder
+  - Attacking midfielder / #10
+  - Winger
+  - Striker / Forward
 
-POSITION-SPECIFIC LENS — this is critical:
-You are evaluating a ${rubric.role}. Score them ONLY against what their position demands. Do NOT score them against a generic outfield checklist.
-- For this role, IGNORE: ${rubric.ignore}
-- Do not penalize a ${rubric.role} for not doing things outside their job description. A center back without 1v1 dribbling is not a weakness; a striker without recovery runs is not a weakness.
+Position-evidence cues:
+  - Striker / Forward: starts on/near the last defender, finishes in the box, hold-up with back to goal, shots and headers in the 18.
+  - Winger: starts wide, 1v1s on the touchline, cut-ins, crosses, runs in behind the fullback.
+  - Attacking mid / #10: receives between lines, through balls, late runs into the box, shots from the edge of the area.
+  - Central mid: box-to-box, switches play, supports both halves, tackles AND attacking touches.
+  - Defensive mid: screens the back four, ball-winning, deeper position, recycles possession.
+  - Fullback / Outside back: defends the touchline, overlaps, crosses, recovery runs.
+  - Center back: deepest outfield position, aerial duels, blocks, plays out from the back.
+  - Goalkeeper: in the goal, handles, distributes.
 
-SCORING — every score is a 1–10 INTEGER on this scale, calibrated to ${profile.targetDivision} level:
-  1 = wrong level entirely for ${profile.targetDivision}
-  2 = well below ${profile.targetDivision}
-  3 = clearly below ${profile.targetDivision}
-  4 = somewhat below ${profile.targetDivision}
-  5 = on the edge of ${profile.targetDivision} — borderline
-  6 = competitive at ${profile.targetDivision} — could fit a roster
-  7 = solid ${profile.targetDivision} level
-  8 = above ${profile.targetDivision} — would be a contributor
-  9 = well above ${profile.targetDivision} — impact starter
-  10 = elite for ${profile.targetDivision} — could play higher
+If clips show genuine multi-role play (e.g. wing AND striker), pick the role they play MOST.
 
-CALIBRATION NOTE — be fair, not harsh:
-Players who put a highlight tape together are usually at least near their target level. Default reasonable when evidence is mixed. If you're genuinely torn between two adjacent scores (e.g. 6 vs 7), lean to the HIGHER one unless you saw a specific weakness on tape that justifies the lower number.
+STEP 3 — EVALUATE AGAINST THAT POSITION'S RUBRIC:
+Use the rubric below for the position you detected. Do NOT use a generic outfield checklist.
+
+GOALKEEPER — technical: handling, shot-stopping technique, distribution accuracy, footwork under press. tactical: command of area, when to come off the line, organizing the back line, reading through balls. composure: staying set under shots, calm playing out from the back, no panic clearances. positionPlay: modern keeper (brave, comfortable with the ball) vs. line-keeper. IGNORE: dribbling, finishing, recovery runs.
+
+CENTER BACK — technical: passing range and weight, first touch in deep buildup, aerial technique, clean tackling without lunging. tactical: when to step vs. drop, marking responsibilities, denying lanes, switching play. composure: calm under press, no panic clearances, body shape open, confident in 1v1 duels. positionPlay: ball-playing CB vs. "just clear it" defender. IGNORE: attacking 1v1 dribbles, finishing, wing play.
+
+FULLBACK / OUTSIDE BACK — technical: crossing technique, 1v1 defending technique, first touch on the touchline, passing into the half-space. tactical: overlap timing, recovery angles, marking the winger 1v1. composure: composed receiving on the touchline, calm in transition. positionPlay: defends side AND delivers attacking value. IGNORE: striker-level finishing, central playmaking.
+
+DEFENSIVE MIDFIELDER — technical: passing in tight spaces, ball-winning without fouling, first touch with back to goal, range of passing. tactical: screening the back four, pressing triggers, breaking lines, scanning before receiving. composure: calm with back to goal, no rushed passes, body shape open. positionPlay: protects defense AND starts attacks. IGNORE: attacking dribbling, finishing.
+
+CENTRAL MIDFIELDER — technical: first touch in tight spaces, range of passing, dribbling out of pressure, finishing from distance. tactical: scanning, box-to-box rhythm, third-man runs, body shape. composure: calm receiving under pressure, body shape open to play forward. positionPlay: true 8 — contributing in both boxes. IGNORE: judging on just goals or just tackles.
+
+ATTACKING MIDFIELDER / #10 — technical: tight-space dribbling, through-ball weight, finishing from the edge, set-piece quality. tactical: finding pockets between lines, timing runs into the box, combination play. composure: composed in tight spaces with multiple defenders close. positionPlay: creative pivot — turning, finding runners, finishing. IGNORE: tracking back / defensive duels.
+
+WINGER — technical: 1v1 dribbling, crossing technique, cutting inside and finishing, change of pace. tactical: starting wide and arriving central, isolating fullbacks 1v1, tracking back. composure: composed in 1v1 isolations, picks the right end-product. positionPlay: actually beats the fullback and produces end-product. IGNORE: midfield-level retention, central #10 creativity.
+
+STRIKER / FORWARD — technical: finishing technique, hold-up play with back to goal, first touch on long balls, link-up touches. tactical: movement off the ball (offside line, near-post runs, dropping in), pressing from front, run selection. composure: composed in front of goal, calm hold-up, decisive in the box. positionPlay: true 9 — finishing AND linking AND pressing. IGNORE: tracking back to defend, central playmaking.
+
+POSITION-FAIRNESS RULE: do not penalize the player for not doing things outside the detected role's job description. A center back without 1v1 dribbling is not a weakness; a striker without recovery runs is not a weakness.
+
+SCORING — every score is a 1.0–10.0 number on this scale, with ONE decimal place (e.g. 6.4, 7.0, 8.3), calibrated to ${profile.targetDivision} level:
+  1.0–2.9 = wrong level entirely for ${profile.targetDivision} (clear evidence of major technical/tactical gaps; reserve for plain unreadiness)
+  3.0–3.9 = clearly below ${profile.targetDivision} (would not contribute at this level)
+  4.0–4.9 = somewhat below ${profile.targetDivision} (gap is visible but bridgeable)
+  5.0–5.9 = at the lower edge of ${profile.targetDivision} (could fit the bench of a weaker program at this division)
+  6.0–6.9 = competitive at ${profile.targetDivision} — would fit a typical roster at this division
+  7.0–7.9 = solid ${profile.targetDivision} contributor — would compete for minutes at a typical program
+  8.0–8.9 = above ${profile.targetDivision} — clear impact player, could start at most programs
+  9.0–9.9 = well above ${profile.targetDivision} — top-program starter, could play a level higher
+  10.0  = elite for ${profile.targetDivision} — best-in-class, plays well above this level
+
+DECIMAL PRECISION: every sub-score must use one decimal place. Use the .x to express fine differences — a player who is "solidly D1 but not quite an impact starter" is 7.4, not 7. A player who is "competitive but rough" is 6.2 or 6.5, not 6 or 7. Whole numbers like 7.0 are allowed when the score is genuinely on the line, but most scores should land on .1–.9. Do NOT just emit integers and trust the server to add decimals.
+
+HIGHLIGHT-TAPE SELECTION BIAS — read carefully:
+You are watching a HIGHLIGHT REEL. The player (or their family/coach) has hand-picked their best moments. By construction, this is their A-game. Players whose actual level is well below their target division do NOT typically have a polished highlight reel. So your prior should be: "this player is at or near their target division" UNLESS the tape itself contradicts that.
+
+DEFAULT-UPWARD RULE:
+Anchor the typical highlight-tape rating around 7.0–8.0 for a player auditing for their target division. Reserve scores below 5.5 for clear, specific deficiencies you can name from the tape (e.g. "first touch consistently bounces off them at 0:42, 1:18, 2:05 — well below D1 cleanliness"). If a clip looks competent and you have no concrete reason to mark it down, the score for that dimension is at least 7.0. If the play is fluid, decisions are sound, and there are no visible technical breakdowns, the floor is 7.5 — even when there isn't a flashy "wow" moment to hang a higher number on.
+
+ANTI-HARSH RULE:
+Do not punish a player for things you didn't see. Lack of evidence is not evidence of weakness. If you only see a striker finish three times and you don't see hold-up play, that is NOT a 4 in technical — score what you saw, not what was absent. The tape is short by design.
 
 ANTI-HEDGE RULE — read carefully:
-You are not allowed to default to 5 or 6 just because you're uncertain. Every score must be backed by a specific observation. If you find yourself wanting to give a 5, decide between 5 and 6 by asking: do they look closer to "borderline" or "could compete"? Pick. The full scale exists for a reason — most players land somewhere between 5 and 8.
+You are not allowed to default to 6 or 7 just because you're uncertain. Every score must be backed by a specific observation. If you find yourself wanting to give a 6.x, decide between 6 and 7 by asking: do they look closer to "competitive but rough" or "solid contributor"? Pick. The full scale exists for a reason — most players auditing for their target division on tape land somewhere between 7 and 9.
 
 You score every dimension independently. Every dimension uses different evidence — technique vs. decision-making vs. composure vs. role-fit vs. level — so the scores almost never line up. A player can be technical=8 / composure=5. That's normal.
 
@@ -324,24 +282,27 @@ After you draft your five scores, perform this CHECK:
   3. Do not "split the difference" — pick a clear strongest and clear weakest based on what you actually saw in the frames.
 Output only AFTER the range constraint is satisfied.
 
-Five evaluation dimensions — for EACH, describe what you see and assign a 1–10 score. Each dimension below is REWRITTEN for a ${rubric.role}. Use these definitions, not generic ones:
+Five evaluation dimensions — for EACH, describe what you see and assign a 1.0–10.0 score with ONE decimal place. Use the rubric for the position you detected, not a generic checklist:
 
-1. technical (for a ${rubric.role}) — ${rubric.technical}. Is the technique clean or scrappy?
+1. technical (for the detected role) — technique judged for that position. Is the technique clean or scrappy?
 
-2. tactical (for a ${rubric.role}) — ${rubric.tactical}. Do they understand the game from this position?
+2. tactical (for the detected role) — tactical understanding judged for that position. Do they understand the game from this position?
 
-3. composure (for a ${rubric.role}) — ${rubric.composure}. This is visible at any camera angle, unlike pure athletic traits like top-end pace which a highlight tape rarely shows reliably. Do NOT score-down for unseen athletic traits — judge what is actually on tape.
+3. composure (for the detected role) — poise under pressure for that position. This is visible at any camera angle, unlike pure athletic traits like top-end pace which a highlight tape rarely shows reliably. Do NOT score-down for unseen athletic traits — judge what is actually on tape.
 
-4. positionPlay (for a ${rubric.role}) — ${rubric.positionPlay} Frame of reference: ${posSkills}.
+4. positionPlay (for the detected role) — how they play that position specifically.
 
-5. divisionFit — direct level assessment. Do they look like a ${profile.targetDivision} ${rubric.role}, higher, or lower?
+5. divisionFit — direct level assessment. Do they look like a ${profile.targetDivision} player at the position you detected, higher, or lower?
 
 ${divisionNote}
 
 ANTI-MISTAKE RULES:
 - Do NOT make markers/circles part of any of the 5 dimensions or sub-scores.
 - Do NOT comment on title cards, stat overlays, music, editing, or video length.
-- The 5 dimensions and their scores are about SOCCER only.
+- Do NOT comment on or score-down for camera angle, video resolution, lighting, or image clarity. The camera is invisible to your evaluation.
+- The 5 dimensions and their scores are about SOCCER only — the player's qualities at their position.
+- Do NOT use any pre-supplied profile position to drive your evaluation. Detect the role from the tape.
+- Do NOT score-down for traits not visible. Score what you saw, not what was missing from the edit.
 
 IMPROVEMENTS LIST:
 - 1–2 items must be soccer-specific: a part of their game to work on, a type of clip to add, a weakness to address.
@@ -349,20 +310,23 @@ IMPROVEMENTS LIST:
 - Do not recommend "shorten the video," "add a stat overlay," "add a title card," or any other production polish.
 
 PROCESS — do this internally, but DO NOT write it out:
-Walk through every frame in time order. Identify the recruit by recurring action focus. Note what they did, the technique, the decisions, and the physical traits shown. Then score each dimension on the 1–10 scale above. The server will overwrite the overall "score" field with the rounded average of your 5 sub-scores, so still fill it in but don't agonize over it.
+Walk through every frame in time order. Identify the recruit by recurring action focus. Detect their position from where they play and what they do. Then score each dimension on the 1.0–10.0 scale above (one decimal place) using that position's rubric. The server will overwrite the overall "score" field with the average of your 5 sub-scores, so still fill it in but don't agonize over it.
 
 OUTPUT — your reply must be ONLY the JSON object below, with no preamble, no analysis, no markdown fences, no explanation. Start your reply with the opening "{" and end with the closing "}". Anything else and the parser fails.
 
-JSON shape (return this exact structure):
-{"score":<integer 1-10 — your overall, will be overwritten by server with avg of sub-scores>,"summary":"<2-3 sentences — honest verdict on the ${rubric.role}'s level relative to ${profile.targetDivision}, with at least one specific observation referencing a timestamp>","technical":"<technique judged for a ${rubric.role}, with timestamps>","technicalScore":<integer 1-10>,"tactical":"<tactical understanding judged for a ${rubric.role}, with timestamps>","tacticalScore":<integer 1-10>,"composure":"<poise under pressure judged for a ${rubric.role}>","composureScore":<integer 1-10>,"positionPlay":"<how they play ${rubric.role} specifically>","positionPlayScore":<integer 1-10>,"divisionFit":"<direct assessment: ${profile.targetDivision} ${rubric.role} caliber, above, or below>","divisionFitScore":<integer 1-10>,"improvements":["<#1 ${rubric.role}-specific>","<#2 ${rubric.role}-specific>","<#3 ${rubric.role}-specific or marker note>"]}`
+JSON shape (return this exact structure — every score is a number with ONE decimal place, e.g. 6.4 or 7.0, never an integer alone):
+{"detectedPosition":"<one of: Goalkeeper, Center back, Fullback / Outside back, Defensive midfielder, Central midfielder, Attacking midfielder / #10, Winger, Striker / Forward>","score":<number 1.0-10.0 with one decimal — your overall, will be overwritten by server with avg of sub-scores>,"summary":"<2-3 sentences — open by stating the detected position with one piece of evidence (e.g. 'Plays as a striker — consistently the furthest forward, finishes inside the 18 at 1:24 and 2:51'), then give an honest verdict on their level relative to ${profile.targetDivision}, with at least one more specific observation referencing a timestamp>","technical":"<technique judged for the detected role, with timestamps>","technicalScore":<number 1.0-10.0 with one decimal>,"tactical":"<tactical understanding judged for the detected role, with timestamps>","tacticalScore":<number 1.0-10.0 with one decimal>,"composure":"<poise under pressure judged for the detected role>","composureScore":<number 1.0-10.0 with one decimal>,"positionPlay":"<how they play the detected role specifically>","positionPlayScore":<number 1.0-10.0 with one decimal>,"divisionFit":"<direct assessment: ${profile.targetDivision} caliber at the detected position, above, or below>","divisionFitScore":<number 1.0-10.0 with one decimal>,"improvements":["<#1 specific to the detected role>","<#2 specific to the detected role>","<#3 specific to the detected role or marker note>"]}`
 
-    const imageInputs = frames.map(f => ({
-      data: f.data,
+    const fmtTs = (s: number) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
+    const imageInputs = grids.map((g, i) => ({
+      data: g.data,
       mediaType: 'image/jpeg',
-      label: `[Screenshot at ${Math.floor(f.timestamp / 60)}:${String(Math.floor(f.timestamp % 60)).padStart(2, '0')}]`,
+      label: `[Grid ${i + 1} of ${grids.length} — ${g.cellCount} frames covering ${fmtTs(g.firstTimestamp)} through ${fmtTs(g.lastTimestamp)}, read left-to-right top-to-bottom]`,
     }))
 
+    console.log(`[video] sending ${imageInputs.length} grid(s) to Claude Vision`)
     let text = await askWithImages(prompt, imageInputs, 3500)
+    console.log(`[video] received response: ${text.length} chars`)
     let result = parseJSON<Record<string, unknown>>(text, {})
 
     // If the parser got nothing usable, log raw response and bail.
@@ -392,6 +356,7 @@ You hedged. Re-evaluate. Pick the player's clearest STRENGTH from what you actua
     // Backfill any missing string field with a placeholder so a partial JSON
     // doesn't kill the whole request. Better to show what we got than 500.
     const stringFields: { key: string; fallback: string }[] = [
+      { key: 'detectedPosition', fallback: 'Position unclear from the footage' },
       { key: 'summary', fallback: 'Analysis incomplete — try rating this video again.' },
       { key: 'technical', fallback: 'No technical assessment available.' },
       { key: 'tactical', fallback: 'No tactical assessment available.' },
@@ -408,19 +373,22 @@ You hedged. Re-evaluate. Pick the player's clearest STRENGTH from what you actua
 
     // Overall score = mechanical average of the sub-scores. Forces commitment
     // and prevents the model from defaulting to 5/10 for everything.
+    // Scores are kept to 1 decimal place (e.g. 7.0, 6.4) so the UI can show
+    // calibrated ratings instead of coarse integers.
+    const round1 = (n: number) => Math.round(n * 10) / 10
     const subKeys = ['technicalScore', 'tacticalScore', 'composureScore', 'positionPlayScore', 'divisionFitScore'] as const
     const subs = subKeys.map(k => Number(result[k])).filter(n => Number.isFinite(n) && n >= 1 && n <= 10)
     if (subs.length >= 3) {
       const avg = subs.reduce((a, b) => a + b, 0) / subs.length
-      result.score = Math.max(1, Math.min(10, Math.round(avg)))
+      result.score = Math.max(1, Math.min(10, round1(avg)))
     } else {
       const overall = Number(result.score)
-      result.score = Number.isFinite(overall) && overall >= 1 && overall <= 10 ? Math.round(overall) : 5
+      result.score = Number.isFinite(overall) && overall >= 1 && overall <= 10 ? round1(overall) : 5.0
     }
     // Backfill any missing sub-score with the overall so the UI doesn't show NaN.
     for (const k of subKeys) {
       const v = Number(result[k])
-      result[k] = Number.isFinite(v) && v >= 1 && v <= 10 ? Math.round(v) : result.score
+      result[k] = Number.isFinite(v) && v >= 1 && v <= 10 ? round1(v) : result.score
     }
 
     // Attach screenshots and metadata so the client can display them
@@ -431,8 +399,25 @@ You hedged. Re-evaluate. Pick the player's clearest STRENGTH from what you actua
     videoCache.set(cacheKey, { result, cachedAt: Date.now() })
     res.json(result)
   } catch (e) {
-    console.error('[video]', e)
-    res.status(500).json({ error: e instanceof Error ? e.message : 'Failed to analyze video' })
+    const err = e as { status?: number; message?: string; error?: { message?: string }; stack?: string }
+    console.error('[video] FAILED:', {
+      message: err?.message,
+      status: err?.status,
+      anthropicError: err?.error?.message,
+      stack: err?.stack?.split('\n').slice(0, 5).join('\n'),
+    })
+    const msg = e instanceof Error ? e.message : 'Failed to analyze video'
+    // Anthropic 429s arrive as errors with status 429 and "rate_limit" in the
+    // body. Surface a friendlier message so the user knows to retry shortly.
+    const isRateLimit = err?.status === 429 || /rate.?limit|429/i.test(msg)
+    if (isRateLimit) {
+      // We've already auto-retried with backoff inside the AI client, so a
+      // 429 surfacing here means the limit is genuinely sustained.
+      return res.status(429).json({
+        error: 'AI is busy right now — please wait 2–3 minutes and try again.',
+      })
+    }
+    res.status(500).json({ error: msg })
   }
 })
 

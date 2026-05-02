@@ -5,29 +5,55 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY ?? '' })
 const PERSONA = `You are a college soccer recruitment counselor with 15+ years of experience.
 Tone: encouraging, direct, and soccer-specific. Never generic. Tailor everything to soccer positions, stats, and recruiting culture.`
 
+// Automatically retry rate-limit (429) and transient 5xx errors. Anthropic
+// returns a `retry-after` header in seconds when known; otherwise we back off
+// exponentially. This stops the video rater from failing on the user's screen
+// just because the org's per-minute token budget was momentarily exhausted by
+// a prior call still in the rolling window.
+async function withRetry<T>(fn: () => Promise<T>, maxAttempts = 4): Promise<T> {
+  let attempt = 0
+  while (true) {
+    try {
+      return await fn()
+    } catch (e) {
+      attempt++
+      const err = e as { status?: number; headers?: Record<string, string>; message?: string }
+      const status = err?.status
+      const retriable = status === 429 || (typeof status === 'number' && status >= 500 && status <= 599)
+      if (!retriable || attempt >= maxAttempts) throw e
+      const headerWait = Number(err.headers?.['retry-after'])
+      const waitMs = Number.isFinite(headerWait) && headerWait > 0
+        ? Math.min(headerWait * 1000, 65_000)
+        : Math.min(2_000 * 2 ** (attempt - 1), 30_000)
+      console.warn(`[aiClient] ${status} on attempt ${attempt} — waiting ${waitMs}ms before retry`)
+      await new Promise((r) => setTimeout(r, waitMs))
+    }
+  }
+}
+
 export async function chat(
   messages: { role: 'user' | 'assistant'; content: string }[],
   systemAddendum = '',
   maxTokens = 600,
 ): Promise<string> {
-  const response = await client.messages.create({
+  const response = await withRetry(() => client.messages.create({
     model: 'claude-haiku-4-5',
     max_tokens: maxTokens,
     system: PERSONA + systemAddendum,
     messages,
-  })
+  }))
   const block = response.content[0]
   if (block.type !== 'text') throw new Error('Unexpected response type')
   return block.text
 }
 
 export async function ask(prompt: string, maxTokens = 1024): Promise<string> {
-  const response = await client.messages.create({
+  const response = await withRetry(() => client.messages.create({
     model: 'claude-haiku-4-5',
     max_tokens: maxTokens,
     system: PERSONA,
     messages: [{ role: 'user', content: prompt }],
-  })
+  }))
   const block = response.content[0]
   if (block.type !== 'text') throw new Error('Unexpected response type')
   return block.text
@@ -64,12 +90,12 @@ export async function askWithImages(
   }
   content.push({ type: 'text', text: textPrompt })
 
-  const response = await client.messages.create({
+  const response = await withRetry(() => client.messages.create({
     model: 'claude-sonnet-4-6',
     max_tokens: maxTokens,
     system: PERSONA,
     messages: [{ role: 'user', content }],
-  })
+  }))
   const block = response.content[0]
   if (block.type !== 'text') throw new Error('Unexpected response type')
   return block.text
