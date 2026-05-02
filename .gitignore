@@ -6,3 +6,6 @@ server.log
 .playwright-mcp/
 .superpowers/
 .claude/settings.local.json
+
+# transient enrichment diagnostic; gets overwritten each run
+server/data/scorecardUnmatched.json

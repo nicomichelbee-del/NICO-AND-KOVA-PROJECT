@@ -13833,5 +13833,11 @@
     "programStrength": 6,
     "scholarships": false,
     "notes": "One of the largest community colleges in the US; nationally recognized athletics program with a highly competitive soccer program drawing from the San Gabriel Valley and greater LA area."
+  },
+  {
+    "id": "bethel-university-tn",
+    "name": "Bethel University",
+    "division": "NAIA",
+    "conference": "Mid-South Conference"
   }
 ]
