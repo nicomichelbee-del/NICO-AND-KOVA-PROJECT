@@ -134,6 +134,8 @@ export function Schools() {
 
       {schools.length > 0 && (
         <>
+          <ProfileAssessment schools={schools} />
+
           <div className="grid grid-cols-3 gap-4 mb-8">
             {(['reach', 'target', 'safety'] as const).map((cat) => (
               <Card key={cat} className="p-5">
@@ -666,6 +668,56 @@ function InfoRow({ label, value }: { label: string; value: string }) {
       <span className="text-[10px] uppercase tracking-widest text-[#64748b]">{label}</span>
       <span className="text-sm text-[#f1f5f9] capitalize">{value}</span>
     </div>
+  )
+}
+
+// Top-of-page summary that interprets the athlete's full match list.
+// Tells them which axis is currently their strength vs. their stretch and
+// where the average match lands financially. The numbers come from data
+// the matcher already produced — no extra computation cost.
+function ProfileAssessment({ schools }: { schools: School[] }) {
+  if (schools.length === 0) return null
+  const avg = (xs: number[]) => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0
+  const ath = Math.round(avg(schools.map((s) => s.athleticFit ?? 50)))
+  const acad = Math.round(avg(schools.map((s) => s.academicFit ?? 50)))
+  const costs = schools.map((s) => s.costOfAttendance).filter((c): c is number => c != null && c > 0)
+  const medianCost = costs.length
+    ? Math.round([...costs].sort((a, b) => a - b)[Math.floor(costs.length / 2)] / 1000)
+    : null
+
+  // Interpret the imbalance.
+  const diff = ath - acad
+  let headline: string
+  if (Math.abs(diff) < 8) {
+    headline = 'Your athletic and academic profile are well-balanced across these matches.'
+  } else if (diff >= 8) {
+    headline = 'Your athletic profile leads — these matches lean on play first; lift academics to widen the funnel.'
+  } else {
+    headline = 'Your academic profile leads — coaches will be reading your transcript before your highlights.'
+  }
+
+  return (
+    <Card className="p-6 mb-6 bg-gradient-to-br from-[rgba(234,179,8,0.05)] to-[rgba(255,255,255,0.02)]">
+      <div className="flex items-start gap-6 flex-wrap">
+        <div className="flex-1 min-w-[280px]">
+          <div className="text-[10px] uppercase tracking-widest text-[#eab308] font-bold mb-1.5">Your match read</div>
+          <p className="text-sm text-[#cbd5e1] leading-relaxed">{headline}</p>
+          {medianCost != null && (
+            <p className="text-xs text-[#64748b] mt-2">
+              Median cost of attendance across your {schools.length} matches: <span className="text-[#cbd5e1] font-semibold">${medianCost}k/yr</span>
+            </p>
+          )}
+        </div>
+        <div className="flex gap-5 min-w-[260px]">
+          <div className="flex-1">
+            <FitBar label="Avg Athletic" value={ath} />
+          </div>
+          <div className="flex-1">
+            <FitBar label="Avg Academic" value={acad} />
+          </div>
+        </div>
+      </div>
+    </Card>
   )
 }
 
