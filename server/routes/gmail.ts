@@ -25,6 +25,31 @@ function getOAuth2Client() {
 
 const CLIENT_URL = process.env.CLIENT_URL ?? 'http://localhost:5173'
 
+// Paginate through Gmail threads.list — Gmail caps a single call at 500 results, so a
+// query that matches more than that needs pageToken iteration. We cap total threads
+// per query at maxThreads as a safety net against runaway inboxes.
+async function listAllThreads(
+  gmail: any,
+  q: string,
+  maxThreads: number,
+): Promise<{ id?: string | null; snippet?: string | null }[]> {
+  const all: { id?: string | null; snippet?: string | null }[] = []
+  let pageToken: string | undefined = undefined
+  do {
+    const remaining = maxThreads - all.length
+    if (remaining <= 0) break
+    const r: any = await gmail.users.threads.list({
+      userId: 'me',
+      q,
+      maxResults: Math.min(500, remaining),
+      pageToken,
+    })
+    for (const t of r.data.threads ?? []) all.push(t)
+    pageToken = r.data.nextPageToken ?? undefined
+  } while (pageToken)
+  return all
+}
+
 function mapContact(row: any) {
   return {
     id: row.id,
@@ -317,35 +342,78 @@ router.get('/threads', async (req, res) => {
     }
   }
 
-  // Scan inbox for untracked potential coach replies
+  // Scan the FULL mailbox (not just the 30 newest inbox threads) for untracked potential
+  // coach replies — mirrors the /history-scan three-query approach so archived threads,
+  // older replies, and coach emails from non-.edu addresses all surface in the picker.
   const trackedEmails = new Set((contacts ?? []).map((c: any) => c.coach_email?.toLowerCase()).filter(Boolean))
   const untracked: any[] = []
   try {
-    const inbox = await gmail.users.threads.list({ userId: 'me', q: 'in:inbox', maxResults: 30 })
-    for (const thread of inbox.data.threads ?? []) {
-      try {
+    // 3-year scan with pagination — three parallel queries, each capped at 200 threads.
+    // The /threads picker has no AI cost (deterministic filters only), but we still cap
+    // to keep the metadata-fetch loop fast.
+    const searchResults = await Promise.allSettled([
+      listAllThreads(gmail, 'newer_than:1095d from:.edu', 200),
+      listAllThreads(gmail, 'newer_than:1095d -from:.edu {subject:"head coach" subject:"assistant coach" subject:scholarship subject:recruiting subject:"soccer coach" subject:"college soccer" subject:"college recruit"}', 200),
+      listAllThreads(gmail, 'newer_than:1095d to:.edu in:sent', 200),
+    ])
+    const seenIds = new Set<string>()
+    const allThreads: any[] = []
+    for (const r of searchResults) {
+      if (r.status !== 'fulfilled') continue
+      for (const t of r.value) {
+        if (t.id && !seenIds.has(t.id)) { seenIds.add(t.id); allThreads.push(t) }
+      }
+    }
+
+    // Process threads in parallel batches of 10 — keeps the picker responsive even with
+    // a few hundred candidate threads.
+    const BATCH = 10
+    for (let i = 0; i < allThreads.length; i += BATCH) {
+      const batch = allThreads.slice(i, i + BATCH)
+      const batchResults = await Promise.allSettled(batch.map(async (thread) => {
         const td = await gmail.users.threads.get({
           userId: 'me', id: thread.id!,
-          format: 'metadata', metadataHeaders: ['From', 'Subject'],
+          format: 'metadata',
+          metadataHeaders: [
+            'From', 'Subject',
+            'List-Unsubscribe', 'Precedence', 'X-Mailer',
+            'X-Campaign-Id', 'X-Mailchimp-Campaign', 'X-Bulk-Signature',
+            'X-Spam-Flag', 'X-Spam-Status',
+          ],
         })
-        const firstMsg = td.data.messages?.[0]
-        const fromHeader = firstMsg?.payload?.headers?.find((h: any) => h.name === 'From')?.value ?? ''
-        const subject = firstMsg?.payload?.headers?.find((h: any) => h.name === 'Subject')?.value ?? ''
-        const emailMatch = fromHeader.match(/<([^>]+)>/) ?? fromHeader.match(/([^\s]+@[^\s]+)/)
-        const senderEmail = emailMatch?.[1]?.toLowerCase() ?? ''
-        if (!senderEmail || trackedEmails.has(senderEmail)) continue
-        const category = categorizeEmail(senderEmail, subject)
-        if (category === 'id_camp' || category === 'coach') {
-          untracked.push({
+        // Look at every message in the thread, not just the first — coach replies often
+        // arrive after the athlete's outbound email.
+        for (const msg of td.data.messages ?? []) {
+          const headers: any[] = msg.payload?.headers ?? []
+          const fromHeader = getHeader(headers, 'From')
+          const subject = getHeader(headers, 'Subject')
+          const emailMatch = fromHeader.match(/<([^>]+)>/) ?? fromHeader.match(/([^\s]+@[^\s]+)/)
+          const senderEmail = emailMatch?.[1]?.toLowerCase() ?? ''
+          if (!senderEmail || trackedEmails.has(senderEmail)) continue
+          if (isBulkMessage(headers, senderEmail, subject)) continue
+          if (isNewsletterEmail(subject)) continue
+
+          const category = categorizeEmail(senderEmail, subject)
+          if (category !== 'id_camp' && category !== 'coach') continue
+
+          const displayName = fromHeader.replace(/<[^>]+>/, '').trim().replace(/^"|"$/g, '')
+          const confidence = classifyCoachMessage(displayName, senderEmail, subject)
+          if (confidence !== 'accept') continue
+
+          return {
             threadId: thread.id,
             senderEmail,
-            senderName: fromHeader.replace(/<[^>]+>/, '').trim().replace(/^"|"$/g, ''),
+            senderName: displayName,
             subject,
-            snippet: thread.snippet ?? '',
+            snippet: td.data.snippet ?? thread.snippet ?? '',
             category,
-          })
+          }
         }
-      } catch { /* skip */ }
+        return null
+      }))
+      for (const r of batchResults) {
+        if (r.status === 'fulfilled' && r.value) untracked.push(r.value)
+      }
     }
   } catch (e) {
     console.error('untracked inbox scan failed:', e instanceof Error ? e.message : e)
@@ -383,14 +451,17 @@ router.get('/history-scan', async (req, res) => {
     oauth2Client.setCredentials({ refresh_token: tokenRow.refresh_token })
     const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
 
+    // 3-year scan — three parallel queries, paginated, capped at 200 threads each.
+    // Caps matter here because every confirmed thread feeds Claude batch rating, so
+    // candidate count directly drives token spend.
     const [contactsResult, ...searchResults] = await Promise.allSettled([
       supabase.from('outreach_contacts').select('gmail_thread_id, coach_email').eq('user_id', userId),
       // Search 1: any .edu sender — covers coach-initiated AND coach-replied threads
-      gmail.users.threads.list({ userId: 'me', q: 'newer_than:730d from:.edu', maxResults: 150 }),
+      listAllThreads(gmail, 'newer_than:1095d from:.edu', 200),
       // Search 2: non-.edu coaches with recruiting subjects (coaches using Gmail, etc.)
-      gmail.users.threads.list({ userId: 'me', q: 'newer_than:730d -from:.edu {subject:"head coach" subject:"assistant coach" subject:scholarship subject:recruiting subject:"soccer coach" subject:"college soccer" subject:"college recruit"}', maxResults: 50 }),
+      listAllThreads(gmail, 'newer_than:1095d -from:.edu {subject:"head coach" subject:"assistant coach" subject:scholarship subject:recruiting subject:"soccer coach" subject:"college soccer" subject:"college recruit"}', 200),
       // Search 3: sent-to-.edu threads where coach may have replied from a non-.edu address
-      gmail.users.threads.list({ userId: 'me', q: 'newer_than:730d to:.edu in:sent', maxResults: 75 }),
+      listAllThreads(gmail, 'newer_than:1095d to:.edu in:sent', 200),
     ])
 
     const contacts = contactsResult.status === 'fulfilled' ? (contactsResult.value.data ?? []) : []
@@ -402,7 +473,7 @@ router.get('/history-scan', async (req, res) => {
     const allThreads: any[] = []
     for (const r of searchResults) {
       if (r.status !== 'fulfilled') continue
-      for (const t of r.value.data.threads ?? []) {
+      for (const t of r.value) {
         if (t.id && !seenIds.has(t.id)) { seenIds.add(t.id); allThreads.push(t) }
       }
     }

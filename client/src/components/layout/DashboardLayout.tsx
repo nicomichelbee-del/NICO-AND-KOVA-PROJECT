@@ -1,5 +1,6 @@
 import { Outlet } from 'react-router-dom'
 import { Sidebar } from './Sidebar'
+import { BeekoWidget } from './BeekoWidget'
 
 export function DashboardLayout() {
   return (
@@ -8,6 +9,7 @@ export function DashboardLayout() {
       <main className="flex-1 ml-60 min-h-screen overflow-y-auto">
         <Outlet />
       </main>
+      <BeekoWidget />
     </div>
   )
 }

@@ -107,16 +107,28 @@ export interface FindCoachResult {
   scrapedAt?: string
 }
 
+export interface VideoFrame {
+  timestamp: number
+  data: string // base64 JPEG
+}
+
 export interface VideoRating {
-  score: number
+  score: number              // overall 1-10, computed as average of 5 sub-scores
   summary: string
-  openingClip: string
-  clipVariety: string
-  videoLength: string
-  production: string
-  statOverlay: string
-  positionSkills: string
+  technical: string          // first touch, ball control, passing, finishing
+  technicalScore: number     // 1-10
+  tactical: string           // decision-making, positioning, awareness, off-ball movement
+  tacticalScore: number      // 1-10
+  composure: string          // poise under pressure: first touch when pressed, decisions in tight spaces, body language in challenges
+  composureScore: number     // 1-10
+  positionPlay: string       // how they play their specific position
+  positionPlayScore: number  // 1-10
+  divisionFit: string        // does the level of play match the target division
+  divisionFitScore: number   // 1-10
   improvements: string[]
+  screenshots?: VideoFrame[]
+  duration?: number
+  videoTitle?: string
 }
 
 export type SubscriptionTier = 'free' | 'pro' | 'family'
@@ -308,11 +320,14 @@ export interface HistoryEmail {
   personalizationNote: string
   messageCount: number        // total messages in thread
   coachMessageCount: number   // how many times coach has messaged
-  // AI interest analysis
-  score: number               // 1–10
+  // AI interest analysis — two independent scores that can and should diverge
+  score: number               // 1–10 INTEREST: forward momentum / concrete asks
   rating: 'hot' | 'warm' | 'cold' | 'not_interested'
   interestLevel: string
-  genuineness: number         // 1–10
+  genuineness: number         // 1–10 GENUINENESS: personal engagement vs. mass-send quality
   ratingNote: string          // one-sentence summary of what the coach said
   nextAction: string
+  // Noise classification — mass ID camp blasts, newsletters, subscription updates
+  isNoise?: boolean
+  noiseReason?: string
 }

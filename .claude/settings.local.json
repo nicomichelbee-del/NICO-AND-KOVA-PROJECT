@@ -14,7 +14,8 @@
       "Bash(git push origin main)",
       "Bash(npx tsx server/scripts/*)",
       "Bash(node server/scripts/*)",
-      "WebFetch(*)"
+      "WebFetch(*)",
+      "Bash(node -e ' *)"
     ],
     "additionalDirectories": [
       "C:\\Users\\nicom\\OneDrive\\Desktop\\AI Soccer College Couselor"

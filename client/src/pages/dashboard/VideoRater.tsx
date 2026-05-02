@@ -1,20 +1,144 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
 import { rateVideo } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
-import type { AthleteProfile, VideoRating, LeaderboardEntry } from '../../types'
+import type { AthleteProfile, VideoRating, VideoFrame, LeaderboardEntry } from '../../types'
 
 function getProfile(): AthleteProfile | null {
   try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
 }
-
 function loadLeaderboard(): LeaderboardEntry[] {
   try { return JSON.parse(localStorage.getItem('videoLeaderboard') ?? '[]') } catch { return [] }
 }
 function saveLeaderboard(entries: LeaderboardEntry[]) {
   localStorage.setItem('videoLeaderboard', JSON.stringify(entries))
+}
+function fmtTime(s: number) {
+  return `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`
+}
+
+const PROGRESS_STEPS = [
+  { label: 'Opening YouTube...', detail: 'Launching headless browser' },
+  { label: 'Capturing video frames...', detail: 'Seeking through the video and taking screenshots' },
+  { label: 'Analyzing footage with AI...', detail: 'Claude Vision is reviewing every frame' },
+  { label: 'Building your report...', detail: 'Generating position-specific feedback' },
+]
+// Approximate seconds at which each step starts
+const STEP_AT = [0, 10, 35, 75]
+
+function ProgressBar({ loading }: { loading: boolean }) {
+  const [step, setStep] = useState(0)
+  const [elapsed, setElapsed] = useState(0)
+  const startRef = useRef<number>(0)
+  const timerRef = useRef<ReturnType<typeof setInterval> | null>(null)
+
+  useEffect(() => {
+    if (loading) {
+      setStep(0); setElapsed(0)
+      startRef.current = Date.now()
+      timerRef.current = setInterval(() => {
+        const sec = Math.floor((Date.now() - startRef.current) / 1000)
+        setElapsed(sec)
+        let nextStep = 0
+        for (let i = STEP_AT.length - 1; i >= 0; i--) { if (sec >= STEP_AT[i]) { nextStep = i; break } }
+        setStep(Math.min(nextStep, PROGRESS_STEPS.length - 1))
+      }, 500)
+    } else {
+      if (timerRef.current) clearInterval(timerRef.current)
+    }
+    return () => { if (timerRef.current) clearInterval(timerRef.current) }
+  }, [loading])
+
+  if (!loading) return null
+
+  return (
+    <Card className="p-6 mb-6">
+      <div className="flex items-center gap-3 mb-5">
+        <div className="w-2 h-2 rounded-full bg-[#eab308] animate-pulse" />
+        <span className="text-sm font-semibold text-[#f1f5f9]">{PROGRESS_STEPS[step].label}</span>
+        <span className="text-xs text-[#475569] ml-auto">{elapsed}s</span>
+      </div>
+      <p className="text-xs text-[#475569] mb-4">{PROGRESS_STEPS[step].detail}</p>
+      <div className="flex gap-2">
+        {PROGRESS_STEPS.map((s, i) => (
+          <div key={i} className="flex-1 flex flex-col gap-1.5">
+            <div className={`h-1 rounded-full transition-all duration-500 ${
+              i < step ? 'bg-[#eab308]' : i === step ? 'bg-[#eab308] opacity-60' : 'bg-[rgba(255,255,255,0.07)]'
+            }`} />
+            <span className={`text-[10px] leading-tight ${i <= step ? 'text-[#94a3b8]' : 'text-[#334155]'}`}>
+              {s.label.replace('...', '')}
+            </span>
+          </div>
+        ))}
+      </div>
+    </Card>
+  )
+}
+
+function Filmstrip({ frames }: { frames: VideoFrame[] }) {
+  const [enlarged, setEnlarged] = useState<VideoFrame | null>(null)
+  if (!frames.length) return null
+  return (
+    <>
+      <div className="mb-6">
+        <div className="text-xs font-semibold text-[#64748b] uppercase tracking-wider mb-2">
+          Captured Frames · {frames.length} screenshots
+        </div>
+        <div className="flex gap-2 overflow-x-auto pb-2">
+          {frames.map((f) => (
+            <button
+              key={f.timestamp}
+              onClick={() => setEnlarged(f)}
+              className="flex-shrink-0 flex flex-col items-center gap-1 group"
+            >
+              <img
+                src={`data:image/jpeg;base64,${f.data}`}
+                alt={`Frame at ${fmtTime(f.timestamp)}`}
+                className="w-32 h-18 object-cover rounded-lg border border-[rgba(255,255,255,0.08)] group-hover:border-[rgba(234,179,8,0.4)] transition-colors"
+                style={{ height: '72px' }}
+              />
+              <span className="text-[10px] text-[#475569] font-mono">{fmtTime(f.timestamp)}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {enlarged && (
+        <div
+          className="fixed inset-0 z-50 bg-black/80 flex items-center justify-center p-4"
+          onClick={() => setEnlarged(null)}
+        >
+          <div className="relative max-w-3xl w-full" onClick={e => e.stopPropagation()}>
+            <img
+              src={`data:image/jpeg;base64,${enlarged.data}`}
+              alt={`Frame at ${fmtTime(enlarged.timestamp)}`}
+              className="w-full rounded-2xl border border-[rgba(255,255,255,0.1)]"
+            />
+            <div className="absolute bottom-3 left-3 px-2.5 py-1 bg-black/70 rounded-lg text-xs text-white font-mono">
+              {fmtTime(enlarged.timestamp)}
+            </div>
+            <button
+              onClick={() => setEnlarged(null)}
+              className="absolute top-3 right-3 w-8 h-8 bg-black/70 rounded-full text-white text-lg flex items-center justify-center hover:bg-black/90"
+            >
+              ×
+            </button>
+            <div className="flex justify-center gap-2 mt-3">
+              {frames.map((f) => (
+                <button
+                  key={f.timestamp}
+                  onClick={() => setEnlarged(f)}
+                  className={`w-2 h-2 rounded-full transition-colors ${f.timestamp === enlarged.timestamp ? 'bg-[#eab308]' : 'bg-[rgba(255,255,255,0.2)]'}`}
+                />
+              ))}
+            </div>
+          </div>
+        </div>
+      )}
+    </>
+  )
 }
 
 function ScoreRing({ score }: { score: number }) {
@@ -61,7 +185,8 @@ export function VideoRater() {
     const profile = getProfile()
     if (!profile?.name) { setError('Please complete your athlete profile first.'); return }
     if (!videoUrl) { setError('Please enter a video URL.'); return }
-    setError(''); setLoading(true)
+    if (!/youtube\.com|youtu\.be/.test(videoUrl)) { setError('Only YouTube URLs are supported.'); return }
+    setError(''); setRating(null); setLoading(true)
     try {
       const result = await rateVideo(videoUrl, profile)
       setRating(result)
@@ -82,17 +207,16 @@ export function VideoRater() {
         saveLeaderboard(updated)
       }
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Failed to rate video')
+      setError(e instanceof Error ? e.message : 'Failed to analyze video')
     } finally { setLoading(false) }
   }
 
   const criteria = rating ? [
-    { label: 'Opening clip (first 30s)', value: rating.openingClip },
-    { label: 'Clip variety', value: rating.clipVariety },
-    { label: 'Video length', value: rating.videoLength },
-    { label: 'Production quality', value: rating.production },
-    { label: 'Stat / info overlay', value: rating.statOverlay },
-    { label: 'Position-specific skills', value: rating.positionSkills },
+    { label: 'Technical quality', value: rating.technical, score: rating.technicalScore },
+    { label: 'Tactical awareness', value: rating.tactical, score: rating.tacticalScore },
+    { label: 'Composure', value: rating.composure, score: rating.composureScore },
+    { label: 'Position play', value: rating.positionPlay, score: rating.positionPlayScore },
+    { label: 'Division fit', value: rating.divisionFit, score: rating.divisionFitScore },
   ] : []
 
   const rankMedal = (i: number) => i === 0 ? '🥇' : i === 1 ? '🥈' : i === 2 ? '🥉' : `#${i + 1}`
@@ -105,7 +229,9 @@ export function VideoRater() {
           <span className="text-xs font-semibold tracking-[2px] uppercase text-[#eab308]">Video Rater</span>
         </div>
         <h1 className="font-serif text-4xl font-black text-[#f1f5f9] tracking-[-1px]">Highlight Video Rater</h1>
-        <p className="text-[#64748b] mt-2 text-sm">Get an honest 1–10 rating and specific, actionable feedback on your highlight video.</p>
+        <p className="text-[#64748b] mt-2 text-sm">
+          AI watches your actual video — seeks through every minute, captures screenshots, and gives you real feedback a coach would give.
+        </p>
       </div>
 
       {/* Tabs */}
@@ -127,12 +253,12 @@ export function VideoRater() {
 
       {tab === 'rate' && (
         <>
-          <Card className="p-6 mb-8">
+          <Card className="p-6 mb-6">
             <Badge variant="gold" className="mb-4">Pro feature</Badge>
             <div className="flex gap-4 items-end flex-wrap mb-4">
               <div className="flex-1 min-w-64">
                 <Input
-                  label="YouTube or Hudl video URL"
+                  label="YouTube video URL"
                   value={videoUrl}
                   onChange={(e) => setVideoUrl(e.target.value)}
                   placeholder="https://youtube.com/watch?v=..."
@@ -142,47 +268,88 @@ export function VideoRater() {
                 {loading ? 'Analyzing...' : 'Rate My Video'}
               </Button>
             </div>
-            <label className="flex items-center gap-3 cursor-pointer">
-              <input
-                type="checkbox"
-                checked={optIn}
-                onChange={(e) => setOptIn(e.target.checked)}
-                className="w-4 h-4 accent-[#eab308]"
-              />
-              <span className="text-xs text-[#64748b]">
-                Add my video to the public leaderboard (name, position, club, and video link will be visible)
-              </span>
-            </label>
+            <p className="text-xs text-[#475569]">
+              AI opens your video, captures a screenshot every 3 seconds across the whole thing (up to 80 frames), and sends every one to Claude Vision for a full breakdown — so no clip gets missed. Takes ~2–3 minutes. YouTube only.
+            </p>
+            <div className="mt-4">
+              <label className="flex items-center gap-3 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={optIn}
+                  onChange={(e) => setOptIn(e.target.checked)}
+                  className="w-4 h-4 accent-[#eab308]"
+                />
+                <span className="text-xs text-[#64748b]">
+                  Add my video to the public leaderboard (name, position, club, and video link will be visible)
+                </span>
+              </label>
+            </div>
             {error && <p className="text-xs text-red-400 mt-3">{error}</p>}
           </Card>
 
+          <ProgressBar loading={loading} />
+
           {rating && (
             <div className="flex flex-col gap-6">
-              <Card className="p-6 flex items-start gap-8 flex-wrap">
-                <ScoreRing score={rating.score} />
-                <div className="flex-1 min-w-48">
-                  <div className="font-serif text-xl font-bold text-[#f1f5f9] mb-2">Overall Assessment</div>
-                  <p className="text-sm text-[#64748b] leading-relaxed">{rating.summary}</p>
+              {/* Overall assessment with first frame */}
+              <Card className="p-6">
+                {rating.videoTitle && (
+                  <div className="text-xs text-[#475569] mb-4 truncate">"{rating.videoTitle}"</div>
+                )}
+                <div className="flex items-start gap-6 flex-wrap">
+                  <ScoreRing score={rating.score} />
+                  {rating.screenshots?.[0] && (
+                    <img
+                      src={`data:image/jpeg;base64,${rating.screenshots[0].data}`}
+                      alt="Opening frame"
+                      className="w-40 rounded-xl border border-[rgba(255,255,255,0.08)] object-cover flex-shrink-0"
+                      style={{ height: '90px' }}
+                    />
+                  )}
+                  <div className="flex-1 min-w-48">
+                    <div className="font-serif text-xl font-bold text-[#f1f5f9] mb-2">Overall Assessment</div>
+                    <p className="text-sm text-[#64748b] leading-relaxed">{rating.summary}</p>
+                    {rating.duration && rating.duration > 0 && (
+                      <div className="mt-2 text-xs text-[#475569]">
+                        Duration: {fmtTime(rating.duration)}
+                        {rating.duration >= 180 && rating.duration <= 300
+                          ? ' · ideal length'
+                          : rating.duration > 300
+                          ? ' · consider trimming to 3–5 min'
+                          : ' · shorter than ideal'}
+                      </div>
+                    )}
+                  </div>
                 </div>
               </Card>
 
+              {/* Filmstrip */}
+              {(rating.screenshots?.length ?? 0) > 0 && (
+                <Filmstrip frames={rating.screenshots!} />
+              )}
+
+              {/* Detailed feedback */}
               <div>
                 <h2 className="font-serif text-xl font-bold text-[#f1f5f9] mb-4">Detailed Feedback</h2>
                 <div className="grid grid-cols-2 gap-3">
-                  {criteria.map(({ label, value }) => (
+                  {criteria.map(({ label, value, score }) => (
                     <Card key={label} className="p-4">
-                      <div className="text-xs font-semibold text-[#eab308] uppercase tracking-wider mb-2">{label}</div>
+                      <div className="flex items-center justify-between mb-2 gap-2">
+                        <div className="text-xs font-semibold text-[#eab308] uppercase tracking-wider">{label}</div>
+                        {typeof score === 'number' && Number.isFinite(score) && <ScoreBadge score={score} />}
+                      </div>
                       <p className="text-sm text-[#64748b] leading-relaxed">{value}</p>
                     </Card>
                   ))}
                 </div>
               </div>
 
-              {rating.improvements.length > 0 && (
+              {/* Priority improvements */}
+              {(rating.improvements?.length ?? 0) > 0 && (
                 <div>
                   <h2 className="font-serif text-xl font-bold text-[#f1f5f9] mb-4">Priority Improvements</h2>
                   <div className="flex flex-col gap-3">
-                    {rating.improvements.map((item, i) => (
+                    {(rating.improvements ?? []).map((item, i) => (
                       <div key={i} className="flex items-start gap-4 p-4 bg-[rgba(234,179,8,0.04)] border border-[rgba(234,179,8,0.15)] rounded-xl">
                         <span className="font-serif text-lg font-black text-[#eab308] opacity-50 leading-none mt-0.5 flex-shrink-0">{i + 1}</span>
                         <p className="text-sm text-[#f1f5f9] leading-relaxed">{item}</p>
@@ -199,7 +366,7 @@ export function VideoRater() {
               <div className="text-4xl mb-4">🎬</div>
               <div className="font-serif text-xl font-bold text-[#f1f5f9] mb-2">Submit your video</div>
               <p className="text-sm text-[#64748b] max-w-xs mx-auto">
-                Paste your YouTube or Hudl link above. AI analyzes opening clips, variety, length, production, and position-specific skills.
+                Paste a YouTube link. AI watches the actual video, captures a frame every 3 seconds (up to 80), and gives you real coach-level feedback.
               </p>
             </Card>
           )}

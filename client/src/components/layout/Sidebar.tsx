@@ -13,7 +13,6 @@ const navItems = [
   { to: '/dashboard/video', label: 'Video Rater', icon: '🎬', end: false },
   { to: '/dashboard/camps', label: 'ID Camps', icon: '⛺', end: false },
   { to: '/dashboard/roster', label: 'Roster Intel', icon: '🔍', end: false },
-  { to: '/dashboard/chat', label: 'Ask Beeko', icon: '🤖', end: false },
 ]
 
 export function Sidebar() {

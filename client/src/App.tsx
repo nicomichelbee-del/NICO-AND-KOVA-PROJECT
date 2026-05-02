@@ -14,7 +14,6 @@ import { FollowUp } from './pages/dashboard/FollowUp'
 import { VideoRater } from './pages/dashboard/VideoRater'
 import { Camps } from './pages/dashboard/Camps'
 import { RosterIntel } from './pages/dashboard/RosterIntel'
-import { Chat } from './pages/dashboard/Chat'
 import { Timeline } from './pages/dashboard/Timeline'
 import { AuthCallback } from './pages/AuthCallback'
 
@@ -56,7 +55,6 @@ export default function App() {
             <Route path="video" element={<VideoRater />} />
             <Route path="camps" element={<Camps />} />
             <Route path="roster" element={<RosterIntel />} />
-            <Route path="chat" element={<Chat />} />
             <Route path="timeline" element={<Timeline />} />
           </Route>
         </Routes>

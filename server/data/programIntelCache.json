@@ -379,5 +379,87 @@
     ],
     "cachedAt": "2026-04-30T23:31:42.242Z",
     "source": "ai-generated"
+  },
+  "houston:mens": {
+    "schoolId": "houston",
+    "schoolName": "University of Houston",
+    "gender": "mens",
+    "formation": "Unknown — see search links to verify",
+    "formationVariants": [],
+    "playstyle": "Unknown — unable to provide reliable playstyle description without recent, verified information.",
+    "tacticalNotes": [],
+    "confidence": "low",
+    "caveats": [
+      "Houston is a Big 12 program with a documented soccer history, but I lack specific, recent (2022–2024) tactical knowledge of their formation, playstyle, or coaching philosophy.",
+      "Do not rely on this response for scouting decisions. Verify current coaching staff, roster composition, and tactical tendencies directly with the Houston soccer program website or by contacting the coaching staff.",
+      "Big 12 men's soccer programs vary widely in tactical approach and resources; conference-level generalizations would be misleading without verified program-specific data.",
+      "Check the program's official roster page and recent match reports to understand current player profiles and tactical trends.",
+      "Recent coaching changes or transfers may significantly alter program identity from any outdated information available."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=University%20of%20Houston%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=University%20of%20Houston%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=University%20of%20Houston%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=University%20of%20Houston%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=Big%2012%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-05-02T20:19:41.356Z",
+    "source": "ai-generated"
+  },
+  "azusa-pacific:mens": {
+    "schoolId": "azusa-pacific",
+    "schoolName": "Azusa Pacific University",
+    "gender": "mens",
+    "formation": "Unknown — see search links",
+    "formationVariants": [],
+    "playstyle": "Unknown — insufficient specific knowledge of recent tactical approach.",
+    "tacticalNotes": [],
+    "confidence": "low",
+    "caveats": [
+      "Azusa Pacific is a smaller D2 program in the Pac West Conference with limited public tactical documentation. I do not have specific, recent (2022–2024) knowledge of their formation, playstyle, or coaching staff approach.",
+      "I cannot verify current head coach tenure, recent season records, or roster composition without access to current APU athletics pages.",
+      "Do not rely on this analysis for recruiting decisions. Contact the coaching staff directly or check the official Azusa Pacific athletics website for current tactical information and roster details.",
+      "Pac West Conference programs vary widely in resources and tactical sophistication; baseline assumptions about a D2 program do not necessarily apply to APU specifically.",
+      "Any tactical or staffing details provided in search results should be verified as current before use in evaluations."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=Azusa%20Pacific%20University%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=Azusa%20Pacific%20University%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=Azusa%20Pacific%20University%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=Azusa%20Pacific%20University%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=Pac%20West%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-05-02T21:36:55.917Z",
+    "source": "ai-generated"
   }
 }

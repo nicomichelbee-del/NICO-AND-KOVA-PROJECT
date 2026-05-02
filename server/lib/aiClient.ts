@@ -33,6 +33,48 @@ export async function ask(prompt: string, maxTokens = 1024): Promise<string> {
   return block.text
 }
 
+export async function askWithImage(
+  textPrompt: string,
+  imageBase64: string,
+  mediaType: string,
+  maxTokens = 1024,
+): Promise<string> {
+  return askWithImages(textPrompt, [{ data: imageBase64, mediaType }], maxTokens)
+}
+
+export async function askWithImages(
+  textPrompt: string,
+  images: Array<{ data: string; mediaType: string; label?: string }>,
+  maxTokens = 2000,
+): Promise<string> {
+  type ImageBlock = { type: 'image'; source: { type: 'base64'; media_type: 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp'; data: string } }
+  type TextBlock = { type: 'text'; text: string }
+  const content: Array<ImageBlock | TextBlock> = []
+
+  for (const img of images) {
+    if (img.label) content.push({ type: 'text', text: img.label })
+    content.push({
+      type: 'image',
+      source: {
+        type: 'base64',
+        media_type: img.mediaType as 'image/jpeg' | 'image/png' | 'image/gif' | 'image/webp',
+        data: img.data,
+      },
+    })
+  }
+  content.push({ type: 'text', text: textPrompt })
+
+  const response = await client.messages.create({
+    model: 'claude-sonnet-4-6',
+    max_tokens: maxTokens,
+    system: PERSONA,
+    messages: [{ role: 'user', content }],
+  })
+  const block = response.content[0]
+  if (block.type !== 'text') throw new Error('Unexpected response type')
+  return block.text
+}
+
 export function parseJSON<T>(text: string, fallback: T): T {
   try {
     const cleaned = text.replace(/^```(?:json)?\s*/i, '').replace(/\s*```\s*$/, '').trim()
@@ -43,7 +85,23 @@ export function parseJSON<T>(text: string, fallback: T): T {
     if (arrMatch) { try { return JSON.parse(arrMatch[0]) as T } catch { /* fall through */ } }
     // Try extracting an object
     const objMatch = cleaned.match(/\{[\s\S]*\}/)
-    if (objMatch) { try { return JSON.parse(objMatch[0]) as T } catch { /* fall through */ } }
+    if (objMatch) {
+      try { return JSON.parse(objMatch[0]) as T } catch { /* fall through */ }
+      // Last-ditch repair: models sometimes truncate, leave trailing commas, or
+      // include smart quotes. Apply a few cheap fixes and retry.
+      const repaired = objMatch[0]
+        .replace(/[“”]/g, '"')   // smart double quotes → "
+        .replace(/[‘’]/g, "'")   // smart single quotes → '
+        .replace(/,\s*([}\]])/g, '$1')     // strip trailing commas before } or ]
+      try { return JSON.parse(repaired) as T } catch { /* fall through */ }
+      // If response was truncated mid-string, try closing it. Find the last
+      // complete "key": "value" pair and close out the object.
+      const lastComma = repaired.lastIndexOf(',')
+      if (lastComma > 0) {
+        const truncated = repaired.slice(0, lastComma) + '}'
+        try { return JSON.parse(truncated) as T } catch { /* fall through */ }
+      }
+    }
     return fallback
   } catch {
     return fallback
@@ -114,17 +172,33 @@ export async function batchRateCoachEmails(
   emails: { threadId: string; senderName: string; subject: string; snippet: string; messageCount?: number; isIdCamp?: boolean }[]
 ): Promise<BatchEmailRating[]> {
   if (emails.length === 0) return []
+
+  // Chunk to keep each Claude call's output well under the model's max_tokens.
+  // Rating output is ~120-150 tokens per email (threadId + ratingNote + nextAction);
+  // a single 50+ email call truncates and parseJSON falls back to all-cold.
+  const CHUNK = 20
+  if (emails.length > CHUNK) {
+    const chunks: typeof emails[] = []
+    for (let i = 0; i < emails.length; i += CHUNK) chunks.push(emails.slice(i, i + CHUNK))
+    const results = await Promise.allSettled(chunks.map((c) => batchRateCoachEmails(c)))
+    const out: BatchEmailRating[] = []
+    for (const r of results) {
+      if (r.status === 'fulfilled') out.push(...r.value)
+    }
+    return out
+  }
+
   const compact = emails.map((e) => ({
-    t: e.threadId,
+    threadId: e.threadId,
     from: e.senderName,
     subj: e.subject,
-    msg: e.snippet.slice(0, 150),
+    msg: e.snippet.slice(0, 400),
     // replies > 1 means real back-and-forth occurred — weight heavily in genuineness
     replies: e.messageCount ?? 1,
     idcamp: e.isIdCamp ?? false,
   }))
   const text = await ask(
-    `HS soccer recruit inbox. Rate each email on TWO INDEPENDENT scores. Scores MUST diverge when signals differ.
+    `HS soccer recruit inbox. Rate each email on TWO INDEPENDENT scores. Scores MUST diverge when signals differ. Return one JSON object per email — use the exact threadId from the input.
 
 INTEREST (1-10) — forward momentum: does this coach want THIS athlete on their roster?
   High signals: requests film/transcript/test scores/visit/call/questionnaire; proposes timelines or decision points; directly says they want this player; replies field > 1 (sustained back-and-forth)
@@ -139,29 +213,41 @@ GENUINENESS (1-10) — personal engagement vs. mass-send quality:
 DIVERGENCE REQUIRED — examples of correct scoring:
   Mass camp blast asking for film → interest=5, genuineness=1  (has ask but zero personalization)
   Warm personal reply with no next steps → interest=3, genuineness=7
-  Multi-reply thread, no offer yet → interest=5, genuineness=8  (replies carry genuineness)
+  Multi-reply thread (replies>2), no offer yet → interest=5, genuineness=8
   Templated "we're interested" with visit offer → interest=9, genuineness=3
+  Back-and-forth thread (replies=3), coach asks follow-up questions → interest=6, genuineness=9
 
 RULES (apply before scoring):
   idcamp=true with no athlete name/stats/club: score max 3, genuineness=1, rating="not_interested"
   Generic "Dear Athlete/Player": score max 3, genuineness max 2
   Only interest 7+: coach demonstrates they know this specific athlete (name/club/stats/prior interaction)
   Personalized ID camp invite (uses name, references play): interest max 6, genuineness 5-7
+  replies >= 3: genuineness minimum 6 unless mass blast evidence
+  replies >= 2: genuineness minimum 4
 
 rating: hot(8-10)/warm(5-7)/cold(3-4)/not_interested(1-2)  — based on interest score
 interestLevel: "Actively Recruiting"|"Very Interested"|"High Interest"|"Moderate Interest"|"Mild Interest"|"Low Interest"|"Not Interested"
 ratingNote: one sentence describing what the coach said
 nextAction: one sentence telling the athlete what to do next
 
+Emails to rate:
 ${JSON.stringify(compact)}
-JSON only:[{"threadId":"..","score":7,"rating":"warm","interestLevel":"High Interest","genuineness":3,"ratingNote":"..","nextAction":".."}]`,
-    Math.min(350 + emails.length * 65, 3000),
+
+Return a JSON array only, no markdown, no explanation:
+[{"threadId":"<exact id from input>","score":7,"rating":"warm","interestLevel":"High Interest","genuineness":3,"ratingNote":"...","nextAction":"..."}]`,
+    400 + emails.length * 160,
   )
   const fallback: BatchEmailRating[] = emails.map((e) => ({
     threadId: e.threadId, score: 5, rating: 'cold', interestLevel: 'Mild Interest',
     genuineness: 5, ratingNote: '', nextAction: 'Send a follow-up within two weeks.',
   }))
-  return parseJSON<BatchEmailRating[]>(text, fallback)
+  const parsed = parseJSON<BatchEmailRating[]>(text, fallback)
+  // If AI returned items but threadIds don't match (e.g. abbreviated keys), align by position
+  const hasValidIds = parsed.some((r) => emails.some((e) => e.threadId === r.threadId))
+  if (!hasValidIds && parsed.length === emails.length) {
+    return parsed.map((r, i) => ({ ...r, threadId: emails[i].threadId }))
+  }
+  return parsed
 }
 
 export interface CoachReplyAnalysis {

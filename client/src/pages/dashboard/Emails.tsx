@@ -43,9 +43,10 @@ export function Emails() {
       .catch(() => { /* directory is optional; the manual entry path still works */ })
   }, [])
 
-  // Conferences available within the current region tab.
+  // Conferences available within the current region tab and division.
   const conferenceOptions = useMemo(() => {
-    const pool = region === 'All' ? directory : directory.filter((s) => s.region === region)
+    let pool = region === 'All' ? directory : directory.filter((s) => s.region === region)
+    if (divisionFilter !== 'All') pool = pool.filter((s) => s.division === divisionFilter)
     const counts = new Map<string, number>()
     for (const s of pool) {
       if (!s.conference) continue
@@ -54,7 +55,7 @@ export function Emails() {
     return Array.from(counts.entries())
       .sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0]))
       .map(([name, count]) => ({ name, count }))
-  }, [directory, region])
+  }, [directory, region, divisionFilter])
 
   // Reset conference filter when changing region (a conference may not exist in
   // the new region).
