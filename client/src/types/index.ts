@@ -23,6 +23,9 @@ export interface AthleteProfile {
 }
 
 export interface MatchBreakdown {
+  // Top-line summaries (drive bucket assignment in v2 algo).
+  athleticFit: number  // 0–100: how well athlete matches the program's recruiting profile
+  academicFit: number  // 0–100: how well athlete matches the school's typical admit
   // Each axis is normalized 0–100. "yourValue" / "typicalValue" describe the
   // raw inputs the comparison was made on, so the UI can show side-by-side.
   gpa: { score: number; yourValue: number; typicalValue: number; verdict: string }
@@ -45,6 +48,8 @@ export interface School {
   coachEmail?: string
   category: 'reach' | 'target' | 'safety'
   matchScore: number
+  athleticFit?: number
+  academicFit?: number
   notes?: string
   programStrength?: number
   scholarships?: boolean

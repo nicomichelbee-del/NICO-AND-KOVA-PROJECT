@@ -156,12 +156,18 @@ router.post('/find-coach', async (req, res) => {
     // Scraped data from official athletics sites takes priority over AI recall.
     const scraped = await getScrapedCoach(school, gender)
     if (scraped?.coachName) {
-      const isFullHit = scraped.status === 'success' && scraped.coachEmail
+      const isFullHit = scraped.status === 'success' && !!scraped.coachEmail
+      const isInferredEmail = scraped.status === 'email-inferred' && !!scraped.coachEmail
+      // For inferred-email entries we surface the inferred email but mark it
+      // for verification — better than forcing the athlete to re-search.
+      const source = isFullHit ? 'scraped'
+                   : isInferredEmail ? 'email-inferred'
+                   : 'scraped-partial'
       return res.json({
         coachName: scraped.coachName,
-        coachEmail: isFullHit ? scraped.coachEmail : '',
+        coachEmail: (isFullHit || isInferredEmail) ? scraped.coachEmail : '',
         confidence: isFullHit ? 'high' : 'low',
-        source: isFullHit ? 'scraped' : 'scraped-partial',
+        source,
         sourceUrl: scraped.sourceUrl,
         scrapedAt: scraped.scrapedAt,
       })

@@ -39,133 +39,162 @@ function isForward(position: string): boolean {
   return p.includes('forward') || p.includes('striker') || p.includes('wing') || p === 'cf' || p === 'lw' || p === 'rw'
 }
 
-// Athlete strength relative to the school's typical recruit.
-//   ~0  → matches typical recruit (target)
-//   >0  → athlete is stronger than typical recruit (safety)
-//   <0  → athlete is below typical recruit (reach)
-// Combines academics, on-field stats, division gap, and program prestige.
-function competitiveness(profile: AthleteProfile, school: SchoolRecord): number {
+// ── v2 algorithm: two first-class fit axes ───────────────────────────────
+//
+// `academicFit` — how well does the athlete match the school's typical admit?
+// `athleticFit` — how well does the athlete match the program's typical recruit?
+// Each is 0–100. Higher = better match (athlete more likely to fit/play).
+// Bucketing is *absolute* (thresholds), not relative — so a 3.6 GPA / D1
+// midfielder targeting a top program will see actual reach schools (Stanford,
+// UCLA) instead of having them suppressed by a stretch penalty.
+
+function academicFit(profile: AthleteProfile, school: SchoolRecord): number {
+  const gpaAvg = school.gpaAvg ?? 0
+  const gpaMin = school.gpaMin ?? 0
+  if (gpaAvg === 0) return 50  // unknown academic profile → neutral
+
+  // Athlete GPA delta from typical admit.
+  //  delta = 0   → athlete matches typical recruit → 70
+  //  delta +0.4 → above typical → 100
+  //  delta -0.4 → below typical → 40
+  //  delta -0.7 → well below → 18 (reach)
+  const delta = profile.gpa - gpaAvg
+  let score = 70 + delta * 75
+
+  // Hard floor penalty: if athlete is below the school's published min, this
+  // is a real admissions risk on top of being below average.
+  if (gpaMin > 0 && profile.gpa < gpaMin) {
+    score -= 15
+  }
+
+  return Math.max(0, Math.min(100, Math.round(score)))
+}
+
+function athleticFit(profile: AthleteProfile, school: SchoolRecord): number {
   const gk = isGoalkeeper(profile.position)
   const fwd = isForward(profile.position)
 
-  // Academic delta in "GPA points" — every 0.3 GPA = 1 unit of separation.
-  const gpaDelta = school.gpaAvg > 0 ? (profile.gpa - school.gpaAvg) / 0.3 : 0
-
-  // Stats delta. GKs don't have goals, so weight academics fully for them.
+  // Stats delta — only meaningful when both athlete and school have data.
+  // For keepers we have no good signal yet (no save/clean-sheet data on the
+  // profile); treat as neutral so academic + division dominate.
   let statsDelta = 0
-  if (!gk) {
-    const expected = fwd ? school.goalsForwardAvg : school.goalsMidAvg
+  if (!gk && profile.goals > 0) {
+    const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
     if (expected > 0) {
-      // Half of the typical scoring rate = 1 unit of separation in either direction.
+      // Half the typical scoring rate = 1 unit of separation in either direction.
       statsDelta = (profile.goals - expected) / Math.max(expected * 0.5, 3)
     }
   }
 
-  // Division gap: targeting up vs. school's actual level.
-  // If athlete targets D3 and school is D1 (idx delta = -2), school is much harder → negative.
-  const divGap = divIdx(school.division) - divIdx(profile.targetDivision)
-  // Negative if school is a higher division than target.
-  const divDelta = -divGap * 0.6
+  // Division gap. Cap at ±2 so a D1 prospect doesn't see JUCO as "too easy
+  // to be useful" — JUCOs would dominate as max-safety otherwise.
+  const rawDivGap = divIdx(school.division) - divIdx(profile.targetDivision)
+  const divGap = Math.max(-2, Math.min(2, rawDivGap))
 
-  // Program prestige (1–10): a 10-rated program is harder to crack than a 6.
-  const programDelta = -((school.programStrength - 6) * 0.2)
+  // Program prestige delta. School at strength 10 vs neutral 5 = +5 →
+  // pulls athleticFit down (this is a tougher program).
+  const programGap = (school.programStrength ?? 5) - 5
 
-  // Weighted combination. Stats matter less for GKs.
-  const gpaW = gk ? 0.55 : 0.40
-  const statsW = gk ? 0.0 : 0.30
-  return gpaDelta * gpaW + statsDelta * statsW + divDelta + programDelta
+  // Composition. Tuned so:
+  //   exact-fit, neutral program (statsDelta=0, divGap=0, programGap=0) → 60
+  //   over-qualified safety (statsDelta=+1, divGap=+1, programGap=-2)   → 60+15+15+10 = 100
+  //   classic reach (statsDelta=-1, divGap=-1, programGap=+4)           → 60-15-15-20 = 10
+  const score = 60 + statsDelta * 15 + divGap * 15 - programGap * 5
+  return Math.max(0, Math.min(100, Math.round(score)))
 }
 
-// Preference fit: how well does the school match the athlete's stated wants?
-// 0–100, higher = better aligned.
-function fit(profile: AthleteProfile, school: SchoolRecord): number {
-  let score = 50
-
-  // Division alignment is the strongest fit signal.
-  const divDist = Math.abs(divIdx(school.division) - divIdx(profile.targetDivision))
-  if (divDist === 0) score += 30
-  else if (divDist === 1) score += 15
-  else if (divDist === 2) score -= 5
-  else score -= 20
-
-  // Region preference (now an enum: any | West | Southwest | Midwest | Southeast | Northeast).
+// Soft preference modifier: small bump for region/size match. Doesn't affect
+// bucket assignment — just reorders within a bucket.
+function preferenceBoost(profile: AthleteProfile, school: SchoolRecord): number {
+  let boost = 0
   if (profile.locationPreference && profile.locationPreference !== 'any') {
-    if (school.region === profile.locationPreference) score += 15
-    else score -= 5
+    boost += school.region === profile.locationPreference ? 5 : -2
   }
-
-  // School size preference.
   if (profile.sizePreference && profile.sizePreference !== 'any') {
-    if (school.size === profile.sizePreference) score += 10
-    else score -= 3
+    boost += school.size === profile.sizePreference ? 3 : -1
   }
+  return boost
+}
 
-  return Math.max(0, Math.min(100, score))
+// Absolute bucketing thresholds. A school is a safety only if the athlete is
+// genuinely comfortable on both axes; a target if they're in the conversation
+// on both; a reach if there's at least a credible path on either.
+const SAFETY_FLOOR = 70   // both axes ≥ 70
+const TARGET_FLOOR = 45   // both axes ≥ 45 (and not safety)
+const REACH_FLOOR = 25    // at least one axis ≥ 25 (and not target)
+
+function bucketFor(athletic: number, academic: number): Bucket | null {
+  if (athletic >= SAFETY_FLOOR && academic >= SAFETY_FLOOR) return 'safety'
+  if (athletic >= TARGET_FLOOR && academic >= TARGET_FLOOR) return 'target'
+  if (athletic >= REACH_FLOOR || academic >= REACH_FLOOR) return 'reach'
+  return null  // genuinely not a fit; drop from results
 }
 
 interface Candidate {
   school: SchoolRecord
-  comp: number
-  fit: number
+  athletic: number
+  academic: number
   matchScore: number
   bucket: Bucket
   coachName: string
   coachEmail: string
 }
 
+// Per-bucket caps when the user requests the default 25-school result. Sum
+// must be <= topN; remaining budget is distributed proportionally if any
+// bucket is short.
+const DEFAULT_BUCKET_CAPS = { safety: 8, target: 10, reach: 8 } as const
+
 export function matchSchools(profile: AthleteProfile, topN = 25): School[] {
   const gender = profile.gender ?? 'womens'
 
-  const scored = (schoolsData as SchoolRecord[]).map((s) => {
-    const comp = competitiveness(profile, s)
-    const f = fit(profile, s)
-    // Schools wildly out of reach get a match-score penalty so they don't
-    // dominate the ranking — but they're still allowed to surface as reaches.
-    const stretch = Math.abs(comp)
-    const stretchPenalty = stretch > 2 ? Math.min(40, (stretch - 2) * 20) : 0
-    const matchScore = Math.max(0, Math.min(100, Math.round(f - stretchPenalty)))
-    return {
-      school: s,
-      comp,
-      fit: f,
-      matchScore,
-      coachName: gender === 'womens' ? s.womensCoach : s.mensCoach,
-      coachEmail: gender === 'womens' ? s.womensCoachEmail : s.mensCoachEmail,
-    }
-  })
+  const scored: Candidate[] = (schoolsData as SchoolRecord[])
+    .map((s) => {
+      const athletic = athleticFit(profile, s)
+      const academic = academicFit(profile, s)
+      const bucket = bucketFor(athletic, academic)
+      if (!bucket) return null
 
-  // Pick the topN most-relevant schools by overall fit-weighted score, then
-  // partition *those* by competitiveness. This makes reach/target/safety a
-  // relative split within the chosen pool, so every athlete always gets a mix
-  // of all three — even when stats are sparse.
-  const pool = [...scored].sort((a, b) => b.matchScore - a.matchScore).slice(0, topN)
+      // Display matchScore = weighted blend (athletics-leaning since this is a
+      // recruiting tool) + soft preference boost. Bucket assignment already
+      // happened above; this is just for ranking + UI display.
+      const blended = athletic * 0.55 + academic * 0.45
+      const matchScore = Math.max(0, Math.min(100, Math.round(blended + preferenceBoost(profile, s))))
+      return {
+        school: s,
+        athletic,
+        academic,
+        matchScore,
+        bucket,
+        coachName: gender === 'womens' ? s.womensCoach : s.mensCoach,
+        coachEmail: gender === 'womens' ? s.womensCoachEmail : s.mensCoachEmail,
+      } as Candidate
+    })
+    .filter((c): c is Candidate => c !== null)
 
-  // Slot allocation. Roughly 30% safety / 40% target / 30% reach, with a floor
-  // so each bucket has meaningful representation.
-  const minPerBucket = Math.max(4, Math.floor(topN * 0.2))
-  const safetyN = Math.max(minPerBucket, Math.floor(topN * 0.3))
-  const targetN = Math.max(minPerBucket, Math.floor(topN * 0.4))
-  const reachN = Math.max(minPerBucket, pool.length - safetyN - targetN)
+  // Sort each bucket by matchScore desc, then take the per-bucket cap.
+  const byBucket = (b: Bucket) =>
+    scored.filter((c) => c.bucket === b).sort((a, b2) => b2.matchScore - a.matchScore)
 
-  // Sort the pool by competitiveness (descending = most likely safety first).
-  const byComp = [...pool].sort((a, b) => b.comp - a.comp)
+  const safety = byBucket('safety')
+  const target = byBucket('target')
+  const reach  = byBucket('reach')
 
-  const safetySlice = byComp.slice(0, safetyN)
-  const targetSlice = byComp.slice(safetyN, safetyN + targetN)
-  const reachSlice = byComp.slice(safetyN + targetN, safetyN + targetN + reachN)
+  // Scale caps to the requested topN. For topN=25 this gives 8/10/7.
+  const totalCap = topN
+  const scale = totalCap / 26  // 8+10+8 in defaults
+  const safetyCap = Math.round(DEFAULT_BUCKET_CAPS.safety * scale)
+  const targetCap = Math.round(DEFAULT_BUCKET_CAPS.target * scale)
+  const reachCap  = totalCap - safetyCap - targetCap
 
-  const candidates: Candidate[] = [
-    ...safetySlice.map((c) => ({ ...c, bucket: 'safety' as Bucket })),
-    ...targetSlice.map((c) => ({ ...c, bucket: 'target' as Bucket })),
-    ...reachSlice.map((c) => ({ ...c, bucket: 'reach' as Bucket })),
-  ]
+  const finalSafety = safety.slice(0, safetyCap)
+  const finalTarget = target.slice(0, targetCap)
+  const finalReach  = reach.slice(0, reachCap)
 
-  // Within each bucket, surface the strongest fit first.
-  const ordered = [
-    ...candidates.filter((c) => c.bucket === 'safety').sort((a, b) => b.matchScore - a.matchScore),
-    ...candidates.filter((c) => c.bucket === 'target').sort((a, b) => b.matchScore - a.matchScore),
-    ...candidates.filter((c) => c.bucket === 'reach').sort((a, b) => b.matchScore - a.matchScore),
-  ]
+  // Output order: reach → target → safety. Reaches go first because they're
+  // aspirational and the most useful to surface upfront. Targets are the
+  // working list. Safeties are reassurance at the bottom.
+  const ordered = [...finalReach, ...finalTarget, ...finalSafety]
 
   return ordered.map((c) => ({
     id: c.school.id,
@@ -180,34 +209,48 @@ export function matchSchools(profile: AthleteProfile, topN = 25): School[] {
     coachEmail: c.coachEmail,
     category: c.bucket,
     matchScore: c.matchScore,
+    athleticFit: c.athletic,
+    academicFit: c.academic,
     notes: c.school.notes ?? '',
     programStrength: c.school.programStrength,
     scholarships: c.school.scholarships,
     gpaAvg: c.school.gpaAvg,
     goalsForwardAvg: c.school.goalsForwardAvg,
     goalsMidAvg: c.school.goalsMidAvg,
-    breakdown: buildBreakdown(profile, c.school),
+    breakdown: buildBreakdown(profile, c.school, c.athletic, c.academic),
   }))
 }
 
-function buildBreakdown(profile: AthleteProfile, school: SchoolRecord): MatchBreakdown {
+function buildBreakdown(
+  profile: AthleteProfile,
+  school: SchoolRecord,
+  athletic: number,
+  academic: number,
+): MatchBreakdown {
   const gk = isGoalkeeper(profile.position)
   const fwd = isForward(profile.position)
 
+  // Some schools.json entries are partial (e.g., bethel-university-tn). Treat
+  // missing numerics as 0 here so the verdict logic doesn't crash on toFixed().
+  const gpaAvg = school.gpaAvg ?? 0
+  const gpaMin = school.gpaMin ?? 0
+
   // GPA axis.
-  const gpaScore = school.gpaAvg > 0
-    ? Math.max(0, Math.min(100, Math.round((profile.gpa / school.gpaAvg) * 100)))
+  const gpaScore = gpaAvg > 0
+    ? Math.max(0, Math.min(100, Math.round((profile.gpa / gpaAvg) * 100)))
     : 50
-  const gpaVerdict = profile.gpa >= school.gpaAvg
-    ? `You're above the typical recruit's ${school.gpaAvg.toFixed(1)} GPA.`
-    : profile.gpa >= school.gpaMin
-      ? `Your GPA clears the floor (${school.gpaMin.toFixed(1)}) but is below the typical ${school.gpaAvg.toFixed(1)}.`
-      : `Below this program's typical academic profile (avg ${school.gpaAvg.toFixed(1)}, min ~${school.gpaMin.toFixed(1)}).`
+  const gpaVerdict = gpaAvg === 0
+    ? 'No academic benchmark on file for this program.'
+    : profile.gpa >= gpaAvg
+      ? `You're above the typical recruit's ${gpaAvg.toFixed(1)} GPA.`
+      : profile.gpa >= gpaMin
+        ? `Your GPA clears the floor (${gpaMin.toFixed(1)}) but is below the typical ${gpaAvg.toFixed(1)}.`
+        : `Below this program's typical academic profile (avg ${gpaAvg.toFixed(1)}, min ~${gpaMin.toFixed(1)}).`
 
   // Stats axis (skip for goalkeepers).
   let stats: MatchBreakdown['stats'] = null
   if (!gk) {
-    const expected = fwd ? school.goalsForwardAvg : school.goalsMidAvg
+    const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
     const positionLabel = fwd ? 'forwards' : 'midfielders'
     const score = expected > 0
       ? Math.max(0, Math.min(100, Math.round((profile.goals / expected) * 100)))
@@ -233,28 +276,32 @@ function buildBreakdown(profile: AthleteProfile, school: SchoolRecord): MatchBre
 
   // Region axis.
   const pref = profile.locationPreference || 'any'
-  const regionScore = pref === 'any' ? 75 : school.region === pref ? 100 : 30
+  const schoolRegion = school.region ?? 'unknown'
+  const regionScore = pref === 'any' ? 75 : schoolRegion === pref ? 100 : 30
   const regionVerdict = pref === 'any'
     ? 'No region preference set.'
-    : school.region === pref
+    : schoolRegion === pref
       ? `Located in your preferred ${pref} region.`
-      : `Outside your preferred ${pref} region (this school is ${school.region}).`
+      : `Outside your preferred ${pref} region (this school is ${schoolRegion}).`
 
   // Size axis.
   const sizePref = profile.sizePreference || 'any'
-  const sizeScore = sizePref === 'any' ? 75 : school.size === sizePref ? 100 : 40
+  const schoolSize = school.size ?? 'medium'
+  const sizeScore = sizePref === 'any' ? 75 : schoolSize === sizePref ? 100 : 40
   const sizeVerdict = sizePref === 'any'
     ? 'No size preference set.'
-    : school.size === sizePref
+    : schoolSize === sizePref
       ? `Matches your ${sizePref}-school preference.`
-      : `${school.size} school — you preferred ${sizePref}.`
+      : `${schoolSize} school — you preferred ${sizePref}.`
 
   return {
-    gpa: { score: gpaScore, yourValue: profile.gpa, typicalValue: school.gpaAvg, verdict: gpaVerdict },
+    athleticFit: athletic,
+    academicFit: academic,
+    gpa: { score: gpaScore, yourValue: profile.gpa, typicalValue: gpaAvg, verdict: gpaVerdict },
     stats,
     division: { score: divScore, yourTarget: profile.targetDivision, schoolDivision: school.division, verdict: divVerdict },
-    region: { score: regionScore, yourPref: pref, schoolRegion: school.region, verdict: regionVerdict },
-    size: { score: sizeScore, yourPref: sizePref, schoolSize: school.size, verdict: sizeVerdict },
+    region: { score: regionScore, yourPref: pref, schoolRegion, verdict: regionVerdict },
+    size: { score: sizeScore, yourPref: sizePref, schoolSize, verdict: sizeVerdict },
   }
 }
 

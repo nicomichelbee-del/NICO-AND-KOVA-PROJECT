@@ -357,8 +357,9 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
 }
 
 const SOURCE_BADGE: Record<string, { label: string; color: string }> = {
-  scraped:         { label: '✓ Official site',        color: 'text-[#4ade80]' },
-  'scraped-partial': { label: '⚠️ Verify email',      color: 'text-[#fbbf24]' },
+  scraped:         { label: '✓ Official site',          color: 'text-[#4ade80]' },
+  'scraped-partial': { label: '⚠️ Verify email',        color: 'text-[#fbbf24]' },
+  'email-inferred': { label: '⚠️ Inferred email — verify', color: 'text-[#fbbf24]' },
   'ai-recall':     { label: '⚠️ Verify before sending', color: 'text-[#fbbf24]' },
 }
 
