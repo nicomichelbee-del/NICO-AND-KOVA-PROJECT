@@ -5,6 +5,22 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY ?? '' })
 const PERSONA = `You are a college soccer recruitment counselor with 15+ years of experience.
 Tone: encouraging, direct, and soccer-specific. Never generic. Tailor everything to soccer positions, stats, and recruiting culture.`
 
+export async function chat(
+  messages: { role: 'user' | 'assistant'; content: string }[],
+  systemAddendum = '',
+  maxTokens = 600,
+): Promise<string> {
+  const response = await client.messages.create({
+    model: 'claude-haiku-4-5',
+    max_tokens: maxTokens,
+    system: PERSONA + systemAddendum,
+    messages,
+  })
+  const block = response.content[0]
+  if (block.type !== 'text') throw new Error('Unexpected response type')
+  return block.text
+}
+
 export async function ask(prompt: string, maxTokens = 1024): Promise<string> {
   const response = await client.messages.create({
     model: 'claude-haiku-4-5',

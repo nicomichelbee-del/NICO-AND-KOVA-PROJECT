@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
+import { BeekoLogo } from '../components/ui/BeekoLogo'
 
 export function Signup() {
   const navigate = useNavigate()
@@ -43,9 +44,8 @@ export function Signup() {
   return (
     <div className="min-h-screen bg-[#07090f] flex items-center justify-center px-4">
       <div className="w-full max-w-sm">
-        <Link to="/" className="flex items-center justify-center gap-2 font-serif text-lg font-bold text-[#f1f5f9] mb-10 no-underline">
-          <div className="w-8 h-8 bg-[#eab308] rounded flex items-center justify-center text-sm">⚽</div>
-          SoccerRecruit
+        <Link to="/" className="flex justify-center mb-10 no-underline">
+          <BeekoLogo size={36} textClassName="font-serif text-lg font-black text-[#f1f5f9]" />
         </Link>
         <div className="bg-[rgba(255,255,255,0.03)] border border-[rgba(234,179,8,0.15)] rounded-2xl p-8">
           <h1 className="font-serif text-2xl font-bold text-[#f1f5f9] mb-1">Start for free</h1>

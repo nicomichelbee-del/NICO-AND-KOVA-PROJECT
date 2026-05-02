@@ -2,6 +2,7 @@ import { Link } from 'react-router-dom'
 import { Nav } from '../components/layout/Nav'
 import { Button } from '../components/ui/Button'
 import { Badge } from '../components/ui/Badge'
+import { BeekoLogo } from '../components/ui/BeekoLogo'
 
 const features = [
   { num: '01', icon: '🏟️', title: 'Athlete Profile Builder', desc: 'Position, stats, GPA, club team, and highlight link — the foundation everything else is built on.', tier: 'FREE' },
@@ -57,12 +58,15 @@ export function Landing() {
             <div className="w-8 h-px bg-[#eab308]" />
           </div>
 
+          <div className="flex justify-center mb-6">
+            <BeekoLogo size={80} showText={false} />
+          </div>
           <h1 className="font-serif text-6xl md:text-7xl font-black leading-[1.0] tracking-[-3px] text-[#f1f5f9] mb-7">
             The <em className="text-[#eab308] not-italic">smartest</em> way to<br />get recruited
           </h1>
 
           <p className="text-lg text-[#64748b] leading-[1.8] max-w-xl mx-auto mb-14">
-            An AI counselor with 15+ years of D1–NAIA soccer knowledge. Build your profile, match your schools, and land in coaches' inboxes.
+            Meet <strong className="text-[#f1f5f9]">Beeko</strong> — your AI recruiting counselor with 15+ years of D1–NAIA soccer knowledge. Build your profile, match your schools, and land in coaches' inboxes.
           </p>
 
           <div className="flex gap-4 justify-center items-center flex-wrap">
@@ -221,11 +225,8 @@ export function Landing() {
 
       {/* Footer */}
       <footer className="px-8 md:px-16 py-9 border-t border-[rgba(255,255,255,0.07)] flex items-center justify-between flex-wrap gap-4">
-        <div className="flex items-center gap-2.5 font-serif text-base font-bold text-[#64748b]">
-          <div className="w-7 h-7 bg-[#eab308] rounded flex items-center justify-center text-xs">⚽</div>
-          SoccerRecruit
-        </div>
-        <div className="text-xs text-[#64748b]">© 2025 SoccerRecruit AI. All rights reserved.</div>
+        <BeekoLogo size={28} textClassName="font-serif text-base font-bold text-[#64748b]" />
+        <div className="text-xs text-[#64748b]">© 2025 Beeko AI. All rights reserved.</div>
       </footer>
     </div>
   )

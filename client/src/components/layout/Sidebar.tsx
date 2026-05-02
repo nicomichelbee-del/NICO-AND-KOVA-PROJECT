@@ -1,9 +1,11 @@
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
+import { BeekoLogo } from '../ui/BeekoLogo'
 
 const navItems = [
   { to: '/dashboard', label: 'Overview', icon: '⊞', end: true },
   { to: '/dashboard/profile', label: 'My Profile', icon: '👤', end: false },
+  { to: '/dashboard/timeline', label: 'Timeline', icon: '📍', end: false },
   { to: '/dashboard/schools', label: 'School Matches', icon: '🎯', end: false },
   { to: '/dashboard/emails', label: 'Coach Emails', icon: '✉️', end: false },
   { to: '/dashboard/tracker', label: 'Outreach Tracker', icon: '📊', end: false },
@@ -11,6 +13,7 @@ const navItems = [
   { to: '/dashboard/video', label: 'Video Rater', icon: '🎬', end: false },
   { to: '/dashboard/camps', label: 'ID Camps', icon: '⛺', end: false },
   { to: '/dashboard/roster', label: 'Roster Intel', icon: '🔍', end: false },
+  { to: '/dashboard/chat', label: 'Ask Beeko', icon: '🤖', end: false },
 ]
 
 export function Sidebar() {
@@ -26,10 +29,7 @@ export function Sidebar() {
   return (
     <aside className="fixed left-0 top-0 bottom-0 w-60 bg-[#0c1118] border-r border-[rgba(255,255,255,0.07)] flex flex-col z-40">
       <div className="px-6 py-6 border-b border-[rgba(255,255,255,0.07)]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-7 h-7 bg-[#eab308] rounded flex items-center justify-center text-xs">⚽</div>
-          <span className="font-serif text-lg font-bold text-[#f1f5f9]">SoccerRecruit</span>
-        </div>
+        <BeekoLogo size={34} textClassName="font-serif text-lg font-black text-[#f1f5f9]" />
       </div>
 
       <nav className="flex-1 px-3 py-4 flex flex-col gap-0.5 overflow-y-auto">

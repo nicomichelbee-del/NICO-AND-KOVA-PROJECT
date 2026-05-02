@@ -141,7 +141,7 @@ router.post('/send', async (req, res) => {
     res.json({ success: true, threadId, messageId })
     // Log asynchronously — DB failure should not affect send response
     if (threadId) {
-      supabase.from('sent_emails').insert({
+      void Promise.resolve(supabase.from('sent_emails').insert({
         user_id: userId,
         contact_id: contactId ?? null,
         gmail_thread_id: threadId,
@@ -149,7 +149,7 @@ router.post('/send', async (req, res) => {
         subject,
         body,
         email_type: emailType ?? 'initial_outreach',
-      }).then().catch((err: Error) => {
+      })).catch((err: Error) => {
         console.error('sent_emails insert failed:', err.message)
       })
     }
