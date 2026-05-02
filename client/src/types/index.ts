@@ -57,6 +57,16 @@ export interface School {
   goalsForwardAvg?: number
   goalsMidAvg?: number
   breakdown?: MatchBreakdown
+  // College Scorecard data (optional, present when schoolsAcademic.json has the school).
+  satMid?: number | null
+  sat25?: number | null
+  sat75?: number | null
+  admissionRate?: number | null     // 0–1
+  costOfAttendance?: number | null  // total $ per year incl. room/board
+  tuitionInState?: number | null
+  tuitionOutOfState?: number | null
+  pellGrantRate?: number | null     // 0–1
+  graduationRate?: number | null    // 0–1
 }
 
 export interface SchoolDirectoryEntry {
@@ -107,7 +117,7 @@ export interface FindCoachResult {
   coachName: string
   coachEmail: string
   confidence: 'high' | 'low'
-  source?: 'scraped' | 'scraped-partial' | 'ai-recall'
+  source?: 'scraped' | 'scraped-partial' | 'email-inferred' | 'ai-recall'
   sourceUrl?: string
   scrapedAt?: string
 }

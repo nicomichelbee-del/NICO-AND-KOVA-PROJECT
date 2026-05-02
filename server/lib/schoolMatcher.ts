@@ -1,5 +1,39 @@
+import fs from 'fs'
+import path from 'path'
 import schoolsData from '../data/schools.json'
 import type { AthleteProfile, MatchBreakdown, School, SchoolDirectoryEntry } from '../../client/src/types/index'
+
+// ── College Scorecard academic data (optional) ────────────────────────────
+// When server/data/schoolsAcademic.json exists, the matcher merges admissions,
+// SAT range, cost, and aid figures into each match. Missing file = matcher
+// still works exactly as before, just without the extra fields.
+
+interface AcademicRecord {
+  satMid:             number | null
+  sat25:              number | null
+  sat75:              number | null
+  actMid:             number | null
+  admissionRate:      number | null
+  tuitionInState:     number | null
+  tuitionOutOfState:  number | null
+  costOfAttendance:   number | null
+  pctReceivingAid:    number | null
+  pellGrantRate:      number | null
+  graduationRate:     number | null
+}
+
+let academicCache: Record<string, AcademicRecord> | null = null
+function getAcademic(schoolId: string): AcademicRecord | undefined {
+  if (academicCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'schoolsAcademic.json')
+      academicCache = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, AcademicRecord>
+    } catch {
+      academicCache = {}
+    }
+  }
+  return academicCache[schoolId]
+}
 
 interface SchoolRecord {
   id: string
@@ -196,29 +230,42 @@ export function matchSchools(profile: AthleteProfile, topN = 25): School[] {
   // working list. Safeties are reassurance at the bottom.
   const ordered = [...finalReach, ...finalTarget, ...finalSafety]
 
-  return ordered.map((c) => ({
-    id: c.school.id,
-    name: c.school.name,
-    division: c.school.division,
-    location: c.school.location,
-    region: c.school.region,
-    size: c.school.size,
-    enrollment: c.school.enrollment,
-    conference: c.school.conference,
-    coachName: c.coachName,
-    coachEmail: c.coachEmail,
-    category: c.bucket,
-    matchScore: c.matchScore,
-    athleticFit: c.athletic,
-    academicFit: c.academic,
-    notes: c.school.notes ?? '',
-    programStrength: c.school.programStrength,
-    scholarships: c.school.scholarships,
-    gpaAvg: c.school.gpaAvg,
-    goalsForwardAvg: c.school.goalsForwardAvg,
-    goalsMidAvg: c.school.goalsMidAvg,
-    breakdown: buildBreakdown(profile, c.school, c.athletic, c.academic),
-  }))
+  return ordered.map((c) => {
+    const academic = getAcademic(c.school.id)
+    return {
+      id: c.school.id,
+      name: c.school.name,
+      division: c.school.division,
+      location: c.school.location,
+      region: c.school.region,
+      size: c.school.size,
+      enrollment: c.school.enrollment,
+      conference: c.school.conference,
+      coachName: c.coachName,
+      coachEmail: c.coachEmail,
+      category: c.bucket,
+      matchScore: c.matchScore,
+      athleticFit: c.athletic,
+      academicFit: c.academic,
+      notes: c.school.notes ?? '',
+      programStrength: c.school.programStrength,
+      scholarships: c.school.scholarships,
+      gpaAvg: c.school.gpaAvg,
+      goalsForwardAvg: c.school.goalsForwardAvg,
+      goalsMidAvg: c.school.goalsMidAvg,
+      breakdown: buildBreakdown(profile, c.school, c.athletic, c.academic),
+      // Scorecard fields when available (else undefined; UI guards on truthy).
+      satMid:             academic?.satMid,
+      sat25:              academic?.sat25,
+      sat75:              academic?.sat75,
+      admissionRate:      academic?.admissionRate,
+      costOfAttendance:   academic?.costOfAttendance,
+      tuitionInState:     academic?.tuitionInState,
+      tuitionOutOfState:  academic?.tuitionOutOfState,
+      pellGrantRate:      academic?.pellGrantRate,
+      graduationRate:     academic?.graduationRate,
+    }
+  })
 }
 
 function buildBreakdown(

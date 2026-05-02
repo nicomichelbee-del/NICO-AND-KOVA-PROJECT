@@ -19,6 +19,21 @@ const catDesc: Record<School['category'], string> = {
   safety: 'You would be a top recruit here — strong fit',
 }
 
+function formatMoney(n: number): string {
+  if (n >= 10000) return `$${Math.round(n / 1000)}k`
+  return `$${n.toLocaleString()}`
+}
+
+function formatAdmissionRate(rate: number): string {
+  const pct = Math.round(rate * 100)
+  const label = pct < 10 ? 'extremely selective'
+              : pct < 25 ? 'very selective'
+              : pct < 50 ? 'selective'
+              : pct < 75 ? 'less selective'
+              : 'open'
+  return `${pct}% — ${label}`
+}
+
 type SortKey = 'match' | 'size' | 'program' | 'gpa' | 'division' | 'name'
 
 const SIZE_RANK: Record<NonNullable<School['size']>, number> = { small: 0, medium: 1, large: 2 }
@@ -275,6 +290,32 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
               )}
               {school.gpaAvg != null && school.gpaAvg > 0 && (
                 <InfoRow label="Typical recruit GPA" value={school.gpaAvg.toFixed(1)} />
+              )}
+              {school.admissionRate != null && (
+                <InfoRow label="Acceptance rate" value={formatAdmissionRate(school.admissionRate)} />
+              )}
+              {school.satMid != null && school.satMid > 0 && (
+                <InfoRow
+                  label="SAT (avg)"
+                  value={
+                    school.sat25 && school.sat75
+                      ? `${school.satMid} (range ${school.sat25}–${school.sat75})`
+                      : String(school.satMid)
+                  }
+                />
+              )}
+              {school.costOfAttendance != null && school.costOfAttendance > 0 && (
+                <InfoRow label="Cost of attendance" value={formatMoney(school.costOfAttendance)} />
+              )}
+              {school.tuitionInState != null && school.tuitionOutOfState != null
+                && school.tuitionInState !== school.tuitionOutOfState && (
+                <InfoRow
+                  label="Tuition"
+                  value={`${formatMoney(school.tuitionInState)} in-state · ${formatMoney(school.tuitionOutOfState)} out`}
+                />
+              )}
+              {school.pellGrantRate != null && (
+                <InfoRow label="Pell grant rate" value={`${(school.pellGrantRate * 100).toFixed(0)}% of students`} />
               )}
             </div>
             {school.notes && (
