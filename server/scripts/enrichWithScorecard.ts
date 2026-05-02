@@ -116,7 +116,10 @@ const STATE_ABBR_EXPANSIONS: Array<[RegExp, string]> = [
 const STOP_WORDS = new Set(['the', 'of', 'at', 'in', 'on', 'and', 'for', 'to'])
 
 function normalizeName(s: string): string {
-  let out = s.toLowerCase()
+  let out = s
+    .normalize('NFKD').replace(/[̀-ͯ]/g, '')  // strip diacritics
+    .replace(/ʻ|‘|’/g, '')                              // smart apostrophes
+    .toLowerCase()
   for (const [re, replacement] of STATE_ABBR_EXPANSIONS) out = out.replace(re, replacement)
   return out
     .replace(/\buniversity of\b/g, '')
@@ -225,11 +228,15 @@ function searchTerm(name: string): string {
   //   • "college of william mary" → only Richard Bland College (W&M missing!)
   //   • "william mary" → William & Mary (correct) + Richard Bland
   // So we drop `&`, apostrophes, and the institutional scaffolding words
-  // ("college", "university", "the", "of"). The proper-noun core is what
-  // Scorecard's full-text matcher works on.
+  // ("college", "university", "the", "of"). Also fold Unicode diacritics
+  // ("Hawaiʻi" → "Hawaii", "Mānoa" → "Manoa") and normalize "Saint" → "St"
+  // so our schools.json and Scorecard's variants line up.
   return name
+    .normalize('NFKD').replace(/[̀-ͯ]/g, '')  // strip diacritics
+    .replace(/ʻ|‘|’/g, '')                              // smart apostrophes
     .toLowerCase()
-    .replace(/['"`’]/g, '')
+    .replace(/['"`]/g, '')
+    .replace(/\bsaint\b/g, 'st')
     .replace(/\b(the|of|college|university|institute)\b/g, '')
     .replace(/[^a-z0-9 ]/g, ' ')
     .replace(/\s+/g, ' ')
