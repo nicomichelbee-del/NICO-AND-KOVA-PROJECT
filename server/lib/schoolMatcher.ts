@@ -101,6 +101,22 @@ function academicFit(profile: AthleteProfile, school: SchoolRecord): number {
     score -= 15
   }
 
+  // Scorecard selectivity refinement. When real admission data is available,
+  // adjust for schools whose schools.json gpaAvg understates difficulty:
+  //   • Stanford has gpaAvg 3.9 BUT acceptance ~4% → reach even at gpa 3.9
+  //   • Wingate has gpaAvg 3.0 AND acceptance ~91% → safety even at gpa 3.0
+  // This pulls truly selective schools downward and boosts open-admission
+  // schools, even when the underlying gpaAvg buckets are coarse.
+  const academic = getAcademic(school.id)
+  if (academic?.admissionRate != null) {
+    const admPct = academic.admissionRate * 100
+    if (admPct < 10) score -= 12       // ivy / equivalent
+    else if (admPct < 20) score -= 8   // very selective
+    else if (admPct < 35) score -= 4   // selective
+    else if (admPct >= 80) score += 6  // open admission
+    else if (admPct >= 65) score += 3
+  }
+
   return Math.max(0, Math.min(100, Math.round(score)))
 }
 
