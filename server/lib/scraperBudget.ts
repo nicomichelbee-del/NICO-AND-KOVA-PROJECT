@@ -10,11 +10,32 @@ export class ScraperBudget {
 
   private load(): BudgetState {
     if (!fs.existsSync(this.path)) return { spendUsd: 0, entries: [] }
-    return JSON.parse(fs.readFileSync(this.path, 'utf8'))
+    return this.withRetry(() => JSON.parse(fs.readFileSync(this.path, 'utf8')))
   }
 
   private save(state: BudgetState) {
-    fs.writeFileSync(this.path, JSON.stringify(state, null, 2))
+    const json = JSON.stringify(state, null, 2)
+    const tmp = this.path + '.tmp'
+    this.withRetry(() => {
+      fs.writeFileSync(tmp, json)
+      fs.renameSync(tmp, this.path)
+    })
+  }
+
+  // Windows holds short exclusive locks on rename/open. Retry on EBUSY/EPERM.
+  private withRetry<T>(fn: () => T, attempts = 12): T {
+    let lastErr: unknown
+    for (let i = 0; i < attempts; i++) {
+      try { return fn() } catch (e: any) {
+        const code = e?.code
+        if (code !== 'EBUSY' && code !== 'EPERM' && code !== 'EACCES' && code !== 'ENOENT') throw e
+        lastErr = e
+        const wait = 20 * (i + 1)
+        const end = Date.now() + wait
+        while (Date.now() < end) { /* busy-wait — sync API has no async sleep */ }
+      }
+    }
+    throw lastErr
   }
 
   totalSpent(): number {
