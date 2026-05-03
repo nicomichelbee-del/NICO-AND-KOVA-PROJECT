@@ -1,26 +1,48 @@
 import { supabase } from './supabase'
 import type { AthleteProfile, Division, School, SchoolDirectoryEntry, ProgramIntel, VideoRating, CoachResponse, FindCoachResult, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed, IdEvent, IdCampEntry, OutreachContact, SentEmail, ThreadMessage, UntrackedThread, HistoryEmail, CampRatingSummary, CampComment } from '../types'
 
+// The server-side profile gate runs on /api/ai, /api/gmail, and /api/camps,
+// so every fetch needs the user's bearer token. Centralising it here means
+// individual API helpers don't have to think about auth.
+async function authedHeaders(): Promise<Record<string, string>> {
+  const { data } = await supabase.auth.getSession()
+  const token = data.session?.access_token
+  return token ? { Authorization: `Bearer ${token}` } : {}
+}
+
+// Custom error so route guards can react to "profile incomplete" responses
+// (HTTP 403 with { redirect }) by sending the user to /onboarding/profile.
+export class ProfileIncompleteError extends Error {
+  redirect: string
+  constructor(redirect: string) {
+    super('Profile incomplete')
+    this.redirect = redirect
+  }
+}
+
+async function handleResponse<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Request failed' })) as { error?: string; redirect?: string }
+    if (res.status === 403 && err.redirect) {
+      throw new ProfileIncompleteError(err.redirect)
+    }
+    throw new Error(err.error ?? 'Request failed')
+  }
+  return res.json() as Promise<T>
+}
+
 async function post<T>(path: string, body: unknown): Promise<T> {
   const res = await fetch(path, {
     method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
+    headers: { 'Content-Type': 'application/json', ...(await authedHeaders()) },
     body: JSON.stringify(body),
   })
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: 'Request failed' }))
-    throw new Error((err as { error: string }).error ?? 'Request failed')
-  }
-  return res.json()
+  return handleResponse<T>(res)
 }
 
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(path)
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: 'Request failed' }))
-    throw new Error((err as { error: string }).error ?? 'Request failed')
-  }
-  return res.json()
+  const res = await fetch(path, { headers: await authedHeaders() })
+  return handleResponse<T>(res)
 }
 
 export function generateEmail(profile: AthleteProfile, school: string, division: Division, coachName: string, gender: 'mens' | 'womens') {
@@ -33,8 +55,8 @@ export function findCoach(school: string, division: Division, gender: 'mens' | '
 
 export type { FindCoachResult }
 
-export function matchSchools(profile: AthleteProfile) {
-  return post<{ schools: School[] }>('/api/ai/schools', { profile })
+export function matchSchools(profile: AthleteProfile, video?: VideoRating | null) {
+  return post<{ schools: School[] }>('/api/ai/schools', { profile, video: video ?? null })
 }
 
 export function listAllSchools() {

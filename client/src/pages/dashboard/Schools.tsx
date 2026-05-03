@@ -3,10 +3,18 @@ import { matchSchools, getProgramIntel, findCoach, type FindCoachResult } from '
 import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
 import { Card } from '../../components/ui/Card'
-import type { AthleteProfile, School, ProgramIntel } from '../../types'
+import { PageHeader } from '../../components/ui/PageHeader'
+import type { AthleteProfile, School, ProgramIntel, VideoRating } from '../../types'
 
 function getProfile(): AthleteProfile | null {
   try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
+}
+
+function getLatestVideoRating(): VideoRating | null {
+  try {
+    const raw = localStorage.getItem('latestVideoRating')
+    return raw ? JSON.parse(raw) as VideoRating : null
+  } catch { return null }
 }
 
 const catColor: Record<School['category'], 'blue' | 'gold' | 'green'> = {
@@ -59,7 +67,10 @@ export function Schools() {
     if (!profile.targetDivision) { setError('Please pick a target division (D1/D2/D3/NAIA/JUCO) in your athlete profile.'); return }
     setError(''); setLoading(true)
     try {
-      const { schools } = await matchSchools(profile)
+      // Pull the latest highlight-video rating (if any) so per-school athletic
+      // fit reflects what the AI actually saw on tape, not just GPA + goals.
+      const video = getLatestVideoRating()
+      const { schools } = await matchSchools(profile, video)
       setSchools(schools)
       localStorage.setItem('matchedSchools', JSON.stringify(schools))
     } catch (e) {
@@ -115,22 +126,23 @@ export function Schools() {
   ]
 
   return (
-    <div className="px-10 py-10 max-w-5xl">
-      <div className="mb-8 flex items-end justify-between gap-4 flex-wrap">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-2 h-2 rounded-full bg-[#eab308]" />
-            <span className="text-xs font-semibold tracking-[2px] uppercase text-[#eab308]">School Matcher</span>
-          </div>
-          <h1 className="font-serif text-4xl font-black text-[#f1f5f9] tracking-[-1px]">Your School Matches</h1>
-          <p className="text-[#64748b] mt-2 text-sm">Click any school for a full match breakdown and program details.</p>
-        </div>
-        <Button onClick={handleMatch} disabled={loading}>
-          {loading ? 'Matching...' : schools.length ? 'Rematch' : 'Find My Schools'}
-        </Button>
-      </div>
+    <div className="kr-page">
+      <PageHeader
+        eyebrow="School matcher"
+        title={<>Your school <span className="kr-accent">matches</span>.</>}
+        lede="Click any school for a full match breakdown and program details."
+        aside={
+          <Button onClick={handleMatch} disabled={loading}>
+            {loading ? 'Matching…' : schools.length ? 'Rematch' : 'Find my schools'}
+          </Button>
+        }
+      />
 
-      {error && <div className="mb-6 p-4 bg-red-900/20 border border-red-500/20 rounded-xl text-sm text-red-400">{error}</div>}
+      {error && (
+        <div className="mb-6 p-4 rounded-xl border border-[rgba(227,90,90,0.28)] bg-[rgba(227,90,90,0.08)] text-sm text-crimson-light">
+          {error}
+        </div>
+      )}
 
       {schools.length > 0 && (
         <>
@@ -141,12 +153,12 @@ export function Schools() {
               <Card key={cat} className="p-5">
                 <div className="flex items-center gap-3 mb-2">
                   <Badge variant={catColor[cat]}>{cat.toUpperCase()}</Badge>
-                  <span className="font-serif text-2xl font-black text-[#f1f5f9]">
+                  <span className="font-serif text-2xl font-black text-[#f5f1e8]">
                     {schools.filter((s) => s.category === cat).length}
                   </span>
-                  <span className="text-xs text-[#64748b]">schools</span>
+                  <span className="text-xs text-[#9a9385]">schools</span>
                 </div>
-                <p className="text-xs text-[#64748b] leading-relaxed">{catDesc[cat]}</p>
+                <p className="text-xs text-[#9a9385] leading-relaxed">{catDesc[cat]}</p>
               </Card>
             ))}
           </div>
@@ -156,10 +168,10 @@ export function Schools() {
               <button
                 key={f}
                 onClick={() => setFilter(f)}
-                className={`px-4 py-1.5 rounded-lg text-xs font-semibold capitalize border transition-all ${
+                className={`px-4 py-2 rounded-full font-mono text-[10.5px] tracking-[0.16em] uppercase border transition-[border-color,background,color] ${
                   filter === f
-                    ? 'bg-[#eab308] text-black border-[#eab308]'
-                    : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
+                    ? 'bg-gold text-[#1a1304] border-gold'
+                    : 'bg-transparent text-ink-2 border-[rgba(245,241,232,0.10)] hover:border-[rgba(240,182,90,0.45)] hover:text-ink-0'
                 }`}
               >
                 {f}
@@ -168,22 +180,22 @@ export function Schools() {
           </div>
 
           <div className="flex items-center gap-2 mb-6 flex-wrap">
-            <span className="text-[10px] font-bold text-[#64748b] tracking-[2px] uppercase mr-1">Sort by</span>
+            <span className="font-mono text-[10px] tracking-[0.20em] uppercase text-ink-3 mr-1">Sort by</span>
             {SORT_OPTIONS.map((opt) => {
               const active = sort === opt.key
               return (
                 <button
                   key={opt.key}
                   onClick={() => setSortKey(opt.key)}
-                  className={`px-3 py-1 rounded-lg text-xs font-semibold border transition-all flex items-center gap-1 ${
+                  className={`px-3 py-1.5 rounded-full font-mono text-[10.5px] tracking-[0.14em] uppercase border transition-[border-color,background,color] flex items-center gap-1 ${
                     active
-                      ? 'bg-[#eab308] text-black border-[#eab308]'
-                      : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
+                      ? 'bg-gold text-[#1a1304] border-gold'
+                      : 'bg-transparent text-ink-2 border-[rgba(245,241,232,0.10)] hover:border-[rgba(240,182,90,0.45)] hover:text-ink-0'
                   }`}
                   title={active ? `Click to flip direction (currently ${sortDir === 'desc' ? 'high → low' : 'low → high'})` : undefined}
                 >
                   {opt.label}
-                  {active && <span className="text-[10px]">{sortDir === 'desc' ? '↓' : '↑'}</span>}
+                  {active && <span className="text-[11px]">{sortDir === 'desc' ? '↓' : '↑'}</span>}
                 </button>
               )
             })}
@@ -194,18 +206,22 @@ export function Schools() {
               <button
                 key={school.id}
                 onClick={() => setSelected(school)}
-                className="text-left bg-[rgba(255,255,255,0.03)] border border-[rgba(234,179,8,0.15)] rounded-2xl p-5 flex items-start gap-5 transition-all hover:border-[rgba(234,179,8,0.4)] hover:bg-[rgba(234,179,8,0.05)] cursor-pointer"
+                className="text-left bg-[linear-gradient(180deg,rgba(31,27,40,0.82)_0%,rgba(24,20,32,0.82)_100%)] border border-[rgba(245,241,232,0.08)] rounded-2xl p-6 flex items-start gap-6 transition-[transform,border-color,box-shadow] duration-200 hover:border-[rgba(240,182,90,0.45)] hover:-translate-y-[2px] hover:shadow-[0_12px_30px_rgba(0,0,0,0.30)] cursor-pointer group"
               >
                 <div className="flex-1 min-w-0">
-                  <div className="flex items-center gap-3 mb-1 flex-wrap">
-                    <span className="font-bold text-[#f1f5f9] text-sm">{school.name}</span>
+                  <div className="flex items-center gap-3 mb-2 flex-wrap">
+                    <span className="font-medium text-ink-0 text-[16px] tracking-[-0.005em]">{school.name}</span>
                     <Badge variant={catColor[school.category]}>{school.category}</Badge>
                     <Badge variant="muted">{school.division}</Badge>
                   </div>
-                  <div className="flex items-center gap-4 text-xs text-[#64748b] flex-wrap mb-2.5">
-                    <span>📍 {school.location}</span>
-                    <span>👥 {school.enrollment.toLocaleString()} students</span>
-                    {school.conference && <span>🏆 {school.conference}</span>}
+                  <div className="flex items-center gap-4 font-mono text-[10.5px] tracking-[0.14em] uppercase text-ink-3 flex-wrap mb-3">
+                    <span>{school.location}</span>
+                    <span className="text-ink-3/60">·</span>
+                    <span>{school.enrollment.toLocaleString()} students</span>
+                    {school.conference && <>
+                      <span className="text-ink-3/60">·</span>
+                      <span>{school.conference}</span>
+                    </>}
                   </div>
 
                   {/* Two-axis fit bars: lets the user see at a glance *why* this is reach/target/safety */}
@@ -221,7 +237,7 @@ export function Schools() {
                     <ul className="flex flex-col gap-0.5 mt-1">
                       {school.reasons.slice(0, 2).map((r, i) => (
                         <li key={i} className="text-xs text-[#94a3b8] leading-relaxed flex gap-1.5">
-                          <span className="text-[#eab308] flex-shrink-0">›</span>
+                          <span className="text-[#f0b65a] flex-shrink-0">›</span>
                           <span>{r}</span>
                         </li>
                       ))}
@@ -229,10 +245,10 @@ export function Schools() {
                   )}
                 </div>
                 <div className="text-right flex-shrink-0 pt-1">
-                  <div className="font-serif text-2xl font-black text-[#eab308]">{school.matchScore}</div>
-                  <div className="text-xs text-[#64748b]">match score</div>
+                  <div className="font-serif text-[34px] leading-none text-gold tabular-nums" style={{ fontVariationSettings: '"opsz" 144' }}>{school.matchScore.toFixed(1)}</div>
+                  <div className="font-mono text-[9.5px] tracking-[0.18em] uppercase text-ink-3 mt-1.5">match score</div>
                 </div>
-                <div className="text-[#64748b] text-lg flex-shrink-0 pt-1">›</div>
+                <div className="text-ink-2 text-lg flex-shrink-0 pt-2 group-hover:text-gold group-hover:translate-x-0.5 transition-[color,transform]">→</div>
               </button>
             ))}
           </div>
@@ -240,13 +256,13 @@ export function Schools() {
       )}
 
       {!loading && schools.length === 0 && !error && (
-        <Card className="p-16 text-center">
-          <div className="text-4xl mb-4">🎯</div>
-          <div className="font-serif text-xl font-bold text-[#f1f5f9] mb-2">Find your schools</div>
-          <p className="text-sm text-[#64748b] mb-6 max-w-xs mx-auto">
-            Complete your athlete profile, then click "Find My Schools" to get matched to 25 real programs based on your GPA, stats, and division goal.
+        <Card className="p-12 md:p-16 text-center">
+          <span className="kr-eyebrow justify-center">Step 02 · Match</span>
+          <h2 className="kr-h2 mt-4">Find your <span className="kr-accent">schools</span>.</h2>
+          <p className="text-[15px] text-ink-1 mt-3 mb-7 max-w-md mx-auto leading-[1.6]">
+            We rank 2,500+ programs against your stats, academics, and division goal — then surface the 25 strongest matches.
           </p>
-          <Button onClick={handleMatch} disabled={loading}>Find My Schools</Button>
+          <Button onClick={handleMatch} disabled={loading}>Find my schools</Button>
         </Card>
       )}
 
@@ -291,26 +307,26 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
       onClick={onClose}
     >
       <div
-        className="bg-[#0f172a] border border-[rgba(234,179,8,0.25)] rounded-2xl max-w-2xl w-full my-8 max-h-[90vh] overflow-y-auto scrollbar-hide"
+        className="bg-[linear-gradient(180deg,rgba(31,27,40,0.98)_0%,rgba(20,16,26,0.98)_100%)] border border-[rgba(240,182,90,0.30)] rounded-2xl max-w-2xl w-full my-8 max-h-[90vh] overflow-y-auto scrollbar-hide shadow-[0_24px_60px_rgba(0,0,0,0.5)]"
         onClick={(e) => e.stopPropagation()}
       >
-        <div className="sticky top-0 bg-[#0f172a] border-b border-[rgba(255,255,255,0.07)] px-7 py-5 flex items-start justify-between gap-4">
-          <div className="min-w-0">
-            <div className="flex items-center gap-2 mb-1.5 flex-wrap">
-              <Badge variant={catColor[school.category]}>{school.category.toUpperCase()}</Badge>
+        <div className="sticky top-0 z-10 bg-[rgba(20,16,26,0.92)] backdrop-blur-md border-b border-[rgba(245,241,232,0.08)] px-7 py-5 flex items-start justify-between gap-4">
+          <div className="min-w-0 pr-12">
+            <div className="flex items-center gap-2 mb-2 flex-wrap">
+              <Badge variant={catColor[school.category]}>{school.category}</Badge>
               <Badge variant="muted">{school.division}</Badge>
               {school.conference && <Badge variant="muted">{school.conference}</Badge>}
             </div>
-            <h2 className="font-serif text-2xl font-black text-[#f1f5f9] tracking-[-0.5px]">{school.name}</h2>
-            <p className="text-xs text-[#64748b] mt-1">📍 {school.location}</p>
+            <h2 className="kr-h2">{school.name}</h2>
+            <p className="font-mono text-[10.5px] tracking-[0.14em] uppercase text-ink-3 mt-2">{school.location}</p>
           </div>
           <div className="text-right flex-shrink-0">
-            <div className="font-serif text-3xl font-black text-[#eab308] leading-none">{school.matchScore}</div>
-            <div className="text-[10px] uppercase tracking-widest text-[#64748b] mt-1">match</div>
+            <div className="font-serif text-[40px] leading-none text-gold tabular-nums" style={{ fontVariationSettings: '"opsz" 144' }}>{school.matchScore.toFixed(1)}</div>
+            <div className="font-mono text-[10px] uppercase tracking-[0.18em] text-ink-3 mt-2">match</div>
           </div>
           <button
             onClick={onClose}
-            className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-[rgba(255,255,255,0.05)] hover:bg-[rgba(255,255,255,0.1)] text-[#64748b] hover:text-[#f1f5f9] flex items-center justify-center text-lg"
+            className="absolute top-4 right-4 w-8 h-8 rounded-lg bg-[rgba(245,241,232,0.05)] hover:bg-[rgba(245,241,232,0.10)] text-[#9a9385] hover:text-[#f5f1e8] flex items-center justify-center text-lg"
             aria-label="Close"
           >
             ×
@@ -321,13 +337,13 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
           {/* Why this is a {bucket} — full reasons list */}
           {school.reasons && school.reasons.length > 0 && (
             <section>
-              <h3 className="text-[11px] font-bold text-[#64748b] tracking-[2px] uppercase mb-3">
+              <h3 className="text-[11px] font-bold text-[#9a9385] tracking-[2px] uppercase mb-3">
                 Why this is a {school.category}
               </h3>
               <ul className="flex flex-col gap-1.5">
                 {school.reasons.map((r, i) => (
                   <li key={i} className="text-sm text-[#cbd5e1] leading-relaxed flex gap-2">
-                    <span className="text-[#eab308] flex-shrink-0">›</span>
+                    <span className="text-[#f0b65a] flex-shrink-0">›</span>
                     <span>{r}</span>
                   </li>
                 ))}
@@ -337,7 +353,7 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
 
           {/* General info */}
           <section>
-            <h3 className="text-[11px] font-bold text-[#64748b] tracking-[2px] uppercase mb-3">Program Info</h3>
+            <h3 className="text-[11px] font-bold text-[#9a9385] tracking-[2px] uppercase mb-3">Program Info</h3>
             <div className="grid grid-cols-2 gap-3 text-sm">
               <InfoRow label="Region" value={school.region} />
               <InfoRow label="Size" value={`${school.size} (${school.enrollment.toLocaleString()} students)`} />
@@ -377,7 +393,7 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
               )}
             </div>
             {school.notes && (
-              <p className="text-sm text-[#cbd5e1] mt-4 leading-relaxed italic border-l-2 border-[#eab308] pl-4">
+              <p className="text-sm text-[#cbd5e1] mt-4 leading-relaxed italic border-l-2 border-[#f0b65a] pl-4">
                 {school.notes}
               </p>
             )}
@@ -389,7 +405,7 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
           {/* Match breakdown */}
           {school.breakdown && (
             <section>
-              <h3 className="text-[11px] font-bold text-[#64748b] tracking-[2px] uppercase mb-3">Match Breakdown</h3>
+              <h3 className="text-[11px] font-bold text-[#9a9385] tracking-[2px] uppercase mb-3">Match Breakdown</h3>
               <div className="flex flex-col gap-3">
                 <BreakdownRow
                   label="Academics (GPA)"
@@ -430,12 +446,12 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
           {/* Program intel: tactics, formation, search-driven film links */}
           <section>
             <div className="flex items-center justify-between mb-3 gap-3 flex-wrap">
-              <h3 className="text-[11px] font-bold text-[#64748b] tracking-[2px] uppercase">Program Intel</h3>
+              <h3 className="text-[11px] font-bold text-[#9a9385] tracking-[2px] uppercase">Program Intel</h3>
               {intel && (
                 <button
                   onClick={handleRefresh}
                   disabled={refreshing}
-                  className="text-[10px] uppercase tracking-widest text-[#64748b] hover:text-[#eab308] disabled:opacity-50"
+                  className="text-[10px] uppercase tracking-widest text-[#9a9385] hover:text-[#f0b65a] disabled:opacity-50"
                 >
                   {refreshing ? 'Refreshing…' : '↻ Re-research'}
                 </button>
@@ -443,7 +459,7 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
             </div>
 
             {intelLoading && !intel && (
-              <p className="text-xs text-[#64748b] py-3">Researching {gender === 'womens' ? "women's" : "men's"} program tactics…</p>
+              <p className="text-xs text-[#9a9385] py-3">Researching {gender === 'womens' ? "women's" : "men's"} program tactics…</p>
             )}
             {intelError && !intel && (
               <p className="text-xs text-red-400 py-3">{intelError}</p>
@@ -489,9 +505,9 @@ function CoachSection({ school, gender }: { school: School; gender: 'mens' | 'wo
 
   return (
     <section>
-      <h3 className="text-[11px] font-bold text-[#64748b] tracking-[2px] uppercase mb-3">Head Coach</h3>
+      <h3 className="text-[11px] font-bold text-[#9a9385] tracking-[2px] uppercase mb-3">Head Coach</h3>
       {!lookup ? (
-        <div className="bg-[rgba(255,255,255,0.04)] rounded-lg px-4 py-3 text-sm flex items-center justify-between gap-3 flex-wrap">
+        <div className="bg-[rgba(245,241,232,0.04)] rounded-lg px-4 py-3 text-sm flex items-center justify-between gap-3 flex-wrap">
           <div>
             <div className="text-xs text-[#94a3b8] leading-relaxed">
               We don't store coach contact info — coaches change jobs and stored data goes stale.
@@ -502,7 +518,7 @@ function CoachSection({ school, gender }: { school: School; gender: 'mens' | 'wo
           <button
             onClick={handleLookup}
             disabled={loading}
-            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[rgba(234,179,8,0.12)] border border-[rgba(234,179,8,0.4)] text-[#eab308] hover:bg-[rgba(234,179,8,0.18)] disabled:opacity-50 flex-shrink-0"
+            className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-[rgba(240,182,90,0.12)] border border-[rgba(240,182,90,0.45)] text-[#f0b65a] hover:bg-[rgba(234,179,8,0.18)] disabled:opacity-50 flex-shrink-0"
           >
             {loading ? 'Looking up…' : '🔍 Look up coach'}
           </button>
@@ -514,7 +530,7 @@ function CoachSection({ school, gender }: { school: School; gender: 'mens' | 'wo
             : 'bg-[rgba(251,191,36,0.05)] border-[rgba(251,191,36,0.25)]'
         }`}>
           <div className="flex items-center justify-between gap-2 mb-1">
-            <div className="font-semibold text-[#f1f5f9]">{lookup.coachName || 'Head Coach'}</div>
+            <div className="font-semibold text-[#f5f1e8]">{lookup.coachName || 'Head Coach'}</div>
             {lookup.source && SOURCE_BADGE[lookup.source] && (
               <span className={`text-[10px] uppercase tracking-widest ${SOURCE_BADGE[lookup.source].color}`}>
                 {SOURCE_BADGE[lookup.source].label}
@@ -522,7 +538,7 @@ function CoachSection({ school, gender }: { school: School; gender: 'mens' | 'wo
             )}
           </div>
           {lookup.coachEmail ? (
-            <a href={`mailto:${lookup.coachEmail}`} className="text-xs text-[#eab308] hover:underline">
+            <a href={`mailto:${lookup.coachEmail}`} className="text-xs text-[#f0b65a] hover:underline">
               {lookup.coachEmail}
             </a>
           ) : (
@@ -550,7 +566,7 @@ function CoachSection({ school, gender }: { school: School; gender: 'mens' | 'wo
           <button
             onClick={handleLookup}
             disabled={loading}
-            className="text-[10px] uppercase tracking-widest text-[#64748b] hover:text-[#eab308] mt-2 disabled:opacity-50"
+            className="text-[10px] uppercase tracking-widest text-[#9a9385] hover:text-[#f0b65a] mt-2 disabled:opacity-50"
           >
             {loading ? '…' : '↻ Re-check'}
           </button>
@@ -564,7 +580,7 @@ function ProgramIntelView({ intel }: { intel: ProgramIntel }) {
   const conf = intel.confidence
   const confColor =
     conf === 'high' ? 'bg-[rgba(74,222,128,0.12)] border-[rgba(74,222,128,0.3)] text-[#4ade80]' :
-    conf === 'medium' ? 'bg-[rgba(234,179,8,0.12)] border-[rgba(234,179,8,0.3)] text-[#eab308]' :
+    conf === 'medium' ? 'bg-[rgba(240,182,90,0.12)] border-[rgba(240,182,90,0.35)] text-[#f0b65a]' :
     'bg-[rgba(248,113,113,0.1)] border-[rgba(248,113,113,0.3)] text-[#f87171]'
   const confLabel =
     conf === 'high' ? 'High confidence — specific recent knowledge' :
@@ -586,18 +602,18 @@ function ProgramIntelView({ intel }: { intel: ProgramIntel }) {
 
       {intel.playstyle && (
         <div>
-          <div className="text-[10px] uppercase tracking-widest text-[#64748b] mb-1">Playstyle</div>
+          <div className="text-[10px] uppercase tracking-widest text-[#9a9385] mb-1">Playstyle</div>
           <p className="text-sm text-[#cbd5e1] leading-relaxed">{intel.playstyle}</p>
         </div>
       )}
 
       {intel.tacticalNotes.length > 0 && (
         <div>
-          <div className="text-[10px] uppercase tracking-widest text-[#64748b] mb-1.5">Tactical tendencies</div>
+          <div className="text-[10px] uppercase tracking-widest text-[#9a9385] mb-1.5">Tactical tendencies</div>
           <ul className="flex flex-col gap-1.5">
             {intel.tacticalNotes.map((note, i) => (
               <li key={i} className="text-sm text-[#cbd5e1] leading-relaxed flex gap-2">
-                <span className="text-[#eab308] flex-shrink-0">›</span>
+                <span className="text-[#f0b65a] flex-shrink-0">›</span>
                 <span>{note}</span>
               </li>
             ))}
@@ -607,28 +623,28 @@ function ProgramIntelView({ intel }: { intel: ProgramIntel }) {
 
       {intel.recentForm && (
         <div>
-          <div className="text-[10px] uppercase tracking-widest text-[#64748b] mb-1">Recent form</div>
+          <div className="text-[10px] uppercase tracking-widest text-[#9a9385] mb-1">Recent form</div>
           <p className="text-sm text-[#cbd5e1]">{intel.recentForm}</p>
         </div>
       )}
 
       {intel.staffStability && (
         <div>
-          <div className="text-[10px] uppercase tracking-widest text-[#64748b] mb-1">Coaching staff</div>
+          <div className="text-[10px] uppercase tracking-widest text-[#9a9385] mb-1">Coaching staff</div>
           <p className="text-sm text-[#cbd5e1]">{intel.staffStability}</p>
         </div>
       )}
 
       {intel.recruitingProfile && (
         <div>
-          <div className="text-[10px] uppercase tracking-widest text-[#64748b] mb-1">Recruiting profile</div>
+          <div className="text-[10px] uppercase tracking-widest text-[#9a9385] mb-1">Recruiting profile</div>
           <p className="text-sm text-[#cbd5e1]">{intel.recruitingProfile}</p>
         </div>
       )}
 
       {/* Film & verification links: real searches, never fabricated URLs. */}
       <div>
-        <div className="text-[10px] uppercase tracking-widest text-[#64748b] mb-1.5">Watch film & verify</div>
+        <div className="text-[10px] uppercase tracking-widest text-[#9a9385] mb-1.5">Watch film & verify</div>
         <div className="flex flex-wrap gap-2">
           {intel.searchQueries.map((q) => (
             <a
@@ -636,20 +652,20 @@ function ProgramIntelView({ intel }: { intel: ProgramIntel }) {
               href={q.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="text-xs px-3 py-1.5 rounded-lg bg-[rgba(234,179,8,0.08)] border border-[rgba(234,179,8,0.25)] text-[#eab308] hover:bg-[rgba(234,179,8,0.15)]"
+              className="text-xs px-3 py-1.5 rounded-lg bg-[rgba(240,182,90,0.08)] border border-[rgba(240,182,90,0.30)] text-[#f0b65a] hover:bg-[rgba(240,182,90,0.18)]"
             >
               {q.label} ↗
             </a>
           ))}
         </div>
-        <p className="text-[11px] text-[#64748b] mt-2 italic">
+        <p className="text-[11px] text-[#9a9385] mt-2 italic">
           We don't fabricate video URLs — these open real, current search results so you see actual film, not dead links.
         </p>
       </div>
 
       {intel.caveats.length > 0 && (
-        <div className="rounded-lg border border-[rgba(255,255,255,0.06)] bg-[rgba(255,255,255,0.02)] px-4 py-3">
-          <div className="text-[10px] uppercase tracking-widest text-[#64748b] mb-1.5">⚠️ Caveats</div>
+        <div className="rounded-lg border border-[rgba(245,241,232,0.06)] bg-[rgba(255,255,255,0.02)] px-4 py-3">
+          <div className="text-[10px] uppercase tracking-widest text-[#9a9385] mb-1.5">⚠️ Caveats</div>
           <ul className="flex flex-col gap-1">
             {intel.caveats.map((c, i) => (
               <li key={i} className="text-xs text-[#94a3b8] leading-relaxed">• {c}</li>
@@ -658,7 +674,7 @@ function ProgramIntelView({ intel }: { intel: ProgramIntel }) {
         </div>
       )}
 
-      <p className="text-[10px] text-[#64748b] italic">
+      <p className="text-[10px] text-[#9a9385] italic">
         AI-generated tactical analysis based on publicly available information through {new Date(intel.cachedAt).toLocaleDateString()}. Always confirm with the coach.
       </p>
     </div>
@@ -668,8 +684,8 @@ function ProgramIntelView({ intel }: { intel: ProgramIntel }) {
 function InfoRow({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex flex-col gap-0.5">
-      <span className="text-[10px] uppercase tracking-widest text-[#64748b]">{label}</span>
-      <span className="text-sm text-[#f1f5f9] capitalize">{value}</span>
+      <span className="text-[10px] uppercase tracking-widest text-[#9a9385]">{label}</span>
+      <span className="text-sm text-[#f5f1e8] capitalize">{value}</span>
     </div>
   )
 }
@@ -681,8 +697,8 @@ function InfoRow({ label, value }: { label: string; value: string }) {
 function ProfileAssessment({ schools }: { schools: School[] }) {
   if (schools.length === 0) return null
   const avg = (xs: number[]) => xs.length ? xs.reduce((a, b) => a + b, 0) / xs.length : 0
-  const ath = Math.round(avg(schools.map((s) => s.athleticFit ?? 50)))
-  const acad = Math.round(avg(schools.map((s) => s.academicFit ?? 50)))
+  const ath = Math.round(avg(schools.map((s) => s.athleticFit ?? 50)) * 10) / 10
+  const acad = Math.round(avg(schools.map((s) => s.academicFit ?? 50)) * 10) / 10
   const costs = schools.map((s) => s.costOfAttendance).filter((c): c is number => c != null && c > 0)
   const medianCost = costs.length
     ? Math.round([...costs].sort((a, b) => a - b)[Math.floor(costs.length / 2)] / 1000)
@@ -700,13 +716,13 @@ function ProfileAssessment({ schools }: { schools: School[] }) {
   }
 
   return (
-    <Card className="p-6 mb-6 bg-gradient-to-br from-[rgba(234,179,8,0.05)] to-[rgba(255,255,255,0.02)]">
+    <Card className="p-6 mb-6 bg-gradient-to-br from-[rgba(240,182,90,0.06)] to-[rgba(255,255,255,0.02)]">
       <div className="flex items-start gap-6 flex-wrap">
         <div className="flex-1 min-w-[280px]">
-          <div className="text-[10px] uppercase tracking-widest text-[#eab308] font-bold mb-1.5">Your match read</div>
+          <div className="text-[10px] uppercase tracking-widest text-[#f0b65a] font-bold mb-1.5">Your match read</div>
           <p className="text-sm text-[#cbd5e1] leading-relaxed">{headline}</p>
           {medianCost != null && (
-            <p className="text-xs text-[#64748b] mt-2">
+            <p className="text-xs text-[#9a9385] mt-2">
               Median cost of attendance across your {schools.length} matches: <span className="text-[#cbd5e1] font-semibold">${medianCost}k/yr</span>
             </p>
           )}
@@ -728,32 +744,32 @@ function RosterSection({ signal }: { signal: NonNullable<School['rosterSignal']>
   // Color the open-spots count by signal strength so the user gets an
   // at-a-glance read on how recruitable the position is.
   const opens = signal.openSpots
-  const color = opens >= 4 ? 'text-[#4ade80]' : opens >= 2 ? 'text-[#eab308]' : 'text-[#f87171]'
+  const color = opens >= 4 ? 'text-[#4ade80]' : opens >= 2 ? 'text-[#f0b65a]' : 'text-[#f87171]'
   return (
     <section>
       <div className="flex items-baseline justify-between gap-3 mb-3 flex-wrap">
-        <h3 className="text-[11px] font-bold text-[#64748b] tracking-[2px] uppercase">Roster &amp; Open Spots</h3>
-        <span className="text-[10px] text-[#64748b]">live-scraped from the team's roster page</span>
+        <h3 className="text-[11px] font-bold text-[#9a9385] tracking-[2px] uppercase">Roster &amp; Open Spots</h3>
+        <span className="text-[10px] text-[#9a9385]">live-scraped from the team's roster page</span>
       </div>
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 text-sm">
         <div className="flex flex-col gap-0.5">
-          <span className="text-[10px] uppercase tracking-widest text-[#64748b]">At your position</span>
-          <span className="text-xl font-serif font-black text-[#f1f5f9]">{signal.totalAtPosition}</span>
+          <span className="text-[10px] uppercase tracking-widest text-[#9a9385]">At your position</span>
+          <span className="text-xl font-serif font-black text-[#f5f1e8]">{signal.totalAtPosition}</span>
         </div>
         <div className="flex flex-col gap-0.5">
-          <span className="text-[10px] uppercase tracking-widest text-[#64748b]">Graduating</span>
-          <span className="text-xl font-serif font-black text-[#f1f5f9]">{signal.graduatingByYear}</span>
+          <span className="text-[10px] uppercase tracking-widest text-[#9a9385]">Graduating</span>
+          <span className="text-xl font-serif font-black text-[#f5f1e8]">{signal.graduatingByYear}</span>
         </div>
         <div className="flex flex-col gap-0.5">
-          <span className="text-[10px] uppercase tracking-widest text-[#64748b]">Juniors</span>
-          <span className="text-xl font-serif font-black text-[#f1f5f9]">{signal.juniorsAtPosition}</span>
+          <span className="text-[10px] uppercase tracking-widest text-[#9a9385]">Juniors</span>
+          <span className="text-xl font-serif font-black text-[#f5f1e8]">{signal.juniorsAtPosition}</span>
         </div>
         <div className="flex flex-col gap-0.5">
-          <span className="text-[10px] uppercase tracking-widest text-[#64748b]">Est. open spots</span>
+          <span className="text-[10px] uppercase tracking-widest text-[#9a9385]">Est. open spots</span>
           <span className={`text-xl font-serif font-black ${color}`}>{signal.openSpots}</span>
         </div>
       </div>
-      <p className="text-[11px] text-[#64748b] italic mt-3 leading-relaxed">
+      <p className="text-[11px] text-[#9a9385] italic mt-3 leading-relaxed">
         Estimated openings = current seniors + juniors at your position (will graduate within ~2 years).
         Total roster: {signal.totalRoster} players. Coaches actively recruit positions where players are aging out.
       </p>
@@ -764,14 +780,14 @@ function RosterSection({ signal }: { signal: NonNullable<School['rosterSignal']>
 function FitBar({ label, value }: { label: string; value: number }) {
   // Color thresholds match the buckets:
   //   ≥70 = green (safety zone)  ≥45 = yellow (target)  else red (reach)
-  const color = value >= 70 ? 'bg-[#4ade80]' : value >= 45 ? 'bg-[#eab308]' : 'bg-[#f87171]'
+  const color = value >= 70 ? 'bg-[#4ade80]' : value >= 45 ? 'bg-[#f0b65a]' : 'bg-[#f87171]'
   return (
     <div className="flex-1 min-w-0">
       <div className="flex items-baseline justify-between gap-2 mb-1">
-        <span className="text-[10px] uppercase tracking-widest text-[#64748b]">{label}</span>
-        <span className="text-[11px] font-semibold text-[#cbd5e1] tabular-nums">{value}</span>
+        <span className="text-[10px] uppercase tracking-widest text-[#9a9385]">{label}</span>
+        <span className="text-[11px] font-semibold text-[#cbd5e1] tabular-nums">{value.toFixed(1)}</span>
       </div>
-      <div className="h-1 bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden">
+      <div className="h-1 bg-[rgba(245,241,232,0.06)] rounded-full overflow-hidden">
         <div className={`h-full ${color} transition-all`} style={{ width: `${value}%` }} />
       </div>
     </div>
@@ -779,15 +795,15 @@ function FitBar({ label, value }: { label: string; value: number }) {
 }
 
 function BreakdownRow({ label, score, detail, verdict }: { label: string; score: number; detail: string; verdict: string }) {
-  const color = score >= 75 ? 'bg-[#4ade80]' : score >= 50 ? 'bg-[#eab308]' : 'bg-[#f87171]'
+  const color = score >= 75 ? 'bg-[#4ade80]' : score >= 50 ? 'bg-[#f0b65a]' : 'bg-[#f87171]'
   return (
     <div>
       <div className="flex items-baseline justify-between mb-1.5 gap-2">
-        <span className="text-sm font-semibold text-[#f1f5f9]">{label}</span>
-        <span className="text-xs text-[#64748b]">{detail}</span>
-        <span className="font-serif font-black text-[#eab308] text-sm tabular-nums">{score}</span>
+        <span className="text-sm font-semibold text-[#f5f1e8]">{label}</span>
+        <span className="text-xs text-[#9a9385]">{detail}</span>
+        <span className="font-serif font-black text-[#f0b65a] text-sm tabular-nums">{score}</span>
       </div>
-      <div className="h-1.5 bg-[rgba(255,255,255,0.06)] rounded-full overflow-hidden mb-1.5">
+      <div className="h-1.5 bg-[rgba(245,241,232,0.06)] rounded-full overflow-hidden mb-1.5">
         <div className={`h-full ${color} transition-all`} style={{ width: `${score}%` }} />
       </div>
       <p className="text-xs text-[#94a3b8] leading-relaxed">{verdict}</p>

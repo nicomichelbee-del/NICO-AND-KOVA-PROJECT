@@ -1,175 +1,462 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
+import { useProfile } from '../../context/ProfileContext'
 import { Button } from '../../components/ui/Button'
-import { Input } from '../../components/ui/Input'
 import { Badge } from '../../components/ui/Badge'
-import type { AthleteProfile, Division, Region } from '../../types'
+import { PageHeader } from '../../components/ui/PageHeader'
+import {
+  POSITION_LABELS,
+  DIVISION_TARGET_LABELS,
+  type ProfileVisibility,
+  type AthleteProfileRecord,
+} from '../../types/profile'
 
-const POSITIONS = ['Goalkeeper', 'Center Back', 'Right Back', 'Left Back', 'Defensive Mid', 'Central Mid', 'Attacking Mid', 'Right Wing', 'Left Wing', 'Striker']
-const DIVISIONS: Division[] = ['D1', 'D2', 'D3', 'NAIA', 'JUCO']
-const REGIONS: { value: Region; label: string }[] = [
-  { value: 'any', label: 'Any region' },
-  { value: 'West', label: 'West Coast (CA, OR, WA, NV, AK, HI)' },
-  { value: 'Southwest', label: 'Southwest (TX, AZ, NM, OK, CO, UT)' },
-  { value: 'Midwest', label: 'Midwest (IL, IN, OH, MI, WI, MN, IA, MO, KS, NE, ND, SD)' },
-  { value: 'Southeast', label: 'Southeast (FL, GA, NC, SC, VA, TN, AL, MS, LA, AR, KY, WV)' },
-  { value: 'Northeast', label: 'Northeast (NY, NJ, PA, MA, CT, RI, NH, VT, ME, MD, DE, DC)' },
+const VISIBILITY_OPTIONS: { value: ProfileVisibility; label: string; hint: string }[] = [
+  { value: 'public', label: 'Public', hint: 'Anyone with the link can view your profile.' },
+  { value: 'recruiters_only', label: 'Recruiters only', hint: 'Signed-in coaches and scouts only.' },
+  { value: 'private', label: 'Private', hint: 'Only you can view your profile.' },
 ]
 
-const defaultProfile: AthleteProfile = {
-  name: '', gradYear: 2026, position: '', gender: 'womens', clubTeam: '', clubLeague: '',
-  gpa: 0, satAct: '', goals: 0, assists: 0,
-  intendedMajor: '', highlightUrl: '', targetDivision: 'D2',
-  locationPreference: 'any', sizePreference: 'any',
+const FOOT_OPTIONS = [
+  { value: 'left', label: 'Left' },
+  { value: 'right', label: 'Right' },
+  { value: 'both', label: 'Both' },
+]
+
+const REGIONS = ['Northeast', 'Southeast', 'Midwest', 'South', 'Southwest', 'West', 'Northwest']
+
+function computeStrength(p: Partial<AthleteProfileRecord>): number {
+  const checks: boolean[] = [
+    !!p.full_name,
+    !!p.graduation_year,
+    !!p.high_school_name,
+    !!p.primary_position,
+    !!p.preferred_foot,
+    !!p.current_club,
+    !!p.current_league_or_division,
+    p.gpa != null,
+    !!(p.sat_score || p.act_score),
+    (p.desired_division_levels?.length ?? 0) > 0,
+    (p.regions_of_interest?.length ?? 0) > 0,
+    !!p.highlight_video_url,
+  ]
+  const hits = checks.filter(Boolean).length
+  return Math.round((hits / checks.length) * 100)
 }
 
-// Display helper: show empty string for 0/falsy numerics so users don't get
-// "05" when typing into a field that defaulted to 0.
-const numDisplay = (n: number) => (n ? String(n) : '')
-
 export function Profile() {
-  const [profile, setProfile] = useState<AthleteProfile>(() => {
+  const { profile, saveDraft, loading } = useProfile()
+  const [copied, setCopied] = useState(false)
+  const [savedFlash, setSavedFlash] = useState(false)
+
+  // Local mirror so each input is responsive while saveDraft persists in the background.
+  const [draft, setDraft] = useState<Partial<AthleteProfileRecord>>({})
+  const [saving, setSaving] = useState(false)
+  useEffect(() => {
+    if (profile) setDraft(profile)
+  }, [profile])
+
+  if (loading || !profile) {
+    return <div className="kr-page font-mono text-[10.5px] tracking-[0.22em] uppercase text-gold animate-pulse">Loading…</div>
+  }
+
+  const publicUrl = profile.slug ? `${window.location.origin}/players/${profile.slug}` : null
+
+  function flash() {
+    setSavedFlash(true)
+    setTimeout(() => setSavedFlash(false), 1500)
+  }
+
+  function update<K extends keyof AthleteProfileRecord>(key: K, value: AthleteProfileRecord[K]) {
+    setDraft((prev) => ({ ...prev, [key]: value }))
+  }
+
+  async function persist(patch: Partial<AthleteProfileRecord>) {
+    const next = { ...draft, ...patch }
+    await saveDraft({ ...patch, profile_strength_score: computeStrength(next) })
+    flash()
+  }
+
+  function toggleArray(key: 'desired_division_levels' | 'regions_of_interest', value: string) {
+    const current = (draft[key] as string[] | undefined) ?? []
+    const next = current.includes(value) ? current.filter((v) => v !== value) : [...current, value]
+    update(key, next as AthleteProfileRecord[typeof key])
+    persist({ [key]: next } as Partial<AthleteProfileRecord>)
+  }
+
+  async function setVisibility(v: ProfileVisibility) {
+    update('profile_visibility', v)
+    await saveDraft({ profile_visibility: v })
+    flash()
+  }
+
+  async function copyLink() {
+    if (!publicUrl) return
+    await navigator.clipboard.writeText(publicUrl)
+    setCopied(true)
+    setTimeout(() => setCopied(false), 2000)
+  }
+
+  async function saveAll() {
+    setSaving(true)
     try {
-      const stored = JSON.parse(localStorage.getItem('athleteProfile') ?? '')
-      return { ...defaultProfile, ...stored }
-    } catch { return defaultProfile }
-  })
-  const [saved, setSaved] = useState(false)
-
-  function update<K extends keyof AthleteProfile>(field: K, value: AthleteProfile[K]) {
-    setProfile((p) => ({ ...p, [field]: value }))
-    setSaved(false)
+      await saveDraft({ ...draft, profile_strength_score: computeStrength(draft) })
+      flash()
+    } finally {
+      setSaving(false)
+    }
   }
-
-  function handleSave() {
-    localStorage.setItem('athleteProfile', JSON.stringify(profile))
-    setSaved(true)
-  }
-
-  const selectClass = "w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-lg px-4 py-2.5 text-sm text-[#f1f5f9] focus:outline-none focus:border-[#eab308] appearance-none"
 
   return (
-    <div className="px-10 py-10 max-w-3xl">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="w-2 h-2 rounded-full bg-[#eab308]" />
-          <span className="text-xs font-semibold tracking-[2px] uppercase text-[#eab308]">Profile</span>
+    <div className="kr-page max-w-4xl">
+      <PageHeader
+        eyebrow="Athlete profile"
+        title={<>Your <span className="kr-accent">profile</span>.</>}
+        lede="Edit any field below — changes save as you type."
+      />
+
+      {/* Strength */}
+      <div className="kr-panel kr-panel-warm mb-8">
+        <div className="flex items-center justify-between mb-4 flex-wrap gap-3">
+          <div>
+            <span className="kr-eyebrow">Profile strength</span>
+            <div className="flex items-baseline gap-3 mt-3">
+              <span className="font-serif text-[44px] leading-none text-gold tabular-nums" style={{ fontVariationSettings: '"opsz" 144' }}>
+                {profile.profile_strength_score}
+              </span>
+              <span className="text-sm text-ink-2">/ 100</span>
+              {profile.profile_completed && <Badge variant="green">Complete</Badge>}
+              {savedFlash && <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-pitch-light">Saved</span>}
+            </div>
+          </div>
         </div>
-        <h1 className="font-serif text-4xl font-black text-[#f1f5f9] tracking-[-1px]">Athlete Profile</h1>
-        <p className="text-[#64748b] mt-2 text-sm">This profile powers your school matches and coach emails.</p>
+        <div className="h-[3px] bg-[rgba(245,241,232,0.06)] rounded-full overflow-hidden">
+          <div
+            className="h-full bg-[linear-gradient(90deg,var(--gold-3),var(--gold))] transition-[width] duration-500 ease-out"
+            style={{ width: `${profile.profile_strength_score}%` }}
+          />
+        </div>
       </div>
 
-      <div className="flex flex-col gap-8">
-        {/* Personal */}
-        <section>
-          <h2 className="text-xs font-bold text-[#64748b] tracking-[2px] uppercase mb-4 pb-3 border-b border-[rgba(255,255,255,0.07)]">Personal Info</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <Input label="Full name" value={profile.name} onChange={(e) => update('name', e.target.value)} placeholder="Alex Johnson" />
-            <Input label="Graduation year" type="number" value={numDisplay(profile.gradYear)} onChange={(e) => update('gradYear', parseInt(e.target.value) || 2026)} placeholder="2026" />
+      {/* Sharing */}
+      <Section title="Share your profile">
+        {publicUrl ? (
+          <div className="flex flex-col md:flex-row items-stretch md:items-center gap-2 mb-5">
+            <input
+              readOnly
+              value={publicUrl}
+              className="flex-1 bg-[rgba(245,241,232,0.03)] border border-[rgba(245,241,232,0.10)] rounded-xl px-4 py-3 text-[14px] font-mono text-ink-0 tracking-tight"
+            />
+            <Button onClick={copyLink}>{copied ? 'Copied' : 'Copy link'}</Button>
           </div>
-        </section>
-
-        {/* Soccer */}
-        <section>
-          <h2 className="text-xs font-bold text-[#64748b] tracking-[2px] uppercase mb-4 pb-3 border-b border-[rgba(255,255,255,0.07)]">Soccer</h2>
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-[#f1f5f9]">Position</label>
-              <select value={profile.position} onChange={(e) => update('position', e.target.value)} className={selectClass}>
-                <option value="">Select position</option>
-                {POSITIONS.map((p) => <option key={p} value={p}>{p}</option>)}
-              </select>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-[#f1f5f9]">Program type</label>
-              <div className="flex gap-2">
-                {[{ id: 'womens', label: "Women's" }, { id: 'mens', label: "Men's" }].map((g) => (
-                  <button
-                    key={g.id}
-                    type="button"
-                    onClick={() => update('gender', g.id as 'mens' | 'womens')}
-                    className={`flex-1 py-2.5 rounded-lg text-sm font-semibold border transition-all ${
-                      profile.gender === g.id
-                        ? 'bg-[#eab308] text-black border-[#eab308]'
-                        : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
-                    }`}
-                  >
-                    {g.label}
-                  </button>
-                ))}
-              </div>
-            </div>
-          </div>
-          <div className="grid grid-cols-3 gap-4">
-            <Input label="Goals" type="number" min="0" value={numDisplay(profile.goals)} onChange={(e) => update('goals', parseInt(e.target.value) || 0)} placeholder="12" />
-            <Input label="Assists" type="number" min="0" value={numDisplay(profile.assists)} onChange={(e) => update('assists', parseInt(e.target.value) || 0)} placeholder="8" />
-            <Input label="Highlight video URL (optional)" value={profile.highlightUrl ?? ''} onChange={(e) => update('highlightUrl', e.target.value)} placeholder="youtube.com/..." />
-          </div>
-        </section>
-
-        {/* Club */}
-        <section>
-          <h2 className="text-xs font-bold text-[#64748b] tracking-[2px] uppercase mb-4 pb-3 border-b border-[rgba(255,255,255,0.07)]">Club Team</h2>
-          <div className="grid grid-cols-2 gap-4">
-            <Input label="Club team name" value={profile.clubTeam} onChange={(e) => update('clubTeam', e.target.value)} placeholder="FC Dallas Academy" />
-            <Input label="Club league" value={profile.clubLeague} onChange={(e) => update('clubLeague', e.target.value)} placeholder="ECNL, MLS Next, USYS..." />
-          </div>
-        </section>
-
-        {/* Academic */}
-        <section>
-          <h2 className="text-xs font-bold text-[#64748b] tracking-[2px] uppercase mb-4 pb-3 border-b border-[rgba(255,255,255,0.07)]">Academics</h2>
-          <div className="grid grid-cols-3 gap-4">
-            <Input label="GPA (unweighted)" type="number" step="0.01" min="0" max="4" value={profile.gpa ? String(profile.gpa) : ''} onChange={(e) => update('gpa', parseFloat(e.target.value) || 0)} placeholder="3.7" />
-            <Input label="SAT / ACT (optional)" value={profile.satAct ?? ''} onChange={(e) => update('satAct', e.target.value)} placeholder="1280 / 29" />
-            <Input label="Intended major (optional)" value={profile.intendedMajor ?? ''} onChange={(e) => update('intendedMajor', e.target.value)} placeholder="Business" />
-          </div>
-        </section>
-
-        {/* Recruiting goals */}
-        <section>
-          <h2 className="text-xs font-bold text-[#64748b] tracking-[2px] uppercase mb-4 pb-3 border-b border-[rgba(255,255,255,0.07)]">Recruiting Goals</h2>
-          <div className="mb-4">
-            <label className="text-sm font-medium text-[#f1f5f9] block mb-2">Target division</label>
-            <div className="flex gap-2 flex-wrap">
-              {DIVISIONS.map((d) => (
-                <button
-                  key={d}
-                  onClick={() => update('targetDivision', d)}
-                  className={`px-4 py-2 rounded-lg text-sm font-semibold border transition-all ${
-                    profile.targetDivision === d
-                      ? 'bg-[#eab308] text-black border-[#eab308]'
-                      : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
-                  }`}
-                >
-                  {d}
-                </button>
-              ))}
-            </div>
-          </div>
-          <div className="grid grid-cols-2 gap-4">
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-[#f1f5f9]">Region preference</label>
-              <select value={profile.locationPreference} onChange={(e) => update('locationPreference', e.target.value as Region)} className={selectClass}>
-                {REGIONS.map((r) => <option key={r.value} value={r.value}>{r.label}</option>)}
-              </select>
-            </div>
-            <div className="flex flex-col gap-1.5">
-              <label className="text-sm font-medium text-[#f1f5f9]">School size</label>
-              <select value={profile.sizePreference} onChange={(e) => update('sizePreference', e.target.value as AthleteProfile['sizePreference'])} className={selectClass}>
-                <option value="any">Any size</option>
-                <option value="small">Small (&lt;5k)</option>
-                <option value="medium">Medium (5k–15k)</option>
-                <option value="large">Large (&gt;15k)</option>
-              </select>
-            </div>
-          </div>
-        </section>
-
-        <div className="flex items-center gap-4 pt-2">
-          <Button onClick={handleSave}>Save Profile</Button>
-          {saved && <Badge variant="green">✓ Saved</Badge>}
+        ) : (
+          <p className="text-sm text-ink-2 mb-5">Your shareable link appears once your profile is complete.</p>
+        )}
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {VISIBILITY_OPTIONS.map((opt) => (
+            <button
+              key={opt.value}
+              onClick={() => setVisibility(opt.value)}
+              className={`text-left p-4 rounded-xl border transition-[border-color,background,color,box-shadow] duration-150 ${
+                draft.profile_visibility === opt.value
+                  ? 'bg-[rgba(240,182,90,0.08)] border-[rgba(240,182,90,0.55)] text-ink-0 shadow-[0_0_0_3px_rgba(240,182,90,0.10)]'
+                  : 'bg-[rgba(245,241,232,0.02)] border-[rgba(245,241,232,0.10)] text-ink-2 hover:border-[rgba(240,182,90,0.40)] hover:text-ink-0'
+              }`}
+            >
+              <div className="text-[14px] font-medium mb-1.5 text-ink-0">{opt.label}</div>
+              <div className="text-[12px] text-ink-2 leading-[1.5]">{opt.hint}</div>
+            </button>
+          ))}
         </div>
+      </Section>
+
+      {/* Basics */}
+      <Section title="Basics">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field label="Full name">
+            <TextInput
+              value={draft.full_name ?? ''}
+              onChange={(v) => update('full_name', v)}
+              onBlur={() => persist({ full_name: draft.full_name ?? null })}
+              placeholder="Alex Morgan"
+            />
+          </Field>
+          <Field label="Graduation year">
+            <TextInput
+              type="number"
+              value={draft.graduation_year?.toString() ?? ''}
+              onChange={(v) => update('graduation_year', v ? Number(v) : null)}
+              onBlur={() => persist({ graduation_year: draft.graduation_year ?? null })}
+              placeholder="2027"
+            />
+          </Field>
+          <Field label="High school">
+            <TextInput
+              value={draft.high_school_name ?? ''}
+              onChange={(v) => update('high_school_name', v)}
+              onBlur={() => persist({ high_school_name: draft.high_school_name ?? null })}
+              placeholder="Lincoln High School"
+            />
+          </Field>
+        </div>
+      </Section>
+
+      {/* Soccer */}
+      <Section title="Soccer">
+        <Field label="Primary position">
+          <ChipRow>
+            {Object.entries(POSITION_LABELS).map(([code, label]) => (
+              <Chip
+                key={code}
+                active={draft.primary_position === code}
+                onClick={() => { update('primary_position', code); persist({ primary_position: code }) }}
+              >
+                <span className="font-bold text-xs">{code}</span>
+                <span className="block text-[10px] text-[#9a9385] mt-0.5">{label}</span>
+              </Chip>
+            ))}
+          </ChipRow>
+        </Field>
+
+        <Field label="Secondary position (optional)">
+          <ChipRow>
+            <Chip
+              active={!draft.secondary_position}
+              onClick={() => { update('secondary_position', null); persist({ secondary_position: null }) }}
+            >
+              <span className="font-bold text-xs">None</span>
+            </Chip>
+            {Object.entries(POSITION_LABELS)
+              .filter(([code]) => code !== draft.primary_position)
+              .map(([code, label]) => (
+                <Chip
+                  key={code}
+                  active={draft.secondary_position === code}
+                  onClick={() => { update('secondary_position', code); persist({ secondary_position: code }) }}
+                >
+                  <span className="font-bold text-xs">{code}</span>
+                  <span className="block text-[10px] text-[#9a9385] mt-0.5">{label}</span>
+                </Chip>
+              ))}
+          </ChipRow>
+        </Field>
+
+        <Field label="Preferred foot">
+          <ChipRow cols={3}>
+            {FOOT_OPTIONS.map((f) => (
+              <Chip
+                key={f.value}
+                active={draft.preferred_foot === f.value}
+                onClick={() => { update('preferred_foot', f.value); persist({ preferred_foot: f.value }) }}
+              >
+                {f.label}
+              </Chip>
+            ))}
+          </ChipRow>
+        </Field>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field label="Club team">
+            <TextInput
+              value={draft.current_club ?? ''}
+              onChange={(v) => update('current_club', v)}
+              onBlur={() => persist({ current_club: draft.current_club ?? null })}
+              placeholder="Bay Area Surf"
+            />
+          </Field>
+          <Field label="League / division">
+            <TextInput
+              value={draft.current_league_or_division ?? ''}
+              onChange={(v) => update('current_league_or_division', v)}
+              onBlur={() => persist({ current_league_or_division: draft.current_league_or_division ?? null })}
+              placeholder="ECNL, MLS Next, NPL..."
+            />
+          </Field>
+        </div>
+      </Section>
+
+      {/* Academics */}
+      <Section title="Academics">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+          <Field label="GPA (unweighted)">
+            <TextInput
+              type="number"
+              step="0.01"
+              value={draft.gpa?.toString() ?? ''}
+              onChange={(v) => update('gpa', v ? Number(v) : null)}
+              onBlur={() => persist({ gpa: draft.gpa ?? null })}
+              placeholder="3.75"
+            />
+          </Field>
+          <Field label="SAT (optional)">
+            <TextInput
+              type="number"
+              value={draft.sat_score ?? ''}
+              onChange={(v) => update('sat_score', v || null)}
+              onBlur={() => persist({ sat_score: draft.sat_score ?? null })}
+              placeholder="1280"
+            />
+          </Field>
+          <Field label="ACT (optional)">
+            <TextInput
+              type="number"
+              value={draft.act_score ?? ''}
+              onChange={(v) => update('act_score', v || null)}
+              onBlur={() => persist({ act_score: draft.act_score ?? null })}
+              placeholder="28"
+            />
+          </Field>
+        </div>
+        <Field label="NCAA Eligibility ID (optional)">
+          <TextInput
+            value={draft.ncaa_eligibility_id ?? ''}
+            onChange={(v) => update('ncaa_eligibility_id', v || null)}
+            onBlur={() => persist({ ncaa_eligibility_id: draft.ncaa_eligibility_id ?? null })}
+            placeholder="If you've registered with the NCAA Eligibility Center"
+          />
+        </Field>
+      </Section>
+
+      {/* College goals */}
+      <Section title="College goals">
+        <Field label="Target divisions">
+          <ChipRow cols={5}>
+            {Object.entries(DIVISION_TARGET_LABELS).map(([code, label]) => (
+              <Chip
+                key={code}
+                active={(draft.desired_division_levels ?? []).includes(code)}
+                onClick={() => toggleArray('desired_division_levels', code)}
+              >
+                <span className="font-bold text-xs">{code}</span>
+                <span className="block text-[10px] text-[#9a9385] mt-0.5">{label}</span>
+              </Chip>
+            ))}
+          </ChipRow>
+        </Field>
+
+        <Field label="Regions of interest">
+          <ChipRow cols={4}>
+            {REGIONS.map((r) => (
+              <Chip
+                key={r}
+                active={(draft.regions_of_interest ?? []).includes(r)}
+                onClick={() => toggleArray('regions_of_interest', r)}
+              >
+                {r}
+              </Chip>
+            ))}
+          </ChipRow>
+        </Field>
+      </Section>
+
+      {/* Highlight video */}
+      <Section title="Highlight video">
+        <Field label="URL">
+          <TextInput
+            value={draft.highlight_video_url ?? ''}
+            onChange={(v) => update('highlight_video_url', v || null)}
+            onBlur={() => persist({ highlight_video_url: draft.highlight_video_url ?? null })}
+            placeholder="https://youtube.com/watch?v=..."
+          />
+        </Field>
+      </Section>
+
+      {/* Save bar */}
+      <div className="sticky bottom-0 -mx-6 md:-mx-14 px-6 md:px-14 py-4 bg-[rgba(19,16,23,0.92)] backdrop-blur-md border-t border-[rgba(245,241,232,0.08)] flex items-center justify-between gap-3 mt-12">
+        <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase">
+          {savedFlash
+            ? <span className="text-pitch-light">All changes saved</span>
+            : <span className="text-ink-3">Changes save automatically</span>}
+        </span>
+        <Button onClick={saveAll} disabled={saving}>
+          {saving ? 'Saving…' : 'Save changes'}
+        </Button>
       </div>
     </div>
+  )
+}
+
+function Section({ title, children }: { title: string; children: React.ReactNode }) {
+  return (
+    <section className="mb-10">
+      <div className="mb-5 pb-3 border-b border-[rgba(245,241,232,0.08)] flex items-center gap-3">
+        <span className="w-1 h-4 rounded-full bg-gold" />
+        <h2 className="font-mono text-[11px] font-medium tracking-[0.22em] uppercase text-ink-1">
+          {title}
+        </h2>
+      </div>
+      <div className="space-y-5">{children}</div>
+    </section>
+  )
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="flex flex-col gap-2">
+      <label className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-2">{label}</label>
+      {children}
+    </div>
+  )
+}
+
+function TextInput({
+  value,
+  onChange,
+  onBlur,
+  placeholder,
+  type = 'text',
+  step,
+}: {
+  value: string
+  onChange: (v: string) => void
+  onBlur?: () => void
+  placeholder?: string
+  type?: string
+  step?: string
+}) {
+  return (
+    <input
+      type={type}
+      step={step}
+      value={value}
+      placeholder={placeholder}
+      onChange={(e) => onChange(e.target.value)}
+      onBlur={onBlur}
+      className="w-full bg-[rgba(245,241,232,0.03)] border border-[rgba(245,241,232,0.10)] rounded-xl px-4 py-3 text-[15px] text-ink-0 placeholder-ink-3 caret-gold focus:outline-none focus:border-[rgba(240,182,90,0.55)] focus:ring-[3px] focus:ring-[rgba(240,182,90,0.18)] focus:bg-[rgba(245,241,232,0.05)] transition-[border-color,background,box-shadow]"
+    />
+  )
+}
+
+function ChipRow({ children, cols }: { children: React.ReactNode; cols?: number }) {
+  const colClass = cols === 3
+    ? 'grid-cols-3'
+    : cols === 4
+      ? 'grid-cols-2 sm:grid-cols-4'
+      : cols === 5
+        ? 'grid-cols-2 sm:grid-cols-5'
+        : 'grid-cols-3 sm:grid-cols-5'
+  return <div className={`grid ${colClass} gap-2`}>{children}</div>
+}
+
+function Chip({
+  active,
+  onClick,
+  children,
+}: {
+  active: boolean
+  onClick: () => void
+  children: React.ReactNode
+}) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`px-3 py-2.5 rounded-xl border text-sm text-center transition-[border-color,background,color,box-shadow] duration-150 ${
+        active
+          ? 'bg-[rgba(240,182,90,0.10)] border-[rgba(240,182,90,0.55)] text-ink-0 shadow-[0_0_0_3px_rgba(240,182,90,0.10)]'
+          : 'bg-[rgba(245,241,232,0.02)] border-[rgba(245,241,232,0.10)] text-ink-1 hover:border-[rgba(240,182,90,0.40)] hover:text-ink-0'
+      }`}
+    >
+      {children}
+    </button>
   )
 }

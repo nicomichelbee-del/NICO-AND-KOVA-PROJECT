@@ -1,7 +1,9 @@
 import fs from 'fs'
 import path from 'path'
 import schoolsData from '../data/schools.json'
-import type { AthleteProfile, MatchBreakdown, School, SchoolDirectoryEntry } from '../../client/src/types/index'
+import type { AthleteProfile, MatchBreakdown, School, SchoolDirectoryEntry, VideoRating } from '../../client/src/types/index'
+
+const round1 = (n: number): number => Math.round(n * 10) / 10
 
 // ── College Scorecard academic data (optional) ────────────────────────────
 // When server/data/schoolsAcademic.json exists, the matcher merges admissions,
@@ -189,10 +191,17 @@ function academicFit(profile: AthleteProfile, school: SchoolRecord): number {
     else if (admPct >= 65) score += 3
   }
 
-  return Math.max(0, Math.min(100, Math.round(score)))
+  return Math.max(0, Math.min(100, round1(score)))
 }
 
-function athleticFit(profile: AthleteProfile, school: SchoolRecord): number {
+// Tape-derived skill from the highlight video. Avg of the 4 quality dimensions
+// — division fit is intentionally excluded here because we use it separately
+// against the school's specific division.
+function tapeSkill(v: VideoRating): number {
+  return (v.technicalScore + v.tacticalScore + v.composureScore + v.positionPlayScore) / 4
+}
+
+function athleticFit(profile: AthleteProfile, school: SchoolRecord, video?: VideoRating | null): number {
   const gk = isGoalkeeper(profile.position)
   const fwd = isForward(profile.position)
 
@@ -217,12 +226,41 @@ function athleticFit(profile: AthleteProfile, school: SchoolRecord): number {
   // pulls athleticFit down (this is a tougher program).
   const programGap = (school.programStrength ?? 5) - 5
 
-  // Composition. Tuned so:
+  // Base composition. Tuned so:
   //   exact-fit, neutral program (statsDelta=0, divGap=0, programGap=0) → 60
   //   over-qualified safety (statsDelta=+1, divGap=+1, programGap=-2)   → 60+15+15+10 = 100
   //   classic reach (statsDelta=-1, divGap=-1, programGap=+4)           → 60-15-15-20 = 10
-  const score = 60 + statsDelta * 15 + divGap * 15 - programGap * 5
-  return Math.max(0, Math.min(100, Math.round(score)))
+  let score = 60 + statsDelta * 15 + divGap * 15 - programGap * 5
+
+  // ── Highlight video signal (optional) ────────────────────────────────
+  // Replaces the "every 7.0 mid plays the same level" assumption with what
+  // the tape actually shows. Two distinct adjustments:
+  //
+  //  1) tape-vs-program-expectation: a school with programStrength 10 expects
+  //     a tape ~9.0 player; strength 5 expects ~7.0; strength 0 expects ~5.0.
+  //     A 9.0 player at a 5-strength school is well above the bar (+);
+  //     a 5.0 player at a 10-strength school is well below (−).
+  //     Multiplier ≈ 6 gives meaningful differentiation without dominating.
+  //
+  //  2) division-fit-vs-school-division: the AI's `divisionFitScore` is the
+  //     player's calibrated level vs. their *target* division. We project
+  //     that read onto each school's actual division — same division uses
+  //     the score directly; one division easier than target reads up by 1;
+  //     one division harder reads down by 1. Multiplier ≈ 3.
+  if (video) {
+    const tape = tapeSkill(video)
+    const programExpectation = 5 + (school.programStrength ?? 5) * 0.4  // 5..9
+    const tapeVsProgram = tape - programExpectation                      // ~ −4..+4
+    score += tapeVsProgram * 6
+
+    const divDelta = divIdx(school.division) - divIdx(profile.targetDivision)
+    // Easier division → effectively higher fit; harder → lower.
+    const projectedDivFit = video.divisionFitScore + Math.max(-2, Math.min(2, divDelta))
+    const projectedVsBaseline = projectedDivFit - 7                       // 7 = "fits target"
+    score += projectedVsBaseline * 3
+  }
+
+  return Math.max(0, Math.min(100, round1(score)))
 }
 
 // Soft preference modifier: small bump for region/size match. Doesn't affect
@@ -255,6 +293,7 @@ function buildReasons(
   bucket: Bucket,
   acad: AcademicRecord | undefined,
   roster: RosterSignal | undefined,
+  video?: VideoRating | null,
 ): string[] {
   const reasons: string[] = []
   const gk  = isGoalkeeper(profile.position)
@@ -339,6 +378,23 @@ function buildReasons(
     }
   }
 
+  // ── Highlight tape signal (when the athlete has rated their video) ──
+  if (video) {
+    const tape = tapeSkill(video)
+    const expectation = 5 + (school.programStrength ?? 5) * 0.4
+    const delta = tape - expectation
+    if (delta >= 1.2) {
+      reasons.push(`Tape grades ${tape.toFixed(1)}/10 — above this program's typical recruit profile.`)
+    } else if (delta <= -1.2) {
+      reasons.push(`Tape grades ${tape.toFixed(1)}/10 — below this program's typical recruit; close the gap with a stronger highlight.`)
+    }
+    if (school.division === profile.targetDivision && video.divisionFitScore <= 5.5) {
+      reasons.push(`Video AI rates your ${profile.targetDivision} fit at ${video.divisionFitScore.toFixed(1)}/10 — consider also targeting one level down.`)
+    } else if (school.division === profile.targetDivision && video.divisionFitScore >= 8.5) {
+      reasons.push(`Video AI rates your ${profile.targetDivision} fit at ${video.divisionFitScore.toFixed(1)}/10 — clearly playing at this level.`)
+    }
+  }
+
   // ── Geography preference ────────────────────────────────────────────
   if (profile.locationPreference && profile.locationPreference !== 'any'
       && school.region === profile.locationPreference) {
@@ -378,21 +434,23 @@ interface Candidate {
 // bucket is short.
 const DEFAULT_BUCKET_CAPS = { safety: 8, target: 10, reach: 8 } as const
 
-export function matchSchools(profile: AthleteProfile, topN = 25): School[] {
+export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRating | null): School[] {
   const gender = profile.gender ?? 'womens'
 
   const scored: Candidate[] = (schoolsData as SchoolRecord[])
     .map((s) => {
-      const athletic = athleticFit(profile, s)
+      const athletic = athleticFit(profile, s, video)
       const academic = academicFit(profile, s)
       const bucket = bucketFor(athletic, academic)
       if (!bucket) return null
 
       // Display matchScore = weighted blend (athletics-leaning since this is a
       // recruiting tool) + soft preference boost. Bucket assignment already
-      // happened above; this is just for ranking + UI display.
+      // happened above; this is just for ranking + UI display. One decimal
+      // place so the score actually varies across the list — without
+      // decimals every athlete sees a wall of 90 / 91 / 92s.
       const blended = athletic * 0.55 + academic * 0.45
-      const matchScore = Math.max(0, Math.min(100, Math.round(blended + preferenceBoost(profile, s))))
+      const matchScore = Math.max(0, Math.min(100, round1(blended + preferenceBoost(profile, s))))
       return {
         school: s,
         athletic,
@@ -462,7 +520,7 @@ export function matchSchools(profile: AthleteProfile, topN = 25): School[] {
       matchScore: c.matchScore,
       athleticFit: c.athletic,
       academicFit: c.academic,
-      reasons: buildReasons(profile, c.school, c.athletic, c.academic, c.bucket, academic, rosterSignal),
+      reasons: buildReasons(profile, c.school, c.athletic, c.academic, c.bucket, academic, rosterSignal, video),
       notes: c.school.notes ?? '',
       programStrength: c.school.programStrength,
       scholarships: c.school.scholarships,

@@ -3,18 +3,27 @@ import { TextareaHTMLAttributes, forwardRef } from 'react'
 interface TextareaProps extends TextareaHTMLAttributes<HTMLTextAreaElement> {
   label?: string
   error?: string
+  hint?: string
 }
 
 export const Textarea = forwardRef<HTMLTextAreaElement, TextareaProps>(
-  ({ label, error, className = '', ...props }, ref) => (
-    <div className="flex flex-col gap-1.5">
-      {label && <label className="text-sm font-medium text-[#f1f5f9]">{label}</label>}
+  ({ label, error, hint, className = '', ...props }, ref) => (
+    <div className="flex flex-col gap-2">
+      {label && (
+        <label className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-2">
+          {label}
+        </label>
+      )}
       <textarea
         ref={ref}
-        className={`w-full bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-lg px-4 py-2.5 text-sm text-[#f1f5f9] placeholder-[#64748b] focus:outline-none focus:border-[#eab308] focus:ring-1 focus:ring-[rgba(234,179,8,0.3)] transition-colors resize-none ${className}`}
+        className={`w-full bg-[rgba(245,241,232,0.03)] border border-[rgba(245,241,232,0.10)] rounded-xl px-4 py-3 text-[15px] leading-[1.55] text-ink-0 placeholder-ink-3 caret-gold focus:outline-none focus:border-[rgba(240,182,90,0.55)] focus:ring-[3px] focus:ring-[rgba(240,182,90,0.18)] focus:bg-[rgba(245,241,232,0.05)] transition-[border-color,background,box-shadow] duration-200 resize-none ${className}`}
         {...props}
       />
-      {error && <p className="text-xs text-red-400">{error}</p>}
+      {error ? (
+        <p className="text-xs text-crimson-light">{error}</p>
+      ) : hint ? (
+        <p className="text-xs text-ink-3">{hint}</p>
+      ) : null}
     </div>
   ),
 )

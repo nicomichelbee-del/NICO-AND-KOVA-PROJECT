@@ -146,16 +146,20 @@ for (const [key, entry] of Object.entries(scrapedRaw)) {
 
 // ── Stats preview ─────────────────────────────────────────────────────────────
 
-const successCount  = coachRows.filter((r) => r.status === 'success').length
-const partialCount  = coachRows.filter((r) => r.status === 'partial').length
-const failedCount   = coachRows.filter((r) => r.status === 'failed').length
+const statusCounts: Record<string, number> = {}
+for (const r of coachRows) statusCounts[r.status] = (statusCounts[r.status] ?? 0) + 1
+const withEmailCount = coachRows.filter((r) => r.email).length
+const withNameCount = coachRows.filter((r) => r.name).length
 
 console.log('══ SEED PREVIEW ══')
 console.log(`Schools to upsert:     ${schoolRows.length}`)
 console.log(`Coach rows to upsert:  ${coachRows.length}`)
-console.log(`  ✅ success (name+email): ${successCount}`)
-console.log(`  🟡 partial (name only):  ${partialCount}`)
-console.log(`  ❌ failed (no data):     ${failedCount}`)
+console.log(`  with name:    ${withNameCount} (${Math.round(withNameCount / coachRows.length * 100)}%)`)
+console.log(`  with email:   ${withEmailCount} (${Math.round(withEmailCount / coachRows.length * 100)}%)`)
+console.log(`  by status:`)
+Object.entries(statusCounts).sort((a, b) => b[1] - a[1]).forEach(([k, v]) => {
+  console.log(`    ${k.padEnd(18)} ${v}`)
+})
 console.log()
 
 if (DRY_RUN) {

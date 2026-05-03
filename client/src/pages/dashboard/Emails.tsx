@@ -4,6 +4,7 @@ import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
+import { PageHeader } from '../../components/ui/PageHeader'
 import type { Division, CoachEmail, AthleteProfile, SchoolDirectoryEntry } from '../../types'
 
 function getProfile(): AthleteProfile | null {
@@ -130,15 +131,12 @@ export function Emails() {
   }
 
   return (
-    <div className="px-10 py-10 max-w-6xl">
-      <div className="mb-8">
-        <div className="flex items-center gap-3 mb-1">
-          <div className="w-2 h-2 rounded-full bg-[#eab308]" />
-          <span className="text-xs font-semibold tracking-[2px] uppercase text-[#eab308]">Coach Emails</span>
-        </div>
-        <h1 className="font-serif text-4xl font-black text-[#f1f5f9] tracking-[-1px]">Email Generator</h1>
-        <p className="text-[#64748b] mt-2 text-sm">Browse {directory.length || 'all'} programs by region or conference, or type a school directly. We'll find the coach and draft your outreach.</p>
-      </div>
+    <div className="kr-page max-w-6xl">
+      <PageHeader
+        eyebrow="Coach outreach"
+        title={<>Email a <span className="kr-accent">coach</span>.</>}
+        lede={`Browse ${directory.length || 'all'} programs by region or conference, or type a school directly. We'll find the coach and draft your outreach.`}
+      />
 
       {/* School browser: region tabs → optional conference filter → school list */}
       <Card className="p-6 mb-8">
@@ -151,8 +149,8 @@ export function Emails() {
                   onClick={() => setRegion(r)}
                   className={`px-4 py-1.5 rounded-lg text-xs font-semibold border transition-all ${
                     region === r
-                      ? 'bg-[#eab308] text-black border-[#eab308]'
-                      : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
+                      ? 'bg-[#f0b65a] text-black border-[#f0b65a]'
+                      : 'bg-transparent text-[#9a9385] border-[rgba(245,241,232,0.10)] hover:border-[#f0b65a] hover:text-[#f0b65a]'
                   }`}
                 >
                   {r}
@@ -163,7 +161,7 @@ export function Emails() {
               <select
                 value={conference}
                 onChange={(e) => setConference(e.target.value)}
-                className="bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-1.5 text-xs text-[#f1f5f9] focus:outline-none focus:border-[#eab308]"
+                className="bg-[rgba(245,241,232,0.04)] border border-[rgba(245,241,232,0.10)] rounded-lg px-3 py-1.5 text-xs text-[#f5f1e8] focus:outline-none focus:border-[#f0b65a]"
               >
                 <option value="all">All conferences (optional)</option>
                 {conferenceOptions.map((c) => (
@@ -174,7 +172,7 @@ export function Emails() {
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder="Search school..."
-                className="bg-[rgba(255,255,255,0.04)] border border-[rgba(255,255,255,0.1)] rounded-lg px-3 py-1.5 text-xs text-[#f1f5f9] placeholder-[#64748b] focus:outline-none focus:border-[#eab308] w-44"
+                className="bg-[rgba(245,241,232,0.04)] border border-[rgba(245,241,232,0.10)] rounded-lg px-3 py-1.5 text-xs text-[#f5f1e8] placeholder-[#9a9385] focus:outline-none focus:border-[#f0b65a] w-44"
               />
             </div>
           </div>
@@ -185,8 +183,8 @@ export function Emails() {
                 onClick={() => setDivisionFilter(d)}
                 className={`px-3 py-1 rounded text-xs font-semibold border transition-all ${
                   divisionFilter === d
-                    ? 'bg-[rgba(234,179,8,0.15)] text-[#eab308] border-[#eab308]'
-                    : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.08)] hover:border-[rgba(234,179,8,0.4)] hover:text-[#f1f5f9]'
+                    ? 'bg-[rgba(240,182,90,0.18)] text-[#f0b65a] border-[#f0b65a]'
+                    : 'bg-transparent text-[#9a9385] border-[rgba(245,241,232,0.08)] hover:border-[rgba(240,182,90,0.45)] hover:text-[#f5f1e8]'
                 }`}
               >
                 {d === 'All' ? 'All Divisions' : d}
@@ -196,9 +194,9 @@ export function Emails() {
         </div>
 
         {directory.length === 0 ? (
-          <p className="text-xs text-[#64748b] py-3">Loading school directory…</p>
+          <p className="text-xs text-[#9a9385] py-3">Loading school directory…</p>
         ) : filteredSchools.length === 0 ? (
-          <p className="text-xs text-[#64748b] py-3">No schools match these filters.</p>
+          <p className="text-xs text-[#9a9385] py-3">No schools match these filters.</p>
         ) : (
           <div className="grid grid-cols-1 md:grid-cols-2 gap-2 max-h-72 overflow-y-auto pr-1 scrollbar-hide">
             {filteredSchools.map((s) => {
@@ -209,15 +207,15 @@ export function Emails() {
                   onClick={() => pickSchoolFromDirectory(s)}
                   className={`text-left rounded-lg px-3 py-2 text-xs border transition-all ${
                     active
-                      ? 'bg-[rgba(234,179,8,0.12)] border-[rgba(234,179,8,0.5)]'
-                      : 'bg-[rgba(255,255,255,0.02)] border-[rgba(255,255,255,0.06)] hover:border-[rgba(234,179,8,0.3)] hover:bg-[rgba(234,179,8,0.04)]'
+                      ? 'bg-[rgba(240,182,90,0.12)] border-[rgba(234,179,8,0.5)]'
+                      : 'bg-[rgba(255,255,255,0.02)] border-[rgba(245,241,232,0.06)] hover:border-[rgba(240,182,90,0.35)] hover:bg-[rgba(234,179,8,0.04)]'
                   }`}
                 >
                   <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                    <span className="font-semibold text-[#f1f5f9]">{s.name}</span>
-                    <span className="text-[10px] uppercase tracking-widest text-[#eab308]">{s.division}</span>
+                    <span className="font-semibold text-[#f5f1e8]">{s.name}</span>
+                    <span className="text-[10px] uppercase tracking-widest text-[#f0b65a]">{s.division}</span>
                   </div>
-                  <div className="text-[#64748b] truncate">
+                  <div className="text-[#9a9385] truncate">
                     {s.conference} · {s.location}
                   </div>
                 </button>
@@ -226,7 +224,7 @@ export function Emails() {
           </div>
         )}
 
-        <p className="text-[11px] text-[#64748b] mt-3 italic">
+        <p className="text-[11px] text-[#9a9385] mt-3 italic">
           Click a school to auto-fill the form below — or type one in manually.
         </p>
       </Card>
@@ -244,7 +242,7 @@ export function Emails() {
 
             {/* Division */}
             <div>
-              <label className="text-sm font-medium text-[#f1f5f9] block mb-2">Division</label>
+              <label className="text-sm font-medium text-[#f5f1e8] block mb-2">Division</label>
               <div className="flex flex-wrap gap-2">
                 {DIVISIONS.map((d) => (
                   <button
@@ -252,8 +250,8 @@ export function Emails() {
                     onClick={() => { setDivision(d); resetCoach() }}
                     className={`px-3 py-1.5 rounded text-xs font-semibold border transition-all ${
                       division === d
-                        ? 'bg-[#eab308] text-black border-[#eab308]'
-                        : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
+                        ? 'bg-[#f0b65a] text-black border-[#f0b65a]'
+                        : 'bg-transparent text-[#9a9385] border-[rgba(245,241,232,0.10)] hover:border-[#f0b65a] hover:text-[#f0b65a]'
                     }`}
                   >
                     {d}
@@ -264,7 +262,7 @@ export function Emails() {
 
             {/* Gender */}
             <div>
-              <label className="text-sm font-medium text-[#f1f5f9] block mb-2">Program</label>
+              <label className="text-sm font-medium text-[#f5f1e8] block mb-2">Program</label>
               <div className="flex gap-2">
                 {[{ id: 'womens', label: "Women's" }, { id: 'mens', label: "Men's" }].map((g) => (
                   <button
@@ -272,8 +270,8 @@ export function Emails() {
                     onClick={() => { setGender(g.id as 'mens' | 'womens'); resetCoach() }}
                     className={`flex-1 py-1.5 rounded text-xs font-semibold border transition-all ${
                       gender === g.id
-                        ? 'bg-[#eab308] text-black border-[#eab308]'
-                        : 'bg-transparent text-[#64748b] border-[rgba(255,255,255,0.1)] hover:border-[#eab308] hover:text-[#eab308]'
+                        ? 'bg-[#f0b65a] text-black border-[#f0b65a]'
+                        : 'bg-transparent text-[#9a9385] border-[rgba(245,241,232,0.10)] hover:border-[#f0b65a] hover:text-[#f0b65a]'
                     }`}
                   >
                     {g.label}
@@ -290,7 +288,7 @@ export function Emails() {
             ) : (
               <div className={`p-3 rounded-xl border ${coachSource === 'scraped' ? 'border-[rgba(74,222,128,0.3)] bg-[rgba(74,222,128,0.05)]' : 'border-[rgba(251,191,36,0.3)] bg-[rgba(251,191,36,0.05)]'}`}>
                 <div className="flex items-center justify-between mb-2">
-                  <span className="text-xs font-semibold text-[#f1f5f9]">Coach Found</span>
+                  <span className="text-xs font-semibold text-[#f5f1e8]">Coach Found</span>
                   {coachSource === 'scraped' && (
                     <span className="text-xs text-[#4ade80]">✓ Official site</span>
                   )}
@@ -315,7 +313,7 @@ export function Emails() {
                     placeholder="coach@school.edu"
                   />
                 </div>
-                <button onClick={resetCoach} className="text-xs text-[#64748b] hover:text-[#f1f5f9] mt-2">
+                <button onClick={resetCoach} className="text-xs text-[#9a9385] hover:text-[#f5f1e8] mt-2">
                   ← Search different coach
                 </button>
               </div>
@@ -330,7 +328,7 @@ export function Emails() {
             >
               {loading ? 'Generating...' : 'Generate Email'}
             </Button>
-            <p className="text-xs text-[#64748b] text-center">3 free emails · Unlimited with Pro</p>
+            <p className="text-xs text-[#9a9385] text-center">3 free emails · Unlimited with Pro</p>
           </Card>
         </div>
 
@@ -345,14 +343,14 @@ export function Emails() {
                 </Button>
               </div>
               <div className="mb-4">
-                <div className="text-xs font-semibold text-[#64748b] uppercase tracking-widest mb-1.5">Subject</div>
-                <div className="text-sm font-medium text-[#f1f5f9] bg-[rgba(255,255,255,0.04)] px-3 py-2 rounded-lg">
+                <div className="text-xs font-semibold text-[#9a9385] uppercase tracking-widest mb-1.5">Subject</div>
+                <div className="text-sm font-medium text-[#f5f1e8] bg-[rgba(245,241,232,0.04)] px-3 py-2 rounded-lg">
                   {generated.subject}
                 </div>
               </div>
               <div>
-                <div className="text-xs font-semibold text-[#64748b] uppercase tracking-widest mb-1.5">Body</div>
-                <pre className="text-sm text-[#f1f5f9] whitespace-pre-wrap font-sans leading-relaxed bg-[rgba(255,255,255,0.04)] px-4 py-3 rounded-lg max-h-80 overflow-y-auto scrollbar-hide">
+                <div className="text-xs font-semibold text-[#9a9385] uppercase tracking-widest mb-1.5">Body</div>
+                <pre className="text-sm text-[#f5f1e8] whitespace-pre-wrap font-sans leading-relaxed bg-[rgba(245,241,232,0.04)] px-4 py-3 rounded-lg max-h-80 overflow-y-auto scrollbar-hide">
                   {generated.body}
                 </pre>
               </div>
@@ -360,8 +358,8 @@ export function Emails() {
           ) : (
             <Card className="p-16 text-center h-full flex flex-col items-center justify-center">
               <div className="text-4xl mb-4">✉️</div>
-              <div className="font-serif text-lg font-bold text-[#f1f5f9] mb-2">Ready to send</div>
-              <p className="text-sm text-[#64748b] max-w-xs">Pick a school above (filter by region or conference), then Find Coach and Generate Email.</p>
+              <div className="font-serif text-lg font-bold text-[#f5f1e8] mb-2">Ready to send</div>
+              <p className="text-sm text-[#9a9385] max-w-xs">Pick a school above (filter by region or conference), then Find Coach and Generate Email.</p>
             </Card>
           )}
         </div>
@@ -370,19 +368,19 @@ export function Emails() {
       {/* History */}
       {history.length > 0 && (
         <div>
-          <h2 className="font-serif text-xl font-bold text-[#f1f5f9] mb-5">Email history</h2>
+          <h2 className="font-serif text-xl font-bold text-[#f5f1e8] mb-5">Email history</h2>
           <div className="flex flex-col gap-3">
             {history.map((email) => (
               <Card key={email.id} className="p-4 flex items-center gap-4">
                 <div className="flex-1 min-w-0">
                   <div className="flex items-center gap-2 mb-0.5 flex-wrap">
-                    <span className="text-sm font-bold text-[#f1f5f9]">{email.school}</span>
+                    <span className="text-sm font-bold text-[#f5f1e8]">{email.school}</span>
                     <Badge variant="muted">{email.division}</Badge>
                     <Badge variant="muted">{email.status}</Badge>
                   </div>
-                  <div className="text-xs text-[#64748b] truncate">To: {email.coachName} · {email.subject}</div>
+                  <div className="text-xs text-[#9a9385] truncate">To: {email.coachName} · {email.subject}</div>
                 </div>
-                <div className="text-xs text-[#64748b] flex-shrink-0">
+                <div className="text-xs text-[#9a9385] flex-shrink-0">
                   {new Date(email.createdAt).toLocaleDateString()}
                 </div>
               </Card>

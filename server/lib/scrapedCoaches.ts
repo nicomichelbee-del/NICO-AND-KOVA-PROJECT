@@ -11,7 +11,7 @@ export interface ScrapedCoach {
   coachEmail: string
   sourceUrl:  string
   scrapedAt:  string
-  status:     'success' | 'no-program' | 'failed' | 'partial' | 'ai-inferred' | 'email-inferred'
+  status:     'success' | 'no-program' | 'failed' | 'partial' | 'ai-inferred' | 'email-inferred' | 'web-verified' | 'web-name-only'
   reason?:    string
 }
 
@@ -129,7 +129,7 @@ function getFromFlat(schoolNameOrId: string, gender: 'mens' | 'womens'): Scraped
 // fall through to AI-recall in the route handler.
 // `email-inferred` = real scraped coach name + Haiku-inferred email format.
 // The route handler badges these as "verify before sending" so the user knows.
-const USEFUL_STATUSES = ['success', 'partial', 'ai-inferred', 'email-inferred']
+const USEFUL_STATUSES = ['success', 'partial', 'ai-inferred', 'email-inferred', 'web-verified', 'web-name-only']
 
 export async function getScrapedCoach(
   schoolNameOrId: string,

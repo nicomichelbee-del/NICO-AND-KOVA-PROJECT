@@ -6,6 +6,8 @@ import { getScrapedCoach } from '../lib/scrapedCoaches'
 import { ask, askWithImages, chat, parseJSON, rateCoachReply } from '../lib/aiClient'
 import { captureYouTubeFrames } from '../lib/videoAnalyzer'
 import rosterData from '../data/rosterPrograms.json'
+import schoolsData from '../data/schools.json'
+import coachesData from '../data/coachesScraped.json'
 import idEventsData from '../data/idEvents.json'
 import idCampsData from '../data/idCamps.json'
 
@@ -62,16 +64,19 @@ router.post('/find-coach', async (req, res) => {
     const scraped = await getScrapedCoach(school, gender)
     if (scraped?.coachName) {
       const isFullHit = scraped.status === 'success' && !!scraped.coachEmail
+      const isWebVerified = scraped.status === 'web-verified' && !!scraped.coachEmail
       const isInferredEmail = scraped.status === 'email-inferred' && !!scraped.coachEmail
-      // For inferred-email entries we surface the inferred email but mark it
-      // for verification — better than forcing the athlete to re-search.
+      // Web-verified entries are grounded in real .edu/.com pages via search,
+      // so they're treated as high-confidence alongside puppeteer scrapes.
+      const hasGoodEmail = isFullHit || isWebVerified || isInferredEmail
       const source = isFullHit ? 'scraped'
+                   : isWebVerified ? 'scraped'
                    : isInferredEmail ? 'email-inferred'
                    : 'scraped-partial'
       return res.json({
         coachName: scraped.coachName,
-        coachEmail: (isFullHit || isInferredEmail) ? scraped.coachEmail : '',
-        confidence: isFullHit ? 'high' : 'low',
+        coachEmail: hasGoodEmail ? scraped.coachEmail : '',
+        confidence: isFullHit || isWebVerified ? 'high' : 'low',
         source,
         sourceUrl: scraped.sourceUrl,
         scrapedAt: scraped.scrapedAt,
@@ -102,8 +107,8 @@ Rules:
 
 router.post('/schools', async (req, res) => {
   try {
-    const { profile } = req.body as { profile: AthleteProfile }
-    const schools = matchSchools(profile)
+    const { profile, video } = req.body as { profile: AthleteProfile; video?: import('../../client/src/types/index').VideoRating | null }
+    const schools = matchSchools(profile, 25, video ?? null)
     res.json({ schools })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
@@ -509,12 +514,62 @@ Respond with JSON only: { "emails": [{ "coachName": "...", "subject": "...", "bo
   }
 })
 
+// Curated roster overrides keyed by `${schoolName}:${gender}` (case-insensitive).
+// Hand-tuned recruiting needs / formations for the 70 highest-profile programs;
+// every other school falls back to a generic profile sourced from schools.json.
+const CURATED_ROSTER = new Map<string, RosterProgram>()
+for (const p of rosterData as RosterProgram[]) {
+  CURATED_ROSTER.set(`${p.school.toLowerCase()}:${p.gender}`, p)
+}
+
+const DEFAULT_RECRUITING_NEEDS: RosterProgram['typicalRecruitingNeeds'] = [
+  { position: 'Forward',            level: 'Medium' },
+  { position: 'Central Midfielder', level: 'Medium' },
+  { position: 'Center Back',        level: 'Medium' },
+  { position: 'Outside Back',       level: 'Medium' },
+  { position: 'Goalkeeper',         level: 'Low' },
+]
+
+interface CoachEntry { coachName: string; coachEmail: string; status: string }
+const COACH_LOOKUP = coachesData as Record<string, CoachEntry>
+const USEFUL_COACH_STATUSES = new Set(['success', 'partial', 'ai-inferred', 'email-inferred', 'web-verified', 'web-name-only'])
+
+function buildRosterPrograms(gender: 'mens' | 'womens', division: string): RosterProgram[] {
+  const schools = schoolsData as SchoolRecord[]
+  const filtered = division === 'all' ? schools : schools.filter((s) => s.division === division)
+  const out: RosterProgram[] = []
+  for (const s of filtered) {
+    const coach = COACH_LOOKUP[`${s.id}:${gender}`]
+    // Skip schools confirmed not to sponsor this gender's program.
+    if (coach?.status === 'no-program') continue
+    const curated = CURATED_ROSTER.get(`${s.name.toLowerCase()}:${gender}`)
+    const usefulCoach = coach && USEFUL_COACH_STATUSES.has(coach.status) ? coach : null
+    const location = s.location ?? ''
+    const stateParts = location.split(',').map((x) => x.trim())
+    out.push({
+      id: curated?.id ?? `${s.id}-${gender}`,
+      school: s.name,
+      conference: s.conference,
+      division: s.division,
+      location,
+      region: s.region,
+      state: stateParts[stateParts.length - 1] || '',
+      gender,
+      coachName: curated?.coachName ?? usefulCoach?.coachName ?? '',
+      coachEmail: curated?.coachEmail ?? usefulCoach?.coachEmail ?? '',
+      typicalRecruitingNeeds: curated?.typicalRecruitingNeeds ?? DEFAULT_RECRUITING_NEEDS,
+      formationStyle: curated?.formationStyle ?? 'Varies by class',
+      notes: curated?.notes ?? 'Recruiting needs vary year to year. Contact the program directly to confirm current openings.',
+    })
+  }
+  return out
+}
+
 router.post('/roster-intel', async (req, res) => {
   try {
     const { gender, division, athletePosition } = req.body as { gender: 'mens' | 'womens'; division: string; athletePosition: string }
 
-    let programs = (rosterData as RosterProgram[]).filter((p) => p.gender === gender)
-    if (division !== 'all') programs = programs.filter((p) => p.division === division)
+    let programs = buildRosterPrograms(gender, division)
 
     if (athletePosition) {
       const pos = athletePosition.toLowerCase()
@@ -542,11 +597,43 @@ router.post('/roster-intel', async (req, res) => {
       }))
       .sort((a, b) => b.schoolCount - a.schoolCount)
 
-    res.json({ programs: programs.slice(0, 20), positionSummary })
+    res.json({ programs, positionSummary })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
   }
 })
+
+// Beeko chat addendum: human tone + accuracy guardrails. The base PERSONA gives
+// the counselor identity; this layer fixes the voice so replies don't read as
+// AI and pins the model to verifiable recruiting facts instead of plausible-
+// sounding filler.
+const BEEKO_STYLE = `
+
+You are "Beeko" inside a chat widget. Talk like a real coach texting a player back, not like an assistant writing a memo.
+
+VOICE RULES (strict):
+- Never use em dashes (—). Use a period, comma, "and", "or", parentheses, or just a regular hyphen with spaces if you need a pause.
+- No corporate or AI filler. Cut phrases like "Great question", "Absolutely", "I'd be happy to", "Let's dive in", "It's important to note", "In conclusion", "I hope this helps".
+- No bold headers or section titles for short answers. Plain sentences. Use a short bulleted list only when the answer is genuinely a list of items (3+).
+- Contractions are good (you're, don't, it's). Short sentences. Sound like a person, not a brochure.
+- Don't restate the question back. Just answer.
+- Length: 2 to 5 sentences for most questions. Only go longer if they actually asked for a breakdown or step-by-step.
+
+ACCURACY RULES (strict):
+- Stick to things that are actually true about US college soccer recruiting. If you don't know a specific fact (a coach's email, a roster spot, a specific school's policy, a deadline that changes year to year), say you don't know and tell them where to check (the school's athletics site, NCAA Eligibility Center, their club DOC, etc.).
+- Never invent stats, school requirements, scholarship numbers, GPA cutoffs, or coach names. If they ask about a specific school you don't have data on, say so plainly.
+- NCAA rules and contact dates change. If they ask about a specific date or rule, give the general shape of the rule and tell them to verify on ncaa.org.
+- D1 men's soccer is equivalency (9.9 scholarships split). D1 women's is headcount (14 full). D2 is equivalency for both. D3 has zero athletic scholarships, only academic and need-based aid. Get this right when it comes up.
+- Recruiting timeline reality: D1 contact opens June 15 after sophomore year; most D1 verbal commits land junior year; D2/D3/NAIA timelines run later (junior into senior year is normal). Don't push athletes to panic.
+- If they ask something outside soccer recruiting (homework help, life advice, other sports), gently redirect back to recruiting.
+
+WHEN A USER ASKS FOR HELP THE APP CAN ACTUALLY DO:
+- Coach email writing: point them to the Coach Email Generator.
+- Finding schools: point them to the School Matcher.
+- Rating their highlight tape: point them to the Highlight Video Rater (Pro/Family).
+- Tracking responses: point them to the Outreach Tracker.
+
+If their profile is attached below, use it. Reference their position, grad year, division goal, and stats when it helps. If something in their profile is missing and matters for the answer, ask one short follow-up.`
 
 router.post('/chat', async (req, res) => {
   try {
@@ -557,8 +644,11 @@ router.post('/chat', async (req, res) => {
     const profileContext = profile
       ? `\n\nAthlete context: ${profile.name}, ${profile.position}, Class of ${profile.gradYear}, ${profile.clubTeam} (${profile.clubLeague}), ${profile.goals}G/${profile.assists}A, GPA ${profile.gpa}, targeting ${profile.targetDivision}.`
       : ''
-    const reply = await chat(messages, profileContext, 500)
-    res.json({ reply })
+    const reply = await chat(messages, BEEKO_STYLE + profileContext, 500)
+    // Belt-and-suspenders: even with the prompt rule, models occasionally slip an
+    // em or en dash through. Strip them on the way out so the user never sees one.
+    const cleaned = reply.replace(/[—–]/g, ', ').replace(/ ,/g, ',').replace(/,\s*,/g, ',')
+    res.json({ reply: cleaned })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
   }

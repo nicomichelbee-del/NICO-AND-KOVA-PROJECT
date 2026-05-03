@@ -6,6 +6,7 @@ import { Textarea } from '../../components/ui/Textarea'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Input } from '../../components/ui/Input'
+import { PageHeader } from '../../components/ui/PageHeader'
 import { useAuth } from '../../context/AuthContext'
 import type { AthleteProfile, OutreachContact, UntrackedThread } from '../../types'
 
@@ -213,59 +214,54 @@ export function FollowUp() {
   }
 
   return (
-    <div className="px-10 py-10 max-w-4xl">
-      <div className="mb-6 flex items-start justify-between gap-4 flex-wrap">
-        <div>
-          <div className="flex items-center gap-3 mb-1">
-            <div className="w-2 h-2 rounded-full bg-[#eab308]" />
-            <span className="text-xs font-semibold tracking-[2px] uppercase text-[#eab308]">Follow-up Assistant</span>
-          </div>
-          <h1 className="font-serif text-4xl font-black text-[#f1f5f9] tracking-[-1px]">Follow-up Assistant</h1>
-          <p className="text-[#64748b] mt-2 text-sm">Never stall a recruiting conversation. Always know exactly what to send next.</p>
-        </div>
-
-        {/* Gmail connection */}
-        <div className="flex flex-col items-end gap-2">
-          {gmailConnected ? (
-            <div className="flex items-center gap-3">
-              <div>
-                <div className="flex items-center gap-2">
-                  <span className="w-2 h-2 rounded-full bg-[#4ade80] inline-block" />
-                  <span className="text-xs text-[#4ade80] font-semibold">Gmail Connected</span>
+    <div className="kr-page max-w-4xl">
+      <PageHeader
+        eyebrow="Follow-up assistant"
+        title={<>Never stall a <span className="kr-accent">conversation</span>.</>}
+        lede="Always know exactly what to send next — drafts, thank-yous, and replies tuned to the moment."
+        aside={
+          <div className="flex flex-col items-end gap-2">
+            {gmailConnected ? (
+              <div className="flex items-center gap-3">
+                <div>
+                  <div className="flex items-center gap-2">
+                    <span className="w-1.5 h-1.5 rounded-full bg-pitch-light shadow-[0_0_8px_var(--pitch-2)] inline-block" />
+                    <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-pitch-light">Gmail connected</span>
+                  </div>
+                  {gmailEmail && <div className="text-[12px] text-ink-2 mt-1">{gmailEmail}</div>}
                 </div>
-                {gmailEmail && <div className="text-xs text-[#64748b]">{gmailEmail}</div>}
+                <Button variant="outline" size="sm" onClick={() => setShowInbox((v) => !v)}>
+                  {showInbox ? 'Hide inbox' : 'Pick from inbox'}
+                </Button>
               </div>
-              <Button variant="outline" size="sm" onClick={() => setShowInbox((v) => !v)}>
-                {showInbox ? 'Hide Inbox' : '📬 Pick from Inbox'}
+            ) : (
+              <Button onClick={connectGmail} disabled={gmailLoading || !user?.id} size="sm">
+                {gmailLoading ? 'Connecting…' : 'Connect Gmail'}
               </Button>
-            </div>
-          ) : (
-            <Button onClick={connectGmail} disabled={gmailLoading || !user?.id} size="sm">
-              {gmailLoading ? 'Connecting...' : '📧 Connect Gmail'}
-            </Button>
-          )}
-          {!user?.id && <div className="text-xs text-[#64748b]">Sign in to connect Gmail</div>}
-        </div>
-      </div>
+            )}
+            {!user?.id && <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-ink-3">Sign in to connect</div>}
+          </div>
+        }
+      />
 
       {/* Inbox picker panel */}
       {showInbox && gmailConnected && (
         <Card className="p-5 mb-6">
           <div className="flex items-center justify-between mb-3">
-            <div className="text-xs font-semibold text-[#eab308] uppercase tracking-wider">📬 Coach Inbox — Click to Pre-fill Context</div>
+            <div className="text-xs font-semibold text-[#f0b65a] uppercase tracking-wider">📬 Coach Inbox — Click to Pre-fill Context</div>
             <button
               onClick={loadInbox}
               disabled={inboxLoading}
-              className="text-[11px] text-[#64748b] hover:text-[#eab308] disabled:opacity-50 transition-colors"
+              className="text-[11px] text-[#9a9385] hover:text-[#f0b65a] disabled:opacity-50 transition-colors"
             >
               {inboxLoading ? 'Syncing…' : '⟳ Refresh'}
             </button>
           </div>
 
           {inboxLoading && inboxContacts.length === 0 && inboxUntracked.length === 0 ? (
-            <p className="text-xs text-[#64748b]">Syncing your inbox…</p>
+            <p className="text-xs text-[#9a9385]">Syncing your inbox…</p>
           ) : inboxContacts.length === 0 && inboxUntracked.length === 0 ? (
-            <p className="text-xs text-[#64748b]">No coach emails found in your inbox yet.</p>
+            <p className="text-xs text-[#9a9385]">No coach emails found in your inbox yet.</p>
           ) : (
             <div className="flex flex-col gap-4 max-h-72 overflow-y-auto pr-1 scrollbar-hide">
               {inboxContacts.length > 0 && (
@@ -279,15 +275,15 @@ export function FollowUp() {
                           key={c.id}
                           onClick={() => pickFromInbox(c)}
                           disabled={loading}
-                          className="text-left px-3 py-2.5 rounded-lg border border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(234,179,8,0.4)] hover:bg-[rgba(234,179,8,0.04)] transition-all disabled:opacity-60"
+                          className="text-left px-3 py-2.5 rounded-lg border border-[rgba(245,241,232,0.08)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(240,182,90,0.45)] hover:bg-[rgba(234,179,8,0.04)] transition-all disabled:opacity-60"
                         >
                           <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-xs font-semibold text-[#f1f5f9]">{c.schoolName}</span>
-                            <span className="text-[10px] uppercase tracking-widest text-[#eab308]">{c.division}</span>
+                            <span className="text-xs font-semibold text-[#f5f1e8]">{c.schoolName}</span>
+                            <span className="text-[10px] uppercase tracking-widest text-[#f0b65a]">{c.division}</span>
                             {c.status === 'replied' && <span className="text-[10px] text-[#4ade80] font-semibold">Replied</span>}
-                            {loading && <span className="text-[10px] text-[#64748b]">Loading thread…</span>}
+                            {loading && <span className="text-[10px] text-[#9a9385]">Loading thread…</span>}
                           </div>
-                          <div className="text-xs text-[#64748b]">Coach {c.coachName}</div>
+                          <div className="text-xs text-[#9a9385]">Coach {c.coachName}</div>
                           {c.lastReplySnippet && (
                             <div className="text-xs text-[#94a3b8] mt-0.5 truncate italic">"{c.lastReplySnippet}"</div>
                           )}
@@ -317,11 +313,11 @@ export function FollowUp() {
                           className="text-left px-3 py-2.5 rounded-lg border border-[rgba(74,222,128,0.15)] bg-[rgba(74,222,128,0.03)] hover:border-[rgba(74,222,128,0.4)] hover:bg-[rgba(74,222,128,0.06)] transition-all disabled:opacity-60"
                         >
                           <div className="flex items-center gap-2 mb-0.5">
-                            <span className="text-xs font-semibold text-[#f1f5f9]">{t.senderName || t.senderEmail}</span>
+                            <span className="text-xs font-semibold text-[#f5f1e8]">{t.senderName || t.senderEmail}</span>
                             <span className="text-[10px] text-[#4ade80] font-semibold uppercase tracking-widest">New</span>
-                            {loading && <span className="text-[10px] text-[#64748b]">Loading thread…</span>}
+                            {loading && <span className="text-[10px] text-[#9a9385]">Loading thread…</span>}
                           </div>
-                          <div className="text-xs text-[#64748b] truncate">{t.subject}</div>
+                          <div className="text-xs text-[#9a9385] truncate">{t.subject}</div>
                           {t.snippet && (
                             <div className="text-xs text-[#94a3b8] mt-0.5 truncate italic">"{t.snippet}"</div>
                           )}
@@ -356,19 +352,19 @@ export function FollowUp() {
             onClick={() => { setType(t.value); setResult(''); setAdvice('') }}
             className={`p-4 rounded-xl border text-left transition-all ${
               type === t.value
-                ? 'border-[#eab308] bg-[rgba(234,179,8,0.06)]'
-                : 'border-[rgba(255,255,255,0.07)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(234,179,8,0.3)]'
+                ? 'border-[#f0b65a] bg-[rgba(240,182,90,0.06)]'
+                : 'border-[rgba(245,241,232,0.08)] bg-[rgba(255,255,255,0.02)] hover:border-[rgba(240,182,90,0.35)]'
             }`}
           >
-            <div className={`text-sm font-bold mb-1 ${type === t.value ? 'text-[#eab308]' : 'text-[#f1f5f9]'}`}>{t.label}</div>
-            <div className="text-xs text-[#64748b]">{t.desc}</div>
+            <div className={`text-sm font-bold mb-1 ${type === t.value ? 'text-[#f0b65a]' : 'text-[#f5f1e8]'}`}>{t.label}</div>
+            <div className="text-xs text-[#9a9385]">{t.desc}</div>
           </button>
         ))}
       </div>
 
       {/* Schedule Picker */}
       <Card className="p-5 mb-6">
-        <div className="text-xs font-semibold text-[#eab308] uppercase tracking-wider mb-3">📅 My Upcoming Schedule (optional)</div>
+        <div className="text-xs font-semibold text-[#f0b65a] uppercase tracking-wider mb-3">📅 My Upcoming Schedule (optional)</div>
         <div className="flex flex-wrap gap-2 mb-3">
           {PRESET_EVENTS.map((event) => (
             <button
@@ -376,8 +372,8 @@ export function FollowUp() {
               onClick={() => toggleEvent(event.id)}
               className={`px-3 py-1.5 rounded-full text-xs font-medium border transition-all ${
                 selectedEvents.includes(event.id)
-                  ? 'bg-[rgba(234,179,8,0.1)] border-[#eab308] text-[#eab308]'
-                  : 'bg-transparent border-[rgba(255,255,255,0.1)] text-[#64748b] hover:border-[rgba(234,179,8,0.4)] hover:text-[#f1f5f9]'
+                  ? 'bg-[rgba(240,182,90,0.10)] border-[#f0b65a] text-[#f0b65a]'
+                  : 'bg-transparent border-[rgba(245,241,232,0.10)] text-[#9a9385] hover:border-[rgba(240,182,90,0.45)] hover:text-[#f5f1e8]'
               }`}
             >
               {selectedEvents.includes(event.id) ? '✓ ' : ''}{event.label}
@@ -417,26 +413,26 @@ export function FollowUp() {
                     {copied ? '✓ Copied' : 'Copy'}
                   </Button>
                 </div>
-                <pre className="text-sm text-[#f1f5f9] whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto scrollbar-hide max-h-64">
+                <pre className="text-sm text-[#f5f1e8] whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto scrollbar-hide max-h-64">
                   {result}
                 </pre>
               </Card>
 
               {advice && (
-                <Card className="p-4 border border-[rgba(234,179,8,0.2)] bg-[rgba(234,179,8,0.04)]">
+                <Card className="p-4 border border-[rgba(240,182,90,0.25)] bg-[rgba(234,179,8,0.04)]">
                   <div className="flex items-center gap-2 mb-2">
-                    <span className="text-xs font-semibold uppercase tracking-wider text-[#eab308]">Counselor's Take</span>
+                    <span className="text-xs font-semibold uppercase tracking-wider text-[#f0b65a]">Counselor's Take</span>
                   </div>
-                  <p className="text-sm text-[#f1f5f9] leading-relaxed">{advice}</p>
+                  <p className="text-sm text-[#f5f1e8] leading-relaxed">{advice}</p>
                 </Card>
               )}
             </>
           ) : (
             <Card className="p-12 h-full flex flex-col items-center justify-center text-center">
               <div className="text-3xl mb-3">💬</div>
-              <div className="font-serif text-base font-bold text-[#f1f5f9] mb-1">Your email appears here</div>
-              <p className="text-xs text-[#64748b]">Choose a type, pick your events, and click Generate</p>
-              <p className="text-xs text-[#64748b] mt-1">You'll also get a counselor's read on the situation.</p>
+              <div className="font-serif text-base font-bold text-[#f5f1e8] mb-1">Your email appears here</div>
+              <p className="text-xs text-[#9a9385]">Choose a type, pick your events, and click Generate</p>
+              <p className="text-xs text-[#9a9385] mt-1">You'll also get a counselor's read on the situation.</p>
             </Card>
           )}
         </div>

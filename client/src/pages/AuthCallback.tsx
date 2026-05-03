@@ -35,11 +35,14 @@ export function AuthCallback() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#07090f] flex flex-col items-center justify-center gap-4">
-        <div className="text-red-400 text-sm">{error}</div>
+      <div className="kr-auth-shell flex flex-col items-center justify-center gap-5 px-4">
+        <span className="kr-eyebrow">Sign-in error</span>
+        <div className="text-crimson-light text-sm max-w-md text-center px-4 py-3 rounded-lg bg-[rgba(227,90,90,0.08)] border border-[rgba(227,90,90,0.28)]">
+          {error}
+        </div>
         <button
           onClick={() => navigate('/login')}
-          className="text-[#eab308] text-sm underline"
+          className="font-mono text-[11px] tracking-[0.18em] uppercase text-gold hover:underline underline-offset-4"
         >
           Back to login
         </button>
@@ -48,8 +51,10 @@ export function AuthCallback() {
   }
 
   return (
-    <div className="min-h-screen bg-[#07090f] flex items-center justify-center">
-      <div className="text-[#eab308] text-sm font-medium">Signing you in...</div>
+    <div className="kr-auth-shell flex items-center justify-center">
+      <div className="font-mono text-[10.5px] tracking-[0.22em] uppercase text-gold animate-pulse">
+        Signing you in…
+      </div>
     </div>
   )
 }

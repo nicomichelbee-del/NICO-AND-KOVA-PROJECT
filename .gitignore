@@ -9,3 +9,6 @@ server.log
 
 # transient enrichment diagnostic; gets overwritten each run
 server/data/scorecardUnmatched.json
+
+# Supabase CLI local cache
+supabase/.temp/

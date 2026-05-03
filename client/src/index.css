@@ -1,19 +1,22 @@
+@import './styles/kickriq.css';
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
+/* Legacy aliases — point old token names at the new warm palette so any
+   stragglers using --bg / --gold / --text inherit the KickrIQ feel. */
 :root {
-  --bg: #07090f;
-  --bg-surface: #0c1118;
-  --navy: #0f1729;
-  --card: rgba(255, 255, 255, 0.03);
-  --card-border: rgba(234, 179, 8, 0.15);
-  --gold: #eab308;
-  --gold-dim: #ca8a04;
-  --gold-pale: rgba(234, 179, 8, 0.1);
-  --text: #f1f5f9;
-  --muted: #64748b;
-  --border: rgba(255, 255, 255, 0.07);
+  --bg: var(--bg-0);
+  --bg-surface: var(--bg-1);
+  --navy: var(--bg-2);
+  --card: rgba(245, 241, 232, 0.03);
+  --card-border: rgba(240, 182, 90, 0.18);
+  --gold-dim: var(--gold-2);
+  --gold-pale: var(--gold-soft);
+  --text: var(--fg-0);
+  --muted: var(--fg-2);
+  --border: var(--line-1);
 }
 
 * {
@@ -21,27 +24,36 @@
 }
 
 body {
-  background-color: var(--bg);
-  color: var(--text);
-  font-family: 'Inter', system-ui, sans-serif;
   margin: 0;
-  -webkit-font-smoothing: antialiased;
 }
 
 @layer utilities {
-  .font-serif { font-family: 'Playfair Display', Georgia, serif; }
+  .font-serif {
+    font-family: var(--serif);
+    font-variation-settings: "SOFT" 50, "opsz" 96;
+    letter-spacing: -0.02em;
+  }
+  .font-display {
+    font-family: var(--serif);
+    font-variation-settings: "SOFT" 50, "opsz" 144;
+    letter-spacing: -0.025em;
+  }
+  .font-mono-kr {
+    font-family: var(--kr-mono);
+    letter-spacing: 0.04em;
+  }
   .text-gold { color: var(--gold); }
-  .text-muted { color: var(--muted); }
+  .text-muted { color: var(--fg-2); }
   .bg-card { background: var(--card); }
   .border-card { border-color: var(--card-border); }
-  .bg-gold-pale { background: var(--gold-pale); }
+  .bg-gold-pale { background: var(--gold-soft); }
   .scrollbar-hide::-webkit-scrollbar { display: none; }
   .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
 }
 
 .bg-gold-grid {
   background-image:
-    linear-gradient(rgba(234, 179, 8, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(234, 179, 8, 0.04) 1px, transparent 1px);
-  background-size: 60px 60px;
+    linear-gradient(rgba(240, 182, 90, 0.05) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(240, 182, 90, 0.05) 1px, transparent 1px);
+  background-size: 64px 64px;
 }

@@ -1,233 +1,984 @@
+import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
-import { Nav } from '../components/layout/Nav'
-import { Button } from '../components/ui/Button'
-import { Badge } from '../components/ui/Badge'
-import { BeekoLogo } from '../components/ui/BeekoLogo'
 
-const features = [
-  { num: '01', icon: '🏟️', title: 'Athlete Profile Builder', desc: 'Position, stats, GPA, club team, and highlight link — the foundation everything else is built on.', tier: 'FREE' },
-  { num: '02', icon: '🎯', title: 'School Matcher', desc: 'Reach, target, and safety schools ranked by fit — based on your real stats, not generic rankings.', tier: 'FREE' },
-  { num: '03', icon: '✉️', title: 'Coach Email Generator', desc: 'AI writes personalized cold outreach for each division. D1 = stat-heavy. D3 = academic fit. NAIA = playing time.', tier: 'FREE · 3 EMAILS' },
-  { num: '04', icon: '📊', title: 'Outreach Tracker', desc: 'Track every contact, response, and next step. Never let a warm lead go cold.', tier: 'PRO' },
-  { num: '05', icon: '💬', title: 'Follow-up Assistant', desc: 'AI drafts follow-ups, thank-you notes, and answers to coach questions — always the right tone.', tier: 'PRO' },
-  { num: '06', icon: '🎬', title: 'Highlight Video Rater', desc: 'Submit your YouTube or Hudl URL. Get a 1–10 score and specific, actionable improvement points.', tier: 'PRO' },
-]
+/* ============================================================
+   SCROLL MOTION
+   - Sets up a scroll-progress rail at top of page
+   - IntersectionObserver reveals [data-reveal] / [data-stagger] / [data-words]
+   - Splits headline text marked with data-words into spans on mount
+   ============================================================ */
+function useScrollMotion() {
+  useEffect(() => {
+    const root = document.querySelector('.kickriq')
+    if (!root) return
 
-const plans = [
-  {
-    tier: 'Free', price: '0', period: 'Forever free',
-    items: ['Athlete profile builder', '5 school matches', '3 coach emails', 'Division guidance'],
-    cta: 'Get Started', featured: false,
-  },
-  {
-    tier: 'Pro', price: '19', period: 'per month · cancel anytime',
-    items: ['Everything in Free', 'Unlimited coach emails', 'Outreach tracker dashboard', 'Follow-up assistant', 'Highlight video rater'],
-    cta: 'Start Pro', featured: true,
-  },
-  {
-    tier: 'Family', price: '29', period: 'per month · cancel anytime',
-    items: ['Everything in Pro', 'Parent dashboard view', 'Shared recruiting timeline', 'Progress notifications'],
-    cta: 'Start Family', featured: false,
-  },
-]
+    // Split [data-words] into per-word spans
+    root.querySelectorAll<HTMLElement>('[data-words]').forEach((el) => {
+      if (el.dataset.wordsApplied) return
+      const html = el.innerHTML
+      const tokens = html.split(/(<[^>]+>|\s+)/g)
+      let out = ''
+      for (const t of tokens) {
+        if (!t) continue
+        if (/^<.+>$/.test(t) || /^\s+$/.test(t)) {
+          out += t
+        } else {
+          // Wrap each word in a span
+          out += t.split(/(\s+)/).map((w) =>
+            w.trim() ? `<span class="kr-word">${w}</span>` : w
+          ).join('')
+        }
+      }
+      el.innerHTML = out
+      el.dataset.wordsApplied = '1'
+    })
 
-const steps = [
-  { num: '01', title: 'Build your athlete profile', desc: 'Enter your position, GPA, club team, stats, grad year, and target division. Add your highlight video link.', tier: 'FREE' },
-  { num: '02', title: 'Get matched to schools', desc: 'AI matches you to reach, target, and safety schools based on your real stats — not generic ranking lists.', tier: 'FREE' },
-  { num: '03', title: 'Send coach emails that work', desc: 'AI writes personalized cold outreach for each coach. D1 emails are stat-heavy. D2/D3 emphasize academic fit.', tier: 'FREE · 3 EMAILS' },
-  { num: '04', title: 'Track, follow up, get offers', desc: 'Manage every contact and response in your outreach dashboard. Let AI draft your follow-ups and thank-you notes.', tier: 'PRO' },
-]
+    // Reveal on intersect
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-revealed')
+          io.unobserve(e.target)
+        }
+      }
+    }, { threshold: 0.12, rootMargin: '0px 0px -8% 0px' })
 
-export function Landing() {
+    root.querySelectorAll('[data-reveal], [data-stagger], [data-words]').forEach((el) => io.observe(el))
+
+    // Scroll progress rail
+    const rail = document.createElement('div')
+    rail.className = 'kr-progress-rail'
+    document.body.appendChild(rail)
+    let raf = 0
+    const onScroll = () => {
+      cancelAnimationFrame(raf)
+      raf = requestAnimationFrame(() => {
+        const max = document.documentElement.scrollHeight - window.innerHeight
+        const pct = max > 0 ? (window.scrollY / max) * 100 : 0
+        rail.style.width = `${Math.max(0, Math.min(100, pct))}%`
+      })
+    }
+    window.addEventListener('scroll', onScroll, { passive: true })
+    onScroll()
+
+    // Safety: ensure anything still hidden after 2s gets revealed
+    const safety = window.setTimeout(() => {
+      root.querySelectorAll('[data-reveal], [data-stagger], [data-words]').forEach((el) => {
+        if (!el.classList.contains('is-revealed')) el.classList.add('is-revealed')
+      })
+    }, 2000)
+
+    return () => {
+      io.disconnect()
+      window.removeEventListener('scroll', onScroll)
+      cancelAnimationFrame(raf)
+      window.clearTimeout(safety)
+      rail.remove()
+    }
+  }, [])
+}
+
+/* ============================================================
+   ICONS
+   ============================================================ */
+type IconName =
+  | 'target' | 'roster' | 'mail' | 'video' | 'track' | 'follow'
+  | 'camp' | 'timeline' | 'profile' | 'arrow' | 'check' | 'play'
+  | 'menu' | 'close'
+
+function Icon({ name, size = 20, stroke = 'currentColor', fill = 'none' }: {
+  name: IconName; size?: number; stroke?: string; fill?: string
+}) {
+  const props = {
+    width: size, height: size, viewBox: '0 0 24 24',
+    fill, stroke, strokeWidth: 1.6,
+    strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const,
+  }
+  switch (name) {
+    case 'target':   return <svg {...props}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill={stroke}/></svg>
+    case 'roster':   return <svg {...props}><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 14h3"/><path d="M8 17h6"/><circle cx="17" cy="15" r="2" fill={stroke} stroke="none"/></svg>
+    case 'mail':     return <svg {...props}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 7 9-7"/></svg>
+    case 'video':    return <svg {...props}><rect x="3" y="6" width="14" height="12" rx="2"/><path d="M17 10l4-2v8l-4-2z"/></svg>
+    case 'track':    return <svg {...props}><path d="M3 17l5-5 4 4 8-9"/><path d="M14 7h6v6"/></svg>
+    case 'follow':   return <svg {...props}><path d="M12 8v4l3 2"/><circle cx="12" cy="12" r="9"/></svg>
+    case 'camp':     return <svg {...props}><path d="M3 21l9-15 9 15z"/><path d="M3 21h18"/></svg>
+    case 'timeline': return <svg {...props}><path d="M4 12h16"/><circle cx="6" cy="12" r="2" fill={stroke} stroke="none"/><circle cx="12" cy="12" r="2"/><circle cx="18" cy="12" r="2"/></svg>
+    case 'profile':  return <svg {...props}><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/></svg>
+    case 'arrow':    return <svg {...props}><path d="M5 12h14"/><path d="M13 6l6 6-6 6"/></svg>
+    case 'check':    return <svg {...props}><path d="M5 12l4.5 4.5L19 7"/></svg>
+    case 'play':     return <svg {...props}><path d="M7 5l12 7-12 7z" fill={stroke} stroke="none"/></svg>
+    case 'menu':     return <svg {...props}><path d="M4 7h16M4 12h16M4 17h16"/></svg>
+    case 'close':    return <svg {...props}><path d="M6 6l12 12M18 6L6 18"/></svg>
+    default: return null
+  }
+}
+
+/* ============================================================
+   LOGO
+   ============================================================ */
+function KickrIQLogo({ height = 32 }: { height?: number }) {
   return (
-    <div className="min-h-screen bg-[#07090f]">
-      <Nav />
+    <span
+      className="kickriq-logo"
+      style={{ ['--logo-h' as string]: `${height}px` } as React.CSSProperties}
+      aria-label="KickrIQ"
+      role="img"
+    >
+      <span className="klogo-kickr">Kickr</span>
+      <span className="klogo-iq">
+        <span className="klogo-i">i</span>
+        <span className="klogo-q">Q</span>
+      </span>
+    </span>
+  )
+}
 
-      {/* Hero */}
-      <section className="relative flex items-center justify-center overflow-hidden px-8 md:px-16 pt-40 pb-24">
-        <div
-          className="absolute inset-0 bg-gold-grid opacity-60"
-          style={{ maskImage: 'radial-gradient(ellipse 80% 80% at 50% 50%, black 0%, transparent 100%)' }}
+/* ============================================================
+   NAVBAR
+   ============================================================ */
+function Navbar() {
+  const [scrolled, setScrolled] = useState(false)
+  const [open, setOpen] = useState(false)
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 30)
+    window.addEventListener('scroll', onScroll, { passive: true })
+    return () => window.removeEventListener('scroll', onScroll)
+  }, [])
+  return (
+    <header className={`knav ${scrolled ? 'knav-scrolled' : ''}`}>
+      <div className="wrap knav-inner">
+        <Link to="/" className="brand" aria-label="KickrIQ">
+          <KickrIQLogo height={32} />
+        </Link>
+        <nav className="knav-links hide-mobile">
+          <a href="#features">Features</a>
+          <a href="#roster">Roster Intelligence</a>
+          <a href="#how">How it works</a>
+          <a href="#pricing">Pricing</a>
+          <a href="#parents">For Parents</a>
+        </nav>
+        <div className="knav-cta">
+          <Link to="/login" className="nav-signin hide-mobile">Sign in</Link>
+          <Link to="/signup" className="kbtn kbtn-primary knav-btn">
+            Start Free
+            <Icon name="arrow" size={16} />
+          </Link>
+          <button className="knav-menu show-mobile" onClick={() => setOpen(!open)} aria-label="menu">
+            <Icon name={open ? 'close' : 'menu'} size={22} />
+          </button>
+        </div>
+      </div>
+      {open && (
+        <div className="knav-drawer show-mobile">
+          <a href="#features" onClick={() => setOpen(false)}>Features</a>
+          <a href="#roster" onClick={() => setOpen(false)}>Roster Intelligence</a>
+          <a href="#how" onClick={() => setOpen(false)}>How it works</a>
+          <a href="#pricing" onClick={() => setOpen(false)}>Pricing</a>
+          <a href="#parents" onClick={() => setOpen(false)}>For Parents</a>
+          <Link to="/login" onClick={() => setOpen(false)}>Sign in</Link>
+        </div>
+      )}
+    </header>
+  )
+}
+
+/* ============================================================
+   HERO
+   ============================================================ */
+function Hero() {
+  const videoRef = useRef<HTMLVideoElement | null>(null)
+  useEffect(() => {
+    if (videoRef.current) videoRef.current.playbackRate = 0.75
+  }, [])
+  return (
+    <section className="hero">
+      <div className="hero-video-wrap">
+        <video
+          ref={videoRef}
+          className="hero-video"
+          autoPlay loop muted playsInline
+          src="/kickriq/hero-stadium.mp4"
         />
-        <div className="absolute w-[600px] h-[600px] rounded-full bg-[radial-gradient(circle,rgba(234,179,8,0.08)_0%,transparent_65%)] top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 pointer-events-none" />
+        <div className="hero-veil" />
+        <div className="hero-radial" />
+        <div className="hero-vignette" />
+      </div>
 
-        <div className="relative text-center max-w-4xl mx-auto">
-          <div className="flex items-center justify-center gap-3 mb-9">
-            <div className="w-8 h-px bg-[#eab308]" />
-            <span className="text-xs font-semibold tracking-[3px] uppercase text-[#eab308]">AI-Powered College Soccer Recruitment</span>
-            <div className="w-8 h-px bg-[#eab308]" />
+      <div className="wrap hero-inner">
+        <div className="hero-eyebrow">
+          <span className="hero-kicker">
+            <span className="hk-line" />
+            <span className="hk-text serif">The smartest way to get recruited</span>
+            <span className="hk-line" />
+          </span>
+        </div>
+
+        <h1 className="h-display hero-headline">
+          The <span className="accent">smartest</span> way<br />
+          to get recruited.
+        </h1>
+
+        <p className="lede hero-sub hero-sub-editorial">
+          Your <span className="serif accent">AI recruiting counselor</span>. Match with the right college programs, email the right coaches, and track every response&mdash;{' '}
+          <span className="hero-sub-divs">D1 · D2 · D3 · NAIA · JUCO</span>.
+        </p>
+
+        <div className="hero-ctas">
+          <Link to="/signup" className="kbtn kbtn-primary kbtn-lg">
+            Start for Free
+            <Icon name="arrow" size={16} />
+          </Link>
+          <a href="#how" className="kbtn kbtn-ghost kbtn-lg">
+            <Icon name="play" size={14} stroke="#f5f1e8" />
+            See how it works
+          </a>
+        </div>
+
+        <div className="hero-trust">
+          <div className="trust-item">
+            <span className="trust-num">2,500<span className="trust-sm">+</span></span>
+            <span className="trust-lbl">College programs</span>
           </div>
-
-          <div className="flex justify-center mb-6">
-            <BeekoLogo size={80} showText={false} />
+          <span className="trust-sep" />
+          <div className="trust-item">
+            <span className="trust-num">98.8<span className="trust-sm">%</span></span>
+            <span className="trust-lbl">D1–NAIA coverage</span>
           </div>
-          <h1 className="font-serif text-6xl md:text-7xl font-black leading-[1.0] tracking-[-3px] text-[#f1f5f9] mb-7">
-            The <em className="text-[#eab308] not-italic">smartest</em> way to<br />get recruited
-          </h1>
-
-          <p className="text-lg text-[#64748b] leading-[1.8] max-w-xl mx-auto mb-14">
-            Meet <strong className="text-[#f1f5f9]">Beeko</strong> — your AI recruiting counselor with 15+ years of D1–NAIA soccer knowledge. Build your profile, match your schools, and land in coaches' inboxes.
-          </p>
-
-          <div className="flex gap-4 justify-center items-center flex-wrap">
-            <Link to="/signup"><Button size="lg">Start for Free</Button></Link>
-            <Button variant="ghost" size="lg">See how it works →</Button>
-          </div>
-
-          <div className="flex gap-12 justify-center mt-16 pt-12 border-t border-[rgba(255,255,255,0.07)] flex-wrap">
-            {[
-              { num: '1,200+', label: 'Athletes recruited' },
-              { num: '3×', label: 'More coach responses' },
-              { num: 'D1–NAIA', label: 'All divisions covered' },
-            ].map(({ num, label }) => (
-              <div key={label} className="text-center">
-                <div className="font-serif text-4xl font-black text-[#f1f5f9] tracking-[-1px]">
-                  {num.includes('+') ? <>{num.slice(0, -1)}<span className="text-[#eab308]">+</span></>
-                    : num.includes('×') ? <>{num.slice(0, -1)}<span className="text-[#eab308]">×</span></>
-                    : <>{num.split('–')[0]}<span className="text-[#eab308]">–</span>{num.split('–')[1]}</>}
-                </div>
-                <div className="text-sm text-[#64748b] mt-1">{label}</div>
-              </div>
-            ))}
+          <span className="trust-sep" />
+          <div className="trust-item">
+            <span className="trust-num" style={{ color: 'var(--gold)' }}>Free</span>
+            <span className="trust-lbl">to start · no card</span>
           </div>
         </div>
-      </section>
+      </div>
+    </section>
+  )
+}
 
-      {/* Feature strip */}
-      <div className="bg-[#0f1729] border-y border-[rgba(255,255,255,0.07)] overflow-x-auto">
-        <div className="flex items-center px-8 md:px-16 py-4 min-w-max">
-          {features.map((f, i) => (
-            <div
-              key={f.num}
-              className={`flex items-center gap-3 px-8 whitespace-nowrap ${i < features.length - 1 ? 'border-r border-[rgba(255,255,255,0.07)]' : ''}`}
-            >
-              <span className="text-base">{f.icon}</span>
-              <span className="text-sm font-medium text-[#f1f5f9]">{f.title}</span>
+/* ============================================================
+   THREE-UP
+   ============================================================ */
+function MatchVisual() {
+  const rows = [
+    { name: 'Stanford', code: 'S', tier: 'D1', score: 96, top: true },
+    { name: 'Wake Forest', code: 'W', tier: 'D1', score: 91, top: false },
+    { name: 'Amherst', code: 'A', tier: 'D3', score: 88, top: false },
+  ]
+  return (
+    <div className="vis-match">
+      {rows.map((s, i) => (
+        <div key={i} className={`match-row ${s.top ? 'top' : ''}`}>
+          <div className="match-logo">{s.code}</div>
+          <div className="match-info">
+            <div className="match-name">{s.name}</div>
+            <div className="match-meta kr-mono">{s.tier} · FIT {s.score}</div>
+          </div>
+          <div className="match-score">
+            <span className="serif">{s.score}</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function RosterVisual() {
+  const rows = [
+    { school: 'University of Portland', tier: 'D1', open: 1, year: "'27" },
+    { school: 'Grand Valley State', tier: 'D2', open: 2, year: "'26" },
+    { school: 'Keiser University', tier: 'NAIA', open: 3, year: "'27" },
+  ]
+  return (
+    <div className="vis-roster">
+      <div className="vis-roster-header kr-mono">
+        <span><span className="live-dot" />LIVE OPENINGS · GK</span>
+        <span>UPDATED 2h</span>
+      </div>
+      {rows.map((r, i) => (
+        <div key={i} className="roster-row">
+          <div>
+            <div className="roster-school">{r.school}</div>
+            <div className="roster-meta kr-mono">{r.tier} · CLASS OF {r.year}</div>
+          </div>
+          <div className="roster-open">
+            <span className="open-num serif">{r.open}</span>
+            <span className="open-lbl kr-mono">OPEN</span>
+          </div>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function MailVisual() {
+  return (
+    <div className="vis-mail">
+      <div className="mail-bar kr-mono">
+        <span className="mail-from">FROM: jordan@gmail.com</span>
+        <span className="mail-status"><span className="live-dot" />SENT</span>
+      </div>
+      <div className="mail-preview">
+        <div className="mail-line"><span className="mail-key kr-mono">TO</span><span>Coach Mendez · Stanford W. Soccer</span></div>
+        <div className="mail-line"><span className="mail-key kr-mono">SUBJ</span><span>2027 GK · Highlight Tape & Visit</span></div>
+        <div className="mail-body">
+          <p>Coach Mendez,</p>
+          <p>I'm a 2027 goalkeeper from Portland, OR. After watching Stanford's Pac-12 run last fall, the way your back line plays out from goal is exactly the system I want to grow in…</p>
+        </div>
+      </div>
+      <div className="mail-track">
+        <span className="dot dot-on" /> Drafted
+        <span className="line" />
+        <span className="dot dot-on" /> Sent
+        <span className="line" />
+        <span className="dot dot-on" /> Opened
+        <span className="line" />
+        <span className="dot dot-pulse" /> Reply
+      </div>
+    </div>
+  )
+}
+
+function ThreeUp() {
+  const items: Array<{
+    icon: IconName; tag: string; title: string; body: string;
+    visual: 'match' | 'roster' | 'mail'; accent: 'gold' | 'crimson' | 'pitch';
+    featured?: boolean
+  }> = [
+    {
+      icon: 'target', tag: 'MATCHING', title: 'Smart School Matching',
+      body: 'AI ranks every program by athletic fit, academic fit, and cost, so your shortlist is built on signal, not vibes.',
+      visual: 'match', accent: 'gold',
+    },
+    {
+      icon: 'roster', tag: 'OUR DIFFERENTIATOR', title: 'Roster Intelligence',
+      body: 'See which programs have open spots at your position right now. We track every coach + roster across 2,500+ schools.',
+      visual: 'roster', accent: 'crimson', featured: true,
+    },
+    {
+      icon: 'mail', tag: 'OUTREACH', title: 'Coach Outreach',
+      body: 'AI drafts personalized emails sent from your own Gmail, with follow-up reminders and response tracking that actually works.',
+      visual: 'mail', accent: 'pitch',
+    },
+  ]
+  return (
+    <section id="features" className="section threeup-section">
+      <div className="wrap">
+        <div className="section-head" data-reveal>
+          <span className="section-marker">What KickrIQ does</span>
+          <h2 className="h-section" data-words>
+            A recruiting counselor in your pocket. <span className="accent">Always on</span>, never tired.
+          </h2>
+        </div>
+
+        <div className="threeup-grid" data-stagger>
+          {items.map((it, i) => (
+            <article key={i} className={`threeup-card ${it.featured ? 'featured' : ''}`}>
+              <div className="threeup-top">
+                <div className={`threeup-icon icon-${it.accent}`}>
+                  <Icon name={it.icon} size={20} />
+                </div>
+                <span className={`chip ${it.accent === 'crimson' ? 'chip-crimson' : it.accent === 'pitch' ? 'chip-pitch' : ''}`}>
+                  {it.tag}
+                </span>
+              </div>
+
+              <h3 className="h-card threeup-title">{it.title}</h3>
+              <p className="threeup-body">{it.body}</p>
+
+              <div className="threeup-visual">
+                {it.visual === 'match' && <MatchVisual />}
+                {it.visual === 'roster' && <RosterVisual />}
+                {it.visual === 'mail' && <MailVisual />}
+              </div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ============================================================
+   ROSTER SPOTLIGHT
+   ============================================================ */
+type Position = 'GK' | 'CB' | 'FB' | 'CM' | 'WG' | 'ST'
+
+const ROSTER_DATA: Record<Position, Array<{
+  school: string; tier: string; conf: string; open: number; year: string; reason: string
+}>> = {
+  GK: [
+    { school: 'University of Portland', tier: 'D1', conf: 'WCC', open: 1, year: "'27", reason: 'Senior starter graduating' },
+    { school: 'Wake Forest', tier: 'D1', conf: 'ACC', open: 1, year: "'27", reason: 'Recruiting class incomplete' },
+    { school: 'Grand Valley State', tier: 'D2', conf: 'GLIAC', open: 2, year: "'26", reason: 'Two transfers leaving' },
+    { school: 'Amherst College', tier: 'D3', conf: 'NESCAC', open: 1, year: "'27", reason: 'Senior + injury exit' },
+    { school: 'Keiser University', tier: 'NAIA', conf: 'Sun', open: 3, year: "'27", reason: 'Program expanding roster' },
+  ],
+  CB: [
+    { school: 'UNC Chapel Hill', tier: 'D1', conf: 'ACC', open: 2, year: "'27", reason: 'Two seniors graduating' },
+    { school: 'Notre Dame', tier: 'D1', conf: 'ACC', open: 1, year: "'27", reason: 'Transfer portal exit' },
+    { school: 'Messiah University', tier: 'D3', conf: 'MAC', open: 2, year: "'26", reason: 'Class size below cap' },
+    { school: 'Lewis University', tier: 'D2', conf: 'GLVC', open: 3, year: "'27", reason: 'Roster overhaul' },
+    { school: 'Iowa Western CC', tier: 'JUCO', conf: 'NJCAA', open: 4, year: "'26", reason: 'Annual turnover' },
+  ],
+  FB: [
+    { school: 'Stanford', tier: 'D1', conf: 'Pac-12', open: 1, year: "'27", reason: 'Outside back vacancy' },
+    { school: 'Charleston', tier: 'D1', conf: 'CAA', open: 2, year: "'27", reason: 'Two graduating' },
+    { school: 'Williams', tier: 'D3', conf: 'NESCAC', open: 1, year: "'26", reason: 'Mid-class need' },
+    { school: 'Cal Baptist', tier: 'D1', conf: 'WAC', open: 2, year: "'27", reason: 'Class building' },
+  ],
+  CM: [
+    { school: 'Indiana', tier: 'D1', conf: 'Big Ten', open: 2, year: "'27", reason: 'Three seniors graduating' },
+    { school: 'Tufts', tier: 'D3', conf: 'NESCAC', open: 1, year: "'26", reason: 'Transfer to D1' },
+    { school: 'Lynn University', tier: 'D2', conf: 'SSC', open: 3, year: "'27", reason: 'Roster expansion' },
+  ],
+  WG: [
+    { school: 'Clemson', tier: 'D1', conf: 'ACC', open: 1, year: "'27", reason: 'Pac-12 transfer out' },
+    { school: 'Akron', tier: 'D1', conf: 'MAC', open: 2, year: "'27", reason: 'MLS SuperDraft picks' },
+    { school: 'Trinity (TX)', tier: 'D3', conf: 'SAA', open: 2, year: "'26", reason: 'Speed need on flanks' },
+  ],
+  ST: [
+    { school: 'Maryland', tier: 'D1', conf: 'Big Ten', open: 1, year: "'27", reason: 'Top scorer graduating' },
+    { school: 'SMU', tier: 'D1', conf: 'ACC', open: 1, year: "'27", reason: 'Pro contract exit' },
+    { school: 'Bowdoin', tier: 'D3', conf: 'NESCAC', open: 1, year: "'26", reason: 'Recruiting target' },
+    { school: 'Eastern Florida State', tier: 'JUCO', conf: 'NJCAA', open: 5, year: "'26", reason: 'Full roster reset' },
+  ],
+}
+
+const POSITIONS: Position[] = ['GK', 'CB', 'FB', 'CM', 'WG', 'ST']
+
+function PhoneMock({ children }: { children: React.ReactNode }) {
+  return (
+    <div className="phone-frame">
+      <div className="phone-glow" />
+      <div className="phone-bezel">
+        <div className="phone-side phone-side-l" />
+        <div className="phone-side phone-side-r" />
+        {children}
+      </div>
+    </div>
+  )
+}
+
+function RosterSpotlight() {
+  const [position, setPosition] = useState<Position>('GK')
+  const rows = ROSTER_DATA[position]
+  const totalOpen = rows.reduce((s, r) => s + r.open, 0)
+
+  return (
+    <section id="roster" className="section roster-spotlight">
+      <div className="halo" style={{ background: 'rgba(227,90,90,0.18)', width: 500, height: 500, top: -120, left: -120 }} />
+      <div className="halo" style={{ background: 'rgba(240,182,90,0.16)', width: 600, height: 600, bottom: -200, right: -150 }} />
+
+      <div className="wrap roster-inner">
+        <div className="roster-copy" data-reveal="left">
+          <span className="section-marker">Roster Intelligence</span>
+          <h2 className="h-section" data-words>
+            Stop guessing.<br />
+            Start <span className="accent">targeting</span>.
+          </h2>
+          <p className="lede">
+            We track coach and roster data across 2,500+ programs and surface real-time
+            openings by position, class year, and division. You stop emailing programs that
+            don't need you, and start showing up where the door is actually open.
+          </p>
+
+          <ul className="roster-bullets">
+            <li><Icon name="check" size={16} stroke="var(--gold)" /> Updated weekly across D1, D2, D3, NAIA, JUCO</li>
+            <li><Icon name="check" size={16} stroke="var(--gold)" /> Inferred openings from grad classes &amp; transfer portal</li>
+            <li><Icon name="check" size={16} stroke="var(--gold)" /> Filter by position, class year, region, fit</li>
+          </ul>
+
+          <div className="roster-stats">
+            <div className="stat">
+              <div className="stat-num">2,500<span className="accent">+</span></div>
+              <div className="stat-label">Programs tracked</div>
+            </div>
+            <div className="stat">
+              <div className="stat-num">98.8<span className="accent">%</span></div>
+              <div className="stat-label">D1–NAIA coverage</div>
+            </div>
+          </div>
+        </div>
+
+        <div className="roster-device" data-reveal="right">
+          <PhoneMock>
+            <div className="phone-screen">
+              <div className="phone-statbar kr-mono">
+                <span>9:41</span>
+                <span className="phone-notch" />
+                <span>●●●●  ▮</span>
+              </div>
+              <div className="phone-app-bar">
+                <div>
+                  <div className="phone-eyebrow kr-mono"><span className="live-dot" />LIVE</div>
+                  <div className="phone-title serif">Roster Openings</div>
+                </div>
+                <div className="phone-counter">
+                  <span className="phone-counter-num serif">{totalOpen}</span>
+                  <span className="phone-counter-lbl kr-mono">OPEN</span>
+                </div>
+              </div>
+
+              <div className="phone-tabs">
+                {POSITIONS.map(p => (
+                  <button
+                    key={p}
+                    className={`phone-tab ${position === p ? 'active' : ''}`}
+                    onClick={() => setPosition(p)}
+                  >{p}</button>
+                ))}
+              </div>
+
+              <div className="phone-list">
+                {rows.map((r, i) => (
+                  <div
+                    key={`${position}-${i}`}
+                    className="phone-row"
+                    style={{ animationDelay: `${i * 60}ms` }}
+                  >
+                    <div className="phone-row-l">
+                      <div className="phone-school">{r.school}</div>
+                      <div className="phone-school-meta kr-mono">{r.tier} · {r.conf} · {r.year}</div>
+                      <div className="phone-reason">{r.reason}</div>
+                    </div>
+                    <div className="phone-row-r">
+                      <div className="phone-open serif">{r.open}</div>
+                      <div className="phone-open-lbl kr-mono">OPEN</div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button className="phone-cta">
+                Email these coaches
+                <Icon name="arrow" size={14} stroke="#1a1304" />
+              </button>
+            </div>
+          </PhoneMock>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ============================================================
+   CINEMATIC BAND
+   ============================================================ */
+function CinematicBand() {
+  return (
+    <section className="cinematic-band">
+      <div className="cb-video-wrap">
+        <video className="cb-video" autoPlay loop muted playsInline src="/kickriq/video-roster.mp4" />
+        <div className="cb-veil" />
+        <div className="cb-grain" />
+      </div>
+      <div className="wrap cb-inner" data-reveal>
+        <div className="cb-marker kr-mono">
+          <span className="cb-dot" />
+          <span>Made by players · For players</span>
+        </div>
+        <h3 className="cb-quote serif" data-words>
+          "We sent the cold emails. We went to the showcases.<br />
+          We built <span className="accent">the tool we wish we'd had</span>."
+        </h3>
+        <div className="cb-attrib kr-mono">— Nicolas &amp; Alexander, Co-founders</div>
+      </div>
+    </section>
+  )
+}
+
+/* ============================================================
+   HOW IT WORKS
+   ============================================================ */
+function HowItWorks() {
+  const steps = [
+    { n: '01', title: 'Build your profile', body: 'Position, class year, club, GPA, highlight tape. Takes 6 minutes — most of it pulled in automatically.', pill: 'PROFILE' },
+    { n: '02', title: 'Match with schools', body: 'AI scores every program on athletic, academic, and cost fit. You get a ranked shortlist, not a 600-school dump.', pill: 'MATCH' },
+    { n: '03', title: 'Email coaches', body: "Personalized drafts sent from your own Gmail. Each one references the coach's system, season, and your fit.", pill: 'OUTREACH' },
+    { n: '04', title: 'Track responses', body: 'Opens, replies, follow-ups, visits. Every coach conversation in one timeline you can actually act on.', pill: 'TRACK' },
+  ]
+  return (
+    <section id="how" className="section how-section">
+      <div className="wrap">
+        <div className="section-head" data-reveal>
+          <span className="section-marker">How it works</span>
+          <h2 className="h-section" data-words>
+            Four steps from <span className="accent">unknown</span> to recruited.
+          </h2>
+        </div>
+
+        <div className="how-grid" data-stagger>
+          {steps.map((s, i) => (
+            <div className="how-card" key={i}>
+              <div className="how-top">
+                <span className="num">{s.n}</span>
+                <span className="chip chip-ghost">{s.pill}</span>
+              </div>
+              <h3 className="h-card how-title">{s.title}</h3>
+              <p className="how-body">{s.body}</p>
+              <div className="how-bar">
+                <span className="how-bar-fill" style={{ width: `${(i + 1) * 25}%` }} />
+              </div>
             </div>
           ))}
         </div>
       </div>
+    </section>
+  )
+}
 
-      {/* How it works */}
-      <section className="py-24 px-8 md:px-16" id="how-it-works">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-8 h-px bg-[#eab308]" />
-            <span className="text-xs font-semibold tracking-[3px] uppercase text-[#eab308]">Process</span>
-          </div>
-          <h2 className="font-serif text-5xl font-black tracking-[-1.5px] text-[#f1f5f9] mb-3 leading-[1.1]">How it works</h2>
-          <p className="text-base text-[#64748b] max-w-md leading-[1.75] mb-14">
-            From blank profile to coach response in four steps.
-          </p>
-          <div className="flex flex-col divide-y divide-[rgba(255,255,255,0.07)]">
-            {steps.map((step) => (
-              <div key={step.num} className="grid grid-cols-[80px_1fr] gap-8 py-9 items-start">
-                <div className="font-serif text-5xl font-black text-[#eab308] opacity-40 leading-none">{step.num}</div>
-                <div>
-                  <div className="text-lg font-bold text-[#f1f5f9] mb-2">{step.title}</div>
-                  <p className="text-sm text-[#64748b] leading-[1.7]">{step.desc}</p>
-                  <Badge variant="gold" className="mt-3">{step.tier}</Badge>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Features grid */}
-      <section className="py-24 bg-[#0c1118] px-8 md:px-16" id="features">
-        <div className="max-w-6xl mx-auto">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-8 h-px bg-[#eab308]" />
-            <span className="text-xs font-semibold tracking-[3px] uppercase text-[#eab308]">Features</span>
-          </div>
-          <h2 className="font-serif text-5xl font-black tracking-[-1.5px] text-[#f1f5f9] mb-4 leading-[1.1]">Everything in one place</h2>
-          <p className="text-base text-[#64748b] max-w-md leading-[1.75] mb-14">
-            Six tools built on 15+ years of soccer recruiting knowledge.
-          </p>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-px bg-[rgba(255,255,255,0.05)] border border-[rgba(255,255,255,0.05)] rounded-2xl overflow-hidden">
-            {features.map((f) => (
-              <div key={f.num} className="bg-[#0c1118] p-8 hover:bg-[rgba(234,179,8,0.04)] transition-colors">
-                <div className="font-serif text-xs font-bold tracking-widest text-[#eab308] opacity-60 mb-5">{f.num}</div>
-                <div className="text-base font-bold text-[#f1f5f9] mb-2">{f.title}</div>
-                <p className="text-sm text-[#64748b] leading-[1.7]">{f.desc}</p>
-                <Badge variant="gold" className="mt-4">{f.tier}</Badge>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Pricing */}
-      <section className="py-24 px-8 md:px-16" id="pricing">
-        <div className="max-w-5xl mx-auto">
-          <div className="flex items-center gap-3 mb-5">
-            <div className="w-8 h-px bg-[#eab308]" />
-            <span className="text-xs font-semibold tracking-[3px] uppercase text-[#eab308]">Pricing</span>
-          </div>
-          <h2 className="font-serif text-5xl font-black tracking-[-1.5px] text-[#f1f5f9] mb-3 leading-[1.1]">Straightforward pricing</h2>
-          <p className="text-base text-[#64748b] max-w-sm leading-[1.75] mb-14">Start free. No credit card required.</p>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
-            {plans.map((plan) => (
-              <div
-                key={plan.tier}
-                className={`relative rounded-2xl p-9 border transition-colors ${
-                  plan.featured
-                    ? 'border-[#eab308] bg-[linear-gradient(145deg,rgba(234,179,8,0.06),rgba(7,9,15,0.9))]'
-                    : 'border-[rgba(234,179,8,0.15)] bg-[rgba(255,255,255,0.03)] hover:border-[rgba(234,179,8,0.3)]'
-                }`}
-              >
-                {plan.featured && (
-                  <div className="absolute -top-3 left-1/2 -translate-x-1/2 bg-[#eab308] text-black text-[10px] font-black px-4 py-1 rounded">
-                    MOST POPULAR
-                  </div>
-                )}
-                <div className={`text-xs font-bold tracking-[2px] uppercase mb-4 ${plan.featured ? 'text-[#eab308]' : 'text-[#64748b]'}`}>
-                  {plan.tier}
-                </div>
-                <div className="font-serif text-5xl font-black text-[#f1f5f9] tracking-[-2px] leading-none mb-1.5">
-                  <sup className="text-2xl font-bold font-sans align-super">$</sup>{plan.price}
-                </div>
-                <div className="text-xs text-[#64748b] mb-7">{plan.period}</div>
-                <ul className="flex flex-col gap-3 mb-8 list-none p-0 m-0">
-                  {plan.items.map((item) => (
-                    <li key={item} className="text-sm text-[#f1f5f9] flex items-center gap-2.5">
-                      <span className="text-[#eab308] font-bold">—</span> {item}
-                    </li>
-                  ))}
-                </ul>
-                <Link to="/signup">
-                  <Button variant={plan.featured ? 'gold' : 'outline'} className="w-full">{plan.cta}</Button>
-                </Link>
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* CTA */}
-      <section className="relative py-32 px-8 md:px-16 text-center bg-[#0f1729] border-t border-[rgba(255,255,255,0.07)] overflow-hidden">
-        <div
-          className="absolute inset-0 bg-gold-grid opacity-40"
-          style={{ maskImage: 'radial-gradient(ellipse 70% 70% at 50% 100%, black 0%, transparent 100%)' }}
-        />
-        <div className="relative">
-          <h2 className="font-serif text-5xl md:text-6xl font-black tracking-[-2px] text-[#f1f5f9] leading-[1.05] mb-5">
-            Your offer is out there.<br />Go <em className="text-[#eab308] not-italic">find it.</em>
+/* ============================================================
+   FEATURE GRID
+   ============================================================ */
+function FeatureGrid() {
+  const features: Array<{ icon: IconName; title: string; body: string; tag: string }> = [
+    { icon: 'video',    title: 'Highlight Video Rater', body: 'AI scores your tape on technique, decision-making, and athleticism — and tells you the clips to cut.', tag: 'AI' },
+    { icon: 'track',    title: 'Outreach Tracker',      body: 'Every email, every open, every reply. One timeline per coach, automatic.', tag: 'CRM' },
+    { icon: 'follow',   title: 'Follow-up Assistant',   body: 'AI nudges you exactly when to follow up — not too eager, not forgotten.', tag: 'AI' },
+    { icon: 'camp',     title: 'ID Camps',              body: "Find ID camps where the coaches you're emailing will actually be on the touchline.", tag: 'EVENTS' },
+    { icon: 'timeline', title: 'Recruitment Timeline',  body: 'A monthly playbook tuned to your class year and division target.', tag: 'PLAN' },
+    { icon: 'profile',  title: 'Public Player Profile', body: 'A shareable link with stats, video, transcripts, and a coach quote — built for the inbox.', tag: 'SHARE' },
+  ]
+  return (
+    <section className="section feature-grid-section">
+      <div className="wrap">
+        <div className="section-head" data-reveal>
+          <span className="section-marker">Built into the platform</span>
+          <h2 className="h-section" data-words>
+            Every tool a recruit needs — <span className="accent">none</span> of the busywork.
           </h2>
-          <p className="text-lg text-[#64748b] mb-12">
-            D1 coaches make most offers sophomore and junior year. The clock is running.
-          </p>
-          <Link to="/signup"><Button size="lg">Create Your Free Profile</Button></Link>
         </div>
-      </section>
 
-      {/* Footer */}
-      <footer className="px-8 md:px-16 py-9 border-t border-[rgba(255,255,255,0.07)] flex items-center justify-between flex-wrap gap-4">
-        <BeekoLogo size={28} textClassName="font-serif text-base font-bold text-[#64748b]" />
-        <div className="text-xs text-[#64748b]">© 2025 Beeko AI. All rights reserved.</div>
-      </footer>
+        <div className="feature-grid" data-stagger>
+          {features.map((f, i) => (
+            <article className="feature-card" key={i}>
+              <div className="feature-icon"><Icon name={f.icon} size={22} stroke="var(--gold)" /></div>
+              <span className="chip chip-ghost feature-tag">{f.tag}</span>
+              <h3 className="h-card feature-title">{f.title}</h3>
+              <p className="feature-body">{f.body}</p>
+              <div className="feature-arrow"><Icon name="arrow" size={16} /></div>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ============================================================
+   DIVISIONS
+   ============================================================ */
+function Divisions() {
+  const divs = [
+    { code: 'D1',   programs: 207, scholarships: 'Full',     color: 'gold',    desc: 'Top of the pyramid. Athletic scholarships, big stages.' },
+    { code: 'D2',   programs: 215, scholarships: 'Partial',  color: 'crimson', desc: 'Hidden value. Strong soccer, real scholarship money.' },
+    { code: 'D3',   programs: 415, scholarships: 'Academic', color: 'pitch',   desc: 'Best academics in college soccer. Aid is academic, not athletic.' },
+    { code: 'NAIA', programs: 192, scholarships: 'Athletic', color: 'gold',    desc: 'Smaller schools, real funding, faster recruiting cycles.' },
+    { code: 'JUCO', programs: 175, scholarships: 'Athletic', color: 'crimson', desc: 'Two-year springboard. Game time fast, transfer pipelines proven.' },
+  ]
+  return (
+    <section className="section divisions-section">
+      <div className="wrap">
+        <div className="div-grid">
+          <div className="div-copy" data-reveal="left">
+            <span className="section-marker">Built for every division</span>
+            <h2 className="h-section" data-words>
+              98.8% coverage.<br />
+              Every <span className="accent">level</span> of the game.
+            </h2>
+            <p className="lede">
+              KickrIQ doesn't push you toward D1 because the website does. We rank by fit —
+              and most great college soccer careers happen below the D1 line.
+            </p>
+            <div className="div-stat-big">
+              <span className="serif div-stat-num">98.8%</span>
+              <span className="div-stat-lbl">D1–NAIA program coverage. JUCO and emerging programs added monthly.</span>
+            </div>
+          </div>
+
+          <div className="div-cards" data-stagger>
+            {divs.map((d, i) => (
+              <div className={`div-card div-${d.color}`} key={i}>
+                <div className="div-code serif">{d.code}</div>
+                <div className="div-info">
+                  <div className="div-meta kr-mono">
+                    <span>{d.programs} programs</span>
+                    <span className="div-dot">·</span>
+                    <span>{d.scholarships}</span>
+                  </div>
+                  <div className="div-desc">{d.desc}</div>
+                </div>
+                <div className="div-bar"><span style={{ width: `${(d.programs / 415) * 100}%` }} /></div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ============================================================
+   PARENTS
+   ============================================================ */
+function Parents() {
+  return (
+    <section id="parents" className="section parents-section">
+      <div className="wrap">
+        <div className="parents-card">
+          <div className="parents-pattern" />
+          <div className="parents-copy" data-reveal="left">
+            <span className="section-marker">For parents</span>
+            <h2 className="h-section parents-h" data-words>
+              Parents stay in <span className="accent">the loop</span>.
+            </h2>
+            <p className="lede">
+              The Family tier gives parents a quiet dashboard — every email sent, every coach
+              response, every visit booked. No nagging. No surprises. Just clarity from the
+              kitchen table.
+            </p>
+            <div className="parents-ctas">
+              <Link to="/signup" className="kbtn kbtn-primary">
+                See the Family tier
+                <Icon name="arrow" size={16} />
+              </Link>
+              <a href="#pricing" className="kbtn kbtn-link">/for-parents →</a>
+            </div>
+          </div>
+
+          <div className="parents-visual" data-reveal="right">
+            <div className="parents-mock">
+              <div className="parents-mock-head">
+                <div>
+                  <div className="parents-mock-eyebrow kr-mono">FAMILY DASHBOARD · MARCH</div>
+                  <div className="parents-mock-title serif">Jordan's recruiting · this week</div>
+                </div>
+                <span className="chip">QUIET MODE</span>
+              </div>
+              <div className="parents-rows">
+                <div className="parents-row">
+                  <span className="parents-dot dot-on" />
+                  <div>
+                    <div className="parents-row-t">Coach Mendez · Stanford</div>
+                    <div className="parents-row-s kr-mono">REPLIED · TUE 4:12pm</div>
+                  </div>
+                  <span className="chip chip-pitch">REPLY</span>
+                </div>
+                <div className="parents-row">
+                  <span className="parents-dot dot-on" />
+                  <div>
+                    <div className="parents-row-t">Coach Patel · UNC Chapel Hill</div>
+                    <div className="parents-row-s kr-mono">OPENED 3× · WED 9:02am</div>
+                  </div>
+                  <span className="chip">OPENED</span>
+                </div>
+                <div className="parents-row">
+                  <span className="parents-dot dot-on" />
+                  <div>
+                    <div className="parents-row-t">ID Camp · Wake Forest</div>
+                    <div className="parents-row-s kr-mono">BOOKED · APR 12</div>
+                  </div>
+                  <span className="chip chip-crimson">CAMP</span>
+                </div>
+              </div>
+              <div className="parents-summary kr-mono">
+                7 emails sent · 4 opened · 2 replies · 1 visit booked
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ============================================================
+   PRICING
+   ============================================================ */
+function Pricing() {
+  const tiers = [
+    {
+      name: 'Free', price: '$0', period: 'forever',
+      desc: 'Try the engine. Send a few emails. See if it clicks.',
+      features: ['3 coach emails', '5 school matches', 'Public player profile', 'Recruitment timeline'],
+      cta: 'Start free', featured: false,
+    },
+    {
+      name: 'Pro', price: '$19', period: 'per month',
+      desc: 'For athletes serious about getting recruited this season.',
+      features: ['Unlimited coach emails', 'Unlimited school matches', 'Outreach tracker + follow-ups', 'AI Highlight Video Rater', 'Roster Intelligence', 'Priority support'],
+      cta: 'Get Pro', featured: true,
+    },
+    {
+      name: 'Family', price: '$29', period: 'per month',
+      desc: 'Everything in Pro plus a clean parent dashboard.',
+      features: ['Everything in Pro', 'Parent dashboard', 'Weekly family digest', 'Multi-athlete (up to 3)', 'Recruiting concierge calls'],
+      cta: 'Get Family', featured: false,
+    },
+  ]
+
+  return (
+    <section id="pricing" className="section pricing-section">
+      <div className="wrap">
+        <div className="section-head section-head-center" data-reveal>
+          <span className="section-marker">Pricing</span>
+          <h2 className="h-section" data-words>
+            Free to start. <span className="accent">Cheaper</span> than one ID camp.
+          </h2>
+          <p className="lede pricing-sub pricing-sub-quote">
+            One bad recruiting year can cost five figures in missed scholarships.{' '}
+            <span className="serif accent">Pro is nineteen dollars.</span>
+          </p>
+        </div>
+
+        <div className="pricing-grid" data-stagger>
+          {tiers.map((t, i) => (
+            <article key={i} className={`pricing-card pricing-${t.name.toLowerCase()} ${t.featured ? 'featured' : ''}`}>
+              {t.featured && <div className="pricing-ribbon kr-mono">MOST POPULAR</div>}
+              <div className="pricing-head">
+                <h3 className="serif pricing-name">{t.name}</h3>
+                <p className="pricing-desc">{t.desc}</p>
+              </div>
+              <div className="pricing-price">
+                <span className="serif pricing-num">{t.price}</span>
+                <span className="pricing-period kr-mono">{t.period}</span>
+              </div>
+              <ul className="pricing-features">
+                {t.features.map((f, j) => (
+                  <li key={j}>
+                    <Icon name="check" size={14} stroke={t.featured ? 'var(--gold)' : 'var(--fg-1)'} />
+                    {f}
+                  </li>
+                ))}
+              </ul>
+              <Link
+                to="/signup"
+                className={`kbtn ${t.featured ? 'kbtn-primary' : 'kbtn-ghost'} pricing-cta`}
+              >
+                {t.cta}
+                <Icon name="arrow" size={14} stroke={t.featured ? '#1a1304' : 'var(--fg-0)'} />
+              </Link>
+            </article>
+          ))}
+        </div>
+      </div>
+    </section>
+  )
+}
+
+/* ============================================================
+   FINAL CTA + FOOTER
+   ============================================================ */
+function FinalCTA() {
+  return (
+    <section className="section final-cta-section">
+      <div className="cta-video-wrap">
+        <video className="cta-video" autoPlay loop muted playsInline src="/kickriq/video-cta.mp4" />
+        <div className="cta-video-veil" />
+      </div>
+      <div className="halo" style={{ background: 'rgba(240,182,90,0.45)', width: 700, height: 700, top: '50%', left: '50%', transform: 'translate(-50%,-50%)', filter: 'blur(80px)' }} />
+      <div className="wrap final-cta-inner" data-reveal>
+        <span className="section-marker">Your move</span>
+        <h2 className="h-display final-h" data-words>
+          Get <span className="accent">recruited</span>.<br />
+          Not <span style={{ opacity: 0.55 }}>overlooked</span>.
+        </h2>
+        <p className="lede final-sub">
+          2,500+ programs. 98.8% D1–NAIA coverage. Drafts, sends, and tracks every contact.
+          Free to start, no credit card.
+        </p>
+        <div className="final-ctas">
+          <Link to="/signup" className="kbtn kbtn-primary kbtn-lg">
+            Start for Free
+            <Icon name="arrow" size={16} />
+          </Link>
+          <a href="#how" className="kbtn kbtn-ghost kbtn-lg">Talk to a counselor</a>
+        </div>
+        <div className="final-trust">FREE · 3 EMAILS · 5 MATCHES · NO CARD</div>
+      </div>
+    </section>
+  )
+}
+
+function Footer() {
+  return (
+    <footer className="footer">
+      <div className="wrap footer-inner">
+        <div className="footer-brand">
+          <Link to="/" className="brand" aria-label="KickrIQ">
+            <KickrIQLogo height={44} />
+          </Link>
+          <p className="footer-tag">The smartest way to get recruited. Built by former college players + AI engineers.</p>
+          <div className="footer-trust">
+            <span className="chip chip-ghost">2,500+ PROGRAMS</span>
+            <span className="chip chip-ghost">98.8% COVERAGE</span>
+          </div>
+        </div>
+
+        <div className="footer-cols">
+          <div>
+            <div className="footer-h">PRODUCT</div>
+            <a href="#features">Features</a>
+            <a href="#roster">Roster Intelligence</a>
+            <a href="#how">How it works</a>
+            <a href="#pricing">Pricing</a>
+          </div>
+          <div>
+            <div className="footer-h">FOR</div>
+            <a href="#parents">Parents</a>
+            <a href="#features">Athletes</a>
+            <a href="#features">Club coaches</a>
+            <a href="#features">College coaches</a>
+          </div>
+          <div>
+            <div className="footer-h">DIVISIONS</div>
+            <a href="#features">D1 Programs</a>
+            <a href="#features">D2 Programs</a>
+            <a href="#features">D3 Programs</a>
+            <a href="#features">NAIA · JUCO</a>
+          </div>
+          <div>
+            <div className="footer-h">COMPANY</div>
+            <a href="#features">About</a>
+            <a href="#features">Stories</a>
+            <a href="#features">Press</a>
+            <a href="#features">Careers</a>
+          </div>
+        </div>
+      </div>
+      <div className="wrap footer-bottom">
+        <div>© 2026 KickrIQ Athletics, Inc.</div>
+        <div className="footer-links">
+          <a href="#features">Privacy</a>
+          <a href="#features">Terms</a>
+          <a href="#features">Security</a>
+        </div>
+      </div>
+    </footer>
+  )
+}
+
+/* ============================================================
+   ROOT
+   ============================================================ */
+export function Landing() {
+  useScrollMotion()
+  return (
+    <div className="kickriq">
+      <div className="page">
+        <Navbar />
+        <Hero />
+        <ThreeUp />
+        <RosterSpotlight />
+        <CinematicBand />
+        <HowItWorks />
+        <FeatureGrid />
+        <Divisions />
+        <Parents />
+        <Pricing />
+        <FinalCTA />
+        <Footer />
+      </div>
     </div>
   )
 }

@@ -48,13 +48,20 @@ create table if not exists coaches (
   email       text not null default '',
   source_url  text not null default '',
   scraped_at  timestamptz,
-  -- success  = name + email from scrape
-  -- partial  = name only, no email
-  -- failed   = scrape found nothing
-  -- ai-inferred = filled by Claude batch lookup (unverified)
-  -- unknown  = not yet attempted
+  -- success         = name + email from Puppeteer scrape
+  -- partial         = name only, no email
+  -- failed          = scrape found nothing
+  -- ai-inferred     = filled by Claude batch lookup (unverified)
+  -- email-inferred  = real coach name + Haiku-guessed email (verify before sending)
+  -- web-verified    = name + email confirmed by Sonnet + web_search on .edu page
+  -- web-name-only   = name confirmed by web_search, email pending
+  -- no-program      = school doesn't sponsor this gender's soccer
+  -- unknown         = not yet attempted
   status      text not null default 'unknown'
-    check (status in ('success','partial','failed','ai-inferred','unknown')),
+    check (status in (
+      'success','partial','failed','ai-inferred','unknown',
+      'email-inferred','web-verified','web-name-only','no-program'
+    )),
   created_at  timestamptz not null default now(),
   updated_at  timestamptz not null default now(),
   unique (school_id, gender)
