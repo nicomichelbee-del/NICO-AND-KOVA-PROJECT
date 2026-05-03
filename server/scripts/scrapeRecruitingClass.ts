@@ -1,6 +1,6 @@
 /**
  * Recruiting class composition scraper — D1/D2/D3.
- * Sources: TopDrawerSoccer → Sidearm /news scraping → Sonnet web_search (budget-capped).
+ * Sources: TopDrawerSoccer → Sidearm /news scraping → Haiku web_search (budget-capped).
  *
  * Usage:
  *   npx tsx server/scripts/scrapeRecruitingClass.ts --limit=10
@@ -97,7 +97,7 @@ async function scrapeSidearmNews(browser: Browser, school: School, gender: 'mens
 }
 
 async function llmFallback(school: School, gender: 'mens' | 'womens'): Promise<{ count: number | null; commits: RecruitCommit[] } | null> {
-  budget.assertCanSpend(0.05)
+  budget.assertCanSpend(0.006)
   const gl = gender === 'mens' ? "men's" : "women's"
   const prompt = `Find the incoming Class of ${CURRENT_CLASS_YEAR} for the ${gl} soccer program at ${school.name}.
 Search official athletic-department signing announcements and press releases on the school's athletic website.
@@ -105,12 +105,12 @@ Do NOT invent commits — if you cannot find verified names, return commits=[] a
 Return ONLY JSON: {"count": <number|null>, "commits":[{"name":"Full Name","position":"FW|MF|DF|GK|null","hometown":"City, ST|null","club":"Club Name|null"}], "reason":"one sentence"}`
 
   const resp = await client.messages.create({
-    model: 'claude-sonnet-4-6',
+    model: 'claude-haiku-4-5-20251001',
     max_tokens: 2048,
     tools: [{ type: 'web_search_20250305' as any, name: 'web_search', max_uses: 5 }],
     messages: [{ role: 'user', content: prompt }],
   })
-  budget.record('recruiting-llm', 0.05)
+  budget.record('recruiting-llm', 0.006)
   let txt = ''; for (const b of resp.content) if (b.type === 'text') txt = b.text
   const m = txt.match(/\{[\s\S]*\}/)
   if (!m) return null
