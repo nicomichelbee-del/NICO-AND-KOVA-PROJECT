@@ -31,6 +31,7 @@ const args = Object.fromEntries(process.argv.slice(2).map(a => {
 const ARG_LIMIT  = args.limit ? parseInt(args.limit, 10) : Infinity
 const ARG_SCHOOL = args.school as string | undefined
 const ARG_RESUME = args.resume === 'true'
+const ARG_NO_LLM = args['no-llm'] === 'true'   // Wikipedia-only, no API spend
 const FRESHNESS_DAYS = 180
 
 interface School { id: string; name: string; division: string }
@@ -98,7 +99,8 @@ async function buildRecord(school: School, gender: 'mens' | 'womens'): Promise<P
   }
 
   // If Wikipedia gave us nothing useful (no tourney info), fall back to Haiku web_search.
-  if (seasons.length === 0) {
+  // The --no-llm flag forces Wikipedia-only mode (zero API spend).
+  if (seasons.length === 0 && !ARG_NO_LLM) {
     try {
       const fallback = await haikuRecord(school, gender)
       if (fallback && fallback.recordHistory.length > 0) {
