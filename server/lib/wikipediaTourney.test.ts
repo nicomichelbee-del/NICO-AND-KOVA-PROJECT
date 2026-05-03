@@ -1,5 +1,5 @@
-import { describe, it, expect } from 'vitest'
-import { extractTourneyAppearances } from './wikipediaTourney'
+import { describe, it, expect, vi, beforeEach } from 'vitest'
+import { extractTourneyAppearances, resolveWikipediaTitle } from './wikipediaTourney'
 
 describe('extractTourneyAppearances', () => {
   it('extracts a year-to-round mapping from a wikitext blob', () => {
@@ -21,5 +21,23 @@ describe('extractTourneyAppearances', () => {
 
   it('returns empty object when no tourney section', () => {
     expect(extractTourneyAppearances('Some other content')).toEqual({})
+  })
+})
+
+describe('resolveWikipediaTitle', () => {
+  beforeEach(() => { vi.restoreAllMocks() })
+
+  it('returns the first match title when opensearch returns one', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({
+      ok: true,
+      json: async () => ['UNC men', ['North Carolina Tar Heels men\'s soccer'], [''], ['']],
+    }))
+    const r = await resolveWikipediaTitle('UNC men')
+    expect(r).toBe("North Carolina Tar Heels men's soccer")
+  })
+
+  it('returns null when opensearch has no matches', async () => {
+    vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: true, json: async () => ['x', [], [], []] }))
+    expect(await resolveWikipediaTitle('asdf')).toBeNull()
   })
 })

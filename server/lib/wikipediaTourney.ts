@@ -1,3 +1,11 @@
+export async function resolveWikipediaTitle(query: string): Promise<string | null> {
+  const url = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=1&format=json`
+  const res = await fetch(url, { headers: { 'User-Agent': 'KickrIo/1.0 (info@fahga.org)' } })
+  if (!res.ok) return null
+  const json = await res.json() as [string, string[], string[], string[]]
+  return Array.isArray(json) && json[1] && json[1][0] ? json[1][0] : null
+}
+
 export function extractTourneyAppearances(wikitext: string): Record<number, string> {
   const result: Record<number, string> = {}
   const idx = wikitext.toLowerCase().indexOf('ncaa tournament')
