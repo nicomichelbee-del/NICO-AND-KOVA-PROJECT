@@ -92,6 +92,8 @@ export interface School {
   dataConfidence?: 'high' | 'medium' | 'low'
   // Two-letter state extracted from `location` for client-side filtering.
   state?: string
+  record?: import('./athletic').ProgramRecord | null
+  recruitingClass?: import('./athletic').RecruitingClass | null
 }
 
 export interface SchoolDirectoryEntry {

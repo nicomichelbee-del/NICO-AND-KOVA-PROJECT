@@ -2,6 +2,7 @@ import fs from 'fs'
 import path from 'path'
 import schoolsData from '../data/schools.json'
 import type { AthleteProfile, MatchBreakdown, School, SchoolDirectoryEntry, VideoRating } from '../../client/src/types/index'
+import type { ProgramRecord, RecruitingClass } from '../../client/src/types/athletic'
 
 const round1 = (n: number): number => Math.round(n * 10) / 10
 
@@ -64,6 +65,34 @@ function getRoster(schoolId: string, gender: 'mens' | 'womens'): RosterRecord | 
     }
   }
   return rosterCache[`${schoolId}:${gender}`]
+}
+
+// ── Program record (W-L-T history) ────────────────────────────────────────
+let programRecordCache: Record<string, ProgramRecord> | null = null
+function getProgramRecord(schoolId: string, gender: 'mens' | 'womens'): ProgramRecord | undefined {
+  if (programRecordCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'programRecords.json')
+      programRecordCache = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, ProgramRecord>
+    } catch {
+      programRecordCache = {}
+    }
+  }
+  return programRecordCache[`${schoolId}:${gender}`]
+}
+
+// ── Recruiting class composition ──────────────────────────────────────────
+let recruitingClassCache: Record<string, RecruitingClass> | null = null
+function getRecruitingClass(schoolId: string, gender: 'mens' | 'womens'): RecruitingClass | undefined {
+  if (recruitingClassCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'recruitingClasses.json')
+      recruitingClassCache = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, RecruitingClass>
+    } catch {
+      recruitingClassCache = {}
+    }
+  }
+  return recruitingClassCache[`${schoolId}:${gender}`]
 }
 
 // Map athlete profile.position string → roster position bucket.
@@ -217,10 +246,13 @@ function athleticFit(profile: AthleteProfile, school: SchoolRecord, video?: Vide
     }
   }
 
-  // Division gap. Cap at ±2 so a D1 prospect doesn't see JUCO as "too easy
-  // to be useful" — JUCOs would dominate as max-safety otherwise.
+  // Division gap. We cap the *positive* side at +1 so schools 2+ levels
+  // below the athlete's target don't all get the same maxed-out bonus —
+  // otherwise a D1-targeting athlete sees JUCOs flood her safety bucket
+  // at matchScore=100. The negative side (school plays above target) keeps
+  // the −2 cap so a true reach is appropriately discouraged.
   const rawDivGap = divIdx(school.division) - divIdx(profile.targetDivision)
-  const divGap = Math.max(-2, Math.min(2, rawDivGap))
+  const divGap = Math.max(-2, Math.min(1, rawDivGap))
 
   // Program prestige delta. School at strength 10 vs neutral 5 = +5 →
   // pulls athleticFit down (this is a tougher program).
@@ -301,19 +333,95 @@ function buildReasons(
   const positionLabel = gk ? 'keepers' : fwd ? 'forwards' : 'midfielders'
 
   // ── Top-line fit summary (always first) ──────────────────────────────
+  // We build the headline from the actual gaps in the data, not generic
+  // language. Athletes asked us repeatedly what "athletic stretch" means —
+  // now the answer is specific: division gap, program prestige, GPA delta,
+  // selectivity, or position-specific stat gaps.
+  const divGap = divIdx(school.division) - divIdx(profile.targetDivision)
+  const gpaAvg = school.gpaAvg ?? 0
+  const gpaDelta = gpaAvg > 0 ? profile.gpa - gpaAvg : 0
+  const programStrength = school.programStrength ?? 5
+  const expectedGoals = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
+  const goalsDelta = !gk && profile.goals > 0 && expectedGoals > 0 ? profile.goals - expectedGoals : 0
+  const admPct = acad?.admissionRate != null ? acad.admissionRate * 100 : null
+
+  // Specific gap descriptors — used to assemble human-readable reasons.
+  // Each describes ONE concrete reason this school is a stretch.
+  function athleticGaps(): string[] {
+    const gaps: string[] = []
+    if (divGap < 0) {
+      gaps.push(`they play ${school.division} (you target ${profile.targetDivision}) — one level above`)
+    }
+    if (programStrength >= 8 && athletic <= 50) {
+      gaps.push(`top-tier program (${programStrength}/10 strength)`)
+    }
+    if (goalsDelta <= -5 && expectedGoals > 0) {
+      gaps.push(`typical ${positionLabel} score ${expectedGoals} (you have ${profile.goals})`)
+    }
+    if (video) {
+      const tape = tapeSkill(video)
+      const expectation = 5 + (school.programStrength ?? 5) * 0.4
+      if (tape - expectation <= -1.5) {
+        gaps.push(`tape grades ${tape.toFixed(1)}/10 vs typical ${expectation.toFixed(1)} for this level`)
+      }
+    }
+    return gaps
+  }
+  function academicGaps(): string[] {
+    const gaps: string[] = []
+    if (gpaDelta <= -0.4 && gpaAvg > 0) {
+      gaps.push(`your ${profile.gpa.toFixed(2)} GPA vs typical ${gpaAvg.toFixed(1)}`)
+    }
+    if (admPct != null && admPct < 15) {
+      gaps.push(`only ${Math.round(admPct)}% of applicants admitted`)
+    } else if (admPct != null && admPct < 30 && academic <= 60) {
+      gaps.push(`selective admit (${Math.round(admPct)}% acceptance rate)`)
+    }
+    return gaps
+  }
+
   if (bucket === 'safety') {
     reasons.push(athletic >= 90 && academic >= 90
       ? 'You\'re a top recruit on paper — comfortable fit on both axes.'
       : 'Both your athletic and academic profile clear this program\'s typical recruit.')
   } else if (bucket === 'target') {
-    if (athletic >= 70 && academic <= 60) reasons.push('Athletically a strong fit; academics will be the stretch.')
-    else if (academic >= 70 && athletic <= 60) reasons.push('Academic fit is strong; you\'ll need to compete athletically to play.')
-    else reasons.push('You\'re in the conversation on both axes — a real target school.')
+    if (athletic >= 70 && academic <= 60) {
+      const gaps = academicGaps().slice(0, 1)
+      reasons.push(gaps.length
+        ? `Athletically a strong fit — academics will be the stretch (${gaps[0]}).`
+        : 'Athletically a strong fit; academics will be the stretch.')
+    } else if (academic >= 70 && athletic <= 60) {
+      const gaps = athleticGaps().slice(0, 1)
+      reasons.push(gaps.length
+        ? `Academic fit is strong — you'll need to compete athletically (${gaps[0]}).`
+        : 'Academic fit is strong; you\'ll need to compete athletically to play.')
+    } else {
+      reasons.push('You\'re in the conversation on both axes — a real target school.')
+    }
   } else {
-    if (athletic <= 35 && academic <= 35) reasons.push('A genuine reach — aspirational on both sides.')
-    else if (athletic <= 40) reasons.push('Their program plays a level above your current profile — athletic stretch.')
-    else if (academic <= 40) reasons.push('Their typical recruit is above your current academic profile — push the GPA/SAT.')
-    else reasons.push('Stretch fit — worth applying if it\'s a dream school.')
+    // Reach bucket. Pull up to two specific gaps so the user understands
+    // *what exactly* makes this a stretch, not just that it is one.
+    const aGaps = athletic <= 50 ? athleticGaps() : []
+    const acGaps = academic <= 50 ? academicGaps() : []
+    if (athletic <= 35 && academic <= 35) {
+      const all = [...aGaps, ...acGaps].slice(0, 2)
+      reasons.push(all.length
+        ? `A genuine reach on both sides — ${all.join('; ')}.`
+        : 'A genuine reach — aspirational on both sides.')
+    } else if (athletic <= 40 && aGaps.length) {
+      reasons.push(`Athletic stretch — ${aGaps.slice(0, 2).join('; ')}.`)
+    } else if (academic <= 40 && acGaps.length) {
+      reasons.push(`Academic stretch — ${acGaps.slice(0, 2).join('; ')}.`)
+    } else if (athletic <= 40) {
+      reasons.push('Their program plays a level above your current profile — athletic stretch.')
+    } else if (academic <= 40) {
+      reasons.push('Their typical recruit is above your current academic profile — push the GPA/SAT.')
+    } else {
+      const all = [...aGaps, ...acGaps].slice(0, 2)
+      reasons.push(all.length
+        ? `Stretch fit — ${all.join('; ')}.`
+        : 'Stretch fit — worth applying if it\'s a dream school.')
+    }
   }
 
   // ── Roster / open spots (live-scraped) ──────────────────────────────
@@ -405,6 +513,74 @@ function buildReasons(
   return reasons.slice(0, 5)
 }
 
+// ── Recruitable Shot % — the headline differentiator ────────────────────
+//
+// matchScore answers "is this a good fit?" — it's a weighted blend of axes.
+// recruitableShot answers "what are your odds of actually being recruited
+// here?" Distinct, more honest, and the single number a teen + parent
+// most want to know. Probabilistic (0–100) — calibrated so:
+//   • A clean safety (both fits 90+, open spots, no division gap)         → 80–95
+//   • A solid target (both fits 60–75, some opens, neutral program)       → 45–60
+//   • A reach with no open spots and a tough program                      → 8–20
+// Never returns 0 or 100 — always leaves room for the human factor.
+function recruitableShot(
+  athletic: number,
+  academic: number,
+  divisionGap: number,            // school.div - athlete.targetDiv (-2..+2)
+  programGap: number,             // school.programStrength - 5 (-5..+5)
+  roster: RosterSignal | null,
+): number {
+  // Base from the two fit axes — the dominant signal.
+  let p = (athletic * 0.55 + academic * 0.45)
+
+  // Roster need adjustment. Open spots at the athlete's position is the
+  // single most actionable real-world signal, so weight it strongly.
+  if (roster) {
+    if (roster.openSpots >= 4) p += 8         // big opening — coaches actively recruiting position
+    else if (roster.openSpots >= 2) p += 4
+    else if (roster.openSpots === 1) p += 1
+    else if (roster.totalAtPosition >= 8) p -= 6  // logjam at position
+    else if (roster.totalAtPosition >= 6) p -= 3
+  }
+
+  // Division gap penalty — moving up a level is exponentially harder.
+  if (divisionGap < 0) p -= Math.abs(divisionGap) * 6   // school plays above target
+  else if (divisionGap > 0) p += Math.min(divisionGap * 2, 4)  // school below target = easier
+
+  // Program prestige — strength 10 (Stanford-tier) penalizes harder than
+  // strength 8 (mid-major). Strength <5 boosts.
+  if (programGap > 0) p -= programGap * 2.5
+  else if (programGap < 0) p += Math.abs(programGap) * 1.5
+
+  // Clamp to 5–95 — never declare certain success or failure.
+  return Math.max(5, Math.min(95, round1(p)))
+}
+
+// Confidence reflects how much underlying data we have. Drives whether the UI
+// shows the recruitable-shot number with full confidence or hedges it.
+function dataConfidence(
+  school: SchoolRecord,
+  acad: AcademicRecord | undefined,
+  roster: RosterSignal | null,
+): 'high' | 'medium' | 'low' {
+  let signals = 0
+  if ((school.gpaAvg ?? 0) > 0) signals++
+  if ((school.goalsForwardAvg ?? 0) > 0 || (school.goalsMidAvg ?? 0) > 0) signals++
+  if (acad?.admissionRate != null) signals++
+  if (acad?.satMid != null && acad.satMid > 0) signals++
+  if (acad?.costOfAttendance != null) signals++
+  if (roster) signals++
+  if (signals >= 5) return 'high'
+  if (signals >= 3) return 'medium'
+  return 'low'
+}
+
+// Extract two-letter state code from school.location ("Stanford, CA").
+function extractState(location: string): string | undefined {
+  const m = location.match(/,\s*([A-Z]{2})\s*$/)
+  return m ? m[1] : undefined
+}
+
 // Absolute bucketing thresholds. A school is a safety only if the athlete is
 // genuinely comfortable on both axes; a target if they're in the conversation
 // on both; a reach if there's at least a credible path on either.
@@ -436,8 +612,16 @@ const DEFAULT_BUCKET_CAPS = { safety: 8, target: 10, reach: 8 } as const
 
 export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRating | null): School[] {
   const gender = profile.gender ?? 'womens'
+  // Hard exclusions — divisions the athlete has explicitly opted out of.
+  // The targetDivision is never excludable (defensive guard against bad
+  // client state). Applied before scoring so excluded schools never enter
+  // the candidate pool, the bucket caps, or the deep-safety logic.
+  const excluded = new Set(
+    (profile.excludedDivisions ?? []).filter((d) => d !== profile.targetDivision),
+  )
 
   const scored: Candidate[] = (schoolsData as SchoolRecord[])
+    .filter((s) => !excluded.has(s.division))
     .map((s) => {
       const athletic = athleticFit(profile, s, video)
       const academic = academicFit(profile, s)
@@ -449,7 +633,17 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
       // happened above; this is just for ranking + UI display. One decimal
       // place so the score actually varies across the list — without
       // decimals every athlete sees a wall of 90 / 91 / 92s.
-      const blended = athletic * 0.55 + academic * 0.45
+      let blended = athletic * 0.55 + academic * 0.45
+      // Honesty penalty for "deep below" target. A D1-target athlete should
+      // never see a JUCO score 100 — even if she'd dominate athletically,
+      // it isn't a "match" to her stated goals. Graded so:
+      //   • +2 levels below (e.g., D1 → D3): -8
+      //   • +3 levels below (e.g., D1 → NAIA, D2 → JUCO): -16
+      //   • +4 levels below (D1 → JUCO): -22
+      const rawDivGapForScore = divIdx(s.division) - divIdx(profile.targetDivision)
+      if (rawDivGapForScore === 2) blended -= 8
+      else if (rawDivGapForScore === 3) blended -= 16
+      else if (rawDivGapForScore >= 4) blended -= 22
       const matchScore = Math.max(0, Math.min(100, round1(blended + preferenceBoost(profile, s))))
       return {
         school: s,
@@ -463,12 +657,24 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
     })
     .filter((c): c is Candidate => c !== null)
 
-  // Sort each bucket by matchScore desc, then break ties so ties don't
-  // collapse the visual ordering. Many safeties cap at matchScore=100; we
-  // surface the more competitive program first (higher programStrength),
-  // then prefer schools matching the athlete's region/size preferences,
-  // then the higher athletic fit.
+  // Sort each bucket. Primary order is "closeness to target division" so a
+  // D1-target athlete's safety bucket leads with D2 schools, not JUCOs.
+  // Within the same closeness, sort by matchScore desc, then break further
+  // ties on programStrength → region match → athletic fit.
+  const targetIdx = divIdx(profile.targetDivision)
+  function divCloseness(c: Candidate): number {
+    // Lower = closer to target. We weight "below target" more leniently
+    // than "above target" — a D2 prospect should rank D3 (gap=+1) above
+    // D1 (gap=-1) since one is attainable and the other is genuine reach.
+    const gap = divIdx(c.school.division) - targetIdx
+    if (gap === 0) return 0
+    if (gap > 0) return gap            // 1, 2, 3, 4 — below target, getting "easier"
+    return -gap + 0.5                  // 1.5, 2.5 — above target, harder
+  }
   function bucketCompare(a: Candidate, b: Candidate): number {
+    const aClose = divCloseness(a)
+    const bClose = divCloseness(b)
+    if (aClose !== bClose) return aClose - bClose
     if (a.matchScore !== b.matchScore) return b.matchScore - a.matchScore
     const aProg = a.school.programStrength ?? 0
     const bProg = b.school.programStrength ?? 0
@@ -493,9 +699,35 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
   const targetCap = Math.round(DEFAULT_BUCKET_CAPS.target * scale)
   const reachCap  = totalCap - safetyCap - targetCap
 
-  const finalSafety = safety.slice(0, safetyCap)
-  const finalTarget = target.slice(0, targetCap)
-  const finalReach  = reach.slice(0, reachCap)
+  // Cap "deep below" safeties (3+ divisions below the athlete's target) at
+  // a hard maximum of 2. These are mostly bridge-year fallbacks — useful
+  // but not the focus. Without this cap, a D1-targeting athlete's safety
+  // bucket can fill entirely with JUCOs because they all score perfectly
+  // on the athletic axis. We deliberately under-fill the safety bucket
+  // rather than backfilling with more JUCOs when close-divisions are
+  // sparse — a 5-school safety bucket is more honest than a 7-school one
+  // padded with bridge programs the athlete didn't ask for.
+  const DEEP_SAFETY_CAP = 2
+  const isDeepBelow = (c: Candidate) =>
+    divIdx(c.school.division) - targetIdx >= 3
+  const closeSafeties = safety.filter((c) => !isDeepBelow(c))
+  // Within the deep-safety pool, sort NAIA before JUCO — NAIA programs are
+  // 4-year schools and a more honest "fallback" than a JUCO bridge year.
+  // Athletes asked for NCAA/4-year representation in safeties before any
+  // 2-year bridge options.
+  const deepSafeties = safety
+    .filter(isDeepBelow)
+    .sort((a, b) => {
+      const aJuco = a.school.division === 'JUCO' ? 1 : 0
+      const bJuco = b.school.division === 'JUCO' ? 1 : 0
+      if (aJuco !== bJuco) return aJuco - bJuco       // NAIA first
+      return bucketCompare(a, b)                       // existing tiebreaker
+    })
+  const closeSlots = Math.min(closeSafeties.length, safetyCap)
+  const deepSlots  = Math.min(deepSafeties.length, DEEP_SAFETY_CAP, Math.max(0, safetyCap - closeSlots))
+  const finalSafety = [...closeSafeties.slice(0, closeSlots), ...deepSafeties.slice(0, deepSlots)]
+  const finalTarget   = target.slice(0, targetCap)
+  const finalReach    = reach.slice(0, reachCap)
 
   // Output order: reach → target → safety. Reaches go first because they're
   // aspirational and the most useful to surface upfront. Targets are the
@@ -505,6 +737,9 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
   return ordered.map((c) => {
     const academic = getAcademic(c.school.id)
     const rosterSignal = computeRosterSignal(profile, c.school.id) ?? undefined
+    const rawDivGap = divIdx(c.school.division) - divIdx(profile.targetDivision)
+    const programGap = (c.school.programStrength ?? 5) - 5
+    const shot = recruitableShot(c.athletic, c.academic, Math.max(-2, Math.min(2, rawDivGap)), programGap, rosterSignal ?? null)
     return {
       id: c.school.id,
       name: c.school.name,
@@ -539,6 +774,11 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
       pellGrantRate:      academic?.pellGrantRate,
       graduationRate:     academic?.graduationRate,
       rosterSignal,
+      recruitableShot:    shot,
+      dataConfidence:     dataConfidence(c.school, academic, rosterSignal ?? null),
+      state:              extractState(c.school.location),
+      record:           getProgramRecord(c.school.id, gender) ?? null,
+      recruitingClass:  getRecruitingClass(c.school.id, gender) ?? null,
     }
   })
 }
