@@ -264,13 +264,13 @@
     "schoolId": "notredame",
     "schoolName": "University of Notre Dame",
     "gender": "womens",
-    "scrapedAt": "2026-05-02T22:27:18.796Z",
+    "scrapedAt": "2026-05-03T22:49:08.733Z",
     "coachName": "Nate Norman",
     "coachTitle": "Head Coach",
-    "coachEmail": "",
+    "coachEmail": "mnorman@nd.edu",
     "sourceUrl": "https://fightingirish.com/coach/nate-norman/",
-    "status": "web-name-only",
-    "reason": "Nate Norman is listed as current head coach on official Notre Dame athletics site; email not publicly displayed on accessible pages."
+    "status": "haiku-verified",
+    "reason": "Nate Norman is the Doug and Lisa Jones Family Head Women's Soccer Coach at University of Notre Dame, currently in his eighth season (2025)."
   },
   "indiana:womens": {
     "schoolId": "indiana",
