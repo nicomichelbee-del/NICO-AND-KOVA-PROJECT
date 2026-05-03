@@ -53,13 +53,20 @@ const client = new Anthropic({ apiKey: process.env.ANTHROPIC_API_KEY ?? '' })
 const budget = new ScraperBudget(BUDGET_PATH, { soft: 18, hard: 20 })
 
 async function withRetry<T>(fn: () => Promise<T>, max = 5): Promise<T> {
-  let delay = 15000
+  let delay = 8000
   for (let i = 0; i <= max; i++) {
     try { return await fn() } catch (e: any) {
-      const is429 = e?.status === 429 || /429|rate_limit/i.test(String(e?.message))
-      if (is429 && i < max) {
+      const msg = String(e?.message ?? '')
+      const name = String(e?.name ?? e?.constructor?.name ?? '')
+      const is429 = e?.status === 429 || /429|rate_limit/i.test(msg)
+      const isTransient = is429
+        || /timeout|timed out|ECONNRESET|ECONNREFUSED|ENOTFOUND|EAI_AGAIN|socket hang up|fetch failed/i.test(msg)
+        || /ConnectionTimeout|APIConnectionError/i.test(name)
+        || (typeof e?.status === 'number' && e.status >= 500)
+      if (isTransient && i < max) {
         const wait = delay * (1 + 0.2 * Math.random())
-        console.log(`  ⏳ rate limit — waiting ${Math.round(wait/1000)}s (${i+1}/${max})`)
+        const why = is429 ? 'rate limit' : 'transient error'
+        console.log(`  ⏳ ${why} (${msg.slice(0, 60)}) — waiting ${Math.round(wait/1000)}s (${i+1}/${max})`)
         await new Promise(r => setTimeout(r, wait))
         delay = Math.min(delay * 2, 120000)
         continue
@@ -145,15 +152,24 @@ async function runPass(
   console.log(`Targets: ${gaps.length}  Concurrency: ${ARG_CONC}  Est cost: $${(estPerCall * gaps.length).toFixed(2)}`)
   if (DRY_RUN) { gaps.slice(0, 10).forEach(g => console.log(' ', g.key)); return { resolved: 0 } }
 
-  let resolved = 0, counter = 0
+  let resolved = 0, counter = 0, errors = 0
   await runWithLimit(gaps, ARG_CONC, async ({ key, entry }) => {
     try { budget.assertCanSpend(estPerCall) } catch (e) {
       if (e instanceof BudgetExceededError) { console.log(`  ⛔ ${e.message} — stopping pass`); return }
       throw e
     }
     counter++
-    const r = await researchOne(model, entry.schoolName, entry.gender)
-    budget.record(passName, estPerCall)
+    let r: ResearchResult
+    try {
+      r = await researchOne(model, entry.schoolName, entry.gender)
+      budget.record(passName, estPerCall)
+    } catch (e: any) {
+      errors++
+      const reason = `error after retries: ${String(e?.message ?? e).slice(0, 100)}`
+      console.log(`  [${counter}/${gaps.length}] 💥 ${entry.schoolId}:${entry.gender}  ${reason}`)
+      // Don't update the cache on error — entry stays in 'failed' status for next run.
+      return
+    }
 
     let status = entry.status
     if (r.coachName === 'NO_PROGRAM') { status = 'no-program' }
@@ -175,7 +191,7 @@ async function runPass(
     if (counter % 10 === 0) fs.writeFileSync(COACHES_PATH, JSON.stringify(cache, null, 2))
   })
   fs.writeFileSync(COACHES_PATH, JSON.stringify(cache, null, 2))
-  console.log(`Pass ${passName} done — resolved ${resolved}/${gaps.length}.  Total spend: $${budget.totalSpent().toFixed(2)}`)
+  console.log(`Pass ${passName} done — resolved ${resolved}/${gaps.length}, errors ${errors}.  Total spend: $${budget.totalSpent().toFixed(2)}`)
   return { resolved }
 }
 
