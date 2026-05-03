@@ -20,6 +20,11 @@ export interface AthleteProfile {
   targetDivision: Division
   locationPreference: Region
   sizePreference: 'small' | 'medium' | 'large' | 'any'
+  // Hard exclusions — divisions the athlete refuses to consider, e.g. "no
+  // JUCO" or "no NAIA". Filtered out before scoring on the server. The
+  // user's targetDivision is always implicitly allowed (UI prevents it
+  // from being added here).
+  excludedDivisions?: Division[]
 }
 
 export interface MatchBreakdown {
@@ -77,6 +82,16 @@ export interface School {
     openSpots:         number
     totalRoster:       number
   }
+  // Recruitable Shot — 0-100 probability the athlete realistically makes this
+  // roster. Distinct from matchScore: matchScore is "is this a good fit",
+  // recruitableShot is "what are your odds". Combines academic+athletic fit,
+  // open spots at position, division gap, and program prestige.
+  recruitableShot?: number
+  // Confidence in the score itself (driven by how complete the school's data
+  // is — Scorecard, roster, gpaAvg, etc.). Helps the UI hedge appropriately.
+  dataConfidence?: 'high' | 'medium' | 'low'
+  // Two-letter state extracted from `location` for client-side filtering.
+  state?: string
 }
 
 export interface SchoolDirectoryEntry {
@@ -383,3 +398,5 @@ export interface HistoryEmail {
   isNoise?: boolean
   noiseReason?: string
 }
+
+export * from './athletic'

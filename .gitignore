@@ -12,3 +12,6 @@ server/data/scorecardUnmatched.json
 
 # Supabase CLI local cache
 supabase/.temp/
+
+server/data/.scraperBudget.json
+server/data/scraperDrift.log
