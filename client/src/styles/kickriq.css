@@ -1765,13 +1765,12 @@ body {
 .kickriq .cta-video {
   width: 100%; height: 100%;
   object-fit: cover;
-  opacity: 0.18;
-  filter: brightness(1.4) saturate(0.8);
-  mix-blend-mode: multiply;
+  opacity: 0.08;
+  filter: brightness(0.95) saturate(0.6) blur(2px);
 }
 .kickriq .cta-video-veil {
   position: absolute; inset: 0;
-  background: linear-gradient(180deg, rgba(247,241,227,0.55) 0%, rgba(241,232,211,0.40) 50%, rgba(241,232,211,0.65) 100%);
+  background: linear-gradient(180deg, rgba(247,241,227,0.92) 0%, rgba(241,232,211,0.94) 50%, rgba(241,232,211,0.96) 100%);
 }
 .kickriq .final-cta-inner {
   text-align: center;
