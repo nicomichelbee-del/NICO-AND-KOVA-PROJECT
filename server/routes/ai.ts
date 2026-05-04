@@ -155,7 +155,7 @@ router.post('/video', async (req, res) => {
     // Check cache. The "v" prefix is a schema version — bump it whenever the
     // rating output shape changes. v3 dropped profile.position from the cache
     // key; v9 switched the AI from individual frames to grid composites.
-    const cacheKey = `v9::${videoUrl}::${profile.targetDivision}`
+    const cacheKey = `v10::${videoUrl}::${profile.targetDivision}`
     const cached = videoCache.get(cacheKey)
     if (cached && Date.now() - cached.cachedAt < CACHE_TTL_MS) {
       return res.json(cached.result)
@@ -252,30 +252,38 @@ STRIKER / FORWARD — technical: finishing technique, hold-up play with back to 
 
 POSITION-FAIRNESS RULE: do not penalize the player for not doing things outside the detected role's job description. A center back without 1v1 dribbling is not a weakness; a striker without recovery runs is not a weakness.
 
-SCORING — every score is a 1.0–10.0 number on this scale, with ONE decimal place (e.g. 6.4, 7.0, 8.3), calibrated to ${profile.targetDivision} level:
+SCORING — every score is a 1.0–10.0 number on this scale, with ONE decimal place (e.g. 7.6, 8.2, 9.0), calibrated to ${profile.targetDivision} level:
   1.0–2.9 = wrong level entirely for ${profile.targetDivision} (clear evidence of major technical/tactical gaps; reserve for plain unreadiness)
   3.0–3.9 = clearly below ${profile.targetDivision} (would not contribute at this level)
   4.0–4.9 = somewhat below ${profile.targetDivision} (gap is visible but bridgeable)
   5.0–5.9 = at the lower edge of ${profile.targetDivision} (could fit the bench of a weaker program at this division)
   6.0–6.9 = competitive at ${profile.targetDivision} — would fit a typical roster at this division
   7.0–7.9 = solid ${profile.targetDivision} contributor — would compete for minutes at a typical program
-  8.0–8.9 = above ${profile.targetDivision} — clear impact player, could start at most programs
+  8.0–8.9 = above ${profile.targetDivision} — clear impact player, could start at most programs at this level (this is the band for top-program commits like Stanford / Duke / UNC / UCLA at D1)
   9.0–9.9 = well above ${profile.targetDivision} — top-program starter, could play a level higher
   10.0  = elite for ${profile.targetDivision} — best-in-class, plays well above this level
 
-DECIMAL PRECISION: every sub-score must use one decimal place. Use the .x to express fine differences — a player who is "solidly D1 but not quite an impact starter" is 7.4, not 7. A player who is "competitive but rough" is 6.2 or 6.5, not 6 or 7. Whole numbers like 7.0 are allowed when the score is genuinely on the line, but most scores should land on .1–.9. Do NOT just emit integers and trust the server to add decimals.
+DECIMAL PRECISION: every sub-score must use one decimal place. Use the .x to express fine differences — a player who is "above D1 contributor but not quite top-program starter" is 8.4, not 8. A player who is "solid but not flashy" is 7.6 or 7.8, not 7 or 8. Whole numbers are allowed when the score is genuinely on the line, but most scores should land on .1–.9. Do NOT just emit integers and trust the server to add decimals.
 
 HIGHLIGHT-TAPE SELECTION BIAS — read carefully:
-You are watching a HIGHLIGHT REEL. The player (or their family/coach) has hand-picked their best moments. By construction, this is their A-game. Players whose actual level is well below their target division do NOT typically have a polished highlight reel. So your prior should be: "this player is at or near their target division" UNLESS the tape itself contradicts that.
+You are watching a HIGHLIGHT REEL. The player (or their family/coach) has hand-picked their best moments. By construction, this is their A-game. Players whose actual level is well below their target division do NOT typically have a polished highlight reel. So your prior should be: "this player is at or somewhat above their target division" UNLESS the tape itself contradicts that.
 
-DEFAULT-UPWARD RULE:
-Anchor the typical highlight-tape rating around 7.0–8.0 for a player auditing for their target division. Reserve scores below 5.5 for clear, specific deficiencies you can name from the tape (e.g. "first touch consistently bounces off them at 0:42, 1:18, 2:05 — well below D1 cleanliness"). If a clip looks competent and you have no concrete reason to mark it down, the score for that dimension is at least 7.0. If the play is fluid, decisions are sound, and there are no visible technical breakdowns, the floor is 7.5 — even when there isn't a flashy "wow" moment to hang a higher number on.
+DEFAULT-UPWARD RULE — read this twice:
+Anchor the typical highlight-tape rating around 8.0 for a player auditing for their target division — most highlights you score should land in the 7.5–9.0 band, with the CENTER of that distribution at 8.0. Reserve scores below 6.0 for clear, specific deficiencies you can name from the tape (e.g. "first touch consistently bounces off them at 0:42, 1:18, 2:05 — well below D1 cleanliness"). If a clip looks competent and you have no concrete reason to mark it down, the score for that dimension is at least 7.5. If the play is fluid, decisions are sound, and there are no visible technical breakdowns — i.e. the player just looks like they belong at the level — the floor is 8.0, even when there isn't a flashy "wow" moment to hang a higher number on. A clean, controlled, tactically-aware tape is an 8, not a 7.
 
-ANTI-HARSH RULE:
-Do not punish a player for things you didn't see. Lack of evidence is not evidence of weakness. If you only see a striker finish three times and you don't see hold-up play, that is NOT a 4 in technical — score what you saw, not what was absent. The tape is short by design.
+CALIBRATION ANCHORS — what each band actually looks like:
+  • 8.5–9.0: visibly the best player on the field in most clips. Multiple flashes of high-end ability — a goal that requires real technique, a defensive read other players miss, a pass that breaks lines. Could play higher.
+  • 8.0–8.4: clearly a level above their teammates. Plays at the speed of the division. Mistakes are rare and minor. No glaring weakness on tape.
+  • 7.5–7.9: solid for the division. Plays cleanly, decisions are sound, but the tape doesn't show standout moments — they look like a contributor, not a star.
+  • 7.0–7.4: competent for the division but with one or two visible rough edges (e.g. occasional heavy touch, slightly slow off the mark, decisions sometimes hurried). Belongs but isn't standing out.
+  • 6.5–6.9: at-or-just-below division level — would need to keep developing to consistently contribute.
+  • Below 6.0: needs a NAMED, timestamped, repeated deficiency to justify.
+
+ANTI-HARSH RULE — non-negotiable:
+Do not punish a player for things you didn't see. Lack of evidence is not evidence of weakness. If you only see a striker finish three times and you don't see hold-up play, that is NOT a 4 in technical — score what you saw, not what was absent. The tape is short by design. A 3-minute reel will never show every dimension — that's normal, and it does NOT mean the player lacks those dimensions.
 
 ANTI-HEDGE RULE — read carefully:
-You are not allowed to default to 6 or 7 just because you're uncertain. Every score must be backed by a specific observation. If you find yourself wanting to give a 6.x, decide between 6 and 7 by asking: do they look closer to "competitive but rough" or "solid contributor"? Pick. The full scale exists for a reason — most players auditing for their target division on tape land somewhere between 7 and 9.
+You are not allowed to default to 7 just because you're uncertain. Every score must be backed by a specific observation. If you find yourself wanting to give a 7.x, decide between 7 and 8 by asking: do they look like a typical contributor at this level, or do they look like they're a step ahead of the competition on this tape? Pick. The full scale exists for a reason — most players auditing for their target division on tape land somewhere between 7.5 and 9.
 
 You score every dimension independently. Every dimension uses different evidence — technique vs. decision-making vs. composure vs. role-fit vs. level — so the scores almost never line up. A player can be technical=8 / composure=5. That's normal.
 
