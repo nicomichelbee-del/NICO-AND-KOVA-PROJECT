@@ -1,0 +1,261 @@
+◇ injected env (9) from .env // tip: ⌘ override existing { override: true }
+Total D1/D2/D3 coach gaps: 384.  Budget so far: $1.16
+
+══ PASS: HAIKU (claude-haiku-4-5-20251001) ══
+Targets: 384  Concurrency: 2  Est cost: $1.15
+  [2/384] ❌ louisville:womens  Hunter Norton  (no email)
+  [3/384] ❌ rutgers:womens  Mike O'Neill  (no email)
+  [4/384] ❌ louisville:mens  (no name)  (no email)
+  [5/384] ⛔ tcu:mens  NO_PROGRAM  (no email)
+  [6/384] ⛔ arkansas:mens  NO_PROGRAM  (no email)
+  [7/384] ❌ byu:mens  Brandon Gilliam  (no email)
+  [8/384] ⛔ colorado:mens  NO_PROGRAM  (no email)
+  [9/384] ⛔ auburn:mens  NO_PROGRAM  (no email)
+  [10/384] ❌ southcarolina:mens  Tony Annan  (no email)
+  [11/384] ❌ floridasouthern:womens  Maddi Moon  (no email)
+  [12/384] ❌ wingate:womens  Katie Mitchell  (no email)
+  [13/384] ✅ montevallo:mens  Bruce Dietterle  bdietterle@montevallo.edu
+  [14/384] ❌ montevallo:womens  Trey Gregory  (no email)
+  [15/384] ✅ setonhill:mens  Dilveer Chaggar  dchaggar@setonhill.edu
+  [16/384] ❌ shippensburg:mens  Jeremy Spering  (no email)
+  [17/384] ❌ enmu:womens  Nona Borden  (no email)
+  [18/384] ❌ enmu:mens  POSITION_VACANT  (no email)
+  [19/384] ✅ williams:womens  Sarah Raymond  ser3@williams.edu
+  [20/384] ✅ findlay:womens  Sierra Tom  perrys1@findlay.edu
+  [21/384] ❌ columbia:mens  Michael Casper  (no email)
+  [22/384] ❌ mhbu:mens  Ben Allen  (no email)
+  [23/384] ⛔ vanderbilt:mens  NO_PROGRAM  (no email)
+  [24/384] ❌ vanderbilt:womens  Darren Ambrose  (no email)
+  [25/384] ❌ kentucky:womens  Troy Fabiano  (no email)
+  [26/384] ⛔ lsu:mens  NO_PROGRAM  (no email)
+  ⏳ rate limit (429 {"type":"error","error":{"type":"rate_limit_error","mess) — waiting 8s (1/5)
+  [27/384] ❌ nebraska:womens  John Walker  (no email)
+  [28/384] ⛔ nebraska:mens  NO_PROGRAM  (no email)
+  ⏳ rate limit (429 {"type":"error","error":{"type":"rate_limit_error","mess) — waiting 9s (1/5)
+  [29/384] ⛔ illinois:mens  NO_PROGRAM  (no email)
+  [30/384] ⛔ iowa:mens  NO_PROGRAM  (no email)
+  ⏳ rate limit (429 {"type":"error","error":{"type":"rate_limit_error","mess) — waiting 9s (1/5)
+  [31/384] ⛔ usc:mens  NO_PROGRAM  (no email)
+  [32/384] ⛔ oregon:mens  NO_PROGRAM  (no email)
+  [33/384] ⛔ arizonastate:mens  NO_PROGRAM  (no email)
+  [34/384] ❌ miami:mens  (no name)  (no email)
+  [35/384] ⛔ arizona:mens  NO_PROGRAM  (no email)
+  [36/384] ⛔ newmexico:mens  NO_PROGRAM  (no email)
+  [37/384] ❌ miami:womens  Ken Masuhr  (no email)
+  [38/384] ❌ liberty:mens  Scott Wells  (no email)
+  [39/384] ❌ newmexico:womens  Karley Nelson  (no email)
+  [40/384] ❌ stolaf:womens  Molly Fiedler  (no email)
+  [41/384] ❌ cms:womens  David Nolan  (no email)
+  [42/384] ✅ kenyon:womens  Sarah McClellan  mcclellan2@kenyon.edu
+  [43/384] ❌ conncoll:womens  POSITION_VACANT  (no email)
+  ⏳ rate limit (429 {"type":"error","error":{"type":"rate_limit_error","mess) — waiting 8s (1/5)
+  [44/384] ✅ loras:womens  Matt Pucci  Matthew.Pucci@loras.edu
+  [45/384] ❌ loras:mens  (no name)  (no email)
+  ⏳ rate limit (429 {"type":"error","error":{"type":"rate_limit_error","mess) — waiting 8s (1/5)
+  [46/384] ⛔ wabash:womens  NO_PROGRAM  (no email)
+  [47/384] ❌ lemoyne:womens  Taylor Van Fleet  (no email)
+  [48/384] ✅ spu:womens  Arby Busey  buseyr@spu.edu
+  [49/384] ⛔ saintRose:mens  NO_PROGRAM  (no email)
+  [50/384] ⛔ saintRose:womens  NO_PROGRAM  (no email)
+  [51/384] ❌ clark-university:mens  Samuel Matteson  (no email)
+  [52/384] ❌ springfield-college:mens  Tommy Crabill  (no email)
+  [53/384] ✅ umass-dartmouth:womens  Bobby Desilets  rdesilets@umassd.edu
+  [54/384] ❌ umass-boston:womens  Amy Zombeck  (no email)
+  [55/384] ❌ eastern-connecticut-state:mens  Greg DeVito  (no email)
+  [56/384] ❌ eastern-connecticut-state:womens  Sarah Tompkins  (no email)
+  [57/384] ✅ suny-geneseo:womens  Nate Wiley  wiley@geneseo.edu
+  [58/384] ❌ suny-geneseo:mens  Mark Howlett  (no email)
+  [59/384] ❌ suny-plattsburgh:womens  Whitney Frary  (no email)
+  [60/384] ✅ suny-plattsburgh:mens  Chris Taylor  ctaylor@plattsburgh.edu
+  [61/384] ✅ hartwick-college:mens  John Scott  scottj@hartwick.edu
+  [62/384] ❌ nazareth-college:mens  Matt Tantalo  (no email)
+  [63/384] ❌ st-lawrence-university:womens  (no name)  (no email)
+  [64/384] ❌ drew-university:womens  Ray Goon  (no email)
+  [65/384] ✅ kean-university:mens  Jairo Munoz  munozj@kean.edu
+  [66/384] ❌ rutgers-camden:mens  Tim Oswald  (no email)
+  [67/384] ❌ rutgers-camden:womens  Kevin Luber  (no email)
+  [68/384] ✅ kean-university:womens  Brian Doherty  bdoherty@kean.edu
+  [69/384] ✅ albright-college:mens  Pat Stanco  pstanco@albright.edu
+  [70/384] ❌ albright-college:womens  Shamus Matthews-Brady  (no email)
+  [71/384] ❌ elizabethtown-college:womens  POSITION_VACANT  (no email)
+  [72/384] ❌ lebanon-valley-college:womens  Frank Carrozza  (no email)
+  [73/384] ✅ goucher-college:womens  Angela Amato  angela.amato@goucher.edu
+  [74/384] ✅ mcdaniel-college:womens  Michael Scott  mpscott@mcdaniel.edu
+  [75/384] ❌ salisbury-university:mens  Zachary MacDougall  (no email)
+  [76/384] ✅ york-college-pa:womens  Ovid Cusu  ocusu901@york.cuny.edu
+  [77/384] ❌ guilford-college:womens  Dakota Rock  (no email)
+  [78/384] ❌ guilford-college:mens  Sean Reilly  (no email)
+  [79/384] ✅ methodist-university:mens  Justin Terranova  jterranova@methodist.edu
+  [80/384] ❌ millsaps-college:mens  Gentry Johnson  (no email)
+  [81/384] ✅ sewanee:womens  Greg Cathell  gacathel@sewanee.edu
+  [82/384] ❌ millsaps-college:womens  Luke Schwarz  (no email)
+  [83/384] ✅ centre-college:womens  Jay Hoffman  hoffman@centre.edu
+  [84/384] ❌ centre-college:mens  Jeb Burch  (no email)
+  [85/384] ✅ transylvania-university:mens  Ben Federici  bfederici@transy.edu
+  [86/384] ❌ transylvania-university:womens  Trip Rogers  (no email)
+  [87/384] ✅ ohio-northern-university:mens  Chris Matejka  c-matejka@onu.edu
+  [88/384] ✅ heidelberg-university:womens  Madalynn McLaughlin  mmclaugh@heidelberg.edu
+  [89/384] ❌ ohio-northern-university:womens  Ben Tierney  (no email)
+  [90/384] ✅ heidelberg-university:mens  Michael Wright  mwright7@heidelberg.edu
+  [91/384] ✅ capital-university:mens  Corey Kirk  ckirk20@capital.edu
+  [92/384] ✅ capital-university:womens  Matt Ogden  mogden@capital.edu
+  [93/384] ❌ adrian-college:womens  Nathan Kronewetter  (no email)
+  [94/384] ❌ adrian-college:mens  Charles Miles  (no email)
+  [95/384] ✅ albion-college:mens  Wytse Molenaar  wmolenaar@albion.edu
+  [96/384] ❌ albion-college:womens  Ron Rainey  (no email)
+  [97/384] ✅ kalamazoo-college:mens  Mike Haines  michael.haines@kzoo.edu
+  [98/384] ✅ kalamazoo-college:womens  Jill Leibforth  Jill.Leibforth@kzoo.edu
+  [99/384] ✅ wisconsin-eau-claire:mens  Casey Holm  holmc@uwec.edu
+  [100/384] ✅ wisconsin-eau-claire:womens  Sean Yengo  yengosp@uwec.edu
+  [101/384] ⛔ wisconsin-oshkosh:mens  NO_PROGRAM  (no email)
+  [102/384] ✅ wisconsin-oshkosh:womens  Erin Coppernoll  copperne@uwosh.edu
+  [103/384] ❌ wisconsin-platteville:mens  Jesse Tinney  (no email)
+  [104/384] ✅ wisconsin-platteville:womens  Eliza Denmeade  denmeadee@uwplatt.edu
+  [105/384] ✅ wisconsin-river-falls:mens  Evan Sassano  evan.sassano@uwrf.edu
+  [106/384] ✅ wisconsin-stevens-point:mens  Jordan Kayser  jkayser@uwsp.edu
+  [107/384] ❌ wisconsin-river-falls:womens  Sean McKuras  (no email)
+  [108/384] ❌ wisconsin-stevens-point:womens  Dawn Crow  (no email)
+  [109/384] ✅ wisconsin-stout:mens  Cole Schwartz  schwartzco@uwstout.edu
+  [110/384] ❌ wisconsin-whitewater:mens  (no name)  (no email)
+  [111/384] ✅ wisconsin-stout:womens  Marcos Rodriguez  rodriguezma@uwstout.edu
+  [112/384] ❌ wisconsin-whitewater:womens  Dan Montanye  (no email)
+  [113/384] ✅ augustana-college-il:womens  Scott Mejia  scottmejia@augustana.edu
+  [114/384] ❌ illinois-wesleyan-university:mens  Kyle Schauls  (no email)
+  [115/384] ❌ augustana-college-il:mens  Chad Flanders  (no email)
+  [116/384] ✅ north-central-college:mens  Enzo Fuschino  efuschino@noctrl.edu
+  [117/384] ❌ illinois-wesleyan-university:womens  Oz Bakirdan  (no email)
+  [118/384] ✅ wartburg-college:mens  Christian Coridon  Christian.coridon@wartburg.edu
+  [119/384] ✅ north-central-college:womens  Andrew Gamarra  atgamarra@noctrl.edu
+  [120/384] ✅ luther-college:mens  Chris Garcia-Prats  garcch01@luther.edu
+  [121/384] ❌ wartburg-college:womens  Emily Ryan  (no email)
+  ⏳ rate limit (429 {"type":"error","error":{"type":"rate_limit_error","mess) — waiting 9s (1/5)
+  [122/384] ✅ university-of-dubuque:womens  Jason Berna  JBerna@dbq.edu
+  [123/384] ✅ luther-college:womens  Hollie Gray III  grayho01@luther.edu
+  [124/384] ✅ university-of-dubuque:mens  Andrew Mathys  AMathys@dbq.edu
+  [125/384] ✅ central-college-ia:mens  Garry Laidlaw  laidlawg@central.edu
+  [126/384] ✅ hamline-university:mens  John Pucci  jpucci02@hamline.edu
+  [127/384] ✅ central-college-ia:womens  Mike Kobylinski  kobylinskim@central.edu
+  [128/384] ✅ hamline-university:womens  Michael Prunty  mprunty01@hamline.edu
+  [129/384] ✅ bethel-university-mn:mens  Jeremy Iwaszkowiec  j-iwaszkowiec@bethel.edu
+  [130/384] ✅ bethel-university-mn:womens  Sheila McGill  sheila-mcgill@bethel.edu
+  [131/384] ✅ pacific-university:mens  Andres Ochoa  aochoabaeza@pacific.edu
+  [132/384] ❌ concordia-college-mn:mens  Nick Zuchowski  (no email)
+  [133/384] ❌ concordia-college-mn:womens  Jared Rice  (no email)
+  [134/384] ✅ pacific-university:womens  Jeff Freeman  jfreeman@pacific.edu
+  [135/384] ❌ george-fox-university:mens  Paul Karver  (no email)
+  [136/384] ❌ george-fox-university:womens  Brooke Alteneder  (no email)
+  [137/384] ❌ pacific-lutheran-university:womens  Seth Spidahl  (no email)
+  [138/384] ❌ pacific-lutheran-university:mens  John Yorke  (no email)
+  [139/384] ✅ whitman-college:womens  Michelle Voiland  voilandm@whitman.edu
+  [140/384] ❌ whitworth-university:mens  Kevin Moon  (no email)
+  [141/384] ✅ whitman-college:mens  Jose Cedeno  cedenojs@whitman.edu
+  [142/384] ❌ whitworth-university:womens  Cameron Bushéy  (no email)
+  [143/384] ✅ willamette-university:womens  Lisa Ljubicic  loljubicic@willamette.edu
+  [144/384] ❌ linfield-university:womens  Steve Simmons  (no email)
+  [145/384] ✅ willamette-university:mens  Matt Corti-Young  mdcortiyoung@willamette.edu
+  [146/384] ✅ linfield-university:mens  Andrew Duvall  aduvall@linfield.edu
+  ⏳ rate limit (429 {"type":"error","error":{"type":"rate_limit_error","mess) — waiting 9s (1/5)
+  [147/384] ❌ university-of-dallas:mens  Chase Reynolds  (no email)
+  [148/384] ✅ austin-college:womens  Kevin Gregory  kgregory@austincollege.edu
+  [149/384] ❌ university-of-dallas:womens  Jeremiah Narvaez  (no email)
+  [150/384] ❌ texas-lutheran-university:mens  Eddie Salazar  (no email)
+  [151/384] ❌ austin-college:mens  (no name)  (no email)
+  [152/384] ❌ oglethorpe-university:mens  Jon Akin  (no email)
+  [153/384] ❌ texas-lutheran-university:womens  Kerwin Johnson  (no email)
+  [154/384] ✅ berry-college:mens  Richard Vardy  rvardy@berry.edu
+  [155/384] ✅ berry-college:womens  Kathy Insel-Brown  kinselbrown@berry.edu
+  [156/384] ✅ colorado-college:mens  Scott Palguta  spalguta@coloradocollege.edu
+  ⏳ rate limit (429 {"type":"error","error":{"type":"rate_limit_error","mess) — waiting 9s (1/5)
+  [157/384] ❌ oglethorpe-university:womens  Rob King  (no email)
+  [158/384] ⛔ georgia-tech:womens  NO_PROGRAM  (no email)
+  [159/384] ✅ colorado-college:womens  Keri Sanchez  ksanchez@coloradocollege.edu
+  ⏳ rate limit (429 {"type":"error","error":{"type":"rate_limit_error","mess) — waiting 9s (1/5)
+  [160/384] ✅ fordham:mens  Carlo Acquista  cacquista@fordham.edu
+  [161/384] ✅ fordham:womens  Magnus Nilerud  mnilerud@fordham.edu
+  [162/384] ✅ richmond:womens  Adam Denton  adam.denton@richmond.edu
+  [163/384] ⛔ richmond:mens  NO_PROGRAM  (no email)
+  [164/384] ✅ csulb:womens  Mauricio Ingrassia  Mauricio.Ingrassia@csulb.edu
+  [165/384] ⛔ nevada:mens  NO_PROGRAM  (no email)
+  [166/384] ❌ csub:mens  Adam Grant  (no email)
+  [167/384] ✅ charleston:womens  Christian Michner  michnercm@cofc.edu
+  [168/384] ❌ csub:womens  Martin Navarro Jr.  (no email)
+  [169/384] ❌ gardner-webb:mens  Jonathan Lagos  (no email)
+  [170/384] ⛔ boise-state:mens  NO_PROGRAM  (no email)
+  [171/384] ✅ vmi:mens  Nick Regan  regannj@vmi.edu
+  [172/384] ✅ vmi:womens  Jim Robbins  robbinsjc@vmi.edu
+  [173/384] ❌ gardner-webb:womens  POSITION_VACANT  (no email)
+  [174/384] ❌ presbyterian:womens  Matt Smith  (no email)
+  [175/384] ❌ jacksonville:womens  Ryan Moon  (no email)
+  [176/384] ❌ presbyterian:mens  Nick Finotti  (no email)
+  [177/384] ❌ jacksonville:mens  Ali Simmons  (no email)
+  [178/384] ⛔ little-rock:mens  NO_PROGRAM  (no email)
+  [179/384] ❌ little-rock:womens  Kelly Farrell  (no email)
+  [180/384] ✅ colgate:mens  Erik Ronning  eronning@colgate.edu
+  [181/384] ❌ etsu:womens  Jay Yelton  (no email)
+  [182/384] ❌ colgate:womens  Lyndse Hokanson  (no email)
+  [183/384] ✅ boston-university:womens  Megan Burke  megburke@bu.edu
+  [184/384] ✅ boston-university:mens  Kevin Nylen  knylen@bu.edu
+  [185/384] ✅ albany:mens  Trevor Gorman  tgorman@albany.edu
+  [186/384] ✅ albany:womens  Sade Ayinde  sthomas-ayinde@albany.edu
+  [187/384] ❌ etsu:mens  Allen Vital  (no email)
+  [188/384] ⛔ kennesaw-state:mens  NO_PROGRAM  (no email)
+  [189/384] ❌ umass-lowell:womens  Mira Novak  (no email)
+  [190/384] ❌ umass-lowell:mens  Kyle Zenoni  (no email)
+  [191/384] ✅ hofstra:mens  Stephen Roche  stephen.roche@hofstra.edu
+  [192/384] ⛔ maine:mens  NO_PROGRAM  (no email)
+  [193/384] ✅ hofstra:womens  Simon Riddiough  simon.riddiough@hofstra.edu
+  [194/384] ✅ uw-green-bay:mens  John O'Reilly  oreillyj@uwgb.edu
+  [195/384] ❌ uw-green-bay:womens  Matthew Kagan  (no email)
+  [196/384] ❌ tennessee-tech:mens  INFORMATION_NOT_FOUND  (no email)
+  [197/384] ❌ southern-indiana:mens  Mads Kaiser  (no email)
+  [198/384] ✅ southern-indiana:womens  Eric Schoenstein  emschoenst@usi.edu
+  [199/384] ✅ umkc:mens  Ryan Pore  msoccer@umkc.edu
+  [200/384] ❌ umkc:womens  Jessica Smith  (no email)
+  [201/384] ✅ oral-roberts:womens  Austin Risenhoover  arisenhoover@oru.edu
+  [202/384] ✅ oral-roberts:mens  Ryan Bush  rybush@oru.edu
+  [203/384] ✅ st-thomas-mn:mens  Ernesto Ramirez  ernesto.ramirez@stthom.edu
+  [204/384] ⛔ hampton:mens  NO_PROGRAM  (no email)
+  [205/384] ✅ st-thomas-mn:womens  Gretta Macdonald  gretta.macdonald@stthomas.edu
+  [206/384] ⛔ ut-martin:mens  NO_PROGRAM  (no email)
+  [207/384] ✅ manhattan:mens  Tom Giovatto  tgiovatto01@manhattan.edu
+  [208/384] ❌ nebraska-omaha:mens  Donovan Dowling  (no email)
+  [209/384] ❌ nebraska-omaha:womens  Tim Walters  (no email)
+  [210/384] ❌ manhattan:womens  Brendan Lawler  (no email)
+  [211/384] ✅ siena:womens  Steve Karbowski  skarbowski@siena.edu
+  [212/384] ✅ siena:mens  Graciano Brito  gbrito@siena.edu
+  [213/384] ✅ quinnipiac:mens  Eric Sousa Da Costa  eric.dacosta@qu.edu
+  [214/384] ✅ quinnipiac:womens  Dave Clarke  david.clarke@qu.edu
+  [215/384] ❌ iona:womens  Todd Plourde  (no email)
+  [216/384] ❌ iona:mens  James Hamilton  (no email)
+  [217/384] ✅ south-dakota:womens  Michael Thomas  Michael.K.Thomas@usd.edu
+  [218/384] ✅ liu:mens  Michael Mordocco  Michael.Mordocco@liu.edu
+  [219/384] ✅ ut-martin:womens  Mike Varga  mvarga3@utm.edu
+  [220/384] ⛔ ndsu:mens  NO_PROGRAM  (no email)
+  [221/384] ❌ utsa:mens  (no name)  (no email)
+  [222/384] ⛔ south-dakota:mens  NO_PROGRAM  (no email)
+  [223/384] ❌ utsa:womens  Derek Pittman  (no email)
+  [224/384] ⛔ jacksonville-state:mens  NO_PROGRAM  (no email)
+  [225/384] ✅ jacksonville-state:womens  Corey Smith  coreysmith@jsu.edu
+  [226/384] ❌ new-mexico-state:mens  PROGRAM_EXISTS_COACH_NOT_FOUND  (no email)
+  ⏳ rate limit (429 {"type":"error","error":{"type":"rate_limit_error","mess) — waiting 9s (1/5)
+  [227/384] ✅ georgia-southern:mens  Lee Squires  gsumenssoccer@georgiasouthern.edu
+  [228/384] ✅ new-mexico-state:womens  Rob Baarts  baarts@nmsu.edu
+  [229/384] ✅ georgia-southern:womens  Chris Adams  cadams@georgiasouthern.edu
+  [230/384] ✅ sam-houston:womens  Kendall Ayers  kja055@shsu.edu
+  [231/384] ⛔ sam-houston:mens  NO_PROGRAM  (no email)
+  [232/384] ❌ merrimack:womens  Gabe Mejail  (no email)
+  [233/384] ❌ georgia-state:mens  Brett Surrency  (no email)
+  [234/384] ❌ merrimack:mens  Tony Martone  (no email)
+  [235/384] ⛔ south-alabama:mens  NO_PROGRAM  (no email)
+  [236/384] ❌ northern-illinois:womens  Michael O'Neill  (no email)
+  [237/384] ✅ northern-illinois:mens  Ryan Swan  rswan@niu.edu
+  [238/384] ⛔ ball-state:mens  NO_PROGRAM  (no email)
+  [239/384] ⛔ kent-state:mens  NO_PROGRAM  (no email)
+  [240/384] ✅ abilene-christian:womens  Stephen Salas  stephen.salas@acu.edu
+  [241/384] ⛔ abilene-christian:mens  NO_PROGRAM  (no email)
+  [242/384] ❌ utah-valley:womens  Chris Lemay  (no email)
+  [243/384] ✅ utah-valley:mens  Michael Chesler  michael.chesler@uvu.edu
+  [244/384] 💥 illinois-state:mens  error after retries: 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too lo
+  [245/384] 💥 eastern-michigan:mens  error after retries: 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too lo
+  [246/384] 💥 nicholls-state:mens  error after retries: 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too lo
+  [247/384] 💥 buffalo:mens  error after retries: 400 {"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too lo

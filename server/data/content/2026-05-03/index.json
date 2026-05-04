@@ -1,0 +1,211 @@
+{
+  "generatedAt": "2026-05-03T20:15:42.073Z",
+  "feature": null,
+  "drafts": [
+    {
+      "draftNumber": 1,
+      "format": "both",
+      "angle": "The recruiting rejection spiral: athlete sends 30 emails, gets 2 responses, doesn't know why — until they see what D1 coaches actually want in a profile.",
+      "audience": "athlete",
+      "hook": "You sent 30 recruiting emails and got ghosted by 28 coaches. Here's why.",
+      "script": [
+        {
+          "timeSec": "0-1.5",
+          "visual": "Close-up of phone screen showing Gmail inbox with red 'no response' notifications, athlete's face looking defeated",
+          "voiceover": "You sent 30 recruiting emails and got ghosted by 28 coaches."
+        },
+        {
+          "timeSec": "1.5-4",
+          "visual": "Split-screen: left side shows generic 'Dear Coach' email template, right side shows phone with KickrIo profile builder open, athlete's stats and highlights properly formatted",
+          "voiceover": "It's not that you're not good enough. Your profile is invisible. Coaches need to see your GPA, your speed numbers, your position flexibility, your highlight reel — all in one place they can actually scan in 10 seconds."
+        },
+        {
+          "timeSec": "4-7",
+          "visual": "Screen recording of KickrIo profile builder: athlete fills in height, weight, club team, GPA, best clips. Profile auto-generates a clean card.",
+          "voiceover": "Build your recruiting profile once. Then every coach sees what they're actually looking for."
+        },
+        {
+          "timeSec": "7-10",
+          "visual": "Phone notification sound + coach response email appears on screen, athlete smiles",
+          "voiceover": "The difference between ghosted and getting official visit offers? A profile coaches can actually read."
+        },
+        {
+          "timeSec": "10-12",
+          "visual": "KickrIo app icon on phone home screen, athlete tapping it",
+          "voiceover": null
+        }
+      ],
+      "onScreenText": [
+        {
+          "timeSec": "0-2",
+          "text": "28 GHOSTED",
+          "position": "top"
+        },
+        {
+          "timeSec": "2-5",
+          "text": "Generic emails = invisible",
+          "position": "middle"
+        },
+        {
+          "timeSec": "5-8",
+          "text": "Smart profile = visible",
+          "position": "middle"
+        },
+        {
+          "timeSec": "8-12",
+          "text": "Link in bio to build yours free",
+          "position": "bottom"
+        }
+      ],
+      "shotList": [
+        "Phone screen recording of KickrIo profile builder in action (athlete entering stats, uploading highlight clips)",
+        "Before/after split screen: messy Gmail inbox vs. clean KickrIo profile card",
+        "Close-up of athlete's face looking at phone (despondent → hopeful)",
+        "Notification sound effect + incoming coach email on-screen"
+      ],
+      "suggestedSound": {
+        "soundId": "pov-text-trend",
+        "soundTitle": "Relatable recruiting confession trend",
+        "whyThisSound": "Athlete pain point (ghosting) is the core of the hook, needs conversational, text-heavy vibe that feels like a peer dropping truth."
+      },
+      "captions": {
+        "tiktok": "sent 30 emails, got ghosted by 28. turned out my profile was invisible to coaches. not anymore. build yours free (link in bio) #collegesoccer #recruiting #d1soccer",
+        "instagram": "30 emails. 2 responses. 28 ghosts.\n\nThen I realized: coaches can't see what they're looking for if your profile is scattered across emails and highlight compilations.\n\nOne clean profile. That's it.\n\nBuild yours free — link in bio."
+      },
+      "hashtags": {
+        "tiktok": [
+          "#collegesoccer",
+          "#recruiting",
+          "#d1soccer",
+          "#highschoolsoccer",
+          "#soccerrecruitment",
+          "#collegeathlete",
+          "#soccer"
+        ],
+        "instagram": [
+          "#CollegeSoccer",
+          "#SoccerRecruiting",
+          "#D1Soccer",
+          "#RecruitingTips",
+          "#HighSchoolSoccer",
+          "#CollegeAthletics",
+          "#ClubSoccer",
+          "#SoccerPlayer",
+          "#AcademyToCollege",
+          "#BecomesD1",
+          "#UniversitySoccer",
+          "#SoccerCommitment",
+          "#RecruitmentJourney"
+        ]
+      },
+      "postingNotes": {
+        "bestTime": "Mon-Wed 6-8pm ET (athletes checking phones after practice/homework)",
+        "cta": "Link in bio to build your recruiting profile free (3 emails + 5 matches included)",
+        "coverFrameAdvice": "The split-screen showing ghosted inbox vs. clean profile card — strongest visual contrast that stops scrolling."
+      }
+    },
+    {
+      "draftNumber": 2,
+      "format": "both",
+      "angle": "Parent perspective: your kid is a solid player, but you don't know which D1, D2, D3, NAIA schools to target — the school matcher cuts through the noise in 60 seconds.",
+      "audience": "parent",
+      "hook": "Your daughter's a good player. But which colleges actually want her?",
+      "script": [
+        {
+          "timeSec": "0-1.5",
+          "visual": "Parent (mom or dad) sitting on couch at home, phone in hand, looking confused, surrounded by college stickers and recruiting brochures",
+          "voiceover": "Your daughter's a good player. But which colleges actually want her?"
+        },
+        {
+          "timeSec": "1.5-4",
+          "visual": "Parent scrolling through college websites — takes 5 seconds per school, sighs, closes app",
+          "voiceover": "You've looked at 40 D1 websites. Your kid's played in 15 ID camps. But you still don't have a real list."
+        },
+        {
+          "timeSec": "4-7",
+          "visual": "Phone screen recording: parent enters athlete's stats (GPA, club level, position, GPA, test scores) into KickrIo school matcher",
+          "voiceover": "Here's what changes: you answer 5 quick questions about your kid's grades, club level, and position. The matcher shows you 50+ schools that actually recruit her profile."
+        },
+        {
+          "timeSec": "7-10",
+          "visual": "Results appear on screen — schools organized by division, match percentage, location. Parent's eyes widen, nods",
+          "voiceover": "D1 schools, D2 pipeline options, realistic D3 targets, NAIA safeties. It's not guessing anymore. It's strategy."
+        },
+        {
+          "timeSec": "10-12",
+          "visual": "Parent smiling, showing phone to athlete (in background), both looking relieved",
+          "voiceover": null
+        }
+      ],
+      "onScreenText": [
+        {
+          "timeSec": "0-2",
+          "text": "40 WEBSITES. STILL NO LIST.",
+          "position": "top"
+        },
+        {
+          "timeSec": "3-6",
+          "text": "5 questions. 50+ matches.",
+          "position": "middle"
+        },
+        {
+          "timeSec": "7-10",
+          "text": "D1 • D2 • D3 • NAIA",
+          "position": "middle"
+        },
+        {
+          "timeSec": "10-12",
+          "text": "No more guessing. Just strategy.",
+          "position": "bottom"
+        }
+      ],
+      "shotList": [
+        "Wide shot of parent on couch surrounded by recruiting materials (brochures, printed emails, stickers)",
+        "Close-up of parent scrolling through 3-4 college websites quickly, showing frustration",
+        "Phone screen recording of KickrIo school matcher input form (GPA, club level, position fields)",
+        "Phone screen recording of results page showing 50+ schools in organized list with division badges",
+        "Wide shot of parent and athlete in background (athlete in practice gear or casual), parent showing phone, both smiling"
+      ],
+      "suggestedSound": {
+        "soundId": "emotional-piano",
+        "soundTitle": "Vulnerable parent-perspective piano",
+        "whyThisSound": "Parent journey (confusion → clarity) is emotional and relatable; slow burn builds to relief when school list appears; piano conveys trust and wisdom."
+      },
+      "captions": {
+        "tiktok": "we spent $3k on id camps, looked at 40 college websites, and i STILL didn't have a real list for my daughter. then we tried the school matcher. 50+ schools matched to her profile in 5 min. finally a strategy. #collegesoccer #parentlife",
+        "instagram": "I looked at 40 college websites.\n\nMy daughter played 15 ID camps.\n\nWe still didn't have a realistic list.\n\nThen I spent 2 minutes with the school matcher. It showed us 50+ colleges that actually recruit her GPA, position, and club level.\n\nD1 reach schools. D2 realistic targets. D3 safe bets. NAIA options.\n\nNo more guessing. Just strategy.\n\nLink in bio."
+      },
+      "hashtags": {
+        "tiktok": [
+          "#collegesoccer",
+          "#parentlife",
+          "#soccerrecruiting",
+          "#collegeathlete",
+          "#highschoolsoccer",
+          "#d1soccer"
+        ],
+        "instagram": [
+          "#CollegeSoccerRecruiting",
+          "#ParentLife",
+          "#SoccerParent",
+          "#HighSchoolSoccer",
+          "#CollegeAthletics",
+          "#D1Soccer",
+          "#D2Soccer",
+          "#D3Soccer",
+          "#RecruitmentJourney",
+          "#ClubSoccer",
+          "#SoccerMom",
+          "#SoccerFamily",
+          "#CollegeRoadmap",
+          "#ParentingTheater"
+        ]
+      },
+      "postingNotes": {
+        "bestTime": "Thu-Fri 7-9pm ET (parents winding down, checking phones before bed, planning weekend soccer stuff)",
+        "cta": "Link in bio for a free school match (Family plan includes parent dashboard + AI coach email generator + kid's Pro features)",
+        "coverFrameAdvice": "The results screen showing 50+ schools organized by division — visual proof that the app delivers a real list, not vague advice."
+      }
+    }
+  ]
+}

@@ -1,16 +1,23 @@
 import { useState, useMemo, useRef, useEffect } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { PageHeader } from '../../components/ui/PageHeader'
+import { useProfile } from '../../context/ProfileContext'
+import type { Division } from '../../types'
 import {
   MILESTONES, CATEGORY_META, GRADE_LABEL,
-  getMilestoneDate, getMilestoneStatus, loadDone, getAthleteProfile, DONE_KEY,
+  getMilestoneDate, getMilestoneStatus, loadDone, DONE_KEY,
   getCurrentGrade, getCurrentSemester, isMilestonePast,
+  type Grade,
 } from '../../data/milestones'
 
+const GRADES: Grade[] = ['freshman', 'sophomore', 'junior', 'senior']
+
 export function Timeline() {
-  const profile = getAthleteProfile()
-  const gradYear = profile?.gradYear ?? (new Date().getFullYear() + 2)
-  const division = profile?.targetDivision
+  const { profile } = useProfile()
+  const hasProfile = !!profile?.graduation_year
+  const gradYear = profile?.graduation_year ?? (new Date().getFullYear() + 2)
+  const division = (profile?.desired_division_levels?.[0] as Division | undefined) ?? undefined
+  const athleteName = profile?.full_name ?? null
   const navigate = useNavigate()
   const upNextRef = useRef<HTMLDivElement>(null)
 
@@ -70,9 +77,45 @@ export function Timeline() {
   const urgentCount = upcoming.filter((m) => m.status === 'overdue' || m.status === 'soon').length
   const progressPct = upcomingCount === 0 ? 100 : Math.round((upcomingDone / upcomingCount) * 100)
 
-  const headerSubtitle = profile
-    ? `${profile.name} · Class of ${gradYear} · ${division ?? 'Set division'} · Currently ${GRADE_LABEL[currentGrade]} year`
+  const headerSubtitle = hasProfile
+    ? `${athleteName ? `${athleteName} · ` : ''}Class of ${gradYear} · ${division ?? 'Set division'} · Currently ${GRADE_LABEL[currentGrade]} year`
     : `Class of ${gradYear} · Set your profile to personalize this`
+
+  // Year quick-jump: count milestones per grade for the active filter so the
+  // pill row reflects what's actually in view.
+  const countsByGrade = useMemo(() => {
+    const counts: Record<Grade, { total: number; done: number }> = {
+      freshman: { total: 0, done: 0 },
+      sophomore: { total: 0, done: 0 },
+      junior: { total: 0, done: 0 },
+      senior: { total: 0, done: 0 },
+    }
+    for (const m of all) {
+      counts[m.grade].total += 1
+      if (m.status === 'done') counts[m.grade].done += 1
+    }
+    return counts
+  }, [all])
+
+  function jumpToGrade(grade: Grade) {
+    // The earlier-years section is collapsed by default; if the user jumps to a
+    // past year we expand it so the target is visible.
+    const order: Record<Grade, number> = { freshman: 0, sophomore: 1, junior: 2, senior: 3 }
+    if (order[grade] < order[currentGrade] && !showPast) setShowPast(true)
+    requestAnimationFrame(() => {
+      const el = document.getElementById(`grade-${grade}`)
+      el?.scrollIntoView({ behavior: 'smooth', block: 'start' })
+    })
+  }
+
+  // School year span text (e.g., "2025 – 2026" for freshman of class 2029).
+  const schoolYearSpan = (grade: Grade) => {
+    const start = { freshman: gradYear - 4, sophomore: gradYear - 3, junior: gradYear - 2, senior: gradYear - 1 }[grade]
+    return `${start} – ${start + 1}`
+  }
+
+  // Up-next: first non-done upcoming milestone (used for the highlight banner).
+  const upNext = upcoming.find((m) => m.status !== 'done')
 
   return (
     <div className="kr-page max-w-3xl">
@@ -82,33 +125,93 @@ export function Timeline() {
         lede={headerSubtitle}
       />
 
-      {/* Stats bar */}
-      <div className="grid grid-cols-3 gap-4 mb-8">
-        {[
-          { label: 'Done so far', value: completedCount, color: 'var(--pitch-2)' },
-          { label: 'Still ahead', value: upcomingCount - upcomingDone, color: 'var(--fg-0)' },
-          { label: 'Action needed', value: urgentCount, color: 'var(--gold)' },
-        ].map(({ label, value, color }) => (
-          <div key={label} className="kr-stat-card">
-            <div className="kr-stat-num" style={{ color }}>{value}</div>
-            <div className="kr-stat-label">{label}</div>
+      {/* Stat ribbon — single panel, three columns, vertical dividers. */}
+      <div className="rounded-2xl border border-[rgba(245,241,232,0.08)] bg-[linear-gradient(180deg,rgba(31,27,40,0.82)_0%,rgba(24,20,32,0.82)_100%)] mb-6 overflow-hidden">
+        <div className="grid grid-cols-3 divide-x divide-[rgba(245,241,232,0.06)]">
+          {[
+            { label: 'Done so far', value: completedCount, tint: 'text-[#4ade80]' },
+            { label: 'Still ahead', value: upcomingCount - upcomingDone, tint: 'text-[#f5f1e8]' },
+            { label: 'Action needed', value: urgentCount, tint: urgentCount > 0 ? 'text-[#f0b65a]' : 'text-[#475569]' },
+          ].map(({ label, value, tint }) => (
+            <div key={label} className="px-5 py-4 flex flex-col items-start">
+              <span className="font-mono text-[9.5px] tracking-[0.20em] uppercase text-ink-3 mb-1.5">{label}</span>
+              <span
+                className={`font-serif text-[34px] leading-none tabular-nums ${tint}`}
+                style={{ fontVariationSettings: '"opsz" 144' }}
+              >
+                {value}
+              </span>
+            </div>
+          ))}
+        </div>
+        {/* Inline progress strip lives at the bottom of the ribbon. */}
+        <div className="px-5 py-3.5 border-t border-[rgba(245,241,232,0.06)] bg-[rgba(0,0,0,0.18)]">
+          <div className="flex items-center justify-between mb-1.5">
+            <span className="font-mono text-[9.5px] tracking-[0.18em] uppercase text-ink-3">Progress on what's ahead</span>
+            <span className="font-mono text-[10.5px] tracking-[0.10em] text-ink-0">{progressPct}%</span>
           </div>
-        ))}
+          <div className="h-[3px] bg-[rgba(245,241,232,0.06)] rounded-full overflow-hidden">
+            <div
+              className="h-full bg-[linear-gradient(90deg,var(--gold-3),var(--gold))] rounded-full transition-[width] duration-500"
+              style={{ width: `${progressPct}%` }}
+            />
+          </div>
+        </div>
       </div>
 
-      {/* Progress (across remaining milestones, not whole life) */}
-      <div className="mb-8">
-        <div className="flex items-center justify-between mb-2">
-          <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-3">Progress on what's still ahead</span>
-          <span className="font-mono text-[11px] tracking-[0.14em] text-ink-0">{progressPct}%</span>
-        </div>
-        <div className="h-[3px] bg-[rgba(245,241,232,0.06)] rounded-full overflow-hidden">
-          <div
-            className="h-full bg-[linear-gradient(90deg,var(--gold-3),var(--gold))] rounded-full transition-[width] duration-500"
-            style={{ width: `${progressPct}%` }}
-          />
-        </div>
+      {/* Year quick-jump pills */}
+      <div className="flex items-center gap-2 mb-6 overflow-x-auto pb-1 -mx-1 px-1">
+        {GRADES.map((g) => {
+          const c = countsByGrade[g]
+          const isCurrent = g === currentGrade
+          const allDone = c.total > 0 && c.done === c.total
+          return (
+            <button
+              key={g}
+              onClick={() => jumpToGrade(g)}
+              className={`shrink-0 inline-flex items-center gap-2 px-3.5 py-2 rounded-full border text-[11px] font-mono tracking-[0.10em] uppercase transition-colors ${
+                isCurrent
+                  ? 'bg-[rgba(240,182,90,0.10)] border-[rgba(240,182,90,0.55)] text-[#f5f1e8] shadow-[0_0_0_3px_rgba(240,182,90,0.10)]'
+                  : 'bg-[rgba(245,241,232,0.02)] border-[rgba(245,241,232,0.10)] text-ink-2 hover:border-[rgba(240,182,90,0.40)] hover:text-ink-0'
+              }`}
+            >
+              <span className={`w-1.5 h-1.5 rounded-full ${isCurrent ? 'bg-[#f0b65a]' : allDone ? 'bg-[#4ade80]' : 'bg-[rgba(245,241,232,0.20)]'}`} />
+              <span className="font-medium">{GRADE_LABEL[g]}</span>
+              <span className="text-[10px] tracking-normal text-ink-3">{c.done}/{c.total}</span>
+            </button>
+          )
+        })}
       </div>
+
+      {/* Up-next highlight — only shown when there's an active milestone */}
+      {upNext && !showPast && (
+        <div className="mb-5 rounded-2xl border border-[rgba(240,182,90,0.28)] bg-[radial-gradient(600px_180px_at_0%_0%,rgba(240,182,90,0.10),transparent_60%),linear-gradient(180deg,rgba(31,27,40,0.85)_0%,rgba(24,20,32,0.85)_100%)] p-5">
+          <div className="flex items-center justify-between gap-3 mb-2 flex-wrap">
+            <span className="font-mono text-[10px] tracking-[0.22em] uppercase text-[#f0b65a]">Up next · {GRADE_LABEL[upNext.grade]} · {upNext.semester.charAt(0).toUpperCase() + upNext.semester.slice(1)}</span>
+            <span className={`text-[10px] font-semibold ${CATEGORY_META[upNext.category].color}`}>
+              {CATEGORY_META[upNext.category].label.toUpperCase()}
+            </span>
+          </div>
+          <div className="text-[15px] font-bold text-[#f5f1e8] mb-1">{upNext.title}</div>
+          <p className="text-xs text-[#94a3b8] leading-relaxed mb-3">{upNext.desc}</p>
+          <div className="flex flex-wrap gap-2">
+            {upNext.actionTo && upNext.actionLabel && (
+              <button
+                onClick={() => navigate(upNext.actionTo!)}
+                className="text-xs font-bold px-3.5 py-2 rounded-lg bg-[#f0b65a] text-black hover:bg-[#ffd28a] transition-colors"
+              >
+                {upNext.actionLabel} →
+              </button>
+            )}
+            <button
+              onClick={() => setExpanded(upNext.id)}
+              className="text-xs font-semibold px-3.5 py-2 rounded-lg bg-[rgba(245,241,232,0.04)] text-[#f5f1e8] hover:bg-[rgba(245,241,232,0.08)] transition-colors border border-[rgba(245,241,232,0.08)]"
+            >
+              See steps
+            </button>
+          </div>
+        </div>
+      )}
 
       {/* Past summary (collapsed) */}
       {(pastIncomplete.length > 0 || pastDone.length > 0) && (
@@ -136,7 +239,8 @@ export function Timeline() {
 
       {/* Timeline */}
       <div className="relative">
-        <div className="absolute left-[15px] top-2 bottom-2 w-px bg-[rgba(245,241,232,0.08)]" />
+        {/* Rail with subtle gradient */}
+        <div className="absolute left-[15px] top-2 bottom-2 w-px bg-[linear-gradient(180deg,rgba(245,241,232,0.04)_0%,rgba(245,241,232,0.12)_50%,rgba(245,241,232,0.04)_100%)]" />
 
         <div className="flex flex-col gap-0">
           {visible.map((m, i) => {
@@ -144,12 +248,13 @@ export function Timeline() {
             const showGradeHeading = !prev || prev.grade !== m.grade
             const isUpNextAnchor = !showPast && i === 0
             const isExpanded = expanded === m.id
+            const isAtCurrent = m.grade === currentGrade && m.semester === currentSemester && m.status !== 'done'
 
             const statusDot = {
               done: 'bg-[#4ade80] border-[#4ade80]',
               overdue: 'bg-[#f0b65a] border-[#f0b65a]',
               soon: 'bg-[#f0b65a] border-[#f0b65a] opacity-60',
-              future: 'bg-transparent border-[rgba(245,241,232,0.20)]',
+              future: 'bg-[rgba(20,16,28,1)] border-[rgba(245,241,232,0.20)]',
             }[m.status]
 
             const cardBorder = m.past
@@ -166,16 +271,39 @@ export function Timeline() {
             return (
               <div key={m.id} className="relative pl-10 pb-4" ref={isUpNextAnchor ? upNextRef : null}>
                 {showGradeHeading && (
-                  <div className="text-xs font-bold tracking-[2px] uppercase mb-3 -ml-10 pl-10 text-[#475569]">
-                    {GRADE_LABEL[m.grade]} Year
+                  <div id={`grade-${m.grade}`} className="-ml-10 pl-10 mb-4 mt-2 first:mt-0">
+                    <div className="flex items-baseline justify-between gap-3 pb-2 border-b border-[rgba(245,241,232,0.08)]">
+                      <div className="flex items-baseline gap-3">
+                        <span className="font-serif text-[22px] leading-none text-[#f5f1e8]" style={{ fontVariationSettings: '"opsz" 144' }}>
+                          {GRADE_LABEL[m.grade]}
+                        </span>
+                        <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-3">year</span>
+                      </div>
+                      <div className="flex items-center gap-2">
+                        <span className="font-mono text-[10px] tracking-[0.10em] text-ink-3">{schoolYearSpan(m.grade)}</span>
+                        {m.grade === currentGrade && (
+                          <span className="text-[9px] font-bold tracking-[0.12em] uppercase px-2 py-0.5 rounded bg-[rgba(240,182,90,0.15)] text-[#f0b65a] border border-[rgba(240,182,90,0.35)]">
+                            You're here
+                          </span>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 )}
 
-                <div className={`absolute left-[11px] top-[3px] w-[9px] h-[9px] rounded-full border-2 ${statusDot} z-10`} />
+                <div
+                  className={`absolute left-[11px] top-[3px] w-[9px] h-[9px] rounded-full border-2 ${statusDot} z-10 ${
+                    isAtCurrent ? 'shadow-[0_0_0_4px_rgba(240,182,90,0.18)]' : ''
+                  }`}
+                />
 
                 <button
                   onClick={() => setExpanded((cur) => (cur === m.id ? null : m.id))}
-                  className={`w-full text-left border ${cardBorder} ${ringFocus} rounded-xl p-5 bg-[rgba(255,255,255,0.02)] hover:bg-[rgba(245,241,232,0.04)] transition-colors group`}
+                  className={`w-full text-left border ${cardBorder} ${ringFocus} rounded-2xl p-5 ${
+                    isAtCurrent
+                      ? 'bg-[rgba(240,182,90,0.04)]'
+                      : 'bg-[rgba(255,255,255,0.02)]'
+                  } hover:bg-[rgba(245,241,232,0.05)] transition-colors group`}
                 >
                   {/* Top row: checkbox + title + chips */}
                   <div className="flex items-start justify-between gap-4 mb-2">
@@ -305,7 +433,7 @@ export function Timeline() {
         </div>
       </div>
 
-      {!profile && (
+      {!hasProfile && (
         <div className="mt-6 rounded-xl bg-[rgba(240,182,90,0.06)] border border-[rgba(240,182,90,0.18)] p-5 flex items-center justify-between gap-4">
           <div>
             <div className="text-sm font-bold text-[#f0b65a] mb-0.5">Personalize this timeline</div>

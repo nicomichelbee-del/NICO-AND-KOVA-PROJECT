@@ -1,0 +1,78 @@
+{
+  "_note": "Edit this file weekly. When you spot a sound trending in your TikTok/IG feed, add it here. The content agent will match drafts to these sounds. Keep 8-15 active. Mark stale ones inactive instead of deleting.",
+  "_lastUpdated": "2026-05-03",
+  "sounds": [
+    {
+      "id": "motivational-build",
+      "platform": "both",
+      "title": "Cinematic motivational build (orchestral swell + drop)",
+      "vibe": "epic, inspiring, slow-burn buildup",
+      "bestFor": ["transformation reveal", "before/after", "highlight reel intro", "pep talk"],
+      "exampleTrack": "any 'Hans Zimmer-style' trending build — search 'cinematic motivational' in TT sound library",
+      "active": true
+    },
+    {
+      "id": "pov-text-trend",
+      "platform": "tiktok",
+      "title": "POV text-on-screen trend (chill lo-fi beat)",
+      "vibe": "relatable, conversational, text-heavy",
+      "bestFor": ["athlete pain points", "parent confessions", "recruiting myths"],
+      "exampleTrack": "rotating lo-fi instrumentals — pick the top trending one this week",
+      "active": true
+    },
+    {
+      "id": "hype-trap",
+      "platform": "both",
+      "title": "Hype trap beat (heavy 808s)",
+      "vibe": "aggressive, energetic, gym-energy",
+      "bestFor": ["training montage", "goal compilations", "1v1 wins"],
+      "exampleTrack": "Travis Scott / Metro Boomin instrumental trends",
+      "active": true
+    },
+    {
+      "id": "emotional-piano",
+      "platform": "both",
+      "title": "Emotional piano (sad-to-hopeful arc)",
+      "vibe": "vulnerable, story-driven, tearjerker",
+      "bestFor": ["recruitment journey story", "commitment reveal", "parent perspective"],
+      "exampleTrack": "Ludovico Einaudi-style trends, or 'Until I Found You'-type ballads",
+      "active": true
+    },
+    {
+      "id": "fast-cuts-edm",
+      "platform": "both",
+      "title": "Fast-cut EDM (drop syncs to clip changes)",
+      "vibe": "high-energy, rapid-fire, attention-grabbing",
+      "bestFor": ["highlight compilations", "tip listicles", "school comparisons"],
+      "exampleTrack": "phonk / hardstyle drop trends",
+      "active": true
+    },
+    {
+      "id": "voiceover-quiet",
+      "platform": "tiktok",
+      "title": "Quiet ambient under voiceover",
+      "vibe": "advisory, expert-tone, talking-head",
+      "bestFor": ["coach advice", "recruiting tip", "myth busting", "explainer"],
+      "exampleTrack": "any soft ambient pad — minimal so the voiceover carries",
+      "active": true
+    },
+    {
+      "id": "nostalgic-2010s",
+      "platform": "instagram",
+      "title": "Nostalgic 2010s pop (slowed + reverb)",
+      "vibe": "wistful, throwback, emotional",
+      "bestFor": ["high school years montage", "senior season recap", "team friendship clips"],
+      "exampleTrack": "slowed/reverb covers of pop hits — currently a recurring IG Reels trend",
+      "active": true
+    },
+    {
+      "id": "comedy-meme-sting",
+      "platform": "both",
+      "title": "Comedy meme sting (short looping audio)",
+      "vibe": "punchy, ironic, joke setup-payoff",
+      "bestFor": ["recruiting frustrations", "coach response fails", "parent/kid moments"],
+      "exampleTrack": "any sub-10-second meme audio currently looping",
+      "active": true
+    }
+  ]
+}

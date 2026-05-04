@@ -36,11 +36,6 @@ export function Signup() {
     else navigate('/dashboard')
   }
 
-  function handleTestMode() {
-    localStorage.setItem('testMode', 'true')
-    navigate('/dashboard')
-  }
-
   return (
     <div className="kr-auth-shell flex items-center justify-center px-4 py-16">
       <div className="relative w-full max-w-[440px]" data-reveal-on-load>
@@ -68,10 +63,6 @@ export function Signup() {
               {error}
             </div>
           )}
-
-          <Button onClick={handleTestMode} variant="gold" size="md" className="w-full mb-4">
-            Explore as guest — no account needed
-          </Button>
 
           <button
             onClick={handleGoogle}
@@ -105,7 +96,10 @@ export function Signup() {
           </form>
 
           <p className="text-xs text-ink-3 text-center mt-4 leading-[1.6]">
-            By signing up you agree to our Terms of Service.
+            By signing up you agree to our{' '}
+            <Link to="/terms" className="text-gold hover:underline underline-offset-4">Terms of Service</Link>{' '}
+            and{' '}
+            <Link to="/privacy" className="text-gold hover:underline underline-offset-4">Privacy Policy</Link>.
           </p>
           <p className="text-sm text-ink-2 text-center mt-3">
             Already a member?{' '}

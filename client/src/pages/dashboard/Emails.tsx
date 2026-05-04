@@ -31,6 +31,20 @@ export function Emails() {
   const [history, setHistory] = useState<CoachEmail[]>([])
   const [copied, setCopied] = useState(false)
 
+  // Snapshot of the school/division/gender used for the last successful coach
+  // lookup. When the user edits fields after a coach is found, surface a Save
+  // button so they can re-run the lookup against the new selection.
+  const [appliedLookup, setAppliedLookup] = useState<{
+    school: string
+    division: Division
+    gender: 'mens' | 'womens'
+  } | null>(null)
+  const lookupDirty = coachFound && appliedLookup !== null && (
+    appliedLookup.school !== school ||
+    appliedLookup.division !== division ||
+    appliedLookup.gender !== gender
+  )
+
   // Browser state
   const [directory, setDirectory] = useState<SchoolDirectoryEntry[]>([])
   const [region, setRegion] = useState<RegionTab>('All')
@@ -97,6 +111,7 @@ export function Emails() {
       setCoachEmail(result.coachEmail)
       setCoachSource(result.source ?? null)
       setCoachFound(true)
+      setAppliedLookup({ school, division, gender })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to find coach')
     } finally { setFindingCoach(false) }
@@ -139,7 +154,7 @@ export function Emails() {
       />
 
       {/* School browser: region tabs → optional conference filter → school list */}
-      <Card className="p-6 mb-8">
+      <Card className="p-6 mb-6">
         <div className="flex flex-col gap-3 mb-5">
           <div className="flex items-center justify-between gap-4 flex-wrap">
             <div className="flex flex-wrap gap-2">
@@ -229,25 +244,25 @@ export function Emails() {
         </p>
       </Card>
 
-      <div className="grid grid-cols-5 gap-8 mb-10">
+      <div className="grid grid-cols-5 gap-6 mb-8">
         {/* Form */}
         <div className="col-span-2">
-          <Card className="p-6 flex flex-col gap-4">
+          <Card className="p-6 flex flex-col gap-7">
             <Input
               label="School / University"
               value={school}
-              onChange={(e) => { setSchool(e.target.value); resetCoach() }}
+              onChange={(e) => setSchool(e.target.value)}
               placeholder="Wake Forest University"
             />
 
             {/* Division */}
             <div>
-              <label className="text-sm font-medium text-[#f5f1e8] block mb-2">Division</label>
+              <label className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-[#9a9385] block mb-2.5">Division</label>
               <div className="flex flex-wrap gap-2">
                 {DIVISIONS.map((d) => (
                   <button
                     key={d}
-                    onClick={() => { setDivision(d); resetCoach() }}
+                    onClick={() => setDivision(d)}
                     className={`px-3 py-1.5 rounded text-xs font-semibold border transition-all ${
                       division === d
                         ? 'bg-[#f0b65a] text-black border-[#f0b65a]'
@@ -262,12 +277,12 @@ export function Emails() {
 
             {/* Gender */}
             <div>
-              <label className="text-sm font-medium text-[#f5f1e8] block mb-2">Program</label>
+              <label className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-[#9a9385] block mb-2.5">Program</label>
               <div className="flex gap-2">
                 {[{ id: 'womens', label: "Women's" }, { id: 'mens', label: "Men's" }].map((g) => (
                   <button
                     key={g.id}
-                    onClick={() => { setGender(g.id as 'mens' | 'womens'); resetCoach() }}
+                    onClick={() => setGender(g.id as 'mens' | 'womens')}
                     className={`flex-1 py-1.5 rounded text-xs font-semibold border transition-all ${
                       gender === g.id
                         ? 'bg-[#f0b65a] text-black border-[#f0b65a]'
@@ -280,7 +295,8 @@ export function Emails() {
               </div>
             </div>
 
-            {/* Find Coach */}
+            {/* Find Coach — visually separated from form fields above */}
+            <div className="pt-5 mt-1 border-t border-[rgba(245,241,232,0.08)]">
             {!coachFound ? (
               <Button onClick={handleFindCoach} disabled={findingCoach || !school} variant="outline" className="w-full">
                 {findingCoach ? 'Looking up coach...' : '🔍 Find Coach'}
@@ -299,13 +315,13 @@ export function Emails() {
                     <span className="text-xs text-[#fbbf24]">⚠️ Verify before sending</span>
                   )}
                 </div>
-                <Input
-                  label="Coach name"
-                  value={coachName}
-                  onChange={(e) => setCoachName(e.target.value)}
-                  placeholder="Coach name"
-                />
-                <div className="mt-2">
+                <div className="flex flex-col gap-3">
+                  <Input
+                    label="Coach name"
+                    value={coachName}
+                    onChange={(e) => setCoachName(e.target.value)}
+                    placeholder="Coach name"
+                  />
                   <Input
                     label="Coach email"
                     value={coachEmail}
@@ -313,22 +329,35 @@ export function Emails() {
                     placeholder="coach@school.edu"
                   />
                 </div>
-                <button onClick={resetCoach} className="text-xs text-[#9a9385] hover:text-[#f5f1e8] mt-2">
+                <button onClick={resetCoach} className="text-xs text-[#9a9385] hover:text-[#f5f1e8] mt-3">
                   ← Search different coach
                 </button>
+                {lookupDirty && (
+                  <div className="mt-3 pt-3 border-t border-[rgba(245,241,232,0.10)] flex items-center justify-between gap-2 flex-wrap">
+                    <span className="text-[11px] text-[#f0b65a]">
+                      Fields changed — save to apply.
+                    </span>
+                    <Button onClick={handleFindCoach} disabled={findingCoach} size="sm">
+                      {findingCoach ? 'Saving…' : 'Save changes'}
+                    </Button>
+                  </div>
+                )}
               </div>
             )}
+            </div>
 
-            {error && <p className="text-xs text-red-400">{error}</p>}
+            {error && <p className="text-xs text-red-400 -mt-2">{error}</p>}
 
-            <Button
-              onClick={handleGenerate}
-              disabled={loading || !coachFound}
-              className="w-full mt-1"
-            >
-              {loading ? 'Generating...' : 'Generate Email'}
-            </Button>
-            <p className="text-xs text-[#9a9385] text-center">3 free emails · Unlimited with Pro</p>
+            <div>
+              <Button
+                onClick={handleGenerate}
+                disabled={loading || !coachFound}
+                className="w-full"
+              >
+                {loading ? 'Generating...' : 'Generate Email'}
+              </Button>
+              <p className="text-[11px] text-[#9a9385] text-center mt-2">3 free emails · Unlimited with Pro</p>
+            </div>
           </Card>
         </div>
 
@@ -356,10 +385,10 @@ export function Emails() {
               </div>
             </Card>
           ) : (
-            <Card className="p-16 text-center h-full flex flex-col items-center justify-center">
-              <div className="text-4xl mb-4">✉️</div>
-              <div className="font-serif text-lg font-bold text-[#f5f1e8] mb-2">Ready to send</div>
-              <p className="text-sm text-[#9a9385] max-w-xs">Pick a school above (filter by region or conference), then Find Coach and Generate Email.</p>
+            <Card className="p-10 text-center h-full flex flex-col items-center justify-center">
+              <div className="text-3xl mb-3">✉️</div>
+              <div className="font-serif text-lg font-bold text-[#f5f1e8] mb-1.5">Ready to send</div>
+              <p className="text-sm text-[#9a9385] max-w-xs leading-relaxed">Pick a school above (filter by region or conference), then Find Coach and Generate Email.</p>
             </Card>
           )}
         </div>
@@ -368,8 +397,8 @@ export function Emails() {
       {/* History */}
       {history.length > 0 && (
         <div>
-          <h2 className="font-serif text-xl font-bold text-[#f5f1e8] mb-5">Email history</h2>
-          <div className="flex flex-col gap-3">
+          <h2 className="font-serif text-xl font-bold text-[#f5f1e8] mb-4">Email history</h2>
+          <div className="flex flex-col gap-2.5">
             {history.map((email) => (
               <Card key={email.id} className="p-4 flex items-center gap-4">
                 <div className="flex-1 min-w-0">

@@ -34,6 +34,20 @@ export function RosterIntel() {
   const [error, setError] = useState('')
   const [expandedRow, setExpandedRow] = useState<string | null>(null)
 
+  // Snapshot of fields used for the last successful search. Drives the
+  // "Save changes" CTA — only shows when the current selection differs.
+  const [appliedFilters, setAppliedFilters] = useState<{
+    gender: 'mens' | 'womens'
+    division: Division | 'all'
+    region: Region
+  } | null>(null)
+
+  const filtersDirty = appliedFilters !== null && (
+    appliedFilters.gender !== gender ||
+    appliedFilters.division !== division ||
+    appliedFilters.region !== regionFilter
+  )
+
   async function handleSearch() {
     setError(''); setLoading(true); setPrograms([]); setPositionSummary([])
     try {
@@ -41,6 +55,7 @@ export function RosterIntel() {
       const { programs: found, positionSummary: summary } = await getRosterIntel(gender, division, athletePosition)
       setPrograms(found)
       setPositionSummary(summary)
+      setAppliedFilters({ gender, division, region: regionFilter })
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to load roster data')
     } finally { setLoading(false) }
@@ -134,9 +149,19 @@ export function RosterIntel() {
         </div>
 
         {error && <p className="text-xs text-red-400 mb-3">{error}</p>}
-        <Button onClick={handleSearch} disabled={loading}>
-          {loading ? 'Loading...' : '📊 Find Recruiting Programs'}
-        </Button>
+        <div className="flex items-center gap-3 flex-wrap">
+          <Button onClick={handleSearch} disabled={loading}>
+            {loading ? 'Loading...' : appliedFilters ? '📊 Refresh Programs' : '📊 Find Recruiting Programs'}
+          </Button>
+          {filtersDirty && !loading && (
+            <>
+              <Button onClick={handleSearch} variant="outline">
+                Save changes
+              </Button>
+              <span className="text-[11px] text-[#9a9385] italic">Filters changed — save to apply.</span>
+            </>
+          )}
+        </div>
       </Card>
 
       {positionSummary.length > 0 && (

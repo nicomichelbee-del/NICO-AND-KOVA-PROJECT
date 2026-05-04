@@ -1,0 +1,120 @@
+{
+  "unc:womens": {
+    "schoolId": "unc",
+    "gender": "womens",
+    "classYear": 2026,
+    "recruitCount": 12,
+    "knownCommits": [
+      {
+        "name": "Scottie Antonucci",
+        "position": "MF",
+        "hometown": "Rancho Cucamonga, CA",
+        "club": "Legends FC"
+      },
+      {
+        "name": "Maggie Currie",
+        "position": "MF",
+        "hometown": "San Jose, CA",
+        "club": "MVLA"
+      },
+      {
+        "name": "Leah Kuklick",
+        "position": "FW",
+        "hometown": null,
+        "club": "NC Courage ECNL"
+      },
+      {
+        "name": "Amari Manning",
+        "position": "FW",
+        "hometown": "Flemington, NJ",
+        "club": "Players Development Academy"
+      },
+      {
+        "name": "Ella Martinez",
+        "position": "MF",
+        "hometown": "Marietta, GA",
+        "club": "Carolina Ascent"
+      },
+      {
+        "name": "Cali O'Neill",
+        "position": "DF",
+        "hometown": "Durham, NC",
+        "club": "NC Courage"
+      },
+      {
+        "name": "Sealey Strawn",
+        "position": "FW",
+        "hometown": "Prosper, TX",
+        "club": "Dallas Trinity FC"
+      },
+      {
+        "name": "Peyton Trayer",
+        "position": "GK",
+        "hometown": "Aliso Viejo, CA",
+        "club": "Slammers FC HB Koge"
+      }
+    ],
+    "source": "llm-research",
+    "confidence": "low",
+    "lastVerified": "2026-05-03T23:03:49.302Z"
+  },
+  "american:womens": {
+    "schoolId": "american",
+    "gender": "womens",
+    "classYear": 2026,
+    "recruitCount": 8,
+    "knownCommits": [
+      {
+        "name": "Laila Britford",
+        "position": "FW",
+        "hometown": "Gainesville, VA",
+        "club": "Virginia Development Academy"
+      },
+      {
+        "name": "Julianna Critchley",
+        "position": null,
+        "hometown": "Denville, NJ",
+        "club": null
+      },
+      {
+        "name": "Hailey DeTuro",
+        "position": null,
+        "hometown": "Aldie, VA",
+        "club": null
+      },
+      {
+        "name": "Autumn Freeman",
+        "position": "DF",
+        "hometown": "Lanham, MD",
+        "club": "Bethesda SC"
+      },
+      {
+        "name": "Piper Garcia",
+        "position": "MF",
+        "hometown": "Flower Mound, TX",
+        "club": "DKSC ECNL"
+      },
+      {
+        "name": "Amaya Peterson",
+        "position": "DF",
+        "hometown": "San Diego, CA",
+        "club": "Rebels SC"
+      },
+      {
+        "name": "Eva Whitmyer",
+        "position": null,
+        "hometown": "Indianapolis, IN",
+        "club": null
+      },
+      {
+        "name": "Julia Zeug",
+        "position": null,
+        "hometown": "Ramsey, NJ",
+        "club": null
+      }
+    ],
+    "source": "llm-research",
+    "confidence": "low",
+    "lastVerified": "2026-05-03T23:05:47.594Z"
+  }
+}

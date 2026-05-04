@@ -1,0 +1,284 @@
+{
+  "unc:mens": {
+    "schoolId": "unc",
+    "gender": "mens",
+    "recordHistory": [
+      {
+        "season": 2024,
+        "wins": 9,
+        "losses": 4,
+        "ties": 5,
+        "conferenceRecord": "4-3-1",
+        "ncaaTourneyRound": "First Round"
+      },
+      {
+        "season": 2023,
+        "wins": 10,
+        "losses": 4,
+        "ties": 5,
+        "conferenceRecord": "2-3-3",
+        "ncaaTourneyRound": "Second Round"
+      },
+      {
+        "season": 2022,
+        "wins": 8,
+        "losses": 6,
+        "ties": 5,
+        "conferenceRecord": "2-2-4",
+        "ncaaTourneyRound": "First Round"
+      }
+    ],
+    "source": "mixed",
+    "confidence": "medium",
+    "lastVerified": "2026-05-03T22:57:10.196Z"
+  },
+  "unc:womens": {
+    "schoolId": "unc",
+    "gender": "womens",
+    "recordHistory": [
+      {
+        "season": 2024,
+        "wins": 22,
+        "losses": 5,
+        "ties": 0,
+        "conferenceRecord": "7-3-0",
+        "ncaaTourneyRound": "Champion"
+      },
+      {
+        "season": 2022,
+        "wins": 20,
+        "losses": 5,
+        "ties": 1,
+        "conferenceRecord": "8-2-0",
+        "ncaaTourneyRound": "Final Four"
+      }
+    ],
+    "source": "mixed",
+    "confidence": "medium",
+    "lastVerified": "2026-05-03T22:57:18.194Z"
+  },
+  "stanford:mens": {
+    "schoolId": "stanford",
+    "gender": "mens",
+    "recordHistory": [
+      {
+        "season": 2024,
+        "wins": 9,
+        "losses": 5,
+        "ties": 6,
+        "conferenceRecord": "3-2-3",
+        "ncaaTourneyRound": "Second Round"
+      },
+      {
+        "season": 2023,
+        "wins": 12,
+        "losses": 2,
+        "ties": 6,
+        "conferenceRecord": null,
+        "ncaaTourneyRound": "Quarterfinals"
+      },
+      {
+        "season": 2022,
+        "wins": 6,
+        "losses": 6,
+        "ties": 6,
+        "conferenceRecord": "2-4-4",
+        "ncaaTourneyRound": null
+      }
+    ],
+    "source": "mixed",
+    "confidence": "medium",
+    "lastVerified": "2026-05-03T22:57:32.440Z"
+  },
+  "stanford:womens": {
+    "schoolId": "stanford",
+    "gender": "womens",
+    "recordHistory": [
+      {
+        "season": 2024,
+        "wins": 16,
+        "losses": 5,
+        "ties": 2,
+        "conferenceRecord": "5-4-1",
+        "ncaaTourneyRound": "Final Four"
+      },
+      {
+        "season": 2023,
+        "wins": 20,
+        "losses": 1,
+        "ties": 4,
+        "conferenceRecord": "8-0-3",
+        "ncaaTourneyRound": "Championship"
+      },
+      {
+        "season": 2022,
+        "wins": 17,
+        "losses": 2,
+        "ties": 3,
+        "conferenceRecord": "9-1-1",
+        "ncaaTourneyRound": "Second Round"
+      }
+    ],
+    "source": "mixed",
+    "confidence": "medium",
+    "lastVerified": "2026-05-03T22:57:42.423Z"
+  },
+  "abilene-christian:womens": {
+    "schoolId": "abilene-christian",
+    "gender": "womens",
+    "recordHistory": [
+      {
+        "season": 2024,
+        "wins": 2,
+        "losses": 7,
+        "ties": 8,
+        "conferenceRecord": "0-5-2",
+        "ncaaTourneyRound": null
+      }
+    ],
+    "source": "mixed",
+    "confidence": "low",
+    "lastVerified": "2026-05-03T22:58:17.448Z"
+  },
+  "alabama-am:womens": {
+    "schoolId": "alabama-am",
+    "gender": "womens",
+    "recordHistory": [
+      {
+        "season": 2024,
+        "wins": 7,
+        "losses": 11,
+        "ties": 1,
+        "conferenceRecord": "4-3-1",
+        "ncaaTourneyRound": null
+      },
+      {
+        "season": 2023,
+        "wins": 3,
+        "losses": 16,
+        "ties": 0,
+        "conferenceRecord": "3-6",
+        "ncaaTourneyRound": null
+      },
+      {
+        "season": 2022,
+        "wins": 4,
+        "losses": 12,
+        "ties": 2,
+        "conferenceRecord": "2-5-2",
+        "ncaaTourneyRound": null
+      }
+    ],
+    "source": "mixed",
+    "confidence": "medium",
+    "lastVerified": "2026-05-03T22:58:29.946Z"
+  },
+  "american:mens": {
+    "schoolId": "american",
+    "gender": "mens",
+    "recordHistory": [
+      {
+        "season": 2024,
+        "wins": 5,
+        "losses": 5,
+        "ties": 9,
+        "conferenceRecord": "4-2-3",
+        "ncaaTourneyRound": null
+      },
+      {
+        "season": 2023,
+        "wins": 6,
+        "losses": 5,
+        "ties": 5,
+        "conferenceRecord": "3-3-3",
+        "ncaaTourneyRound": null
+      },
+      {
+        "season": 2022,
+        "wins": 8,
+        "losses": 7,
+        "ties": 5,
+        "conferenceRecord": "3-4-5",
+        "ncaaTourneyRound": null
+      }
+    ],
+    "source": "mixed",
+    "confidence": "medium",
+    "lastVerified": "2026-05-03T22:58:38.324Z"
+  },
+  "american:womens": {
+    "schoolId": "american",
+    "gender": "womens",
+    "recordHistory": [
+      {
+        "season": 2024,
+        "wins": 6,
+        "losses": 6,
+        "ties": 3,
+        "conferenceRecord": "2-5-2",
+        "ncaaTourneyRound": null
+      },
+      {
+        "season": 2023,
+        "wins": 3,
+        "losses": 9,
+        "ties": 4,
+        "conferenceRecord": "3-5-1",
+        "ncaaTourneyRound": null
+      },
+      {
+        "season": 2022,
+        "wins": 3,
+        "losses": 6,
+        "ties": 6,
+        "conferenceRecord": "2-5-2",
+        "ncaaTourneyRound": null
+      }
+    ],
+    "source": "mixed",
+    "confidence": "medium",
+    "lastVerified": "2026-05-03T22:58:44.924Z"
+  },
+  "appstate:womens": {
+    "schoolId": "appstate",
+    "gender": "womens",
+    "recordHistory": [
+      {
+        "season": 2023,
+        "wins": 9,
+        "losses": 6,
+        "ties": 3,
+        "conferenceRecord": "6-2-2",
+        "ncaaTourneyRound": null
+      }
+    ],
+    "source": "mixed",
+    "confidence": "low",
+    "lastVerified": "2026-05-03T22:58:57.499Z"
+  },
+  "arizonastate:womens": {
+    "schoolId": "arizonastate",
+    "gender": "womens",
+    "recordHistory": [
+      {
+        "season": 2023,
+        "wins": 10,
+        "losses": 7,
+        "ties": 4,
+        "conferenceRecord": "5-5-1",
+        "ncaaTourneyRound": null
+      },
+      {
+        "season": 2022,
+        "wins": 9,
+        "losses": 6,
+        "ties": 3,
+        "conferenceRecord": "5-5-1",
+        "ncaaTourneyRound": "First Round"
+      }
+    ],
+    "source": "mixed",
+    "confidence": "medium",
+    "lastVerified": "2026-05-03T22:59:14.683Z"
+  }
+}

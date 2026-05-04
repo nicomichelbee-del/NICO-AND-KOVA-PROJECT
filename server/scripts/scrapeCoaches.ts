@@ -68,6 +68,9 @@ const ARG_LIMIT = args.limit ? parseInt(args.limit, 10) : Infinity
 const ARG_SCHOOL = args.school as string | undefined
 const ARG_RESUME = args.resume === 'true'
 const ARG_CONCURRENCY = args.concurrency ? parseInt(args.concurrency, 10) : 3
+const ARG_DIVISIONS = args.division
+  ? new Set((args.division as string).split(',').map((d) => d.trim().toUpperCase()))
+  : null
 
 // ── cache ─────────────────────────────────────────────────────────────────
 
@@ -424,6 +427,7 @@ async function main() {
   const tasks: Array<{ school: SchoolRecord; gender: 'mens' | 'womens' }> = []
   for (const school of allSchools) {
     if (ARG_SCHOOL && school.id !== ARG_SCHOOL) continue
+    if (ARG_DIVISIONS && !ARG_DIVISIONS.has(school.division.toUpperCase())) continue
     for (const gender of ['mens', 'womens'] as const) {
       const key = `${school.id}:${gender}`
       // Skip terminal-good states on --resume. `email-inferred` is preserved

@@ -24,6 +24,23 @@ const FOOT_OPTIONS = [
 
 const REGIONS = ['Northeast', 'Southeast', 'Midwest', 'South', 'Southwest', 'West', 'Northwest']
 
+// Build the grad-year chip list: the four current high-school classes plus
+// next year's incoming freshman (rising 9th graders planning ahead).
+// Academic year flips in September, so before Sep we're still in the previous one.
+function buildGradYearOptions(): { year: number; label: string }[] {
+  const now = new Date()
+  const academicYear = now.getMonth() >= 8 ? now.getFullYear() : now.getFullYear() - 1
+  // Current senior graduates at academicYear + 1.
+  const seniorYear = academicYear + 1
+  return [
+    { year: seniorYear,     label: 'Senior' },
+    { year: seniorYear + 1, label: 'Junior' },
+    { year: seniorYear + 2, label: 'Sophomore' },
+    { year: seniorYear + 3, label: 'Freshman' },
+    { year: seniorYear + 4, label: '8th grade' },
+  ]
+}
+
 function computeStrength(p: Partial<AthleteProfileRecord>): number {
   const checks: boolean[] = [
     !!p.full_name,
@@ -180,15 +197,6 @@ export function Profile() {
               placeholder="Alex Morgan"
             />
           </Field>
-          <Field label="Graduation year">
-            <TextInput
-              type="number"
-              value={draft.graduation_year?.toString() ?? ''}
-              onChange={(v) => update('graduation_year', v ? Number(v) : null)}
-              onBlur={() => persist({ graduation_year: draft.graduation_year ?? null })}
-              placeholder="2027"
-            />
-          </Field>
           <Field label="High school">
             <TextInput
               value={draft.high_school_name ?? ''}
@@ -198,6 +206,21 @@ export function Profile() {
             />
           </Field>
         </div>
+
+        <Field label="Class (graduation year)">
+          <ChipRow cols={5}>
+            {buildGradYearOptions().map(({ year, label }) => (
+              <Chip
+                key={year}
+                active={draft.graduation_year === year}
+                onClick={() => { update('graduation_year', year); persist({ graduation_year: year }) }}
+              >
+                <span className="font-bold text-xs">{label}</span>
+                <span className="block text-[10px] text-[#9a9385] mt-0.5">Class of {year}</span>
+              </Chip>
+            ))}
+          </ChipRow>
+        </Field>
       </Section>
 
       {/* Soccer */}

@@ -79,6 +79,21 @@ function useScrollMotion() {
 }
 
 /* ============================================================
+   REDUCED MOTION
+   ============================================================ */
+function usePrefersReducedMotion() {
+  const [reduced, setReduced] = useState(false)
+  useEffect(() => {
+    const mq = window.matchMedia('(prefers-reduced-motion: reduce)')
+    const apply = () => setReduced(mq.matches)
+    apply()
+    mq.addEventListener?.('change', apply)
+    return () => mq.removeEventListener?.('change', apply)
+  }, [])
+  return reduced
+}
+
+/* ============================================================
    ICONS
    ============================================================ */
 type IconName =
@@ -156,6 +171,7 @@ function Navbar() {
           <a href="#how">How it works</a>
           <a href="#pricing">Pricing</a>
           <a href="#parents">For Parents</a>
+          <Link to="/about">About us</Link>
         </nav>
         <div className="knav-cta">
           <Link to="/login" className="nav-signin hide-mobile">Sign in</Link>
@@ -175,6 +191,7 @@ function Navbar() {
           <a href="#how" onClick={() => setOpen(false)}>How it works</a>
           <a href="#pricing" onClick={() => setOpen(false)}>Pricing</a>
           <a href="#parents" onClick={() => setOpen(false)}>For Parents</a>
+          <Link to="/about" onClick={() => setOpen(false)}>About us</Link>
           <Link to="/login" onClick={() => setOpen(false)}>Sign in</Link>
         </div>
       )}
@@ -185,11 +202,39 @@ function Navbar() {
 /* ============================================================
    HERO
    ============================================================ */
+const KICKER_OUTCOMES = ['recruited.', 'noticed.', 'seen.', 'signed.']
+const HERO_WORDS = ['smartest', 'quickest', 'sharpest', 'boldest']
+
 function Hero() {
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  const reduced = usePrefersReducedMotion()
+  const [kickerIdx, setKickerIdx] = useState(0)
+  const [heroIdx, setHeroIdx] = useState(0)
+
   useEffect(() => {
     if (videoRef.current) videoRef.current.playbackRate = 0.75
   }, [])
+
+  useEffect(() => {
+    if (reduced) return
+    // Kicker every 3.4s. Hero H1 every 3.4s but offset 1.7s so they never swap together.
+    const kickerId = window.setInterval(() => {
+      setKickerIdx((i) => (i + 1) % KICKER_OUTCOMES.length)
+    }, 3400)
+    let heroId = 0
+    const heroDelay = window.setTimeout(() => {
+      setHeroIdx((i) => (i + 1) % HERO_WORDS.length)
+      heroId = window.setInterval(() => {
+        setHeroIdx((i) => (i + 1) % HERO_WORDS.length)
+      }, 3400)
+    }, 1700)
+    return () => {
+      window.clearInterval(kickerId)
+      window.clearTimeout(heroDelay)
+      if (heroId) window.clearInterval(heroId)
+    }
+  }, [reduced])
+
   return (
     <section className="hero">
       <div className="hero-video-wrap">
@@ -208,18 +253,27 @@ function Hero() {
         <div className="hero-eyebrow">
           <span className="hero-kicker">
             <span className="hk-line" />
-            <span className="hk-text serif">The smartest way to get recruited</span>
+            <span className="hk-text serif">
+              AI that puts in the work to get you{' '}
+              <span className="hk-rotator" key={`hk-${kickerIdx}`}>
+                {KICKER_OUTCOMES[kickerIdx]}
+              </span>
+            </span>
             <span className="hk-line" />
           </span>
         </div>
 
         <h1 className="h-display hero-headline">
-          The <span className="accent">smartest</span> way<br />
+          The{' '}
+          <span className="accent hero-rotator" key={`hr-${heroIdx}`}>
+            {HERO_WORDS[heroIdx]}
+          </span>
+          {' '}way<br />
           to get recruited.
         </h1>
 
         <p className="lede hero-sub hero-sub-editorial">
-          Your <span className="serif accent">AI recruiting counselor</span>. Match with the right college programs, email the right coaches, and track every response&mdash;{' '}
+          Your <span className="serif accent">personal recruiting coach</span>. Match with the right college programs, email the right coaches, and track every response.{' '}
           <span className="hero-sub-divs">D1 · D2 · D3 · NAIA · JUCO</span>.
         </p>
 
@@ -562,26 +616,30 @@ function RosterSpotlight() {
 }
 
 /* ============================================================
-   CINEMATIC BAND
+   CINEMATIC BAND — full-bleed video interstitial
    ============================================================ */
 function CinematicBand() {
   return (
-    <section className="cinematic-band">
+    <section className="cinematic-band" aria-hidden="false">
       <div className="cb-video-wrap">
-        <video className="cb-video" autoPlay loop muted playsInline src="/kickriq/video-roster.mp4" />
+        <video
+          className="cb-video"
+          autoPlay loop muted playsInline
+          src="/kickriq/video-roster.mp4"
+        />
         <div className="cb-veil" />
         <div className="cb-grain" />
       </div>
-      <div className="wrap cb-inner" data-reveal>
+      <div className="wrap cb-inner">
         <div className="cb-marker kr-mono">
           <span className="cb-dot" />
           <span>Made by players · For players</span>
         </div>
-        <h3 className="cb-quote serif" data-words>
+        <h3 className="cb-quote serif" data-reveal>
           "We sent the cold emails. We went to the showcases.<br />
           We built <span className="accent">the tool we wish we'd had</span>."
         </h3>
-        <div className="cb-attrib kr-mono">— Nicolas &amp; Alexander, Co-founders</div>
+        <div className="cb-attrib kr-mono">Nicolas &amp; Alexander, Co-founders</div>
       </div>
     </section>
   )
@@ -592,7 +650,7 @@ function CinematicBand() {
    ============================================================ */
 function HowItWorks() {
   const steps = [
-    { n: '01', title: 'Build your profile', body: 'Position, class year, club, GPA, highlight tape. Takes 6 minutes — most of it pulled in automatically.', pill: 'PROFILE' },
+    { n: '01', title: 'Build your profile', body: 'Position, class year, club, GPA, highlight tape. Takes 6 minutes. Most of it pulled in automatically.', pill: 'PROFILE' },
     { n: '02', title: 'Match with schools', body: 'AI scores every program on athletic, academic, and cost fit. You get a ranked shortlist, not a 600-school dump.', pill: 'MATCH' },
     { n: '03', title: 'Email coaches', body: "Personalized drafts sent from your own Gmail. Each one references the coach's system, season, and your fit.", pill: 'OUTREACH' },
     { n: '04', title: 'Track responses', body: 'Opens, replies, follow-ups, visits. Every coach conversation in one timeline you can actually act on.', pill: 'TRACK' },
@@ -632,12 +690,12 @@ function HowItWorks() {
    ============================================================ */
 function FeatureGrid() {
   const features: Array<{ icon: IconName; title: string; body: string; tag: string }> = [
-    { icon: 'video',    title: 'Highlight Video Rater', body: 'AI scores your tape on technique, decision-making, and athleticism — and tells you the clips to cut.', tag: 'AI' },
+    { icon: 'video',    title: 'Highlight Video Rater', body: 'AI scores your tape on technique, decision-making, and athleticism, and tells you the clips to cut.', tag: 'AI' },
     { icon: 'track',    title: 'Outreach Tracker',      body: 'Every email, every open, every reply. One timeline per coach, automatic.', tag: 'CRM' },
-    { icon: 'follow',   title: 'Follow-up Assistant',   body: 'AI nudges you exactly when to follow up — not too eager, not forgotten.', tag: 'AI' },
+    { icon: 'follow',   title: 'Follow-up Assistant',   body: 'AI nudges you exactly when to follow up. Not too eager, not forgotten.', tag: 'AI' },
     { icon: 'camp',     title: 'ID Camps',              body: "Find ID camps where the coaches you're emailing will actually be on the touchline.", tag: 'EVENTS' },
     { icon: 'timeline', title: 'Recruitment Timeline',  body: 'A monthly playbook tuned to your class year and division target.', tag: 'PLAN' },
-    { icon: 'profile',  title: 'Public Player Profile', body: 'A shareable link with stats, video, transcripts, and a coach quote — built for the inbox.', tag: 'SHARE' },
+    { icon: 'profile',  title: 'Public Player Profile', body: 'A shareable link with stats, video, transcripts, and a coach quote. Built for the inbox.', tag: 'SHARE' },
   ]
   return (
     <section className="section feature-grid-section">
@@ -645,7 +703,7 @@ function FeatureGrid() {
         <div className="section-head" data-reveal>
           <span className="section-marker">Built into the platform</span>
           <h2 className="h-section" data-words>
-            Every tool a recruit needs — <span className="accent">none</span> of the busywork.
+            Every tool a recruit needs. <span className="accent">None</span> of the busywork.
           </h2>
         </div>
 
@@ -687,7 +745,7 @@ function Divisions() {
               Every <span className="accent">level</span> of the game.
             </h2>
             <p className="lede">
-              KickrIQ doesn't push you toward D1 because the website does. We rank by fit —
+              KickrIQ doesn't push you toward D1 because the website does. We rank by fit,
               and most great college soccer careers happen below the D1 line.
             </p>
             <div className="div-stat-big">
@@ -733,9 +791,9 @@ function Parents() {
               Parents stay in <span className="accent">the loop</span>.
             </h2>
             <p className="lede">
-              The Family tier gives parents a quiet dashboard — every email sent, every coach
-              response, every visit booked. No nagging. No surprises. Just clarity from the
-              kitchen table.
+              The Family tier gives parents a quiet dashboard. Every email sent, every coach
+              response, every visit booked. No nagging. No surprises. The whole recruiting
+              cycle, finally on one page.
             </p>
             <div className="parents-ctas">
               <Link to="/signup" className="kbtn kbtn-primary">
@@ -811,8 +869,14 @@ function Pricing() {
     },
     {
       name: 'Family', price: '$29', period: 'per month',
-      desc: 'Everything in Pro plus a clean parent dashboard.',
-      features: ['Everything in Pro', 'Parent dashboard', 'Weekly family digest', 'Multi-athlete (up to 3)', 'Recruiting concierge calls'],
+      desc: 'Pro for the athlete, plus visibility for the people paying for it.',
+      features: [
+        'Everything in Pro',
+        'Parent view (read-only dashboard)',
+        'Weekly progress email to parents',
+        'Shared deadlines & visit calendar',
+        'One bill, one login per parent',
+      ],
       cta: 'Get Family', featured: false,
     },
   ]
@@ -826,8 +890,7 @@ function Pricing() {
             Free to start. <span className="accent">Cheaper</span> than one ID camp.
           </h2>
           <p className="lede pricing-sub pricing-sub-quote">
-            One bad recruiting year can cost five figures in missed scholarships.{' '}
-            <span className="serif accent">Pro is nineteen dollars.</span>
+            Pro is <span className="serif accent">nineteen dollars a month.</span> Less than one ID camp lunch.
           </p>
         </div>
 
@@ -873,7 +936,7 @@ function FinalCTA() {
   return (
     <section className="section final-cta-section">
       <div className="cta-video-wrap">
-        <video className="cta-video" autoPlay loop muted playsInline src="/kickriq/video-cta.mp4" />
+        <video className="cta-video" autoPlay loop muted playsInline src="/kickriq/cta-tunnel.mp4" />
         <div className="cta-video-veil" />
       </div>
       <div className="halo" style={{ background: 'rgba(240,182,90,0.45)', width: 700, height: 700, top: '50%', left: '50%', transform: 'translate(-50%,-50%)', filter: 'blur(80px)' }} />
@@ -928,18 +991,18 @@ function Footer() {
             <a href="#parents">Parents</a>
             <a href="#features">Athletes</a>
             <a href="#features">Club coaches</a>
-            <a href="#features">College coaches</a>
+            <Link to="/for-coaches">College coaches</Link>
           </div>
           <div>
-            <div className="footer-h">DIVISIONS</div>
-            <a href="#features">D1 Programs</a>
-            <a href="#features">D2 Programs</a>
-            <a href="#features">D3 Programs</a>
-            <a href="#features">NAIA · JUCO</a>
+            <div className="footer-h">OPEN SPOTS</div>
+            <Link to="/open-spots/womens">Women's Programs</Link>
+            <Link to="/open-spots/mens">Men's Programs</Link>
+            <Link to="/open-spots/womens/goalkeeper">By Position</Link>
+            <Link to="/open-spots">All Open Spots</Link>
           </div>
           <div>
             <div className="footer-h">COMPANY</div>
-            <a href="#features">About</a>
+            <Link to="/about">About</Link>
             <a href="#features">Stories</a>
             <a href="#features">Press</a>
             <a href="#features">Careers</a>
@@ -949,9 +1012,9 @@ function Footer() {
       <div className="wrap footer-bottom">
         <div>© 2026 KickrIQ Athletics, Inc.</div>
         <div className="footer-links">
-          <a href="#features">Privacy</a>
-          <a href="#features">Terms</a>
-          <a href="#features">Security</a>
+          <Link to="/privacy">Privacy</Link>
+          <Link to="/terms">Terms</Link>
+          <Link to="/privacy#security">Security</Link>
         </div>
       </div>
     </footer>

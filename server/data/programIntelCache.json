@@ -461,5 +461,87 @@
     ],
     "cachedAt": "2026-05-02T21:36:55.917Z",
     "source": "ai-generated"
+  },
+  "cal-poly:mens": {
+    "schoolId": "cal-poly",
+    "schoolName": "California Polytechnic State University",
+    "gender": "mens",
+    "formation": "Unknown — see search links",
+    "formationVariants": [],
+    "playstyle": "Unknown — Cal Poly is a mid-tier Big West program, but I do not have specific, recent knowledge of their tactical approach.",
+    "tacticalNotes": [],
+    "confidence": "low",
+    "caveats": [
+      "Cal Poly San Luis Obispo is a Big West D1 program, but it is not among the high-visibility programs I can reliably document. I do not have specific knowledge of their current formation, playstyle, or tactical tendencies.",
+      "I cannot verify the current head coach, coaching tenure, or recent roster composition without access to current sources.",
+      "Recent season results and tournament performance are unknown to me.",
+      "To scout this program accurately, consult the official Cal Poly Athletics website, the head coach's bio, recent game film, and the current roster page.",
+      "Big West programs vary widely in tactical sophistication and investment; do not assume based on conference affiliation alone."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=California%20Polytechnic%20State%20University%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=California%20Polytechnic%20State%20University%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=California%20Polytechnic%20State%20University%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=California%20Polytechnic%20State%20University%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=Big%20West%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-05-03T20:44:18.336Z",
+    "source": "ai-generated"
+  },
+  "montclair-state-university:mens": {
+    "schoolId": "montclair-state-university",
+    "schoolName": "Montclair State University",
+    "gender": "mens",
+    "formation": "Unknown — see search links",
+    "formationVariants": [],
+    "playstyle": "Unknown — insufficient specific knowledge of recent tactical approach.",
+    "tacticalNotes": [],
+    "confidence": "low",
+    "caveats": [
+      "Montclair State is a smaller D3 program in NJAC with limited public tactical documentation available to scouts. I do not have reliable recent (2022–2024) knowledge of their formation, playstyle, or coaching philosophy.",
+      "You must verify current coaching staff, roster composition, and recent match results directly via Montclair State athletics website or NJAC conference records.",
+      "D3 programs at this level often operate with limited media coverage, so YouTube match footage and direct communication with coaching staff are essential for accurate tactical assessment.",
+      "NJAC is a competitive regional conference, but specific team tendencies require direct observation or confirmed reports from scouts who have watched matches.",
+      "Any assumptions about formation or style based on conference context alone would be guessing — do not rely on this response without primary sources."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=Montclair%20State%20University%20men's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=Montclair%20State%20University%20men's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=Montclair%20State%20University%20men's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=Montclair%20State%20University%20men's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=New%20Jersey%20Athletic%20Conference%20(NJAC)%20men's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-05-04T03:35:04.207Z",
+    "source": "ai-generated"
   }
 }

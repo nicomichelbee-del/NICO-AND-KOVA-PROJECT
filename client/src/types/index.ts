@@ -18,8 +18,19 @@ export interface AthleteProfile {
   intendedMajor?: string
   highlightUrl?: string
   targetDivision: Division
+  // Multi-division targeting — when set with 2+ entries, the matcher treats
+  // every listed division as a first-class target (no above/below penalty
+  // between them). Lets athletes say "I'd play D1 OR D3 but not D2/NAIA".
+  // Single-target users can leave undefined; matcher falls back to the
+  // single `targetDivision` field above. Always includes `targetDivision`.
+  targetDivisions?: Division[]
   locationPreference: Region
   sizePreference: 'small' | 'medium' | 'large' | 'any'
+  // Hard exclusions — divisions the athlete refuses to consider, e.g. "no
+  // JUCO" or "no NAIA". Filtered out before scoring on the server. The
+  // user's targetDivision is always implicitly allowed (UI prevents it
+  // from being added here).
+  excludedDivisions?: Division[]
 }
 
 export interface MatchBreakdown {
@@ -47,6 +58,12 @@ export interface School {
   coachName?: string
   coachEmail?: string
   category: 'reach' | 'target' | 'safety'
+  // True when this school was injected as a cross-division "stretch goal" —
+  // a school playing one or two divisions above the athlete's target. The
+  // matcher always includes 1–2 of these for athletes who clear the typical
+  // recruit at their target level. UI can use this to surface a "Stretch
+  // Goal" badge so the higher-division school doesn't look like a mismatch.
+  isStretchReach?: boolean
   matchScore: number
   athleticFit?: number
   academicFit?: number
@@ -77,6 +94,18 @@ export interface School {
     openSpots:         number
     totalRoster:       number
   }
+  // Recruitable Shot — 0-100 probability the athlete realistically makes this
+  // roster. Distinct from matchScore: matchScore is "is this a good fit",
+  // recruitableShot is "what are your odds". Combines academic+athletic fit,
+  // open spots at position, division gap, and program prestige.
+  recruitableShot?: number
+  // Confidence in the score itself (driven by how complete the school's data
+  // is — Scorecard, roster, gpaAvg, etc.). Helps the UI hedge appropriately.
+  dataConfidence?: 'high' | 'medium' | 'low'
+  // Two-letter state extracted from `location` for client-side filtering.
+  state?: string
+  record?: import('./athletic').ProgramRecord | null
+  recruitingClass?: import('./athletic').RecruitingClass | null
 }
 
 export interface SchoolDirectoryEntry {
@@ -383,3 +412,5 @@ export interface HistoryEmail {
   isNoise?: boolean
   noiseReason?: string
 }
+
+export * from './athletic'

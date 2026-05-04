@@ -1,4 +1,5 @@
 @import './styles/kickriq.css';
+@import './styles/about.css';
 
 @tailwind base;
 @tailwind components;

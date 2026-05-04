@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+Allow: /open-spots
+Allow: /open-spots/*
+Disallow: /dashboard
+Disallow: /onboarding
+Disallow: /api/
+
+Sitemap: /sitemap.xml

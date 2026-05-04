@@ -1,0 +1,444 @@
+/* ============================================================
+   KickrIQ. Palette tweak overrides
+   ============================================================ */
+
+/* ============================================================
+   LOGO LOCKUP. image
+   ============================================================ */
+
+/* Nav brand */
+.brand.brand-img {
+  display: inline-flex;
+  align-items: center;
+  padding: 4px 0;
+  text-decoration: none;
+  transition: transform 200ms ease, filter 200ms ease;
+}
+.brand.brand-img:hover { transform: translateY(-1px); }
+.brand-logo-img {
+  display: block;
+  height: 38px;
+  width: auto;
+  filter: drop-shadow(0 2px 10px rgba(0,0,0,0.5));
+  transition: height 220ms ease;
+}
+.nav-scrolled .brand-logo-img { height: 30px; }
+
+/* Footer */
+.footer-logo-lockup {
+  display: inline-block;
+  margin-bottom: 18px;
+  text-decoration: none;
+  filter: drop-shadow(0 4px 14px rgba(0,0,0,0.5));
+  transition: transform 300ms cubic-bezier(.2,.7,.15,1);
+}
+.footer-logo-lockup:hover { transform: translateY(-1px); }
+.footer-logo-img {
+  display: block;
+  width: 230px;
+  height: auto;
+  max-width: 100%;
+}
+
+/* ============================================================
+   VIDEO PANELS
+   ============================================================ */
+
+/* ============================================================
+   CINEMATIC BAND. full-bleed video interstitial
+   ============================================================ */
+.cinematic-band {
+  position: relative;
+  min-height: 480px;
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+  border-top: 1px solid var(--line-1);
+  border-bottom: 1px solid var(--line-1);
+  padding: 100px 0;
+}
+.cb-video-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.cb-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: saturate(0.7) contrast(1.08) brightness(0.5);
+}
+.cb-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(900px 500px at 50% 50%, rgba(20,14,8,0.25) 0%, rgba(20,14,8,0.78) 100%),
+    linear-gradient(180deg, var(--bg-1) 0%, rgba(20,14,8,0.55) 12%, rgba(20,14,8,0.55) 88%, var(--bg-1) 100%);
+}
+.cb-grain {
+  position: absolute;
+  inset: 0;
+  background-image: repeating-linear-gradient(
+    0deg,
+    transparent 0,
+    transparent 2px,
+    rgba(246,239,222,0.012) 2px,
+    rgba(246,239,222,0.012) 3px
+  );
+  pointer-events: none;
+  mix-blend-mode: overlay;
+}
+.cb-inner {
+  position: relative;
+  z-index: 2;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 24px;
+}
+.cb-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 11px;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--fg-1);
+  padding: 8px 14px;
+  border: 1px solid var(--line-2);
+  border-radius: 999px;
+  background: rgba(20,14,8,0.5);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.cb-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 8px var(--gold);
+  animation: pulse 2s ease-in-out infinite;
+}
+.cb-quote {
+  font-size: clamp(28px, 4.4vw, 56px);
+  line-height: 1.15;
+  letter-spacing: -0.015em;
+  color: var(--fg-0);
+  margin: 0;
+  max-width: 1000px;
+  text-wrap: balance;
+}
+.cb-quote .accent { color: var(--gold); font-style: italic; }
+.cb-attrib {
+  font-size: 12px;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+@media (max-width: 720px) {
+  .cinematic-band { min-height: 380px; padding: 72px 0; }
+}
+
+/* Final CTA. full-bleed background video (DARK variant) */
+.cta-video-wrap {
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  overflow: hidden;
+  pointer-events: none;
+}
+.cta-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  /* Slight desaturation so it reads as ambient, not foreground */
+  filter: saturate(0.75) contrast(1.05) brightness(0.85);
+  opacity: 0.55;
+}
+.cta-video-veil {
+  position: absolute;
+  inset: 0;
+  background:
+    radial-gradient(900px 600px at 50% 50%, rgba(8,5,2,0.35) 0%, rgba(8,5,2,0.78) 70%, rgba(8,5,2,0.92) 100%),
+    linear-gradient(180deg, rgba(8,5,2,0.2) 0%, rgba(8,5,2,0.6) 100%);
+}
+.final-cta-section { position: relative; overflow: hidden; }
+.final-cta-section .final-cta-inner { position: relative; z-index: 2; }
+.final-cta-section .halo { position: absolute; z-index: 1; }
+
+/* Tweak panel. palette grid */
+.kickr-palette-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 6px;
+}
+.kickr-palette {
+  appearance: none;
+  border: .5px solid rgba(0,0,0,.12);
+  background: rgba(255,255,255,.55);
+  border-radius: 8px;
+  padding: 8px 8px 9px;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  gap: 7px;
+  align-items: flex-start;
+  text-align: left;
+  font: inherit;
+  transition: all 160ms ease;
+}
+.kickr-palette:hover {
+  background: rgba(255,255,255,.85);
+  border-color: rgba(0,0,0,.22);
+}
+.kickr-palette.active {
+  border-color: #c47a16;
+  background: rgba(240,182,90,0.18);
+  box-shadow: 0 0 0 2px rgba(240,182,90,0.25);
+}
+.kickr-palette-sw {
+  display: inline-flex;
+  width: 100%;
+  height: 18px;
+  border-radius: 4px;
+  overflow: hidden;
+  border: .5px solid rgba(0,0,0,.1);
+}
+.kickr-palette-sw span { flex: 1; display: block; }
+.kickr-palette-lbl {
+  font-size: 11px;
+  font-weight: 500;
+  color: rgba(41,38,27,.85);
+  letter-spacing: 0.005em;
+}
+
+/* ============================================================
+   PALETTE: Pitch Side. deep field green
+   ============================================================ */
+html[data-palette="pitch"] {
+  --bg-0: #0a1410;
+  --bg-1: #0d1a14;
+  --bg-2: #122218;
+  --bg-3: #182d1f;
+  --gold:    #d4a64a;
+  --gold-2:  #b88829;
+  --gold-3:  #8f6915;
+  --gold-soft: rgba(212, 166, 74, 0.14);
+  --gold-halo: rgba(212, 166, 74, 0.45);
+  --pitch:   #4ea36e;
+  --pitch-2: #6cc890;
+  --crimson: #c94545;
+  --crimson-2: #e35a5a;
+}
+html[data-palette="pitch"] body {
+  background:
+    radial-gradient(1200px 800px at 80% 0%, rgba(78,163,110,0.08), transparent 60%),
+    var(--bg-0);
+}
+
+/* ============================================================
+   PALETTE: Floodlit. high contrast night game
+   ============================================================ */
+html[data-palette="floodlit"] {
+  --bg-0: #060912;
+  --bg-1: #0a0f1c;
+  --bg-2: #111728;
+  --bg-3: #1a2236;
+  --gold:    #ffcd5c;
+  --gold-2:  #f5b127;
+  --gold-3:  #cc8a0d;
+  --gold-soft: rgba(255, 205, 92, 0.18);
+  --gold-halo: rgba(255, 205, 92, 0.6);
+}
+html[data-palette="floodlit"] body {
+  background:
+    radial-gradient(1200px 600px at 50% -20%, rgba(255,205,92,0.10), transparent 60%),
+    var(--bg-0);
+}
+html[data-palette="floodlit"] .hero-video {
+  filter: saturate(1.05) contrast(1.15) brightness(0.7);
+}
+html[data-palette="floodlit"] .accent {
+  text-shadow: 0 0 30px rgba(255, 205, 92, 0.55);
+}
+
+/* ============================================================
+   PALETTE: Crimson Wire. broadcast red lead
+   ============================================================ */
+html[data-palette="crimson"] {
+  --bg-0: #10090c;
+  --bg-1: #170c10;
+  --bg-2: #1f1218;
+  --bg-3: #2a1a23;
+  --gold:    #f0b65a;
+  --gold-2:  #e0982e;
+  --gold-3:  #c47a16;
+  --crimson: #c94545;
+  --crimson-2: #ff6b6b;
+}
+html[data-palette="crimson"] body {
+  background:
+    radial-gradient(1200px 600px at 100% 0%, rgba(232,90,90,0.08), transparent 60%),
+    radial-gradient(1000px 600px at 0% 100%, rgba(240,182,90,0.05), transparent 60%),
+    var(--bg-0);
+}
+html[data-palette="crimson"] .accent {
+  color: var(--crimson-2);
+}
+html[data-palette="crimson"] .gold-replace,
+html[data-palette="crimson"] .ticker-kicker {
+  color: var(--crimson-2);
+  border-color: rgba(255,107,107,0.4);
+  background: rgba(255,107,107,0.06);
+}
+
+/* ============================================================
+   PALETTE: Pacific Blue. cool maritime
+   ============================================================ */
+html[data-palette="pacific"] {
+  --bg-0: #0a1220;
+  --bg-1: #0d1828;
+  --bg-2: #142036;
+  --bg-3: #1c2c4a;
+  --gold:    #5fb6ff;
+  --gold-2:  #3a8fd9;
+  --gold-3:  #1f6cb0;
+  --gold-soft: rgba(95, 182, 255, 0.14);
+  --gold-halo: rgba(95, 182, 255, 0.45);
+  --pitch:   #4ea36e;
+  --pitch-2: #6cc890;
+  --crimson: #f0b65a;
+  --crimson-2: #f5c170;
+}
+html[data-palette="pacific"] body {
+  background:
+    radial-gradient(1200px 800px at 30% 10%, rgba(95,182,255,0.10), transparent 60%),
+    var(--bg-0);
+}
+html[data-palette="pacific"] .btn-primary {
+  background: linear-gradient(180deg, #7cc6ff 0%, #3a8fd9 100%);
+  color: #061322;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.4) inset,
+    0 -1px 0 rgba(0,0,0,0.15) inset,
+    0 8px 22px rgba(95,182,255,0.25);
+}
+html[data-palette="pacific"] .btn-primary svg { stroke: #061322; }
+
+/* ============================================================
+   PALETTE: Editorial Paper. light, broadsheet feel
+   ============================================================ */
+html[data-palette="paper"] {
+  --bg-0: #f5f1e8;
+  --bg-1: #ece6d6;
+  --bg-2: #ffffff;
+  --bg-3: #f9f5ec;
+  --bg-warm: #f0eadb;
+
+  --fg-0: #1a1304;
+  --fg-1: #4a4232;
+  --fg-2: #7a7160;
+  --fg-3: #a89e8a;
+
+  --line-1: rgba(26, 19, 4, 0.10);
+  --line-2: rgba(26, 19, 4, 0.18);
+  --line-3: rgba(26, 19, 4, 0.28);
+
+  --gold:    #b8821a;
+  --gold-2:  #9a6b10;
+  --gold-3:  #7a5208;
+  --gold-soft: rgba(184, 130, 26, 0.10);
+  --gold-halo: rgba(184, 130, 26, 0.30);
+
+  --pitch:   #2a6b3e;
+  --pitch-2: #3d8a55;
+  --crimson: #b03030;
+  --crimson-2: #d04545;
+}
+html[data-palette="paper"] body {
+  background: var(--bg-0);
+  color: var(--fg-0);
+}
+html[data-palette="paper"] .hero-veil {
+  background:
+    linear-gradient(180deg, rgba(246,239,222,0.65) 0%, rgba(246,239,222,0.45) 30%, rgba(246,239,222,0.7) 65%, rgba(246,239,222,1) 100%);
+}
+html[data-palette="paper"] .hero-radial {
+  background:
+    radial-gradient(900px 600px at 30% 55%, rgba(246,239,222,0.6) 0%, transparent 70%);
+}
+html[data-palette="paper"] .hero-vignette { display: none; }
+html[data-palette="paper"] .hero-video {
+  filter: saturate(0.7) contrast(0.85) brightness(1.05);
+}
+html[data-palette="paper"] .nav-scrolled {
+  background: rgba(246,239,222, 0.85);
+}
+html[data-palette="paper"] .btn-primary {
+  background: linear-gradient(180deg, #d49a2e 0%, #a8730e 100%);
+  color: #ffffff;
+}
+html[data-palette="paper"] .btn-primary svg { stroke: #ffffff; }
+html[data-palette="paper"] .btn-ghost {
+  background: rgba(26,19,4,0.04);
+  color: var(--fg-0);
+}
+html[data-palette="paper"] .threeup-card,
+html[data-palette="paper"] .feature-card,
+html[data-palette="paper"] .how-card,
+html[data-palette="paper"] .pricing-card,
+html[data-palette="paper"] .corner-card,
+html[data-palette="paper"] .div-card,
+html[data-palette="paper"] .parents-mock,
+html[data-palette="paper"] .threeup-visual,
+html[data-palette="paper"] .roster-row,
+html[data-palette="paper"] .match-row,
+html[data-palette="paper"] .phone-row,
+html[data-palette="paper"] .parents-row,
+html[data-palette="paper"] .div-stat-big {
+  background: var(--bg-2);
+  border-color: var(--line-1);
+  box-shadow: 0 1px 2px rgba(26,19,4,0.04);
+}
+html[data-palette="paper"] .threeup-section,
+html[data-palette="paper"] .how-section,
+html[data-palette="paper"] .divisions-section,
+html[data-palette="paper"] .pricing-section,
+html[data-palette="paper"] .final-cta-section {
+  background: var(--bg-0);
+}
+html[data-palette="paper"] .roster-spotlight,
+html[data-palette="paper"] .feature-grid-section,
+html[data-palette="paper"] .parents-section {
+  background: var(--bg-1);
+}
+html[data-palette="paper"] .footer { background: var(--bg-1); }
+html[data-palette="paper"] .phone-bezel {
+  background: linear-gradient(180deg, #2a2520, #1a1510);
+  border-color: #3a3530;
+}
+html[data-palette="paper"] .phone-screen {
+  background: linear-gradient(180deg, #ffffff 0%, #f9f5ec 100%);
+}
+html[data-palette="paper"] .phone-eyebrow,
+html[data-palette="paper"] .phone-school,
+html[data-palette="paper"] .phone-statbar { color: var(--fg-0); }
+html[data-palette="paper"] .phone-notch { background: #1a1304; }
+html[data-palette="paper"] .parents-card {
+  background:
+    radial-gradient(700px 400px at 100% 0%, rgba(184,130,26,0.10), transparent 60%),
+    linear-gradient(135deg, var(--bg-2) 0%, var(--bg-1) 100%);
+}
+html[data-palette="paper"] .pricing-card.featured {
+  background:
+    radial-gradient(700px 400px at 50% 0%, rgba(184,130,26,0.10), transparent 60%),
+    var(--bg-2);
+}
+html[data-palette="paper"] ::selection { background: rgba(184,130,26,0.35); color: #1a1304; }

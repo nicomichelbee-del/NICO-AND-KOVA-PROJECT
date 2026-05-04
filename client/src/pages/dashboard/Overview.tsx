@@ -3,6 +3,7 @@ import { Link, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { useProfile } from '../../context/ProfileContext'
 import { Badge } from '../../components/ui/Badge'
+import { getContacts } from '../../lib/api'
 import {
   MILESTONES, CATEGORY_META, getMilestoneDate, getMilestoneStatus, loadDone, getAthleteProfile,
   getCurrentGrade, isMilestonePast, getCurrentSemester,
@@ -117,20 +118,55 @@ interface StatTileProps {
   tone: Tone
   spark: number[]
   delay?: number
+  to: string
+  emptyCta: string
+  icon: 'target' | 'mail' | 'send' | 'reply'
+  pulse?: boolean
 }
-function StatTile({ topLabel, value, ofTotal, label, sub, tone, spark, delay = 0 }: StatTileProps) {
+
+function TileIcon({ name }: { name: StatTileProps['icon'] }) {
+  const common = { width: 16, height: 16, viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: 1.6, strokeLinecap: 'round' as const, strokeLinejoin: 'round' as const }
+  switch (name) {
+    case 'target': return (
+      <svg {...common}><circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="5"/><circle cx="12" cy="12" r="1.5" fill="currentColor"/></svg>
+    )
+    case 'mail': return (
+      <svg {...common}><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M3 7l9 6 9-6"/></svg>
+    )
+    case 'send': return (
+      <svg {...common}><path d="M22 2L11 13"/><path d="M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+    )
+    case 'reply': return (
+      <svg {...common}><path d="M9 14l-4-4 4-4"/><path d="M5 10h10a4 4 0 0 1 4 4v4"/></svg>
+    )
+  }
+}
+
+function StatTile({ topLabel, value, ofTotal, label, sub, tone, spark, delay = 0, to, emptyCta, icon, pulse }: StatTileProps) {
   const v = useCountUp(value, 1000)
   const sparkId = `spark-${topLabel.replace(/\s+/g, '-').toLowerCase()}`
+  const isEmpty = value === 0
+  const toneColor = tone === 'gold' ? 'var(--gold)' : tone === 'pitch' ? 'var(--pitch-2)' : tone === 'crimson' ? 'var(--crimson-2)' : 'var(--fg-1)'
   return (
-    <div
-      className={`kr-stat-tile tone-${tone}`}
+    <Link
+      to={to}
+      className={`kr-stat-tile tone-${tone} ${pulse ? 'is-pulse' : ''} ${isEmpty ? 'is-empty' : ''} no-underline block`}
       style={{ animation: 'krReveal 600ms cubic-bezier(.2,.7,.2,1) backwards', animationDelay: `${delay}ms` }}
+      aria-label={`${label} — open`}
     >
       <div className="kr-stat-tile-top">
-        <span className="kr-stat-tile-top-label" style={{ color: tone === 'gold' ? 'var(--gold)' : tone === 'pitch' ? 'var(--pitch-2)' : tone === 'crimson' ? 'var(--crimson-2)' : 'var(--fg-1)' }}>
+        <span className="kr-stat-tile-top-label" style={{ color: toneColor }}>
+          <span className="kr-stat-tile-icon" aria-hidden="true" style={{ color: toneColor }}>
+            <TileIcon name={icon} />
+          </span>
           {topLabel}
         </span>
-        <span style={{ fontSize: 9.5 }}>{value === 0 ? 'No data' : 'This month'}</span>
+        <span className="kr-stat-tile-go">
+          {isEmpty ? 'Start' : 'View'}
+          <svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>
+          </svg>
+        </span>
       </div>
       <div className="kr-stat-tile-num">
         <span className="kr-count">{v}</span>
@@ -138,53 +174,124 @@ function StatTile({ topLabel, value, ofTotal, label, sub, tone, spark, delay = 0
       </div>
       <div className="kr-stat-tile-label">{label}</div>
       {sub && <div className="kr-stat-tile-sub">{sub}</div>}
-      <Sparkline points={spark} id={sparkId} />
-    </div>
+      {isEmpty ? (
+        <div className="kr-stat-tile-cta" style={{ color: toneColor, borderColor: 'currentColor' }}>
+          {emptyCta}
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+            <path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>
+          </svg>
+        </div>
+      ) : (
+        <Sparkline points={spark} id={sparkId} />
+      )}
+    </Link>
   )
 }
 
 /* ----------------- Heatmap ----------------- */
-function Heatmap() {
-  const days = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
-  const rows = ['EMAIL', 'OPEN', 'REPLY', 'CAMP']
-  // Synthetic but consistent activity grid
-  const seed = (i: number, j: number) => {
-    const v = ((i * 13 + j * 7) % 9) - 1
-    return Math.max(0, Math.min(4, Math.round(v / 2)))
-  }
+type ActivityGrid = number[][] // rows = [EMAIL, OPEN, REPLY, CAMP], cols = 7 days
+const ACTIVITY_ROWS = ['EMAIL', 'OPEN', 'REPLY', 'CAMP'] as const
+const ACTIVITY_DAYS = ['M', 'T', 'W', 'T', 'F', 'S', 'S']
+const EMPTY_ACTIVITY: ActivityGrid = ACTIVITY_ROWS.map(() => ACTIVITY_DAYS.map(() => 0))
+
+function Heatmap({ activity }: { activity: ActivityGrid }) {
   return (
     <div className="kr-heatmap">
       <div className="kr-heatmap-day">·</div>
-      {days.map((d, i) => <div key={`d-${i}`} className="kr-heatmap-day text-center">{d}</div>)}
-      {rows.map((label, ri) => (
-        <RowGroup key={label} label={label} ri={ri} seed={seed} days={days} />
+      {ACTIVITY_DAYS.map((d, i) => <div key={`d-${i}`} className="kr-heatmap-day text-center">{d}</div>)}
+      {ACTIVITY_ROWS.map((label, ri) => (
+        <RowGroup key={label} label={label} ri={ri} activity={activity} />
       ))}
     </div>
   )
 }
-function RowGroup({ label, ri, seed, days }: { label: string; ri: number; seed: (i: number, j: number) => number; days: string[] }) {
+function RowGroup({ label, ri, activity }: { label: string; ri: number; activity: ActivityGrid }) {
+  const row = activity[ri] ?? []
   return (
     <>
       <div className="kr-heatmap-day">{label}</div>
-      {days.map((_, di) => {
-        const lvl = seed(ri, di)
-        return <div key={`${label}-${di}`} className={`kr-heatmap-cell ${lvl > 0 ? `l${lvl}` : ''}`} title={`${label} · ${days[di]}`} />
+      {ACTIVITY_DAYS.map((_, di) => {
+        const lvl = row[di] ?? 0
+        return <div key={`${label}-${di}`} className={`kr-heatmap-cell ${lvl > 0 ? `l${lvl}` : ''}`} title={`${label} · ${ACTIVITY_DAYS[di]}`} />
       })}
     </>
   )
 }
 
 /* ----------------- Coach feed ----------------- */
-function CoachFeed() {
-  const items = [
-    'Coach Mendez (Stanford) opened your profile · 3m ago',
-    'Coach Patel (UNC) viewed your highlight tape · 12m ago',
-    'Wake Forest ID Camp · April 12 · spots filling',
-    'New opening · D1 · GK · University of Portland',
-    'Coach Murray (Williams) · replied · 22m ago',
-    'Notre Dame staff viewed 14 profiles this week',
-    'Roster portal · CB exit at SMU · 2 slots open',
-  ]
+type CoachEvent = {
+  kind: 'replied' | 'visit' | 'committed' | 'contacted'
+  coachName?: string
+  schoolName: string
+  at: Date
+}
+
+function timeAgo(d: Date): string {
+  const diffMs = Date.now() - d.getTime()
+  if (diffMs < 0) return 'just now'
+  const m = Math.floor(diffMs / 60_000)
+  if (m < 1) return 'just now'
+  if (m < 60) return `${m}m ago`
+  const h = Math.floor(m / 60)
+  if (h < 24) return `${h}h ago`
+  const days = Math.floor(h / 24)
+  if (days < 7) return `${days}d ago`
+  const weeks = Math.floor(days / 7)
+  if (weeks < 4) return `${weeks}w ago`
+  return d.toLocaleDateString('default', { month: 'short', day: 'numeric' })
+}
+
+function useCoachActivity() {
+  const { user } = useAuth()
+  const [events, setEvents] = useState<CoachEvent[]>([])
+  useEffect(() => {
+    if (!user?.id) return
+    let cancelled = false
+    getContacts(user.id)
+      .then(({ contacts }) => {
+        if (cancelled) return
+        const derived: CoachEvent[] = []
+        for (const c of contacts) {
+          // Coach replied — strongest signal, comes from real Gmail sync
+          if (c.lastReplyAt) {
+            derived.push({
+              kind: 'replied',
+              coachName: c.coachName?.trim() || undefined,
+              schoolName: c.schoolName,
+              at: new Date(c.lastReplyAt),
+            })
+          }
+          // Status milestones
+          if (c.status === 'scheduled_visit') {
+            derived.push({ kind: 'visit', coachName: c.coachName, schoolName: c.schoolName, at: new Date(c.createdAt) })
+          }
+          if (c.status === 'committed') {
+            derived.push({ kind: 'committed', coachName: c.coachName, schoolName: c.schoolName, at: new Date(c.createdAt) })
+          }
+        }
+        derived.sort((a, b) => b.at.getTime() - a.at.getTime())
+        setEvents(derived.slice(0, 12))
+      })
+      .catch(() => { /* silent — empty feed is the right empty state */ })
+    return () => { cancelled = true }
+  }, [user?.id])
+  return events
+}
+
+function formatCoachEvent(e: CoachEvent): { lead: string; emphasis: string; tail: string } {
+  const who = e.coachName ? `Coach ${e.coachName.split(/\s+/).slice(-1)[0]} (${e.schoolName})` : e.schoolName
+  switch (e.kind) {
+    case 'replied':   return { lead: `${who} `,            emphasis: 'replied',           tail: ` · ${timeAgo(e.at)}` }
+    case 'visit':     return { lead: `Visit scheduled · ${e.schoolName} `, emphasis: 'on the books', tail: ` · ${timeAgo(e.at)}` }
+    case 'committed': return { lead: `Committed to ${e.schoolName} `, emphasis: '🏆',           tail: ` · ${timeAgo(e.at)}` }
+    case 'contacted': return { lead: `${who} `,            emphasis: 'contacted',         tail: ` · ${timeAgo(e.at)}` }
+  }
+}
+
+function CoachFeed({ events }: { events: CoachEvent[] }) {
+  if (events.length === 0) return null
+  // Duplicate the list so the marquee track loops seamlessly
+  const looped = [...events, ...events]
   return (
     <div className="kr-coach-feed">
       <div className="kr-coach-feed-kicker">
@@ -193,11 +300,14 @@ function CoachFeed() {
       </div>
       <div className="kr-coach-feed-row">
         <div className="kr-coach-feed-track">
-          {[...items, ...items].map((t, i) => (
-            <span key={i}>· {t.replace(/(\d+\s*m\s*ago|\d+\s*open|spots?\s*filling|opened|viewed|replied)/gi, (m) => `<b>${m}</b>`).split(/(<b>.*?<\/b>)/).map((part, k) => (
-              part.startsWith('<b>') ? <b key={k}>{part.replace(/<\/?b>/g, '')}</b> : <span key={k}>{part}</span>
-            ))}</span>
-          ))}
+          {looped.map((e, i) => {
+            const { lead, emphasis, tail } = formatCoachEvent(e)
+            return (
+              <span key={i}>
+                · {lead}<b>{emphasis}</b>{tail}
+              </span>
+            )
+          })}
         </div>
       </div>
     </div>
@@ -210,6 +320,47 @@ export function Overview() {
   const navigate = useNavigate()
   const name = (user?.user_metadata?.full_name as string | undefined)?.split(' ')[0] ?? 'Athlete'
   const upcomingMilestones = useUpcomingMilestones()
+  const rootRef = useRef<HTMLDivElement>(null)
+
+  // TODO: wire to real activity (email/open/reply/camp counts per day from
+  // Supabase). Until that lands, render the honest empty state instead of
+  // synthetic data so users aren't shown a heatmap they didn't earn.
+  const activityGrid: ActivityGrid = EMPTY_ACTIVITY
+  const hasActivity = activityGrid.some((row) => row.some((v) => v > 0))
+
+  const coachEvents = useCoachActivity()
+
+  // Reveal-on-intersect for [data-reveal] sections (coach feed, hero task,
+  // heatmap, timeline). Without this they stay at opacity:0 and leave a gap.
+  useEffect(() => {
+    const root = rootRef.current
+    if (!root) return
+    const targets = root.querySelectorAll<HTMLElement>('[data-reveal]')
+    if (typeof IntersectionObserver === 'undefined') {
+      targets.forEach((el) => el.classList.add('is-revealed'))
+      return
+    }
+    const io = new IntersectionObserver((entries) => {
+      for (const e of entries) {
+        if (e.isIntersecting) {
+          e.target.classList.add('is-revealed')
+          io.unobserve(e.target)
+        }
+      }
+    }, { threshold: 0.08, rootMargin: '0px 0px -4% 0px' })
+    targets.forEach((el) => io.observe(el))
+    // Fallback: if anything is still hidden after 1.5s (e.g. inside a scroll
+    // container that never fires), reveal it anyway.
+    const safety = window.setTimeout(() => {
+      targets.forEach((el) => {
+        if (!el.classList.contains('is-revealed')) el.classList.add('is-revealed')
+      })
+    }, 1500)
+    return () => {
+      io.disconnect()
+      window.clearTimeout(safety)
+    }
+  }, [])
 
   // Hero task — first incomplete onboarding step or first milestone
   const heroTask = profile?.profile_completed
@@ -231,7 +382,7 @@ export function Overview() {
       }
 
   return (
-    <div className="kr-page mx-auto">
+    <div className="kr-page mx-auto" ref={rootRef}>
       {/* Cinematic hero */}
       <section className="kr-cine-hero mb-8" data-reveal-on-load>
         <div className="kr-cine-hero-row">
@@ -267,10 +418,12 @@ export function Overview() {
         </div>
       </section>
 
-      {/* Coach feed ticker */}
-      <div className="mb-8" data-reveal>
-        <CoachFeed />
-      </div>
+      {/* Coach feed ticker — only renders when there are real coach events */}
+      {coachEvents.length > 0 && (
+        <div className="mb-8" data-reveal>
+          <CoachFeed events={coachEvents} />
+        </div>
+      )}
 
       {/* Stat tiles — kinetic */}
       <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
@@ -282,6 +435,10 @@ export function Overview() {
           tone="gold"
           spark={[1, 2, 1, 3, 2, 4, 3, 5]}
           delay={0}
+          to="/dashboard/schools"
+          emptyCta="Find your first 5 schools"
+          icon="target"
+          pulse
         />
         <StatTile
           topLabel="EMAILS"
@@ -291,6 +448,9 @@ export function Overview() {
           tone="ivory"
           spark={[0, 1, 0, 1, 2, 1, 2, 3]}
           delay={80}
+          to="/dashboard/emails"
+          emptyCta="Draft a coach email"
+          icon="mail"
         />
         <StatTile
           topLabel="CONTACTED"
@@ -300,6 +460,9 @@ export function Overview() {
           tone="pitch"
           spark={[0, 0, 1, 1, 2, 1, 2, 2]}
           delay={160}
+          to="/dashboard/tracker"
+          emptyCta="Log your first outreach"
+          icon="send"
         />
         <StatTile
           topLabel="REPLIES"
@@ -309,6 +472,9 @@ export function Overview() {
           tone="crimson"
           spark={[0, 0, 0, 1, 0, 1, 1, 0]}
           delay={240}
+          to="/dashboard/followup"
+          emptyCta="Plan your follow-ups"
+          icon="reply"
         />
       </div>
 
@@ -380,16 +546,40 @@ export function Overview() {
             </div>
             <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-3">Email · open · reply · camp</span>
           </div>
-          <Heatmap />
-          <div className="mt-3 flex items-center justify-between font-mono text-[9.5px] tracking-[0.16em] uppercase text-ink-3">
-            <span>Less</span>
-            <div className="flex items-center gap-1">
-              {[0, 1, 2, 3, 4].map((l) => (
-                <span key={l} className={`w-2.5 h-2.5 rounded-sm ${l === 0 ? 'bg-[rgba(245,241,232,0.04)] border border-[rgba(245,241,232,0.06)]' : `kr-heatmap-cell l${l}`}`} />
-              ))}
+          {hasActivity ? (
+            <>
+              <Heatmap activity={activityGrid} />
+              <div className="mt-3 flex items-center justify-between font-mono text-[9.5px] tracking-[0.16em] uppercase text-ink-3">
+                <span>Less</span>
+                <div className="flex items-center gap-1">
+                  {[0, 1, 2, 3, 4].map((l) => (
+                    <span key={l} className={`w-2.5 h-2.5 rounded-sm ${l === 0 ? 'bg-[rgba(245,241,232,0.04)] border border-[rgba(245,241,232,0.06)]' : `kr-heatmap-cell l${l}`}`} />
+                  ))}
+                </div>
+                <span>More</span>
+              </div>
+            </>
+          ) : (
+            <div className="kr-activity-empty">
+              <Heatmap activity={EMPTY_ACTIVITY} />
+              <div className="kr-activity-empty-veil" />
+              <div className="kr-activity-empty-msg">
+                <div className="kr-activity-empty-eyebrow">
+                  <span className="dot" />
+                  No activity yet
+                </div>
+                <p className="kr-activity-empty-body">
+                  Each square lights up when you email a coach, get an open, land a reply, or RSVP to a camp. Send your first to see your week light up.
+                </p>
+                <Link to="/dashboard/emails" className="kr-activity-empty-cta">
+                  Draft your first coach email
+                  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                    <path d="M5 12h14"/><path d="M13 6l6 6-6 6"/>
+                  </svg>
+                </Link>
+              </div>
             </div>
-            <span>More</span>
-          </div>
+          )}
         </section>
 
         <section className="xl:col-span-2" data-reveal="right">
