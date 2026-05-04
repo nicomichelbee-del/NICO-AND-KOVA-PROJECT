@@ -5,6 +5,8 @@ import aiRouter from './routes/ai'
 import gmailRouter from './routes/gmail'
 import campsRouter from './routes/camps'
 import profileRouter from './routes/profile'
+import publicRouter from './routes/public'
+import coachRouter from './routes/coach'
 import { requireCompleteProfile } from './lib/profileGate'
 
 const app = express()
@@ -17,12 +19,25 @@ app.use(express.json({ limit: '4mb' }))
 // fill out their profile in the first place.
 app.use('/api/profile', profileRouter)
 
+// Public router has no auth gate — feeds the indexable /open-spots SEO pages.
+// Drops coach contact info before responding so the data behind signup stays gated.
+app.use('/api/public', publicRouter)
+
+// Sitemap at the URL crawlers expect (root path), proxied to publicRouter.
+app.get('/sitemap.xml', (req, res, next) => {
+  req.url = '/sitemap'
+  publicRouter(req, res, next)
+})
+
 // Every other authenticated feature router sits behind the gate. Anonymous
 // callers still get rejected first (401), so this also tightens auth on
 // routers that previously passed userId in the body.
 app.use('/api/ai', requireCompleteProfile, aiRouter)
 app.use('/api/gmail', requireCompleteProfile, gmailRouter)
 app.use('/api/camps', requireCompleteProfile, campsRouter)
+// Coach portal — does NOT use requireCompleteProfile (that gate is for athletes).
+// Auth is enforced inside each handler via the userId/userEmail params.
+app.use('/api/coach', coachRouter)
 
 app.listen(PORT, () => {
   console.log(`API server running on http://localhost:${PORT}`)

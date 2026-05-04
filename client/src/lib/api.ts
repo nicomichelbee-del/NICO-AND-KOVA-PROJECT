@@ -230,3 +230,57 @@ export async function deleteCampComment(commentId: string): Promise<void> {
 }
 
 export type { LeaderboardEntry, IdEvent }
+
+// ── Coach portal ───────────────────────────────────────────────────
+
+export interface CoachProgram {
+  id: string
+  school: string
+  conference: string
+  division: string
+  location: string
+  gender: 'mens' | 'womens'
+  coachName: string
+  coachEmail: string
+  formationStyle: string
+  needs: { position: string; level: 'High' | 'Medium' | 'Low' }[]
+  notes: string
+}
+
+export function searchCoachPrograms(q: string) {
+  return fetch(`/api/coach/search?q=${encodeURIComponent(q)}`)
+    .then(handlePublicResponse<{ programs: { id: string; school: string; conference: string; division: string; gender: 'mens' | 'womens'; location: string }[] }>)
+}
+
+export function claimCoachProgram(userId: string, userEmail: string, schoolId: string, gender: 'mens' | 'womens') {
+  return post<{ program: CoachProgram }>('/api/coach/claim', { userId, userEmail, schoolId, gender })
+}
+
+export function getCoachMe(userId: string) {
+  return get<{ claim: { schoolId: string; gender: 'mens' | 'womens'; coachEmail: string; claimedAt: string } | null; program?: CoachProgram }>(
+    `/api/coach/me?userId=${encodeURIComponent(userId)}`,
+  )
+}
+
+export async function updateCoachNeeds(userId: string, payload: { needs?: { position: string; level: 'High' | 'Medium' | 'Low' }[]; notes?: string }) {
+  const res = await fetch('/api/coach/needs', {
+    method: 'PATCH',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId, ...payload }),
+  })
+  return handlePublicResponse<{ success: true }>(res)
+}
+
+export function getCoachInbound(userId: string) {
+  return get<{ athletes: { id: string; schoolName: string; division: string; position: string | null; status: string; interestRating: string; lastReplyAt: string | null; createdAt: string }[] }>(
+    `/api/coach/inbound?userId=${encodeURIComponent(userId)}`,
+  )
+}
+
+async function handlePublicResponse<T>(res: Response): Promise<T> {
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: 'Request failed' })) as { error?: string }
+    throw new Error(err.error ?? 'Request failed')
+  }
+  return res.json() as Promise<T>
+}

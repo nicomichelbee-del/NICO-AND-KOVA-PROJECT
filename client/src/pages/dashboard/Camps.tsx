@@ -97,14 +97,49 @@ export function Camps() {
 
 // ── Showcase Events tab: multi-school showcase events (ECNL, Disney, Jefferson Cup, etc.) ──
 
+type ShowcaseFilters = {
+  divFilter: Division | 'all'
+  genderFilter: 'both' | 'mens' | 'womens'
+  regionFilter: Region
+  search: string
+}
+const SHOWCASE_FILTERS_KEY = 'campsShowcaseFilters'
+const DEFAULT_SHOWCASE_FILTERS: ShowcaseFilters = {
+  divFilter: 'all', genderFilter: 'both', regionFilter: 'any', search: '',
+}
+function loadShowcaseFilters(): ShowcaseFilters {
+  try {
+    const raw = localStorage.getItem(SHOWCASE_FILTERS_KEY)
+    return raw ? { ...DEFAULT_SHOWCASE_FILTERS, ...(JSON.parse(raw) as ShowcaseFilters) } : DEFAULT_SHOWCASE_FILTERS
+  } catch { return DEFAULT_SHOWCASE_FILTERS }
+}
+
 function ShowcaseTab() {
   const [events, setEvents] = useState<IdEvent[]>([])
   const [loading, setLoading] = useState(true)
-  const [divFilter, setDivFilter] = useState<Division | 'all'>('all')
-  const [genderFilter, setGenderFilter] = useState<'both' | 'mens' | 'womens'>('both')
-  const [regionFilter, setRegionFilter] = useState<Region>('any')
-  const [search, setSearch] = useState('')
+  const initial = loadShowcaseFilters()
+  const [divFilter, setDivFilter] = useState<Division | 'all'>(initial.divFilter)
+  const [genderFilter, setGenderFilter] = useState<'both' | 'mens' | 'womens'>(initial.genderFilter)
+  const [regionFilter, setRegionFilter] = useState<Region>(initial.regionFilter)
+  const [search, setSearch] = useState(initial.search)
   const [selected, setSelected] = useState<SelectedItem | null>(null)
+  const [savedFilters, setSavedFilters] = useState<ShowcaseFilters>(initial)
+  const [savedFlash, setSavedFlash] = useState(false)
+
+  const filtersDirty = (
+    savedFilters.divFilter !== divFilter ||
+    savedFilters.genderFilter !== genderFilter ||
+    savedFilters.regionFilter !== regionFilter ||
+    savedFilters.search !== search
+  )
+
+  function saveFilters() {
+    const next: ShowcaseFilters = { divFilter, genderFilter, regionFilter, search }
+    try { localStorage.setItem(SHOWCASE_FILTERS_KEY, JSON.stringify(next)) } catch { /* */ }
+    setSavedFilters(next)
+    setSavedFlash(true)
+    setTimeout(() => setSavedFlash(false), 1500)
+  }
 
   useEffect(() => {
     getShowcaseEvents()
@@ -191,6 +226,18 @@ function ShowcaseTab() {
             />
           </div>
         </div>
+        {(filtersDirty || savedFlash) && (
+          <div className="mt-4 pt-4 border-t border-[rgba(245,241,232,0.06)] flex items-center justify-end gap-3">
+            {savedFlash ? (
+              <span className="text-[11px] text-[#4ade80] font-mono">✓ Filters saved</span>
+            ) : (
+              <span className="text-[11px] text-[#f0b65a] italic">Filters changed — save to remember.</span>
+            )}
+            <Button onClick={saveFilters} disabled={!filtersDirty} size="sm" variant="outline">
+              Save filters
+            </Button>
+          </div>
+        )}
       </Card>
 
       <div className="text-xs font-semibold text-[#9a9385] uppercase tracking-wider mb-4">
@@ -312,21 +359,67 @@ function campContainsMonth(camp: IdCampEntry, month: Month): boolean {
   return camp.typicalMonths.toLowerCase().includes(month.toLowerCase())
 }
 
+type IdCampsFilters = {
+  search: string
+  divFilter: Division | 'any'
+  regionFilter: Region
+  genderFilter: 'any' | 'mens' | 'womens'
+  tierFilter: StaffTier | 'any'
+  formatFilter: IdCampEntry['format'] | 'any'
+  monthFilter: Month
+  sortKey: SortKey
+}
+const IDCAMPS_FILTERS_KEY = 'campsIdCampsFilters'
+const DEFAULT_IDCAMPS_FILTERS: IdCampsFilters = {
+  search: '', divFilter: 'any', regionFilter: 'any', genderFilter: 'any',
+  tierFilter: 'any', formatFilter: 'any', monthFilter: 'any', sortKey: 'school',
+}
+function loadIdCampsFilters(fallbackSort: SortKey): IdCampsFilters {
+  const base = { ...DEFAULT_IDCAMPS_FILTERS, sortKey: fallbackSort }
+  try {
+    const raw = localStorage.getItem(IDCAMPS_FILTERS_KEY)
+    if (!raw) return base
+    return { ...base, ...(JSON.parse(raw) as IdCampsFilters) }
+  } catch { return base }
+}
+
 function IdCampsTab() {
   const [camps, setCamps] = useState<IdCampEntry[]>([])
   const [loading, setLoading] = useState(true)
   const [selected, setSelected] = useState<SelectedItem | null>(null)
   const [profile] = useState<AthleteProfile | null>(() => getProfile())
 
+  const initial = loadIdCampsFilters(profile ? 'match' : 'school')
   // Filter state
-  const [search, setSearch] = useState('')
-  const [divFilter, setDivFilter] = useState<Division | 'any'>('any')
-  const [regionFilter, setRegionFilter] = useState<Region>('any')
-  const [genderFilter, setGenderFilter] = useState<'any' | 'mens' | 'womens'>('any')
-  const [tierFilter, setTierFilter] = useState<StaffTier | 'any'>('any')
-  const [formatFilter, setFormatFilter] = useState<IdCampEntry['format'] | 'any'>('any')
-  const [monthFilter, setMonthFilter] = useState<Month>('any')
-  const [sortKey, setSortKey] = useState<SortKey>(profile ? 'match' : 'school')
+  const [search, setSearch] = useState(initial.search)
+  const [divFilter, setDivFilter] = useState<Division | 'any'>(initial.divFilter)
+  const [regionFilter, setRegionFilter] = useState<Region>(initial.regionFilter)
+  const [genderFilter, setGenderFilter] = useState<'any' | 'mens' | 'womens'>(initial.genderFilter)
+  const [tierFilter, setTierFilter] = useState<StaffTier | 'any'>(initial.tierFilter)
+  const [formatFilter, setFormatFilter] = useState<IdCampEntry['format'] | 'any'>(initial.formatFilter)
+  const [monthFilter, setMonthFilter] = useState<Month>(initial.monthFilter)
+  const [sortKey, setSortKey] = useState<SortKey>(initial.sortKey)
+  const [savedFilters, setSavedFilters] = useState<IdCampsFilters>(initial)
+  const [savedFlash, setSavedFlash] = useState(false)
+
+  const filtersDirty = (
+    savedFilters.search !== search ||
+    savedFilters.divFilter !== divFilter ||
+    savedFilters.regionFilter !== regionFilter ||
+    savedFilters.genderFilter !== genderFilter ||
+    savedFilters.tierFilter !== tierFilter ||
+    savedFilters.formatFilter !== formatFilter ||
+    savedFilters.monthFilter !== monthFilter ||
+    savedFilters.sortKey !== sortKey
+  )
+
+  function saveFilters() {
+    const next: IdCampsFilters = { search, divFilter, regionFilter, genderFilter, tierFilter, formatFilter, monthFilter, sortKey }
+    try { localStorage.setItem(IDCAMPS_FILTERS_KEY, JSON.stringify(next)) } catch { /* */ }
+    setSavedFilters(next)
+    setSavedFlash(true)
+    setTimeout(() => setSavedFlash(false), 1500)
+  }
 
   useEffect(() => {
     getIdCamps()
@@ -434,6 +527,18 @@ function IdCampsTab() {
             >
               Clear filters · {activeFilterCount}
             </button>
+          )}
+          {(filtersDirty || savedFlash) && (
+            <div className="flex items-center gap-2 ml-auto">
+              {savedFlash ? (
+                <span className="text-[11px] text-[#4ade80] font-mono">✓ Saved</span>
+              ) : (
+                <span className="text-[11px] text-[#f0b65a] italic">Filters changed</span>
+              )}
+              <Button onClick={saveFilters} disabled={!filtersDirty} size="sm" variant="outline">
+                Save filters
+              </Button>
+            </div>
           )}
         </div>
       </div>
@@ -586,8 +691,19 @@ function Fact({ label, value }: { label: string; value: string }) {
 
 // ── Find Camps tab: user-driven lookup for arbitrary schools ──
 
+const FIND_CAMPS_TARGETS_KEY = 'campsFindTargetSchools'
+function loadFindCampsTargets(): { name: string; division: Division }[] {
+  try {
+    const raw = localStorage.getItem(FIND_CAMPS_TARGETS_KEY)
+    return raw ? (JSON.parse(raw) as { name: string; division: Division }[]) : []
+  } catch { return [] }
+}
+
 function FindCampsTab() {
-  const [targetSchools, setTargetSchools] = useState<{ name: string; division: Division }[]>([])
+  const initialTargets = loadFindCampsTargets()
+  const [targetSchools, setTargetSchools] = useState<{ name: string; division: Division }[]>(initialTargets)
+  const [savedTargets, setSavedTargets] = useState<{ name: string; division: Division }[]>(initialTargets)
+  const [savedFlash, setSavedFlash] = useState(false)
   const [schoolInput, setSchoolInput] = useState('')
   const [schoolDivision, setSchoolDivision] = useState<Division>('D1')
   const [camps, setCamps] = useState<IdCamp[]>([])
@@ -600,6 +716,18 @@ function FindCampsTab() {
   const [emails, setEmails] = useState<GeneratedEmail[]>([])
   const [copiedIdx, setCopiedIdx] = useState<number | null>(null)
   const [expandedEmail, setExpandedEmail] = useState<number | null>(null)
+
+  const targetsDirty = (
+    targetSchools.length !== savedTargets.length ||
+    targetSchools.some((t, i) => t.name !== savedTargets[i]?.name || t.division !== savedTargets[i]?.division)
+  )
+
+  function saveTargets() {
+    try { localStorage.setItem(FIND_CAMPS_TARGETS_KEY, JSON.stringify(targetSchools)) } catch { /* */ }
+    setSavedTargets(targetSchools)
+    setSavedFlash(true)
+    setTimeout(() => setSavedFlash(false), 1500)
+  }
 
   function addSchool() {
     if (!schoolInput.trim() || targetSchools.length >= 8) return
@@ -697,9 +825,21 @@ function FindCampsTab() {
         )}
 
         {error && <p className="text-xs text-red-400 mb-3">{error}</p>}
-        <Button onClick={handleFindCamps} disabled={loading || targetSchools.length === 0}>
-          {loading ? 'Searching…' : `🔍 Find ID Camps at ${targetSchools.length} School${targetSchools.length !== 1 ? 's' : ''}`}
-        </Button>
+        <div className="flex items-center gap-3 flex-wrap">
+          <Button onClick={handleFindCamps} disabled={loading || targetSchools.length === 0}>
+            {loading ? 'Searching…' : `🔍 Find ID Camps at ${targetSchools.length} School${targetSchools.length !== 1 ? 's' : ''}`}
+          </Button>
+          {(targetsDirty || savedFlash) && (
+            <>
+              <Button onClick={saveTargets} disabled={!targetsDirty} size="sm" variant="outline">
+                {savedFlash ? '✓ Saved' : 'Save schools'}
+              </Button>
+              {!savedFlash && (
+                <span className="text-[11px] text-[#f0b65a] italic">List changed — save to remember.</span>
+              )}
+            </>
+          )}
+        </div>
       </Card>
 
       {camps.length > 0 && (

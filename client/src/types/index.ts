@@ -18,6 +18,12 @@ export interface AthleteProfile {
   intendedMajor?: string
   highlightUrl?: string
   targetDivision: Division
+  // Multi-division targeting — when set with 2+ entries, the matcher treats
+  // every listed division as a first-class target (no above/below penalty
+  // between them). Lets athletes say "I'd play D1 OR D3 but not D2/NAIA".
+  // Single-target users can leave undefined; matcher falls back to the
+  // single `targetDivision` field above. Always includes `targetDivision`.
+  targetDivisions?: Division[]
   locationPreference: Region
   sizePreference: 'small' | 'medium' | 'large' | 'any'
   // Hard exclusions — divisions the athlete refuses to consider, e.g. "no
@@ -52,6 +58,12 @@ export interface School {
   coachName?: string
   coachEmail?: string
   category: 'reach' | 'target' | 'safety'
+  // True when this school was injected as a cross-division "stretch goal" —
+  // a school playing one or two divisions above the athlete's target. The
+  // matcher always includes 1–2 of these for athletes who clear the typical
+  // recruit at their target level. UI can use this to surface a "Stretch
+  // Goal" badge so the higher-division school doesn't look like a mismatch.
+  isStretchReach?: boolean
   matchScore: number
   athleticFit?: number
   academicFit?: number

@@ -22,11 +22,6 @@ export function Login() {
     else navigate('/dashboard')
   }
 
-  function handleTestMode() {
-    localStorage.setItem('testMode', 'true')
-    navigate('/dashboard')
-  }
-
   async function handleGoogle() {
     setGoogleLoading(true)
     const { error } = await supabase.auth.signInWithOAuth({
@@ -63,10 +58,6 @@ export function Login() {
               {error}
             </div>
           )}
-
-          <Button onClick={handleTestMode} variant="gold" size="md" className="w-full mb-4">
-            Explore as guest — no account needed
-          </Button>
 
           <button
             onClick={handleGoogle}

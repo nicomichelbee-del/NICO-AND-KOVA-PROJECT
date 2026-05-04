@@ -5,6 +5,7 @@ import { KickrIQLogo } from '../ui/KickrIQLogo'
 type IconName =
   | 'overview' | 'profile' | 'timeline' | 'schools' | 'emails'
   | 'tracker' | 'followup' | 'video' | 'camps' | 'roster' | 'logout'
+  | 'eligibility'
 
 function NavIcon({ name }: { name: IconName }) {
   const props = {
@@ -24,6 +25,7 @@ function NavIcon({ name }: { name: IconName }) {
     case 'camps':    return <svg {...props}><path d="M3 21l9-15 9 15z"/><path d="M3 21h18"/></svg>
     case 'roster':   return <svg {...props}><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18"/><path d="M8 14h3"/><path d="M8 17h6"/><circle cx="17" cy="15" r="2" fill="currentColor" stroke="none"/></svg>
     case 'logout':   return <svg {...props}><path d="M15 4h3a2 2 0 0 1 2 2v12a2 2 0 0 1-2 2h-3"/><path d="M10 17l5-5-5-5"/><path d="M15 12H3"/></svg>
+    case 'eligibility': return <svg {...props}><path d="M12 2l8 4v6c0 5-3.5 8.5-8 10-4.5-1.5-8-5-8-10V6l8-4z"/><path d="M9 12l2 2 4-4"/></svg>
   }
 }
 
@@ -36,9 +38,10 @@ const navGroups: NavGroup[] = [
   {
     label: 'Recruiting',
     items: [
-      { to: '/dashboard',          label: 'Overview',            icon: 'overview', end: true },
-      { to: '/dashboard/profile',  label: 'My Profile',          icon: 'profile',  end: false },
-      { to: '/dashboard/timeline', label: 'Timeline',            icon: 'timeline', end: false },
+      { to: '/dashboard',             label: 'Overview',            icon: 'overview',    end: true },
+      { to: '/dashboard/profile',     label: 'My Profile',          icon: 'profile',     end: false },
+      { to: '/dashboard/timeline',    label: 'Timeline',            icon: 'timeline',    end: false },
+      { to: '/dashboard/eligibility', label: 'Eligibility & Docs',  icon: 'eligibility', end: false },
     ],
   },
   {
@@ -63,10 +66,8 @@ const navGroups: NavGroup[] = [
 export function Sidebar() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
-  const isTestMode = typeof window !== 'undefined' && localStorage.getItem('testMode') === 'true'
 
   async function handleSignOut() {
-    localStorage.removeItem('testMode')
     await signOut()
     navigate('/')
   }
@@ -125,7 +126,7 @@ export function Sidebar() {
         <div className="px-3 py-3 mb-2 rounded-xl bg-[rgba(240,182,90,0.04)] border border-[rgba(240,182,90,0.14)]">
           <div className="flex items-center justify-between gap-2">
             <div className="font-mono text-[9.5px] tracking-[0.22em] uppercase text-ink-3">
-              {isTestMode ? 'Demo' : 'Free plan'}
+              Free plan
             </div>
             <span className="inline-flex items-center gap-1 font-mono text-[9px] tracking-[0.16em] uppercase text-gold">
               <span className="w-1.5 h-1.5 rounded-full bg-gold shadow-[0_0_8px_var(--gold)]" />
@@ -133,7 +134,7 @@ export function Sidebar() {
             </span>
           </div>
           <div className="text-[13px] text-ink-0 truncate mt-1.5">
-            {isTestMode ? 'Demo account' : user?.email ?? '—'}
+            {user?.email ?? '—'}
           </div>
           <button
             onClick={() => navigate('/signup')}
@@ -149,7 +150,7 @@ export function Sidebar() {
           <span className="w-5 h-5 inline-flex items-center justify-center">
             <NavIcon name="logout" />
           </span>
-          {isTestMode ? 'Exit test mode' : 'Sign out'}
+          Sign out
         </button>
       </div>
     </aside>

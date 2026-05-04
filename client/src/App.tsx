@@ -16,9 +16,16 @@ import { VideoRater } from './pages/dashboard/VideoRater'
 import { Camps } from './pages/dashboard/Camps'
 import { RosterIntel } from './pages/dashboard/RosterIntel'
 import { Timeline } from './pages/dashboard/Timeline'
+import { Eligibility } from './pages/dashboard/Eligibility'
+import { ForCoaches } from './pages/ForCoaches'
+import { CoachDashboard } from './pages/CoachDashboard'
 import { AuthCallback } from './pages/AuthCallback'
 import { OnboardingProfile } from './pages/onboarding/OnboardingProfile'
 import { PublicProfile } from './pages/PublicProfile'
+import { OpenSpots } from './pages/OpenSpots'
+import { About } from './pages/About'
+import { Privacy } from './pages/Privacy'
+import { Terms } from './pages/Terms'
 
 function LoadingScreen() {
   return (
@@ -32,9 +39,8 @@ function LoadingScreen() {
 
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
-  const testMode = localStorage.getItem('testMode') === 'true'
   if (loading) return <LoadingScreen />
-  return (user || testMode) ? <>{children}</> : <Navigate to="/login" replace />
+  return user ? <>{children}</> : <Navigate to="/login" replace />
 }
 
 // Gates everything dashboard-side: redirects to /onboarding/profile until the
@@ -42,9 +48,7 @@ function ProtectedRoute({ children }: { children: React.ReactNode }) {
 // outside this guard so users can always reach it.
 function RequireCompleteProfile({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useProfile()
-  const testMode = localStorage.getItem('testMode') === 'true'
   if (loading) return <LoadingScreen />
-  if (testMode) return <>{children}</>
   if (!profile?.profile_completed) return <Navigate to="/onboarding/profile" replace />
   return <>{children}</>
 }
@@ -56,11 +60,19 @@ export default function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Landing />} />
+            <Route path="/about" element={<About />} />
+            <Route path="/privacy" element={<Privacy />} />
+            <Route path="/terms" element={<Terms />} />
             <Route path="/login" element={<Login />} />
             <Route path="/signup" element={<Signup />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
             <Route path="/players/:slug" element={<PublicProfile />} />
+            <Route path="/open-spots" element={<OpenSpots />} />
+            <Route path="/open-spots/:gender" element={<OpenSpots />} />
+            <Route path="/open-spots/:gender/:position" element={<OpenSpots />} />
+            <Route path="/for-coaches" element={<ForCoaches />} />
+            <Route path="/for-coaches/dashboard" element={<CoachDashboard />} />
 
             <Route
               path="/onboarding/profile"
@@ -91,6 +103,7 @@ export default function App() {
               <Route path="camps" element={<Camps />} />
               <Route path="roster" element={<RosterIntel />} />
               <Route path="timeline" element={<Timeline />} />
+              <Route path="eligibility" element={<Eligibility />} />
             </Route>
           </Routes>
         </BrowserRouter>
