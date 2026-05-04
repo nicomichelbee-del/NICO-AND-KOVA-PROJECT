@@ -1,0 +1,614 @@
+/* ============================================================
+   KickrIQ. Design tokens & global styles
+   Aesthetic: warm deep navy + amber + editorial serif display
+   ============================================================ */
+
+:root {
+  /* Surfaces. warm cocoa / leather. Dark but always lit by hearth-amber. */
+  --bg-0:   #221913;          /* page base. warm cocoa */
+  --bg-1:   #2a1f17;          /* section base */
+  --bg-2:   #34271c;          /* surface raised */
+  --bg-3:   #422f21;          /* surface hover / inner card */
+  --bg-warm:#2c2014;          /* warmest atmospheric */
+
+  /* Text. warm off-white, slightly creamier */
+  --fg-0:   #f6efde;          /* primary */
+  --fg-1:   #e0d4ba;          /* secondary */
+  --fg-2:   #b0a182;          /* muted / eyebrow */
+  --fg-3:   #7d7058;          /* hint */
+
+  /* Borders. warmer edge tint */
+  --line-1: rgba(246, 220, 168, 0.09);
+  --line-2: rgba(246, 220, 168, 0.16);
+  --line-3: rgba(246, 220, 168, 0.24);
+
+  /* Accent. warm amber (gameday gold) */
+  --gold:    #f0b65a;
+  --gold-2:  #e0982e;
+  --gold-3:  #c47a16;
+  --gold-soft: rgba(240, 182, 90, 0.14);
+  --gold-halo: rgba(240, 182, 90, 0.45);
+
+  /* Secondary accent. pitch green & crimson */
+  --pitch:   #2f7d4f;
+  --pitch-2: #4ea36e;
+  --crimson: #c94545;
+  --crimson-2: #e35a5a;
+
+  /* Functional */
+  --ok:      #4ea36e;
+  --warn:    #f0b65a;
+  --err:     #e35a5a;
+
+  /* Type */
+  --serif: 'Fraunces', 'Source Serif Pro', Georgia, serif;
+  --sans:  'Geist', 'IBM Plex Sans', -apple-system, BlinkMacSystemFont, 'Helvetica Neue', sans-serif;
+  --mono:  'Geist Mono', 'JetBrains Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  /* Radius */
+  --r-sm: 6px;
+  --r-md: 10px;
+  --r-lg: 16px;
+  --r-xl: 24px;
+
+  /* Shadow */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 8px 24px rgba(0,0,0,0.35), 0 2px 4px rgba(0,0,0,0.3);
+  --shadow-lg: 0 24px 60px rgba(0,0,0,0.5), 0 8px 18px rgba(0,0,0,0.35);
+  --shadow-glow: 0 0 0 1px rgba(240,182,90,0.35), 0 12px 40px rgba(240,182,90,0.25);
+
+  /* Containers */
+  --gutter: clamp(20px, 4vw, 40px);
+  --max-w: 1240px;
+}
+
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  padding: 0;
+  background: var(--bg-0);
+  color: var(--fg-0);
+  font-family: var(--sans);
+  font-size: 16px;
+  line-height: 1.55;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+body {
+  overflow-x: hidden;
+  position: relative;
+}
+
+/* Page-wide unifying warmth. sits behind everything via a fixed layer.
+   Subtle amber+crimson radial wash that reads on every section. */
+body::before {
+  content: '';
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 0;
+  background:
+    /* Hearth: amber bloom upper-right, crimson ember lower-left */
+    radial-gradient(1400px 900px at 100% 0%, rgba(240,182,90,0.10) 0%, transparent 55%),
+    radial-gradient(1200px 800px at 0% 100%, rgba(201,69,69,0.06) 0%, transparent 60%),
+    /* Soft top-down warm overlay so even mid-page feels lit */
+    radial-gradient(1800px 1100px at 50% 0%, rgba(240,182,90,0.06) 0%, transparent 65%),
+    linear-gradient(180deg, rgba(70,45,22,0.08) 0%, transparent 50%, rgba(70,45,22,0.08) 100%);
+}
+.page { position: relative; z-index: 1; }
+
+/* Editorial display utility */
+.serif {
+  font-family: var(--serif);
+  font-optical-sizing: auto;
+  font-variation-settings: "SOFT" 50, "WONK" 0;
+  letter-spacing: -0.02em;
+  font-weight: 500;
+}
+
+.mono {
+  font-family: var(--mono);
+  font-feature-settings: "ss01", "ss02";
+  letter-spacing: 0.02em;
+}
+
+/* Eyebrow. small caps */
+.eyebrow {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--gold);
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+}
+.eyebrow::before {
+  content: '';
+  width: 22px;
+  height: 1px;
+  background: var(--gold);
+  opacity: 0.7;
+}
+
+/* Hero kicker. editorial masthead-style line.
+   Replaces generic uppercase eyebrow with serif italic + numeric ornament. */
+.hero-kicker {
+  display: inline-flex;
+  align-items: center;
+  gap: 14px;
+  color: var(--fg-1);
+  font-size: 15px;
+  letter-spacing: 0.005em;
+}
+.hk-line {
+  flex: 0 0 36px;
+  height: 1px;
+  background: linear-gradient(90deg, transparent, var(--gold) 50%, transparent);
+}
+.hk-num {
+  color: var(--gold);
+  font-style: italic;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+}
+.hk-sep {
+  color: var(--fg-3);
+  font-size: 18px;
+  line-height: 1;
+}
+.hk-text {
+  font-style: italic;
+  font-weight: 400;
+  color: var(--fg-1);
+}
+.hk-rotator {
+  display: inline-block;
+  color: var(--gold);
+  font-style: italic;
+  /* Subtle text-shadow for amber bloom */
+  text-shadow: 0 0 18px rgba(240, 182, 90, 0.35);
+  animation: hk-rotate-in 600ms cubic-bezier(.2,.8,.2,1) both;
+  /* Stable width across word swaps so the line doesn't jitter.
+     Words: recruited. / noticed. / seen. / signed.. sized to the longest. */
+  min-width: 5.4em;
+  text-align: left;
+}
+@keyframes hk-rotate-in {
+  0%   { opacity: 0; transform: translateY(0.45em); filter: blur(2px); }
+  60%  { opacity: 1; transform: translateY(0); filter: blur(0); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hk-rotator { animation: none; }
+}
+
+/* Hero H1 rotating accent word. same beat as kicker, scaled to display size */
+.hero-rotator {
+  display: inline-block;
+  animation: hero-rotate-in 520ms cubic-bezier(.22,.61,.36,1) both;
+  /* Stable width so the headline doesn't reflow on swap.
+     Tight: just clears the longest word ("smartest") with minimal padding. */
+  min-width: 3.6em;
+  text-align: center;
+  /* Subtle amber bloom matches kicker */
+  text-shadow: 0 0 32px rgba(240, 182, 90, 0.28);
+}
+@keyframes hero-rotate-in {
+  0%   { opacity: 0; transform: translateY(0.28em); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+@media (prefers-reduced-motion: reduce) {
+  .hero-rotator { animation: none; }
+}
+
+/* Static accent in kicker. no rotation, just fits the same visual rhythm */
+.hk-rotator-static {
+  display: inline-block;
+  color: var(--gold);
+  font-style: italic;
+  text-shadow: 0 0 18px rgba(240, 182, 90, 0.35);
+}
+@media (max-width: 640px) {
+  .hero-kicker { font-size: 13px; gap: 10px; }
+  .hk-line { flex-basis: 18px; }
+}
+
+/* Containers */
+.wrap {
+  max-width: var(--max-w);
+  margin: 0 auto;
+  padding: 0 var(--gutter);
+  position: relative;
+}
+
+/* Buttons */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 14px 22px;
+  border-radius: 999px;
+  font-family: var(--sans);
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: -0.005em;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition:
+    transform 260ms cubic-bezier(.2,.7,.2,1),
+    box-shadow 260ms cubic-bezier(.2,.7,.2,1),
+    background 200ms ease,
+    color 200ms ease,
+    border-color 200ms ease;
+  white-space: nowrap;
+  text-decoration: none;
+  position: relative;
+  overflow: hidden;
+  isolation: isolate;
+  will-change: transform;
+}
+/* Shine sweep. sits above the button bg, animates on hover */
+.btn::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: linear-gradient(
+    115deg,
+    transparent 30%,
+    rgba(255, 255, 255, 0.35) 48%,
+    rgba(255, 255, 255, 0.0) 60%
+  );
+  transform: translateX(-120%);
+  transition: transform 700ms cubic-bezier(.2,.7,.2,1);
+  pointer-events: none;
+  mix-blend-mode: overlay;
+  z-index: 1;
+}
+.btn:hover::before { transform: translateX(120%); }
+.btn > * { position: relative; z-index: 2; }
+
+.btn:active { transform: translateY(1px) scale(0.98); }
+
+/* PRIMARY. gold pill with strong glow + lift on hover */
+.btn-primary {
+  background: linear-gradient(180deg, #f5c170 0%, #e0982e 100%);
+  color: #1a1304;
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.4) inset,
+    0 -1px 0 rgba(0,0,0,0.15) inset,
+    0 8px 22px rgba(240,182,90,0.18);
+}
+.btn-primary:hover {
+  background: linear-gradient(180deg, #ffd28a 0%, #e8a23a 100%);
+  box-shadow:
+    0 1px 0 rgba(255,255,255,0.55) inset,
+    0 -1px 0 rgba(0,0,0,0.18) inset,
+    0 0 0 8px rgba(240,182,90,0.16),
+    0 0 32px rgba(240,182,90,0.55),
+    0 22px 50px rgba(240,182,90,0.40);
+  transform: translateY(-2px) scale(1.035);
+}
+.btn-primary svg { stroke: #1a1304; }
+
+/* GHOST. translucent, gains a soft amber halo + ivory border on hover */
+.btn-ghost {
+  background: rgba(245,241,232,0.04);
+  color: var(--fg-0);
+  border-color: var(--line-2);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+}
+.btn-ghost:hover {
+  background: rgba(245,241,232,0.10);
+  border-color: rgba(245,241,232,0.55);
+  color: #fff;
+  box-shadow:
+    0 0 0 6px rgba(245,241,232,0.05),
+    0 0 28px rgba(240,182,90,0.18),
+    0 14px 36px rgba(0,0,0,0.35);
+  transform: translateY(-2px) scale(1.03);
+}
+
+/* Reduce motion respect */
+@media (prefers-reduced-motion: reduce) {
+  .btn:hover { transform: none; }
+  .btn::before { display: none; }
+}
+
+.btn-link {
+  background: transparent;
+  color: var(--fg-0);
+  padding: 8px 0;
+  border-radius: 0;
+  font-weight: 500;
+}
+.btn-link:hover { color: var(--gold); }
+
+/* Nav sign-in. plain text link, sits beside the primary CTA without
+   competing with it. Subtle underline grows on hover. */
+.nav-signin {
+  display: inline-flex;
+  align-items: center;
+  font-family: var(--sans);
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: -0.005em;
+  color: var(--fg-1);
+  text-decoration: none;
+  padding: 8px 4px;
+  position: relative;
+  transition: color 200ms ease;
+}
+.nav-signin::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  right: 4px;
+  bottom: 4px;
+  height: 1px;
+  background: currentColor;
+  opacity: 0;
+  transform: scaleX(0.4);
+  transform-origin: left center;
+  transition: opacity 220ms ease, transform 320ms cubic-bezier(.2,.7,.2,1);
+}
+.nav-signin:hover {
+  color: var(--fg-0);
+}
+.nav-signin:hover::after {
+  opacity: 0.5;
+  transform: scaleX(1);
+}
+
+/* Section spacing */
+.section {
+  padding: clamp(80px, 11vw, 140px) 0;
+  position: relative;
+}
+.section-tight { padding: clamp(60px, 8vw, 100px) 0; }
+
+/* Headings */
+h1, h2, h3, h4 { margin: 0; }
+
+.h-display {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(44px, 8.4vw, 116px);
+  line-height: 0.94;
+  letter-spacing: -0.035em;
+  font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 144;
+}
+.h-section {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: clamp(34px, 5.2vw, 68px);
+  line-height: 1.0;
+  letter-spacing: -0.028em;
+  font-variation-settings: "SOFT" 50, "opsz" 96;
+}
+.h-card {
+  font-family: var(--serif);
+  font-weight: 500;
+  font-size: clamp(22px, 2.4vw, 28px);
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+}
+.lede {
+  font-family: var(--sans);
+  font-size: clamp(16px, 1.5vw, 19px);
+  line-height: 1.55;
+  color: var(--fg-1);
+  max-width: 56ch;
+}
+
+.accent { color: var(--gold); font-style: italic; font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144; }
+
+/* Pitch-line decorative texture */
+.pitch-grid {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  background-image:
+    linear-gradient(to right, rgba(245,241,232,0.04) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(245,241,232,0.04) 1px, transparent 1px);
+  background-size: 80px 80px;
+  mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  -webkit-mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+  opacity: 0.6;
+}
+
+.field-lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  opacity: 0.28;
+}
+
+/* Editorial tag. borderless, magazine-spread feel.
+   Small caps on a thin leading rule; gold dot anchor.
+   Replaces generic pill-chip vocabulary. */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 0 0 0 2px;
+  border-radius: 0;
+  font-family: var(--mono);
+  font-size: 10.5px;
+  font-weight: 500;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  background: transparent;
+  color: var(--gold);
+  border: none;
+  position: relative;
+  white-space: nowrap;
+}
+.chip::before {
+  content: '';
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: currentColor;
+  flex-shrink: 0;
+  box-shadow: 0 0 6px currentColor;
+}
+.chip-pitch { color: var(--pitch-2); }
+.chip-crimson { color: var(--crimson-2); }
+.chip-ghost {
+  color: var(--fg-2);
+}
+.chip-ghost::before {
+  background: var(--fg-3);
+  box-shadow: none;
+  width: 4px; height: 4px;
+}
+
+/* Card */
+.card {
+  background: linear-gradient(180deg, var(--bg-2) 0%, var(--bg-1) 100%);
+  border: 1px solid var(--line-1);
+  border-radius: var(--r-lg);
+  padding: clamp(22px, 2.6vw, 32px);
+  position: relative;
+  overflow: hidden;
+  transition: transform 240ms cubic-bezier(.2,.7,.2,1), border-color 240ms ease, box-shadow 240ms ease;
+}
+.card::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(600px 200px at 0% 0%, rgba(240,182,90,0.04), transparent 60%);
+  pointer-events: none;
+}
+.card:hover {
+  border-color: var(--line-2);
+  transform: translateY(-2px);
+  box-shadow: var(--shadow-md);
+}
+
+/* Number marker */
+.num {
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 56px;
+  font-style: italic;
+  font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+  line-height: 1;
+  color: var(--gold);
+  letter-spacing: -0.04em;
+}
+
+/* Halo glow utility */
+.halo {
+  position: absolute;
+  border-radius: 50%;
+  filter: blur(80px);
+  pointer-events: none;
+  opacity: 0.5;
+}
+
+/* Stat tile */
+.stat {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.stat-num {
+  font-family: var(--serif);
+  font-size: clamp(36px, 5vw, 56px);
+  font-weight: 400;
+  letter-spacing: -0.03em;
+  line-height: 1;
+  font-variation-settings: "opsz" 144;
+}
+.stat-label {
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+
+/* Divider with marker */
+.section-marker {
+  display: inline-flex;
+  align-items: center;
+  gap: 12px;
+  font-family: var(--mono);
+  font-size: 11.5px;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+  color: var(--fg-2);
+}
+.section-marker::before {
+  content: '';
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 12px var(--gold);
+}
+
+/* Animations */
+@keyframes pulseGlow {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(240,182,90,0.45); }
+  50%      { box-shadow: 0 0 0 14px rgba(240,182,90,0); }
+}
+
+@keyframes scoreCount {
+  from { opacity: 0; transform: translateY(8px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes shimmer {
+  0%   { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes ticker {
+  from { transform: translateX(0); }
+  to   { transform: translateX(-50%); }
+}
+
+/* Live dot */
+.live-dot {
+  display: inline-block;
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--crimson-2);
+  box-shadow: 0 0 0 0 rgba(227,90,90,0.5);
+  animation: pulseGlow 1.8s infinite;
+  margin-right: 6px;
+}
+
+/* Underline accent */
+.underline-accent {
+  background: linear-gradient(120deg, transparent 0%, transparent 8%, var(--gold-soft) 8%, var(--gold-soft) 92%, transparent 92%);
+  padding: 0 4px;
+}
+
+/* Selection */
+::selection { background: rgba(240,182,90,0.4); color: #1a1304; }
+
+/* Scrollbar */
+::-webkit-scrollbar { width: 10px; height: 10px; }
+::-webkit-scrollbar-track { background: var(--bg-0); }
+::-webkit-scrollbar-thumb { background: #2a3142; border-radius: 10px; }
+::-webkit-scrollbar-thumb:hover { background: #3b4358; }
+
+/* Responsive helpers */
+@media (max-width: 760px) {
+  .hide-mobile { display: none !important; }
+}
+@media (min-width: 761px) {
+  .show-mobile { display: none !important; }
+}

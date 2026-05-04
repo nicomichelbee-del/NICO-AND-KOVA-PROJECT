@@ -1,0 +1,128 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <title>KickrIQ. Logo Pack</title>
+  <link rel="stylesheet" href="styles.css" />
+  <style>
+    body { padding: 64px 80px 120px; }
+    h1 { font-family: var(--display); font-size: 56px; letter-spacing: -0.02em; margin: 0 0 8px; }
+    .lede { color: var(--fg-2); margin: 0 0 56px; font-size: 18px; max-width: 60ch; }
+    h2 { font-family: var(--display); font-size: 28px; letter-spacing: -0.01em; margin: 56px 0 20px; }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px;
+    }
+    .card {
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--line-2);
+      background: var(--bg-1);
+      display: flex;
+      flex-direction: column;
+    }
+    .card .swatch {
+      aspect-ratio: 16 / 9;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 36px;
+    }
+    .swatch.dark   { background: #221913; }
+    .swatch.cream  { background: #f6efde; }
+    .swatch.checker {
+      background-color: #1a130d;
+      background-image:
+        linear-gradient(45deg, #2a1f17 25%, transparent 25%),
+        linear-gradient(-45deg, #2a1f17 25%, transparent 25%),
+        linear-gradient(45deg, transparent 75%, #2a1f17 75%),
+        linear-gradient(-45deg, transparent 75%, #2a1f17 75%);
+      background-size: 20px 20px;
+      background-position: 0 0, 0 10px, 10px -10px, 10px 0;
+    }
+    .swatch img {
+      max-width: 100%;
+      max-height: 100%;
+      display: block;
+    }
+    .meta {
+      padding: 14px 18px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-top: 1px solid var(--line-2);
+      font-size: 13px;
+      color: var(--fg-2);
+      background: var(--bg-0);
+    }
+    .meta .name { color: var(--fg-0); font-weight: 600; }
+    .meta a {
+      color: var(--gold);
+      text-decoration: none;
+      font-size: 12px;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+    }
+    .meta a:hover { color: var(--fg-0); }
+    .icon-row .swatch { aspect-ratio: 1 / 1; }
+    .icon-row .swatch img { max-width: 200px; max-height: 200px; }
+  </style>
+</head>
+<body>
+
+  <h1>Logo Pack</h1>
+  <p class="lede">PNGs of the KickrIQ wordmark and "K" icon mark, on dark, cream, and transparent backgrounds. Right-click any image to save individually, or download the full set below.</p>
+
+  <h2>Wordmark</h2>
+  <div class="grid">
+    <div class="card">
+      <div class="swatch dark"><img src="exports/kickriq-wordmark-dark.png" alt="KickrIQ wordmark on dark" /></div>
+      <div class="meta">
+        <span class="name">on dark</span>
+        <a href="exports/kickriq-wordmark-dark.png" download>Download PNG</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="swatch cream"><img src="exports/kickriq-wordmark-cream.png" alt="KickrIQ wordmark on cream" /></div>
+      <div class="meta">
+        <span class="name">on cream</span>
+        <a href="exports/kickriq-wordmark-cream.png" download>Download PNG</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="swatch checker"><img src="exports/kickriq-wordmark.png" alt="KickrIQ wordmark transparent" /></div>
+      <div class="meta">
+        <span class="name">transparent</span>
+        <a href="exports/kickriq-wordmark.png" download>Download PNG</a>
+      </div>
+    </div>
+  </div>
+
+  <h2>Icon</h2>
+  <div class="grid icon-row">
+    <div class="card">
+      <div class="swatch dark"><img src="exports/kickriq-icon-dark.png" alt="KickrIQ icon on dark" /></div>
+      <div class="meta">
+        <span class="name">on dark</span>
+        <a href="exports/kickriq-icon-dark.png" download>Download PNG</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="swatch cream"><img src="exports/kickriq-icon-cream.png" alt="KickrIQ icon on cream" /></div>
+      <div class="meta">
+        <span class="name">on cream</span>
+        <a href="exports/kickriq-icon-cream.png" download>Download PNG</a>
+      </div>
+    </div>
+    <div class="card">
+      <div class="swatch checker"><img src="exports/kickriq-icon.png" alt="KickrIQ icon transparent" /></div>
+      <div class="meta">
+        <span class="name">transparent</span>
+        <a href="exports/kickriq-icon.png" download>Download PNG</a>
+      </div>
+    </div>
+  </div>
+
+</body>
+</html>

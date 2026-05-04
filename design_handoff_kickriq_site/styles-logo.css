@@ -1,0 +1,74 @@
+/* ==============================================================
+   KickrIQ Wordmark. CSS
+   ============================================================== */
+.kickriq-logo {
+  display: inline-flex;
+  align-items: center;
+  font-family: "Saira Condensed", "Barlow Condensed", "Arial Black", system-ui, sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  font-size: var(--logo-h, 32px);
+  line-height: 1;
+  letter-spacing: -0.04em;
+  user-select: none;
+  white-space: nowrap;
+}
+.klogo-kickr {
+  color: var(--fg-0);
+  /* Slight forward slant beyond the italic to echo the reference's chunky slash */
+  transform: skewX(-4deg);
+  display: inline-block;
+}
+.klogo-iq {
+  color: var(--gold);
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  transform: skewX(-4deg);
+  margin-left: 0.04em;
+}
+.klogo-i {
+  position: relative;
+  display: inline-block;
+}
+.klogo-q { display: inline-block; }
+
+/* ==============================================================
+   Icon-only "K". squared rounded tile with K + pentagon corner
+   ============================================================== */
+.kickriq-icon {
+  display: inline-block;
+  position: relative;
+  font-size: 100%;
+}
+.kicon-tile {
+  position: absolute;
+  inset: 0;
+  background: var(--bg-1, #0a1220);
+  border-radius: 22%;
+  border: 1px solid var(--line-2, rgba(255,255,255,0.08));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: "Saira Condensed", "Barlow Condensed", "Arial Black", system-ui, sans-serif;
+  font-weight: 900;
+  font-style: italic;
+  color: var(--fg-0);
+  font-size: 75%;
+  line-height: 1;
+  overflow: hidden;
+}
+.kicon-k {
+  display: block;
+  transform: skewX(-4deg) translateY(0.04em);
+  letter-spacing: -0.02em;
+}
+.kicon-pent {
+  position: absolute;
+  right: 14%;
+  bottom: 14%;
+  width: 22%;
+  height: 22%;
+  background: var(--gold);
+  clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);
+}

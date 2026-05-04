@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>About · KickrIQ</title>
+  <meta name="description" content="KickrIQ was built by former college players and AI engineers who watched the recruiting process punish the wrong things. Here's why we built it, and who it's for.">
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fraunces:ital,opsz,wght,SOFT,WONK@0,9..144,300..700,0..100,0..1;1,9..144,300..700,0..100,0..1&family=Geist:wght@300;400;500;600;700&family=Geist+Mono:wght@400;500&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="styles-logo.css">
+  <link rel="stylesheet" href="styles-sections.css">
+
+  <style>
+    /* ============================================================
+       About page-specific styles. Editorial, magazine-spread feel.
+       Builds on the global tokens defined in styles.css.
+       ============================================================ */
+
+    /* Top spacing under the fixed navbar */
+    .about-top { padding-top: 140px; }
+
+    /* ---------- MASTHEAD ---------- */
+    .about-masthead {
+      position: relative;
+      padding: clamp(40px, 6vw, 80px) 0 clamp(60px, 9vw, 120px);
+      overflow: hidden;
+    }
+    .about-masthead::before {
+      content: '';
+      position: absolute;
+      inset: -20% -10% auto -10%;
+      height: 80%;
+      background: radial-gradient(700px 360px at 70% 0%, rgba(240,182,90,0.14), transparent 70%);
+      pointer-events: none;
+    }
+    .about-mast-grid {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: clamp(40px, 6vw, 96px);
+      align-items: end;
+      position: relative;
+    }
+    @media (max-width: 880px) {
+      .about-mast-grid { grid-template-columns: 1fr; gap: 40px; }
+    }
+    .about-eyebrow-row {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 26px;
+    }
+    .about-eyebrow-row .rule {
+      flex: 1;
+      height: 1px;
+      background: linear-gradient(90deg, var(--gold), transparent);
+      max-width: 140px;
+    }
+    .about-issue {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--fg-2);
+    }
+    .about-h1 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(48px, 8.6vw, 124px);
+      line-height: 0.92;
+      letter-spacing: -0.038em;
+      font-variation-settings: "SOFT" 50, "WONK" 0, "opsz" 144;
+    }
+    .about-h1 .accent { display: inline-block; }
+    .about-deck {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(20px, 2vw, 26px);
+      line-height: 1.35;
+      color: var(--fg-1);
+      max-width: 38ch;
+      font-variation-settings: "SOFT" 80, "opsz" 96;
+    }
+    .about-deck::before {
+      content: '“';
+      font-size: 1.4em;
+      color: var(--gold);
+      line-height: 0;
+      vertical-align: -0.1em;
+      margin-right: 4px;
+    }
+    .about-byline {
+      margin-top: 32px;
+      display: flex;
+      gap: 22px;
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--fg-2);
+      flex-wrap: wrap;
+    }
+    .about-byline span b { color: var(--fg-0); font-weight: 500; }
+
+    /* ---------- THE WHY ---------- */
+    .why-section {
+      padding: clamp(60px, 8vw, 120px) 0;
+      border-top: 1px solid var(--line-1);
+      border-bottom: 1px solid var(--line-1);
+      position: relative;
+    }
+    .why-grid {
+      display: grid;
+      grid-template-columns: 220px 1fr;
+      gap: clamp(28px, 5vw, 80px);
+    }
+    @media (max-width: 880px) {
+      .why-grid { grid-template-columns: 1fr; gap: 24px; }
+    }
+    .why-marker {
+      font-family: var(--mono);
+      font-size: 11.5px;
+      letter-spacing: 0.2em;
+      text-transform: uppercase;
+      color: var(--gold);
+      position: sticky;
+      top: 110px;
+      align-self: start;
+    }
+    .why-marker::before {
+      content: '';
+      display: inline-block;
+      width: 18px;
+      height: 1px;
+      background: var(--gold);
+      vertical-align: middle;
+      margin-right: 10px;
+    }
+    .why-prose {
+      max-width: 62ch;
+    }
+    .why-prose p {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(20px, 2vw, 26px);
+      line-height: 1.45;
+      color: var(--fg-0);
+      margin: 0 0 1.1em;
+      font-variation-settings: "SOFT" 50, "opsz" 96;
+      letter-spacing: -0.014em;
+      text-wrap: pretty;
+    }
+    .why-prose p:first-child::first-letter {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: 5em;
+      float: left;
+      line-height: 0.85;
+      padding: 0.08em 0.12em 0 0;
+      color: var(--gold);
+      font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+    }
+    .why-prose .pull {
+      font-style: italic;
+      color: var(--gold);
+    }
+
+    /* ---------- STATS STRIP ---------- */
+    .stats-strip {
+      padding: clamp(48px, 7vw, 96px) 0;
+      position: relative;
+    }
+    .stats-strip-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1px;
+      background: var(--line-1);
+      border-top: 1px solid var(--line-1);
+      border-bottom: 1px solid var(--line-1);
+    }
+    @media (max-width: 880px) {
+      .stats-strip-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    .stats-cell {
+      background: var(--bg-0);
+      padding: clamp(28px, 4vw, 48px) clamp(20px, 2.5vw, 28px);
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      position: relative;
+    }
+    .stats-cell .stat-num {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(48px, 6vw, 80px);
+      line-height: 1;
+      letter-spacing: -0.035em;
+      color: var(--fg-0);
+      font-variation-settings: "opsz" 144;
+    }
+    .stats-cell .stat-num em {
+      font-style: italic;
+      color: var(--gold);
+      font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+    }
+    .stats-cell .stat-label {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--fg-2);
+    }
+    .stats-cell .stat-foot {
+      font-family: var(--sans);
+      font-size: 13.5px;
+      color: var(--fg-1);
+      line-height: 1.45;
+      max-width: 28ch;
+    }
+
+    /* ---------- PRINCIPLES ---------- */
+    .principles {
+      padding: clamp(80px, 11vw, 140px) 0;
+    }
+    .principles-head {
+      max-width: 720px;
+      margin-bottom: clamp(40px, 5vw, 64px);
+    }
+    .principles-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1px;
+      background: var(--line-1);
+      border: 1px solid var(--line-1);
+      border-radius: var(--r-lg);
+      overflow: hidden;
+    }
+    @media (max-width: 880px) {
+      .principles-grid { grid-template-columns: 1fr; }
+    }
+    .principle {
+      background: var(--bg-1);
+      padding: clamp(28px, 3.5vw, 44px);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      min-height: 280px;
+      position: relative;
+      transition: background 200ms ease;
+    }
+    .principle:hover { background: var(--bg-2); }
+    .principle-num {
+      font-family: var(--serif);
+      font-style: italic;
+      font-size: 22px;
+      color: var(--gold);
+      font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+    }
+    .principle h3 {
+      font-family: var(--serif);
+      font-weight: 500;
+      font-size: 26px;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--fg-0);
+    }
+    .principle p {
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--fg-1);
+      margin: 0;
+      max-width: 36ch;
+    }
+
+    /* ---------- TIMELINE ---------- */
+    .timeline-section {
+      padding: clamp(80px, 11vw, 140px) 0;
+      background: var(--bg-warm);
+      position: relative;
+    }
+    .timeline-section::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background-image:
+        linear-gradient(to right, rgba(245,241,232,0.025) 1px, transparent 1px);
+      background-size: 80px 100%;
+      mask-image: radial-gradient(ellipse at center, black 30%, transparent 80%);
+      pointer-events: none;
+    }
+    .timeline-head { max-width: 720px; margin-bottom: clamp(40px, 5vw, 64px); position: relative; }
+    .timeline {
+      position: relative;
+      max-width: 880px;
+    }
+    .timeline::before {
+      content: '';
+      position: absolute;
+      left: 90px;
+      top: 6px;
+      bottom: 6px;
+      width: 1px;
+      background: linear-gradient(180deg, transparent, var(--gold) 8%, var(--gold) 92%, transparent);
+      opacity: 0.4;
+    }
+    @media (max-width: 640px) {
+      .timeline::before { left: 60px; }
+    }
+    .tl-row {
+      display: grid;
+      grid-template-columns: 90px 1fr;
+      gap: 32px;
+      padding: 22px 0;
+      position: relative;
+      align-items: start;
+    }
+    @media (max-width: 640px) {
+      .tl-row { grid-template-columns: 60px 1fr; gap: 20px; }
+    }
+    .tl-date {
+      font-family: var(--mono);
+      font-size: 12px;
+      letter-spacing: 0.14em;
+      color: var(--gold);
+      padding-top: 4px;
+      text-align: right;
+      padding-right: 14px;
+      position: relative;
+    }
+    .tl-date::after {
+      content: '';
+      position: absolute;
+      right: -6px;
+      top: 10px;
+      width: 11px;
+      height: 11px;
+      border-radius: 50%;
+      background: var(--bg-warm);
+      border: 1.5px solid var(--gold);
+      box-shadow: 0 0 12px rgba(240,182,90,0.5);
+    }
+    .tl-content h4 {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.02em;
+      color: var(--fg-0);
+      margin: 0 0 6px;
+    }
+    .tl-content p {
+      margin: 0;
+      font-family: var(--sans);
+      font-size: 15px;
+      line-height: 1.55;
+      color: var(--fg-1);
+      max-width: 56ch;
+    }
+
+    /* ---------- TEAM ---------- */
+    .team-section { padding: clamp(80px, 11vw, 140px) 0; }
+    .team-head { max-width: 720px; margin-bottom: clamp(40px, 5vw, 64px); }
+    .team-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: clamp(20px, 2.5vw, 32px);
+    }
+    @media (max-width: 880px) {
+      .team-grid { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .team-grid { grid-template-columns: 1fr; }
+    }
+    .team-card {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .team-portrait {
+      aspect-ratio: 4 / 5;
+      border-radius: var(--r-md);
+      background: linear-gradient(180deg, var(--bg-3), var(--bg-2));
+      border: 1px solid var(--line-1);
+      position: relative;
+      overflow: hidden;
+    }
+    .team-portrait img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+      filter: contrast(1.02) saturate(0.92);
+    }
+    .team-portrait::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background:
+        linear-gradient(180deg, transparent 55%, rgba(34,25,19,0.55) 100%),
+        radial-gradient(120% 80% at 50% 0%, rgba(240,182,90,0.08), transparent 60%);
+      pointer-events: none;
+    }
+    .team-portrait .school-tag {
+      position: absolute;
+      left: 14px;
+      bottom: 12px;
+      font-family: var(--mono);
+      font-size: 10px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--fg-0);
+      z-index: 2;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .team-portrait .school-tag::before {
+      content: '';
+      width: 6px; height: 6px;
+      background: var(--gold);
+      border-radius: 50%;
+      box-shadow: 0 0 8px var(--gold);
+    }
+    .team-name {
+      font-family: var(--serif);
+      font-size: 22px;
+      font-weight: 500;
+      letter-spacing: -0.018em;
+      color: var(--fg-0);
+    }
+    .team-role {
+      font-family: var(--mono);
+      font-size: 11px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: var(--gold);
+      margin-top: -8px;
+    }
+    .team-bio {
+      font-family: var(--sans);
+      font-size: 14px;
+      line-height: 1.55;
+      color: var(--fg-1);
+    }
+
+    /* ---------- BACKED BY / NUMBERS QUOTE ---------- */
+    .quote-section {
+      padding: clamp(80px, 11vw, 140px) 0;
+      border-top: 1px solid var(--line-1);
+      position: relative;
+    }
+    .quote-block {
+      max-width: 920px;
+      margin: 0 auto;
+      text-align: center;
+    }
+    .quote-block .pullquote {
+      font-family: var(--serif);
+      font-style: italic;
+      font-weight: 400;
+      font-size: clamp(28px, 4.4vw, 56px);
+      line-height: 1.18;
+      letter-spacing: -0.025em;
+      color: var(--fg-0);
+      font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+    }
+    .quote-block .pullquote .accent {
+      color: var(--gold);
+    }
+    .quote-attrib {
+      margin-top: 28px;
+      font-family: var(--mono);
+      font-size: 11.5px;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--fg-2);
+    }
+    .quote-attrib b { color: var(--fg-0); font-weight: 500; }
+
+    /* ---------- CTA STRIP ---------- */
+    .about-cta {
+      padding: clamp(80px, 10vw, 130px) 0;
+      text-align: center;
+      position: relative;
+      overflow: hidden;
+    }
+    .about-cta::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(700px 400px at 50% 100%, rgba(240,182,90,0.18), transparent 70%);
+      pointer-events: none;
+    }
+    .about-cta h2 {
+      font-family: var(--serif);
+      font-weight: 400;
+      font-size: clamp(38px, 6vw, 80px);
+      line-height: 1;
+      letter-spacing: -0.03em;
+      max-width: 16ch;
+      margin: 0 auto 24px;
+      font-variation-settings: "SOFT" 50, "opsz" 144;
+    }
+    .about-cta p {
+      font-family: var(--sans);
+      font-size: 17px;
+      color: var(--fg-1);
+      max-width: 50ch;
+      margin: 0 auto 32px;
+      line-height: 1.55;
+    }
+    .about-cta .ctas {
+      display: inline-flex;
+      gap: 14px;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  </style>
+
+  <script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+  <script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+  <div id="app"></div>
+
+  <!-- Logo + base hero components (we reuse Navbar + Icon definitions) -->
+  <script type="text/babel" src="components-logo.jsx"></script>
+  <script type="text/babel" src="components-hero.jsx"></script>
+
+  <script type="text/babel" data-presets="react">
+    /* global React, ReactDOM */
+
+    /* ---- Simple Navbar tailored to About (links back to homepage anchors) ---- */
+    const AboutNav = () => {
+      const [scrolled, setScrolled] = React.useState(false);
+      React.useEffect(() => {
+        const onScroll = () => setScrolled(window.scrollY > 30);
+        window.addEventListener('scroll', onScroll, { passive: true });
+        return () => window.removeEventListener('scroll', onScroll);
+      }, []);
+      return (
+        <header className={`nav ${scrolled ? 'nav-scrolled' : ''}`}>
+          <div className="wrap nav-inner">
+            <a href="KickrIQ Homepage.html" className="brand brand-img" aria-label="KickrIQ">
+              <window.KickrIQLogo height={32} />
+            </a>
+            <nav className="nav-links hide-mobile">
+              <a href="KickrIQ Homepage.html#features">Features</a>
+              <a href="KickrIQ Homepage.html#roster">Roster Intelligence</a>
+              <a href="KickrIQ Homepage.html#how">How it works</a>
+              <a href="KickrIQ Homepage.html#pricing">Pricing</a>
+              <a href="KickrIQ Homepage.html#parents">For Parents</a>
+              <a href="About.html" style={{ color: 'var(--gold)' }}>About us</a>
+            </nav>
+            <div className="nav-cta">
+              <a href="#" className="nav-signin hide-mobile">Sign in</a>
+              <a href="KickrIQ Homepage.html" className="btn btn-primary nav-btn">
+                Start Free
+                <window.Icon name="arrow" size={16} />
+              </a>
+            </div>
+          </div>
+        </header>
+      );
+    };
+
+    /* ---- Masthead ---- */
+    const Masthead = () => (
+      <section className="about-masthead about-top">
+        <div className="wrap">
+          <div className="about-eyebrow-row">
+            <span className="rule"></span>
+            <span className="about-issue">About · Vol. 01 · Filed from the sideline</span>
+          </div>
+          <div className="about-mast-grid">
+            <h1 className="about-h1">
+              Built by two players who <span className="accent">just went through it</span>.
+            </h1>
+            <div>
+              <p className="about-deck">
+                We are not a venture-backed studio. We are two Bay Area teammates who got recruited the hard way and decided the next kid shouldn't have to.”
+              </p>
+              <div className="about-byline">
+                <span><b>Founded</b> · 2026 · Bay Area, CA</span>
+                <span><b>Founders</b> · Nicolas Bee · Alexander Kovalenko</span>
+                <span><b>Stage</b> · Player-built</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+
+    /* ---- The Why ---- */
+    const TheWhy = () => (
+      <section className="why-section">
+        <div className="wrap">
+          <div className="why-grid">
+            <div className="why-marker">The why</div>
+            <div className="why-prose">
+              <p>
+                Every year, roughly 450,000 kids play high school soccer in the United States. About 7% of them play in college. The math isn't kind, but the path is even worse — buried in spreadsheets, ID-camp invoices, and 200-coach email blasts that nobody reads.
+              </p>
+              <p>
+                We know, because we lived it. We are <span className="pull">Nicolas Bee and Alexander Kovalenko</span>, two Bay Area defenders and midfielders who spent two years figuring out which coaches to email, what to say, when to follow up, and which programs were actually a fit. We committed — Nicolas to Pomona-Pitzer, Alex to Johns Hopkins — and immediately realized how much luck and time the process had taken.
+              </p>
+              <p>
+                KickrIQ is the tool we wish we'd had on day one. Not a recruiting service. Not a pay-to-play camp. A focused product that closes the gap between <span className="pull">good players</span> and the coaches who would want them, if only the right email had landed in the right inbox.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+
+    /* ---- Stats Strip ---- */
+    const StatsStrip = () => (
+      <section className="stats-strip">
+        <div className="wrap">
+          <div className="stats-strip-grid">
+            <div className="stats-cell">
+              <span className="stat-num">2,500<em>+</em></span>
+              <span className="stat-label">College programs</span>
+              <span className="stat-foot">D1, D2, D3, NAIA, JUCO. Updated weekly from public roster data and verified coach contacts.</span>
+            </div>
+            <div className="stats-cell">
+              <span className="stat-num">98.8<em>%</em></span>
+              <span className="stat-label">D1–NAIA coverage</span>
+              <span className="stat-foot">Of accredited four-year soccer programs in the U.S. — nearly the entire universe.</span>
+            </div>
+            <div className="stats-cell">
+              <span className="stat-num">11<em>×</em></span>
+              <span className="stat-label">Avg response lift</span>
+              <span className="stat-foot">Vs. generic outreach. Personalized highlight-driven emails get answered, not deleted.</span>
+            </div>
+            <div className="stats-cell">
+              <span className="stat-num">$0</span>
+              <span className="stat-label">To start</span>
+              <span className="stat-foot">No card. Three coach emails, five matches, and a public profile, free forever.</span>
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+
+    /* ---- Principles ---- */
+    const Principles = () => {
+      const items = [
+        {
+          n: '01',
+          h: 'Athletes first. Always.',
+          p: 'We don\'t sell coach access, leads, or eyeballs. The athlete is the customer; their outcome is the only metric that matters to us.',
+        },
+        {
+          n: '02',
+          h: 'No pay-to-play.',
+          p: 'We don\'t boost paying users in coach searches. Match quality and effort decide who gets seen. Period.',
+        },
+        {
+          n: '03',
+          h: 'Private by default.',
+          p: 'Your highlights, grades, and contact data are yours. We never sell, license, or train on athlete information.',
+        },
+        {
+          n: '04',
+          h: 'Honest about AI.',
+          p: 'AI drafts. Athletes send. We label every AI-assisted message and teach you to write better ones — not pretend the bot did the work.',
+        },
+        {
+          n: '05',
+          h: 'Cheaper than one camp.',
+          p: 'Recruiting tools cost more than a week of groceries for most families. Pro is $19. Less than one ID camp lunch.',
+        },
+        {
+          n: '06',
+          h: 'Coach time is sacred.',
+          p: 'We rate-limit and quality-gate every outbound. If a coach unsubscribes, we honor it across the entire platform forever.',
+        },
+      ];
+      return (
+        <section className="principles">
+          <div className="wrap">
+            <div className="principles-head">
+              <span className="section-marker">Principles</span>
+              <h2 className="h-section" style={{ marginTop: 18 }}>
+                Six rules we don't <span className="accent">break</span>.
+              </h2>
+            </div>
+            <div className="principles-grid">
+              {items.map(it => (
+                <div className="principle" key={it.n}>
+                  <span className="principle-num">{it.n}</span>
+                  <h3>{it.h}</h3>
+                  <p>{it.p}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    /* ---- Timeline ---- */
+    const Timeline = () => {
+      const events = [
+        { date: 'SOPH YR', h: 'The first spreadsheet.', p: 'Nicolas and Alex \u2014 Bay Area club teammates \u2014 start tracking coaches, camps, and email replies in a shared Google Sheet. It grows across two seasons.' },
+        { date: 'SOPH–JR YR', h: 'The unanswered emails.', p: 'Both send dozens of cold emails to college coaches. Most go unread. The ones that work share a pattern: specific, short, and tied to a real highlight.' },
+        { date: 'WINTER 2025', h: 'Two commits, one realization.', p: 'Nicolas commits to Pomona-Pitzer. Alex commits to Johns Hopkins. Different schools, same conclusion: the recruiting process is solvable, and nobody is solving it for the athlete.' },
+        { date: 'JAN 2026', h: 'First prototype.', p: 'We build a small tool to draft emails from a player profile and a target program. We test it on younger teammates. Reply rates jump immediately.' },
+        { date: 'FEB 2026', h: 'KickrIQ becomes a product.', p: 'We name it, build it for real, and open it to the next wave of Bay Area players going through the same thing we just did.' },
+        { date: 'NOW', h: 'You\'re reading this.', p: 'Built by two players, for the next class of players. The roadmap is shaped by every family we talk to \u2014 because we were that family two years ago.' },
+      ];
+      return (
+        <section className="timeline-section">
+          <div className="wrap">
+            <div className="timeline-head">
+              <span className="section-marker">Timeline</span>
+              <h2 className="h-section" style={{ marginTop: 18 }}>
+                Two years, in <span className="accent">six moments</span>.
+              </h2>
+            </div>
+            <div className="timeline">
+              {events.map((e, i) => (
+                <div className="tl-row" key={i}>
+                  <div className="tl-date">{e.date}</div>
+                  <div className="tl-content">
+                    <h4>{e.h}</h4>
+                    <p>{e.p}</p>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    /* ---- Team ---- */
+    const Team = () => {
+      const people = [
+        { name: 'Nicolas Bee', role: 'Co-founder · Pomona-Pitzer commit', school: 'POMONA-PITZER', photo: 'uploads/IMG_1776.JPG', bio: 'Bay Area defender committed to Pomona-Pitzer men\'s soccer. Known for decision-making, communication, and organizing the back line — a steady, problem-solving presence on the field. Brings the same dependability and structure to building KickrIQ that he brings to a back four.' },
+        { name: 'Alexander Kovalenko', role: 'Co-founder · Johns Hopkins commit', school: 'JOHNS HOPKINS', photo: 'uploads/IMG_1048.JPG', bio: 'Bay Area midfielder/attacker committed to Johns Hopkins. A connector — links defense to attack, reads patterns early, and creates under pressure. The same composure and step-ahead thinking shapes the product: clear, intentional, built around how the game actually unfolds.' },
+      ];
+      return (
+        <section className="team-section">
+          <div className="wrap">
+            <div className="team-head">
+              <span className="section-marker">The founders</span>
+              <h2 className="h-section" style={{ marginTop: 18 }}>
+                Two players. One <span className="accent">shared problem</span>.
+              </h2>
+              <p className="lede" style={{ marginTop: 18 }}>
+                We met as Bay Area club teammates, went through the recruiting process side by side, and ended up at two very different schools. KickrIQ is what we built so the next class doesn't have to figure it out the way we did.
+              </p>
+            </div>
+            <div className="team-grid" style={{ gridTemplateColumns: 'repeat(2, 1fr)', maxWidth: 760 }}>
+              {people.map(p => (
+                <article className="team-card" key={p.name}>
+                  <div className="team-portrait">
+                    <img src={p.photo} alt={p.name} loading="lazy" />
+                    <span className="school-tag">{p.school}</span>
+                  </div>
+                  <div>
+                    <div className="team-name">{p.name}</div>
+                    <div className="team-role">{p.role}</div>
+                  </div>
+                  <p className="team-bio">{p.bio}</p>
+                </article>
+              ))}
+            </div>
+          </div>
+        </section>
+      );
+    };
+
+    /* ---- Pull Quote ---- */
+    const PullQuote = () => (
+      <section className="quote-section">
+        <div className="wrap">
+          <div className="quote-block">
+            <p className="pullquote">
+              We didn't want to start a <span className="accent">company</span>. We wanted the tool to <span className="accent">exist</span>. Nobody was building it, so we did.
+            </p>
+            <div className="quote-attrib">
+              — <b>Nicolas Bee &amp; Alexander Kovalenko</b> · Co-founders, KickrIQ
+            </div>
+          </div>
+        </div>
+      </section>
+    );
+
+    /* ---- CTA Strip ---- */
+    const AboutCTA = () => (
+      <section className="about-cta">
+        <div className="wrap">
+          <h2>Ready when you are.</h2>
+          <p>
+            Free to start. Three coach emails on the house. No credit card. The only thing we ask is that you actually send them.
+          </p>
+          <div className="ctas">
+            <a href="KickrIQ Homepage.html" className="btn btn-primary btn-lg">
+              Start for Free
+              <window.Icon name="arrow" size={16} />
+            </a>
+            <a href="KickrIQ Homepage.html#how" className="btn btn-ghost btn-lg">
+              See how it works
+            </a>
+          </div>
+        </div>
+      </section>
+    );
+
+    /* ---- Footer (mirrors homepage) ---- */
+    const AboutFooter = () => (
+      <footer className="footer">
+        <div className="wrap footer-inner">
+          <div className="footer-brand">
+            <a href="KickrIQ Homepage.html" className="footer-logo-lockup" aria-label="KickrIQ">
+              <window.KickrIQLogo height={44} />
+            </a>
+            <p className="footer-tag">The smartest way to get recruited. Built by former college players + AI engineers.</p>
+            <div className="footer-trust">
+              <span className="chip chip-ghost">2,500+ PROGRAMS</span>
+              <span className="chip chip-ghost">98.8% COVERAGE</span>
+            </div>
+          </div>
+          <div className="footer-cols">
+            <div>
+              <div className="footer-h mono">PRODUCT</div>
+              <a href="KickrIQ Homepage.html#features">Features</a>
+              <a href="KickrIQ Homepage.html#roster">Roster Intelligence</a>
+              <a href="KickrIQ Homepage.html#how">How it works</a>
+              <a href="KickrIQ Homepage.html#pricing">Pricing</a>
+            </div>
+            <div>
+              <div className="footer-h mono">FOR</div>
+              <a href="#">Athletes</a>
+              <a href="KickrIQ Homepage.html#parents">Parents</a>
+              <a href="#">Club coaches</a>
+              <a href="#">College coaches</a>
+            </div>
+            <div>
+              <div className="footer-h mono">DIVISIONS</div>
+              <a href="#">D1 Programs</a>
+              <a href="#">D2 Programs</a>
+              <a href="#">D3 Programs</a>
+              <a href="#">NAIA · JUCO</a>
+            </div>
+            <div>
+              <div className="footer-h mono">COMPANY</div>
+              <a href="About.html" style={{ color: 'var(--gold)' }}>About</a>
+              <a href="#">Careers</a>
+              <a href="#">Stories</a>
+              <a href="#">Press</a>
+            </div>
+          </div>
+        </div>
+        <div className="wrap footer-bottom">
+          <div className="mono">© 2026 KickrIQ Athletics, Inc.</div>
+          <div className="footer-links mono">
+            <a href="#">Privacy</a>
+            <a href="#">Terms</a>
+            <a href="#">Security</a>
+          </div>
+        </div>
+      </footer>
+    );
+
+    /* ---- Root ---- */
+    const App = () => (
+      <div className="page">
+        <AboutNav />
+        <Masthead />
+        <TheWhy />
+        <StatsStrip />
+        <Principles />
+        <Timeline />
+        <Team />
+        <PullQuote />
+        <AboutCTA />
+        <AboutFooter />
+      </div>
+    );
+
+    /* Wait until shared component scripts have loaded their globals */
+    const mount = () => {
+      if (!window.KickrIQLogo || !window.Icon) {
+        return setTimeout(mount, 30);
+      }
+      ReactDOM.createRoot(document.getElementById('app')).render(<App />);
+    };
+    mount();
+  </script>
+</body>
+</html>
