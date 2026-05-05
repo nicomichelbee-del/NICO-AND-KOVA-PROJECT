@@ -1,5 +1,5 @@
 /**
- * Generate KickrIo TikTok + Instagram drafts.
+ * Generate KickrIQ TikTok + Instagram drafts.
  *
  * Usage:
  *   npx tsx server/scripts/generateContent.ts                     # 3 drafts, mixed features
@@ -67,7 +67,7 @@ async function main() {
 
   // README batch overview
   const readme: string[] = []
-  readme.push(`# KickrIo content batch — ${stamp}`)
+  readme.push(`# KickrIQ content batch — ${stamp}`)
   readme.push('')
   readme.push(`${drafts.length} drafts ready to post.${FEATURE ? ` Focus: ${FEATURE}.` : ''}`)
   readme.push('')

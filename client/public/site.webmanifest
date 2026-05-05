@@ -1,0 +1,13 @@
+{
+  "name": "KickrIQ",
+  "short_name": "KickrIQ",
+  "description": "AI college soccer recruiting counselor",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0b0e18",
+  "theme_color": "#0b0e18",
+  "icons": [
+    { "src": "/icon-192.png", "type": "image/png", "sizes": "192x192" },
+    { "src": "/icon-512.png", "type": "image/png", "sizes": "512x512" }
+  ]
+}

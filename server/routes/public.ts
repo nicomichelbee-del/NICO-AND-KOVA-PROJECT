@@ -150,11 +150,18 @@ router.get('/open-spots', async (req, res) => {
   res.json({ programs: sanitized, counts })
 })
 
+// GET /api/public/health — Railway/Vercel healthcheck endpoint
+router.get('/health', (_req, res) => {
+  res.json({ status: 'ok', timestamp: new Date().toISOString() })
+})
+
 // GET /sitemap.xml is mounted at the app root in server/index.ts and
 // proxies to this handler. We expose every (gender × position) URL so search
 // engines can crawl and index them individually.
 router.get('/sitemap', (req, res) => {
-  const host = `${req.protocol}://${req.get('host')}`
+  // PUBLIC_BASE_URL takes precedence in prod so the sitemap advertises the
+  // canonical domain (kickriq.com) even when this handler runs on Railway/Vercel.
+  const host = process.env.PUBLIC_BASE_URL ?? `${req.protocol}://${req.get('host')}`
   const positions = Object.keys(POSITION_ALIASES)
   const urls = [
     `${host}/`,

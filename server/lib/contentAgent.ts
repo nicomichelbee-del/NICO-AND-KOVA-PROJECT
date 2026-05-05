@@ -1,8 +1,8 @@
 /**
- * KickrIo daily content agent.
+ * KickrIQ daily content agent.
  *
  * Generates ready-to-post drafts for TikTok and Instagram Reels promoting
- * KickrIo to high school soccer players and their parents. Each draft includes:
+ * KickrIQ to high school soccer players and their parents. Each draft includes:
  *   - Hook (first 1.5 sec)
  *   - Full script with shot list
  *   - On-screen text overlays w/ timing
@@ -73,8 +73,8 @@ export interface TextOverlay {
   position: 'top' | 'middle' | 'bottom'
 }
 
-const PERSONA = `You are the head of growth marketing for KickrIo, an AI-powered college soccer recruitment counselor.
-KickrIo helps high school soccer players (grades 9-12) get recruited to college teams (D1, D2, D3, NAIA, JUCO).
+const PERSONA = `You are the head of growth marketing for KickrIQ, an AI-powered college soccer recruitment counselor.
+KickrIQ helps high school soccer players (grades 9-12) get recruited to college teams (D1, D2, D3, NAIA, JUCO).
 Core features: athlete profile builder, school matcher, AI coach email generator, outreach tracker, highlight video rater.
 Pricing: Free (3 emails, 5 matches), Pro $19/mo (unlimited + tracker + video rater), Family $29/mo (Pro + parent dashboard).
 
@@ -82,7 +82,7 @@ You write short-form video content for TikTok and Instagram Reels that:
 - Hooks teen soccer players or their parents in the first 1.5 seconds
 - Speaks like a real recruiting expert who has been there — never corporate, never preachy
 - Surfaces a real recruiting pain point (rejection, no responses, late starts, D1 dreams vs reality, parent stress)
-- Pays it off with a specific KickrIo capability — never a generic "use our app"
+- Pays it off with a specific KickrIQ capability — never a generic "use our app"
 - Ends with a clear, soft CTA (link in bio, comment a position, etc.)
 
 Tone: confident, direct, soccer-fluent. Use real recruiting vocabulary (ID camps, club > HS for D1, NCAA Eligibility Center, official visit, verbal commit). Avoid hype-bro energy and avoid corporate jargon.`
@@ -99,10 +99,10 @@ function buildPrompt(numDrafts: number, sounds: TrendingSound[], focusFeature?: 
     .join('\n')
 
   const focusLine = focusFeature
-    ? `\nFOCUS: This batch should center on "${focusFeature}" as the KickrIo feature payoff.\n`
-    : '\nVary the KickrIo feature across drafts (school matcher, video rater, coach emails, outreach tracker, profile builder). Do not repeat the same feature twice in this batch.\n'
+    ? `\nFOCUS: This batch should center on "${focusFeature}" as the KickrIQ feature payoff.\n`
+    : '\nVary the KickrIQ feature across drafts (school matcher, video rater, coach emails, outreach tracker, profile builder). Do not repeat the same feature twice in this batch.\n'
 
-  return `Generate ${numDrafts} ready-to-post short-form video drafts for KickrIo.
+  return `Generate ${numDrafts} ready-to-post short-form video drafts for KickrIQ.
 
 Available trending sound types you may match to (pick by id):
 ${soundLines}
@@ -150,7 +150,7 @@ Return ONLY a JSON array of ${numDrafts} draft objects. No markdown, no commenta
 Constraints:
 - The hook MUST be specific to soccer recruiting, not generic motivation
 - At least one draft should target the parent audience (parents pay for Family tier)
-- Scripts should hit the KickrIo payoff naturally, not feel like an ad until the last 5 seconds
+- Scripts should hit the KickrIQ payoff naturally, not feel like an ad until the last 5 seconds
 - On-screen text must be readable: <8 words per overlay, big sans-serif assumed
 - shotList items must be filmable in a teenager's bedroom or at a soccer field — no studio shoots`
 }

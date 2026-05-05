@@ -1,6 +1,6 @@
 export async function resolveWikipediaTitle(query: string): Promise<string | null> {
   const url = `https://en.wikipedia.org/w/api.php?action=opensearch&search=${encodeURIComponent(query)}&limit=1&format=json`
-  const res = await fetch(url, { headers: { 'User-Agent': 'KickrIo/1.0 (info@fahga.org)' } })
+  const res = await fetch(url, { headers: { 'User-Agent': 'KickrIQ/1.0 (info@fahga.org)' } })
   if (!res.ok) return null
   const json = await res.json() as [string, string[], string[], string[]]
   return Array.isArray(json) && json[1] && json[1][0] ? json[1][0] : null
@@ -23,7 +23,7 @@ export function extractTourneyAppearances(wikitext: string): Record<number, stri
 
 export async function fetchWikipediaWikitext(pageTitle: string): Promise<string | null> {
   const url = `https://en.wikipedia.org/w/api.php?action=parse&page=${encodeURIComponent(pageTitle)}&prop=wikitext&format=json&formatversion=2`
-  const res = await fetch(url, { headers: { 'User-Agent': 'KickrIo/1.0 (info@fahga.org)' } })
+  const res = await fetch(url, { headers: { 'User-Agent': 'KickrIQ/1.0 (info@fahga.org)' } })
   if (!res.ok) return null
   const json = await res.json() as any
   return json?.parse?.wikitext ?? null

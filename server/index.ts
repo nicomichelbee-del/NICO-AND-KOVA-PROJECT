@@ -10,7 +10,11 @@ import coachRouter from './routes/coach'
 import { requireCompleteProfile } from './lib/profileGate'
 
 const app = express()
-const PORT = 3001
+const PORT = Number(process.env.PORT) || 3001
+
+// Behind Railway/Vercel proxies — required so req.protocol returns 'https'
+// and rate limiters / sitemap host detection work correctly.
+app.set('trust proxy', true)
 
 app.use(cors({ origin: process.env.CLIENT_URL ?? 'http://localhost:5173' }))
 app.use(express.json({ limit: '4mb' }))
@@ -40,5 +44,5 @@ app.use('/api/camps', requireCompleteProfile, campsRouter)
 app.use('/api/coach', coachRouter)
 
 app.listen(PORT, () => {
-  console.log(`API server running on http://localhost:${PORT}`)
+  console.log(`API server running on port ${PORT}`)
 })
