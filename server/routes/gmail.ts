@@ -8,6 +8,23 @@ import schoolsData from '../data/schools.json'
 
 const router = Router()
 
+// Express 4 doesn't auto-forward async route errors. Without this, any throw
+// inside an async handler (e.g. getSupabase() with missing env vars) becomes
+// an unhandled promise rejection and crashes the whole Node process — taking
+// /api/ai/schools and every other route down with it. Patch the router so
+// every handler gets a Promise.resolve(...).catch(next) wrapper at registration.
+for (const method of ['get', 'post', 'put', 'delete', 'patch'] as const) {
+  const original = router[method].bind(router) as (path: string, ...handlers: unknown[]) => unknown
+  ;(router as unknown as Record<string, unknown>)[method] = (path: string, ...handlers: unknown[]) => {
+    const wrapped = handlers.map((h) => {
+      if (typeof h !== 'function') return h
+      return (req: unknown, res: unknown, next: unknown) =>
+        Promise.resolve((h as (...a: unknown[]) => unknown)(req, res, next)).catch(next as (e: unknown) => void)
+    })
+    return original(path, ...wrapped)
+  }
+}
+
 function getSupabase() {
   const url = process.env.VITE_SUPABASE_URL ?? ''
   const key = process.env.SUPABASE_SERVICE_KEY || process.env.VITE_SUPABASE_ANON_KEY || ''

@@ -3,7 +3,13 @@ import { Card } from './Card'
 import { Button } from './Button'
 import { WaitlistModal } from './WaitlistModal'
 import { previewRemaining, getPreviewUses, FREE_PREVIEW_LIMIT, hasJoinedWaitlist, type ProFeature, PRO_FEATURE_LABEL } from '../../lib/waitlist'
-import { useAuth } from '../../context/AuthContext'
+import { useAuth, TEST_MODE_KEY } from '../../context/AuthContext'
+
+// Test mode = full Pro access. Lives outside the component so it's evaluated
+// once per render, not as React state.
+function isTestModeActive() {
+  return import.meta.env.DEV && typeof localStorage !== 'undefined' && localStorage.getItem(TEST_MODE_KEY) === 'true'
+}
 
 interface ProGateProps {
   feature: ProFeature
@@ -21,6 +27,11 @@ export function ProGate({ feature, children }: ProGateProps) {
   const { user } = useAuth()
   const [remaining, setRemaining] = useState(() => previewRemaining(feature))
   const [showModal, setShowModal] = useState(false)
+
+  // Dev/test mode bypasses every Pro gate — nothing about counters, waitlists,
+  // or banners. Renders the underlying feature exactly as a paid Pro user
+  // would see it. Production builds tree-shake this branch (DEV is false).
+  if (isTestModeActive()) return <>{children}</>
 
   // Re-check when localStorage changes (e.g. after consumePreview is called)
   useEffect(() => {

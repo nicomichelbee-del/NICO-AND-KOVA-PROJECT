@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
-import { useAuth } from '../context/AuthContext'
+import { useAuth, TEST_MODE_KEY } from '../context/AuthContext'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { KickrIQLogo } from '../components/ui/KickrIQLogo'
@@ -88,6 +88,32 @@ export function Signup() {
     )
   }
 
+  function handleTestMode() {
+    localStorage.setItem(TEST_MODE_KEY, 'true')
+    localStorage.setItem('athleteProfileRecord', JSON.stringify({
+      full_name: 'Test Athlete',
+      graduation_year: 2027,
+      primary_position: 'Forward',
+      secondary_position: null,
+      preferred_foot: 'Right',
+      current_club: 'Test FC',
+      current_league_or_division: 'ECNL',
+      high_school_name: 'Test High School',
+      gpa: 3.8,
+      sat_score: null,
+      act_score: null,
+      ncaa_eligibility_id: null,
+      desired_division_levels: ['D1', 'D2'],
+      regions_of_interest: [],
+      highlight_video_url: null,
+      slug: 'test-athlete',
+      profile_visibility: 'private',
+      profile_strength_score: 75,
+      profile_completed: true,
+    }))
+    window.location.href = '/dashboard'
+  }
+
   return (
     <div className="kr-auth-shell flex items-center justify-center px-4 py-16">
       <div className="relative w-full max-w-[440px]" data-reveal-on-load>
@@ -159,6 +185,16 @@ export function Signup() {
               Sign in
             </Link>
           </p>
+
+          {import.meta.env.DEV && (
+            <button
+              type="button"
+              onClick={handleTestMode}
+              className="w-full mt-6 py-2 px-4 rounded-full text-[11px] font-mono uppercase tracking-[0.18em] text-ink-3 border border-dashed border-[rgba(245,241,232,0.18)] hover:border-gold hover:text-gold transition-colors"
+            >
+              Skip login · test mode (dev only)
+            </button>
+          )}
         </div>
 
         <div className="mt-6 text-center font-mono text-[10px] tracking-[0.18em] uppercase text-ink-3">

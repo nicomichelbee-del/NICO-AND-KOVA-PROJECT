@@ -22,17 +22,35 @@ export class ProfileIncompleteError extends Error {
 
 async function handleResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
-    const err = await res.json().catch(() => ({ error: 'Request failed' })) as { error?: string; redirect?: string }
+    const text = await res.text()
+    let err: { error?: string; redirect?: string } = {}
+    try { err = JSON.parse(text) } catch { /* not JSON — likely a proxy 502 with HTML body */ }
     if (res.status === 403 && err.redirect) {
       throw new ProfileIncompleteError(err.redirect)
     }
-    throw new Error(err.error ?? 'Request failed')
+    // Surface real status + body in DevTools so "Request failed" isn't opaque.
+    // 502/504 with HTML body usually means the backend (port 3001) isn't running.
+    console.error(`[api] ${res.status} ${res.statusText} on ${res.url}`, text.slice(0, 300))
+    const detail = err.error ?? `${res.status}${res.statusText ? ' ' + res.statusText : ''}`
+    throw new Error(`Request failed (${detail})`)
   }
   return res.json() as Promise<T>
 }
 
+async function fetchOrThrow(path: string, init: RequestInit): Promise<Response> {
+  try {
+    return await fetch(path, init)
+  } catch (e) {
+    // Browsers surface "Failed to fetch" / "Load failed" here when the dev
+    // proxy can't reach the backend at all (port 3001 not listening). Make
+    // the cause obvious instead of letting it propagate as a generic error.
+    console.error(`[api] network error reaching ${path} — is the backend on port 3001 running? (\`npm run dev\` runs both client + server)`, e)
+    throw new Error('Cannot reach the API server. Run `npm run dev` to start both client and backend.')
+  }
+}
+
 async function post<T>(path: string, body: unknown): Promise<T> {
-  const res = await fetch(path, {
+  const res = await fetchOrThrow(path, {
     method: 'POST',
     headers: { 'Content-Type': 'application/json', ...(await authedHeaders()) },
     body: JSON.stringify(body),
@@ -41,7 +59,7 @@ async function post<T>(path: string, body: unknown): Promise<T> {
 }
 
 async function get<T>(path: string): Promise<T> {
-  const res = await fetch(path, { headers: await authedHeaders() })
+  const res = await fetchOrThrow(path, { headers: await authedHeaders() })
   return handleResponse<T>(res)
 }
 

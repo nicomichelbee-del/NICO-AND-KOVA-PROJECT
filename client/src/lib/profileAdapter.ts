@@ -6,6 +6,7 @@ import type { AthleteProfile, Division, Region } from '../types'
 import { POSITION_LABELS, type AthleteProfileRecord } from '../types/profile'
 
 const RECORD_KEY = 'athleteProfileRecord'
+const RECORD_KEY_PREFIX = 'athleteProfileRecord:'
 const LEGACY_KEY = 'athleteProfile'
 
 const VALID_DIVISIONS: readonly Division[] = ['D1', 'D2', 'D3', 'NAIA', 'JUCO']
@@ -16,6 +17,18 @@ const VALID_REGIONS: readonly Region[] = ['any', 'Northeast', 'Southeast', 'Midw
 
 function readRecord(): AthleteProfileRecord | null {
   try {
+    // ProfileContext writes user-scoped keys (athleteProfileRecord:<userId>) and
+    // migrates the old global key on first load. Scan for the user-scoped record
+    // first so the dashboard's getProfile helpers see the data ProfileContext owns.
+    for (let i = 0; i < localStorage.length; i++) {
+      const k = localStorage.key(i)
+      if (k && k.startsWith(RECORD_KEY_PREFIX)) {
+        const raw = localStorage.getItem(k)
+        if (raw) return JSON.parse(raw) as AthleteProfileRecord
+      }
+    }
+    // Fallback for the brief window between onboarding writing the global key
+    // and ProfileContext mounting + migrating it.
     const raw = localStorage.getItem(RECORD_KEY)
     if (!raw) return null
     return JSON.parse(raw) as AthleteProfileRecord

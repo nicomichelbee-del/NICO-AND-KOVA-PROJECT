@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import express from 'express'
+import express, { type Request, type Response, type NextFunction } from 'express'
 import cors from 'cors'
 import aiRouter from './routes/ai'
 import gmailRouter from './routes/gmail'
@@ -8,6 +8,15 @@ import profileRouter from './routes/profile'
 import publicRouter from './routes/public'
 import coachRouter from './routes/coach'
 import { requireCompleteProfile } from './lib/profileGate'
+
+// Keep the API server alive on unexpected promise rejections (otherwise Node
+// 15+ exits the process and every subsequent request gets ECONNREFUSED).
+process.on('unhandledRejection', (reason) => {
+  console.error('[unhandledRejection]', reason)
+})
+process.on('uncaughtException', (err) => {
+  console.error('[uncaughtException]', err)
+})
 
 const app = express()
 const PORT = Number(process.env.PORT) || 3001
@@ -42,6 +51,16 @@ app.use('/api/camps', requireCompleteProfile, campsRouter)
 // Coach portal — does NOT use requireCompleteProfile (that gate is for athletes).
 // Auth is enforced inside each handler via the userId/userEmail params.
 app.use('/api/coach', coachRouter)
+
+// Final error handler — turns any error forwarded by next(err) (including the
+// async-wrapped throws from the gmail router) into a clean JSON 500 instead
+// of a dangling socket. Surfaces "Supabase not configured" and similar
+// startup-misconfiguration errors as a real HTTP response the client can show.
+app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
+  console.error('[express error]', err)
+  const message = err instanceof Error ? err.message : 'Internal server error'
+  if (!res.headersSent) res.status(500).json({ error: message })
+})
 
 app.listen(PORT, () => {
   console.log(`API server running on port ${PORT}`)
