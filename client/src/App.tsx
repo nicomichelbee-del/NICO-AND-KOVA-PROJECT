@@ -1,4 +1,5 @@
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom'
+import { Analytics } from '@vercel/analytics/react'
 import { AuthProvider, useAuth } from './context/AuthContext'
 import { ProfileProvider, useProfile } from './context/ProfileContext'
 import { Landing } from './pages/Landing'
@@ -58,6 +59,7 @@ export default function App() {
     <AuthProvider>
       <ProfileProvider>
         <BrowserRouter>
+          <Analytics />
           <Routes>
             <Route path="/" element={<Landing />} />
             <Route path="/about" element={<About />} />
