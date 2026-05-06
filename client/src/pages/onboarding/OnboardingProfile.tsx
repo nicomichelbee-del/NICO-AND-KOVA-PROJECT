@@ -59,6 +59,7 @@ function computeStrength(p: Partial<AthleteProfileRecord>): number {
     !!p.full_name,
     !!p.graduation_year,
     !!p.high_school_name,
+    !!p.gender,
     !!p.primary_position,
     !!p.preferred_foot,
     !!p.current_club,
@@ -106,7 +107,7 @@ export function OnboardingProfile() {
       return !!form.full_name && !!form.graduation_year && !!form.high_school_name
     }
     if (step.key === 'soccer') {
-      return !!form.primary_position && !!form.preferred_foot && !!form.current_club && !!form.current_league_or_division
+      return !!form.gender && !!form.primary_position && !!form.preferred_foot && !!form.current_club && !!form.current_league_or_division
     }
     if (step.key === 'academics') {
       return form.gpa != null
@@ -262,6 +263,18 @@ export function OnboardingProfile() {
 
             {step.key === 'soccer' && (
               <>
+                <FieldLabel>Soccer program</FieldLabel>
+                <div className="grid grid-cols-2 gap-2">
+                  <Chip active={form.gender === 'mens'} onClick={() => update('gender', 'mens')}>
+                    <span className="block font-mono text-[12px] tracking-[0.10em] font-semibold">Men's</span>
+                    <span className="block text-[10px] text-ink-3 mt-1">I'd play men's college soccer</span>
+                  </Chip>
+                  <Chip active={form.gender === 'womens'} onClick={() => update('gender', 'womens')}>
+                    <span className="block font-mono text-[12px] tracking-[0.10em] font-semibold">Women's</span>
+                    <span className="block text-[10px] text-ink-3 mt-1">I'd play women's college soccer</span>
+                  </Chip>
+                </div>
+
                 <FieldLabel>Position on the pitch</FieldLabel>
                 <PitchPositionPicker
                   primary={form.primary_position ?? null}

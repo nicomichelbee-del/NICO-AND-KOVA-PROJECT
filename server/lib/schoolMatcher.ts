@@ -93,6 +93,37 @@ export function academicTier(schoolId: string): AcademicTier {
   return 5
 }
 
+// ── Coach data (used here only for "does this school field a program of
+// the requested gender?" — full coach lookup happens in the routes layer).
+// We treat status === 'no-program' as the canonical "this school doesn't
+// have a men's/women's team" signal. Missing entries are treated as
+// "unknown" and pass through (the scraper just hasn't reached the school).
+
+interface ScrapedCoachLite { status: string }
+
+let coachStatusCache: Record<string, ScrapedCoachLite> | null = null
+function getCoachStatus(schoolId: string, gender: 'mens' | 'womens'): string | null {
+  if (coachStatusCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'coachesScraped.json')
+      const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, ScrapedCoachLite>
+      coachStatusCache = {}
+      for (const [k, v] of Object.entries(raw)) {
+        if (k.startsWith('_')) continue
+        coachStatusCache[k] = { status: v.status }
+      }
+    } catch {
+      coachStatusCache = {}
+    }
+  }
+  const entry = coachStatusCache[`${schoolId}:${gender}`]
+  return entry?.status ?? null
+}
+
+function hasProgramOfGender(schoolId: string, gender: 'mens' | 'womens'): boolean {
+  return getCoachStatus(schoolId, gender) !== 'no-program'
+}
+
 // ── Roster data (open spots) ──────────────────────────────────────────────
 // Sources from server/data/rostersScraped.json (built by scrapeRosters.ts).
 // Used to estimate how many spots open up at the athlete's position
@@ -844,6 +875,7 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
 
   const scored: Candidate[] = (schoolsData as SchoolRecord[])
     .filter((s) => !excluded.has(s.division))
+    .filter((s) => hasProgramOfGender(s.id, gender))
     .filter((s) => {
       if (!academicFloor || academicFloor >= 5) return true
       return academicTier(s.id) <= academicFloor
@@ -989,17 +1021,12 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
   const stretchPool: Candidate[] = eligibleForStretch
     ? (schoolsData as SchoolRecord[])
         .filter((s) => !excluded.has(s.division))
+        .filter((s) => hasProgramOfGender(s.id, gender))
         // Intentionally NOT filtered by academicFloor — stretch reaches are
         // aspirational by design. Letting one slightly-below-floor dream
         // school through is the "flexible" half of the academic-minimum
         // contract: hard filter for the regular list, soft for stretches.
         .filter((s) => divIdx(s.division) < topIdx)  // strictly above the highest target
-        .filter((s) => {
-          // Skip schools without a coach for the athlete's gender — surfacing
-          // a dream school the user can't even email is worse than omitting it.
-          const email = gender === 'womens' ? s.womensCoachEmail : s.mensCoachEmail
-          return Boolean(email)
-        })
         .map((s) => {
           const athletic = athleticFit(profile, s, video)
           const academic = academicFit(profile, s)

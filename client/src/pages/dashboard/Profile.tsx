@@ -54,6 +54,7 @@ function computeStrength(p: Partial<AthleteProfileRecord>): number {
     !!p.full_name,
     !!p.graduation_year,
     !!p.high_school_name,
+    !!p.gender,
     !!p.primary_position,
     !!p.preferred_foot,
     !!p.current_club,
@@ -233,6 +234,25 @@ export function Profile() {
 
       {/* Soccer */}
       <Section title="Soccer">
+        <Field label="Soccer program">
+          <ChipRow cols={2}>
+            <Chip
+              active={draft.gender === 'mens'}
+              onClick={() => { update('gender', 'mens'); persist({ gender: 'mens' }) }}
+            >
+              <span className="font-bold text-xs">Men's</span>
+              <span className="block text-[10px] text-[#9a9385] mt-0.5">I'd play men's college soccer</span>
+            </Chip>
+            <Chip
+              active={draft.gender === 'womens'}
+              onClick={() => { update('gender', 'womens'); persist({ gender: 'womens' }) }}
+            >
+              <span className="font-bold text-xs">Women's</span>
+              <span className="block text-[10px] text-[#9a9385] mt-0.5">I'd play women's college soccer</span>
+            </Chip>
+          </ChipRow>
+        </Field>
+
         <Field label="Position on the field">
           <PitchPositionPicker
             primary={draft.primary_position ?? null}

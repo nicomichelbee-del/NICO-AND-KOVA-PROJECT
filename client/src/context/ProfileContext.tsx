@@ -24,6 +24,7 @@ function defaultProfile(): AthleteProfileRecord {
   return {
     full_name: null,
     graduation_year: null,
+    gender: null,
     primary_position: null,
     secondary_position: null,
     preferred_foot: null,

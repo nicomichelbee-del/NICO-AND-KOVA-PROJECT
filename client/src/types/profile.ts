@@ -58,6 +58,11 @@ export interface AthleteProfileRecord {
   user_id?: string
   full_name: string | null
   graduation_year: number | null
+  // Soccer gender — drives the matcher's coach lookup AND filters out schools
+  // that don't field a program of this gender. Required before matching;
+  // defaults silently produced wrong results (women's profiles saw men's
+  // programs and vice versa).
+  gender: 'mens' | 'womens' | null
   primary_position: string | null
   secondary_position: string | null
   preferred_foot: string | null

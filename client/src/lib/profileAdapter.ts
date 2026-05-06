@@ -69,10 +69,11 @@ export function readLegacyProfile(): AthleteProfile | null {
     VALID_REGIONS.includes(reg as Region))
   const locationPreference: Region = regions[0] ?? 'any'
 
-  // Onboarding doesn't capture gender today. Default to 'mens' so the gender
-  // filter is deterministic; once gender is added to the profile schema,
-  // wire it through here.
-  const gender: 'mens' | 'womens' = 'mens'
+  // Gender lives on the AthleteProfileRecord directly. We do NOT default
+  // anymore — the matcher needs a real choice to filter out programs of the
+  // wrong gender. Falls back to whatever the legacy record had if the new
+  // field is null (rare, only for users mid-migration).
+  const gender: 'mens' | 'womens' = (r.gender ?? 'mens') as 'mens' | 'womens'
 
   return {
     name: r.full_name ?? '',
