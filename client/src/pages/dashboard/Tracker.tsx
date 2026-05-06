@@ -10,6 +10,8 @@ import { ContactRow } from '../../components/tracker/ContactRow'
 import { UntrackedSection } from '../../components/tracker/UntrackedSection'
 import { HistoryScanTab } from '../../components/tracker/HistoryScanTab'
 import { getContacts, createContact, updateContact, gmailGetThreads, getGmailStatus, rateResponse, gmailAutoImport } from '../../lib/api'
+import { ProGate } from '../../components/ui/ProGate'
+import { consumePreview } from '../../lib/waitlist'
 import { useAuth } from '../../context/AuthContext'
 import type { OutreachContact, CoachResponse, UntrackedThread, Division } from '../../types'
 
@@ -28,6 +30,14 @@ function saveResponses(r: CoachResponse[]) {
 }
 
 export function Tracker() {
+  return (
+    <ProGate feature="tracker">
+      <TrackerInner />
+    </ProGate>
+  )
+}
+
+function TrackerInner() {
   const { user } = useAuth()
   const navigate = useNavigate()
   const [tab, setTab] = useState<'contacts' | 'responses' | 'discovered'>('contacts')
@@ -129,6 +139,8 @@ export function Tracker() {
       const res = await fetch(`/api/gmail/auth?userId=${encodeURIComponent(user.id)}`)
       const data = await res.json()
       if (!res.ok || !data.url) throw new Error(data.error ?? 'Failed to get auth URL')
+      consumePreview('tracker')
+      window.dispatchEvent(new Event('kickriq:preview-changed'))
       window.open(data.url, 'gmail-auth', 'width=500,height=600,left=200,top=100')
     } catch (e) {
       alert(e instanceof Error ? e.message : 'Failed to start Gmail auth')

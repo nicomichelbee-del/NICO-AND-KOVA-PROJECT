@@ -17,3 +17,4 @@ supabase/.temp/
 
 server/data/.scraperBudget.json
 server/data/scraperDrift.log
+server/data/waitlist.log.jsonl

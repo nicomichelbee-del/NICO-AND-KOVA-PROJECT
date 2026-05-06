@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react'
 import { Link } from 'react-router-dom'
+import { WaitlistModal } from '../components/ui/WaitlistModal'
 
 /* ============================================================
    SCROLL MOTION
@@ -854,21 +855,26 @@ function Parents() {
    PRICING
    ============================================================ */
 function Pricing() {
+  const [waitlistTier, setWaitlistTier] = useState<'pro' | 'family' | null>(null)
+
   const tiers = [
     {
+      key: 'free' as const,
       name: 'Free', price: '$0', period: 'forever',
       desc: 'Try the engine. Send a few emails. See if it clicks.',
       features: ['3 coach emails', '5 school matches', 'Public player profile', 'Recruitment timeline'],
       cta: 'Start free', featured: false,
     },
     {
-      name: 'Pro', price: '$19', period: 'per month',
+      key: 'pro' as const,
+      name: 'Pro', price: 'Coming soon', period: 'waitlist open',
       desc: 'For athletes serious about getting recruited this season.',
       features: ['Unlimited coach emails', 'Unlimited school matches', 'Outreach tracker + follow-ups', 'AI Highlight Video Rater', 'Roster Intelligence', 'Priority support'],
-      cta: 'Get Pro', featured: true,
+      cta: 'Join Pro waitlist', featured: true,
     },
     {
-      name: 'Family', price: '$29', period: 'per month',
+      key: 'family' as const,
+      name: 'Family', price: 'Coming soon', period: 'waitlist open',
       desc: 'Pro for the athlete, plus visibility for the people paying for it.',
       features: [
         'Everything in Pro',
@@ -877,7 +883,7 @@ function Pricing() {
         'Shared deadlines & visit calendar',
         'One bill, one login per parent',
       ],
-      cta: 'Get Family', featured: false,
+      cta: 'Join Family waitlist', featured: false,
     },
   ]
 
@@ -914,17 +920,34 @@ function Pricing() {
                   </li>
                 ))}
               </ul>
-              <Link
-                to="/signup"
-                className={`kbtn ${t.featured ? 'kbtn-primary' : 'kbtn-ghost'} pricing-cta`}
-              >
-                {t.cta}
-                <Icon name="arrow" size={14} stroke={t.featured ? '#1a1304' : 'var(--fg-0)'} />
-              </Link>
+              {t.key === 'free' ? (
+                <Link
+                  to="/signup"
+                  className={`kbtn ${t.featured ? 'kbtn-primary' : 'kbtn-ghost'} pricing-cta`}
+                >
+                  {t.cta}
+                  <Icon name="arrow" size={14} stroke={t.featured ? '#1a1304' : 'var(--fg-0)'} />
+                </Link>
+              ) : (
+                <button
+                  type="button"
+                  onClick={() => setWaitlistTier(t.key)}
+                  className={`kbtn ${t.featured ? 'kbtn-primary' : 'kbtn-ghost'} pricing-cta`}
+                >
+                  {t.cta}
+                  <Icon name="arrow" size={14} stroke={t.featured ? '#1a1304' : 'var(--fg-0)'} />
+                </button>
+              )}
             </article>
           ))}
         </div>
       </div>
+      <WaitlistModal
+        open={waitlistTier !== null}
+        onClose={() => setWaitlistTier(null)}
+        feature="general"
+        tier={waitlistTier ?? 'pro'}
+      />
     </section>
   )
 }

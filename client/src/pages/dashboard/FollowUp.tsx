@@ -7,6 +7,8 @@ import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { Input } from '../../components/ui/Input'
 import { PageHeader } from '../../components/ui/PageHeader'
+import { ProGate } from '../../components/ui/ProGate'
+import { consumePreview } from '../../lib/waitlist'
 import { useAuth } from '../../context/AuthContext'
 import { readLegacyProfile } from '../../lib/profileAdapter'
 import type { AthleteProfile, OutreachContact, UntrackedThread } from '../../types'
@@ -39,6 +41,14 @@ const PRESET_EVENTS = [
 ]
 
 export function FollowUp() {
+  return (
+    <ProGate feature="followup">
+      <FollowUpInner />
+    </ProGate>
+  )
+}
+
+function FollowUpInner() {
   const { user } = useAuth()
   const [type, setType] = useState<'followup' | 'thankyou' | 'answer'>('followup')
   const [context, setContext] = useState('')
@@ -221,6 +231,8 @@ export function FollowUp() {
     try {
       const fullContext = context + buildScheduleContext()
       const res = await generateFollowUp(profile, fullContext, type)
+      consumePreview('followup')
+      window.dispatchEvent(new Event('kickriq:preview-changed'))
       setResult(res.body)
       setAdvice(res.advice ?? '')
     } catch (e) {

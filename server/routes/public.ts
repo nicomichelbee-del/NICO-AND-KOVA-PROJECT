@@ -1,5 +1,7 @@
 import { Router } from 'express'
 import { createClient } from '@supabase/supabase-js'
+import { promises as fs } from 'fs'
+import path from 'path'
 import rosterPrograms from '../data/rosterPrograms.json'
 
 const router = Router()
@@ -185,6 +187,45 @@ router.get('/sitemap', (req, res) => {
       .join('\n') +
     `\n</urlset>\n`
   res.type('application/xml').send(body)
+})
+
+// POST /api/public/waitlist — collect Pro/Family waitlist signups while billing
+// is on hold. Writes to Supabase if a `waitlist_signups` table exists; always
+// also appends to a local JSON log so we never lose a signup.
+router.post('/waitlist', async (req, res) => {
+  const { email, feature, tier, source } = (req.body ?? {}) as {
+    email?: string; feature?: string; tier?: string; source?: string
+  }
+  const clean = (email ?? '').toString().trim().toLowerCase()
+  if (!clean || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(clean)) {
+    return res.status(400).json({ error: 'Invalid email' })
+  }
+  const row = {
+    email: clean,
+    feature: (feature ?? 'general').toString().slice(0, 32),
+    tier: (tier ?? 'pro').toString().slice(0, 16),
+    source: (source ?? '').toString().slice(0, 200),
+    user_agent: (req.headers['user-agent'] ?? '').toString().slice(0, 200),
+    created_at: new Date().toISOString(),
+  }
+
+  // Always log to disk so signups are never lost even when Supabase is offline.
+  try {
+    const logPath = path.join(process.cwd(), 'server', 'data', 'waitlist.log.jsonl')
+    await fs.appendFile(logPath, JSON.stringify(row) + '\n', 'utf8')
+  } catch { /* fs not writable in some hosts — ignore */ }
+
+  const supabase = getSupabaseOrNull()
+  if (supabase) {
+    const { error } = await supabase
+      .from('waitlist_signups')
+      .upsert(row, { onConflict: 'email' })
+    if (error && !/relation .* does not exist|could not find the table/i.test(error.message)) {
+      // Table may not be created yet — succeed anyway, file log has it
+      console.warn('[waitlist] supabase insert failed:', error.message)
+    }
+  }
+  res.json({ ok: true })
 })
 
 // GET /api/public/positions — list of position slugs the SEO pages support

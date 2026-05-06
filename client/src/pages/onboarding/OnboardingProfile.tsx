@@ -156,6 +156,25 @@ export function OnboardingProfile() {
     }
   }
 
+  async function skip() {
+    setSubmitting(true)
+    try {
+      const slug = form.slug || (form.full_name ? `${slugify(form.full_name)}-${(form.graduation_year ?? '').toString().slice(-2)}` : null)
+      const strength = computeStrength(form)
+      await saveDraft({
+        ...form,
+        slug,
+        profile_strength_score: strength,
+        profile_completed: true,
+      })
+      navigate('/dashboard', { replace: true })
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Something went wrong saving your progress.')
+    } finally {
+      setSubmitting(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="kr-auth-shell flex items-center justify-center">
@@ -277,6 +296,14 @@ export function OnboardingProfile() {
                 </div>
 
                 <FieldLabel>Regions you'd consider</FieldLabel>
+                <div className="grid grid-cols-1 gap-2">
+                  <Chip
+                    active={(form.regions_of_interest?.length ?? 0) === REGIONS.length}
+                    onClick={() => update('regions_of_interest', (form.regions_of_interest?.length ?? 0) === REGIONS.length ? [] : [...REGIONS])}
+                  >
+                    Any region — open to all
+                  </Chip>
+                </div>
                 <div className="grid grid-cols-2 sm:grid-cols-4 gap-2">
                   {REGIONS.map((r) => (
                     <Chip key={r} active={(form.regions_of_interest ?? []).includes(r)} onClick={() => toggleArray('regions_of_interest', r)}>
@@ -316,9 +343,13 @@ export function OnboardingProfile() {
           </button>
           <div className="flex items-center gap-4">
             {!isLast && !isEdit && (
-              <Link to="/dashboard" className="text-sm text-ink-2 hover:text-ink-0 transition-colors">
+              <button
+                onClick={skip}
+                disabled={submitting}
+                className="text-sm text-ink-2 hover:text-ink-0 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+              >
                 Skip for now
-              </Link>
+              </button>
             )}
             <Button onClick={next} disabled={submitting}>
               {submitting ? 'Saving…' : isLast ? (isEdit ? 'Save changes' : 'Finish profile') : 'Continue'}

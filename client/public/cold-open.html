@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>KickrIQ — Cold Open</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Saira+Condensed:ital,wght@1,900&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  :root {
+    --bg-0: #0a0705;
+    --bg-1: #1a120c;
+    --gold: #f0b65a;
+    --gold-soft: rgba(240, 182, 90, 0.18);
+    --gold-faint: rgba(240, 182, 90, 0.06);
+    --cream: #f5f1e8;
+    --ink-2: rgba(245, 241, 232, 0.55);
+  }
+
+  html, body {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+    background: var(--bg-0);
+    color: var(--cream);
+    font-family: 'JetBrains Mono', monospace;
+    cursor: none;
+  }
+
+  /* Ambient radial glow behind the logo */
+  .stage {
+    position: relative;
+    width: 100vw;
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    background:
+      radial-gradient(circle at 50% 50%, rgba(240, 182, 90, 0.08) 0%, rgba(240, 182, 90, 0.02) 30%, transparent 60%),
+      radial-gradient(circle at 50% 50%, var(--bg-1) 0%, var(--bg-0) 80%);
+  }
+
+  /* Soft grain texture using CSS noise */
+  .stage::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='200' height='200'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0 0.5 0 0 0 0.18 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    opacity: 0.4;
+    mix-blend-mode: overlay;
+    pointer-events: none;
+  }
+
+  /* Vignette for cinematic depth */
+  .stage::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(circle at 50% 50%, transparent 30%, rgba(0,0,0,0.55) 95%);
+    pointer-events: none;
+  }
+
+  /* Subtle pitch chalk line element — barely there */
+  .pitch-hint {
+    position: absolute;
+    left: 50%;
+    bottom: 8%;
+    width: 70vw;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, rgba(245, 241, 232, 0.15) 50%, transparent 100%);
+    transform: translateX(-50%);
+    opacity: 0;
+    animation: fadeUp 1.5s ease 0.6s forwards;
+  }
+
+  /* Top-left and top-right corner ornaments */
+  .corner {
+    position: absolute;
+    top: 32px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--ink-2);
+    opacity: 0;
+    animation: fadeIn 1.2s ease 1.0s forwards;
+  }
+  .corner.left { left: 36px; }
+  .corner.right { right: 36px; }
+
+  /* The logo */
+  .kickriq-logo {
+    font-family: 'Saira Condensed', 'Arial Black', sans-serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 14vw;
+    line-height: 1;
+    letter-spacing: -0.04em;
+    user-select: none;
+    white-space: nowrap;
+    position: relative;
+    z-index: 2;
+    opacity: 0;
+    animation: punchIn 1.4s cubic-bezier(0.2, 0.8, 0.2, 1) 0.2s forwards;
+  }
+
+  .klogo-kickr {
+    color: var(--cream);
+    transform: skewX(-4deg);
+    display: inline-block;
+  }
+
+  .klogo-iq {
+    color: var(--gold);
+    display: inline-flex;
+    transform: skewX(-4deg);
+    margin-left: 0.04em;
+    text-shadow:
+      0 0 30px rgba(240, 182, 90, 0.55),
+      0 0 80px rgba(240, 182, 90, 0.25);
+  }
+
+  /* Eyebrow tag above logo */
+  .eyebrow {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 12px;
+    letter-spacing: 0.32em;
+    text-transform: uppercase;
+    color: var(--gold);
+    margin-bottom: 28px;
+    opacity: 0;
+    position: relative;
+    z-index: 2;
+    animation: fadeUp 1.0s ease 0.05s forwards;
+  }
+  .eyebrow::before, .eyebrow::after {
+    content: "";
+    display: inline-block;
+    width: 28px;
+    height: 1px;
+    background: var(--gold);
+    vertical-align: middle;
+    margin: 0 14px;
+    opacity: 0.6;
+  }
+
+  /* Tagline below logo */
+  .tagline {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 14px;
+    letter-spacing: 0.30em;
+    text-transform: lowercase;
+    color: var(--cream);
+    margin-top: 36px;
+    opacity: 0;
+    position: relative;
+    z-index: 2;
+    animation: fadeUp 1.0s ease 0.85s forwards;
+  }
+
+  .tagline .accent {
+    color: var(--gold);
+    font-weight: 500;
+  }
+
+  /* Bottom division ladder */
+  .divisions {
+    position: absolute;
+    left: 50%;
+    bottom: 5%;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 20px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 0.28em;
+    color: var(--ink-2);
+    opacity: 0;
+    animation: fadeIn 1.2s ease 1.2s forwards;
+  }
+  .divisions span {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+  .divisions span::after {
+    content: "·";
+    color: var(--gold);
+    opacity: 0.7;
+  }
+  .divisions span:last-child::after { content: ""; }
+
+  /* Animations */
+  @keyframes punchIn {
+    0%   { opacity: 0; transform: scale(0.94); filter: blur(8px); }
+    60%  { opacity: 1; transform: scale(1.005); filter: blur(0); }
+    100% { opacity: 1; transform: scale(1); filter: blur(0); }
+  }
+  @keyframes fadeUp {
+    0%   { opacity: 0; transform: translateY(8px); }
+    100% { opacity: 1; transform: translateY(0); }
+  }
+  @keyframes fadeIn {
+    0%   { opacity: 0; }
+    100% { opacity: 0.85; }
+  }
+
+  /* Replay button (top right, only when not in fullscreen) */
+  .replay {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    background: rgba(240, 182, 90, 0.08);
+    border: 1px solid rgba(240, 182, 90, 0.40);
+    color: var(--gold);
+    padding: 6px 12px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 10px;
+    letter-spacing: 0.18em;
+    text-transform: uppercase;
+    cursor: pointer;
+    z-index: 10;
+    transition: all 0.2s;
+  }
+  .replay:hover {
+    background: rgba(240, 182, 90, 0.18);
+  }
+  :fullscreen .replay { display: none; }
+</style>
+</head>
+<body>
+  <div class="stage" id="stage">
+    <span class="corner left">Recruiting · Counselor</span>
+    <span class="corner right">2026</span>
+
+    <div class="eyebrow">Built for the next 90 minutes</div>
+
+    <div class="kickriq-logo" aria-label="KickrIQ" role="img">
+      <span class="klogo-kickr">Kickr</span><span class="klogo-iq">iQ</span>
+    </div>
+
+    <div class="tagline">your shot at <span class="accent">college soccer</span></div>
+
+    <div class="divisions">
+      <span>D1</span><span>D2</span><span>D3</span><span>NAIA</span><span>JUCO</span>
+    </div>
+
+    <div class="pitch-hint"></div>
+
+    <button class="replay" onclick="location.reload()">Replay ↻</button>
+  </div>
+</body>
+</html>

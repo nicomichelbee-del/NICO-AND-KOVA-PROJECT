@@ -13,7 +13,12 @@ interface ProfileContextType {
   saveDraft: (patch: Partial<AthleteProfileRecord>) => Promise<void>
 }
 
-const STORAGE_KEY = 'athleteProfileRecord'
+const STORAGE_PREFIX = 'athleteProfileRecord:'
+const LEGACY_STORAGE_KEY = 'athleteProfileRecord'
+
+function storageKeyFor(userId: string) {
+  return `${STORAGE_PREFIX}${userId}`
+}
 
 function defaultProfile(): AthleteProfileRecord {
   return {
@@ -54,8 +59,25 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (authLoading) return
+    if (!user?.id) {
+      setProfile(null)
+      setLoading(false)
+      return
+    }
+    const key = storageKeyFor(user.id)
     try {
-      const raw = localStorage.getItem(STORAGE_KEY)
+      let raw = localStorage.getItem(key)
+      // One-time migration: profiles used to be stored under a single global
+      // key. Move it onto the current user so existing accounts on this
+      // browser don't get sent back through onboarding.
+      if (!raw) {
+        const legacy = localStorage.getItem(LEGACY_STORAGE_KEY)
+        if (legacy) {
+          localStorage.setItem(key, legacy)
+          localStorage.removeItem(LEGACY_STORAGE_KEY)
+          raw = legacy
+        }
+      }
       if (raw) {
         setProfile({ ...defaultProfile(), ...JSON.parse(raw) })
       } else {
@@ -68,14 +90,16 @@ export function ProfileProvider({ children }: { children: ReactNode }) {
   }, [authLoading, user?.id])
 
   const saveDraft = useCallback(async (patch: Partial<AthleteProfileRecord>) => {
+    if (!user?.id) return
+    const key = storageKeyFor(user.id)
     setProfile((prev) => {
       const next = { ...(prev ?? defaultProfile()), ...patch }
       try {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(next))
+        localStorage.setItem(key, JSON.stringify(next))
       } catch {}
       return next
     })
-  }, [])
+  }, [user?.id])
 
   return (
     <ProfileContext.Provider value={{ profile, media, loading, saveDraft }}>

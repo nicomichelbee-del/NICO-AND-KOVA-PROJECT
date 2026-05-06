@@ -5,6 +5,8 @@ import { Input } from '../../components/ui/Input'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { PageHeader } from '../../components/ui/PageHeader'
+import { ProGate } from '../../components/ui/ProGate'
+import { consumePreview } from '../../lib/waitlist'
 import { readLegacyProfile } from '../../lib/profileAdapter'
 import type { AthleteProfile, VideoRating, VideoFrame, LeaderboardEntry } from '../../types'
 
@@ -199,6 +201,14 @@ function ScoreBadge({ score }: { score: number }) {
 }
 
 export function VideoRater() {
+  return (
+    <ProGate feature="video">
+      <VideoRaterInner />
+    </ProGate>
+  )
+}
+
+function VideoRaterInner() {
   const [tab, setTab] = useState<'rate' | 'leaderboard'>('rate')
   const [videoUrl, setVideoUrl] = useState('')
   const [loading, setLoading] = useState(false)
@@ -215,6 +225,8 @@ export function VideoRater() {
     setError(''); setRating(null); setLoading(true)
     try {
       const result = await rateVideo(videoUrl, profile)
+      consumePreview('video')
+      window.dispatchEvent(new Event('kickriq:preview-changed'))
       setRating(result)
       // Persist the latest rating so the school matcher can incorporate
       // tape-derived skill into per-school athletic fit. Stored under a

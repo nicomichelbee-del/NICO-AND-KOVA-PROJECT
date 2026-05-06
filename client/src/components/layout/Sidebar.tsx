@@ -1,6 +1,9 @@
+import { useState } from 'react'
 import { NavLink, useNavigate } from 'react-router-dom'
 import { useAuth } from '../../context/AuthContext'
 import { KickrIQLogo } from '../ui/KickrIQLogo'
+import { WaitlistModal } from '../ui/WaitlistModal'
+import { hasJoinedWaitlist } from '../../lib/waitlist'
 
 type IconName =
   | 'overview' | 'profile' | 'timeline' | 'schools' | 'emails'
@@ -66,6 +69,8 @@ const navGroups: NavGroup[] = [
 export function Sidebar() {
   const { user, signOut } = useAuth()
   const navigate = useNavigate()
+  const [waitlistOpen, setWaitlistOpen] = useState(false)
+  const joined = hasJoinedWaitlist(user?.email)
 
   async function handleSignOut() {
     await signOut()
@@ -137,10 +142,10 @@ export function Sidebar() {
             {user?.email ?? '—'}
           </div>
           <button
-            onClick={() => navigate('/signup')}
+            onClick={() => setWaitlistOpen(true)}
             className="mt-2.5 w-full text-[11.5px] font-medium tracking-[-0.005em] text-[#1a1304] bg-[linear-gradient(180deg,#f5c170_0%,#e0982e_100%)] rounded-md py-1.5 transition-shadow hover:shadow-[0_0_0_4px_rgba(240,182,90,0.18)]"
           >
-            Upgrade to Pro
+            {joined ? "You're on the Pro waitlist" : 'Join the Pro waitlist'}
           </button>
         </div>
         <button
@@ -153,6 +158,7 @@ export function Sidebar() {
           Sign out
         </button>
       </div>
+      <WaitlistModal open={waitlistOpen} onClose={() => setWaitlistOpen(false)} feature="general" tier="pro" />
     </aside>
   )
 }
