@@ -439,8 +439,8 @@ function AboutFooter() {
       <div className="wrap footer-bottom">
         <div>© 2026 KickrIQ Athletics, Inc.</div>
         <div className="footer-links">
-          <a href="#">Privacy</a>
-          <a href="#">Terms</a>
+          <a href="/privacy">Privacy</a>
+          <a href="/terms">Terms</a>
           <a href="#">Security</a>
         </div>
       </div>
