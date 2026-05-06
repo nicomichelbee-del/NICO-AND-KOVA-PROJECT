@@ -8,10 +8,11 @@ import { Badge } from '../../components/ui/Badge'
 import { Input } from '../../components/ui/Input'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { useAuth } from '../../context/AuthContext'
+import { readLegacyProfile } from '../../lib/profileAdapter'
 import type { AthleteProfile, OutreachContact, UntrackedThread } from '../../types'
 
 function getProfile(): AthleteProfile | null {
-  try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
+  return readLegacyProfile()
 }
 
 const EMAIL_TYPES = [

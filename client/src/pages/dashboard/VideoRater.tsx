@@ -5,10 +5,11 @@ import { Input } from '../../components/ui/Input'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { PageHeader } from '../../components/ui/PageHeader'
+import { readLegacyProfile } from '../../lib/profileAdapter'
 import type { AthleteProfile, VideoRating, VideoFrame, LeaderboardEntry } from '../../types'
 
 function getProfile(): AthleteProfile | null {
-  try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
+  return readLegacyProfile()
 }
 function loadLeaderboard(): LeaderboardEntry[] {
   try { return JSON.parse(localStorage.getItem('videoLeaderboard') ?? '[]') } catch { return [] }

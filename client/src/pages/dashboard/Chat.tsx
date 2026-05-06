@@ -2,6 +2,7 @@ import { useState, useRef, useEffect } from 'react'
 import { chatWithBeeko } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { BeekoLogo } from '../../components/ui/BeekoLogo'
+import { readLegacyProfile } from '../../lib/profileAdapter'
 import type { AthleteProfile } from '../../types'
 
 interface Message {
@@ -23,7 +24,7 @@ const STARTERS = [
 ]
 
 function getProfile(): AthleteProfile | null {
-  try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
+  return readLegacyProfile()
 }
 
 function loadMessages(): Message[] {

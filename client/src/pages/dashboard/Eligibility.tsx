@@ -3,10 +3,11 @@ import { Card } from '../../components/ui/Card'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { PageHeader } from '../../components/ui/PageHeader'
+import { readLegacyProfile } from '../../lib/profileAdapter'
 import type { AthleteProfile, Division } from '../../types'
 
 function getProfile(): AthleteProfile | null {
-  try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
+  return readLegacyProfile()
 }
 
 // ── Eligibility checklist ────────────────────────────────────────────────────

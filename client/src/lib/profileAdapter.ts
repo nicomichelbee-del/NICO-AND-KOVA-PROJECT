@@ -6,6 +6,7 @@ import type { AthleteProfile, Division, Region } from '../types'
 import { POSITION_LABELS, type AthleteProfileRecord } from '../types/profile'
 
 const RECORD_KEY = 'athleteProfileRecord'
+const LEGACY_KEY = 'athleteProfile'
 
 const VALID_DIVISIONS: readonly Division[] = ['D1', 'D2', 'D3', 'NAIA', 'JUCO']
 // Onboarding offers more regions than the legacy Region union recognises
@@ -23,9 +24,21 @@ function readRecord(): AthleteProfileRecord | null {
   }
 }
 
+function readLegacy(): AthleteProfile | null {
+  try {
+    const raw = localStorage.getItem(LEGACY_KEY)
+    if (!raw) return null
+    return JSON.parse(raw) as AthleteProfile
+  } catch {
+    return null
+  }
+}
+
 export function readLegacyProfile(): AthleteProfile | null {
   const r = readRecord()
-  if (!r) return null
+  // Fall back to the legacy key for users who completed the older onboarding
+  // before the new record schema landed.
+  if (!r) return readLegacy()
 
   // Map position code (e.g. "CM") to long form ("Central Mid"). Pages match
   // on the long form, so we always expand here.
