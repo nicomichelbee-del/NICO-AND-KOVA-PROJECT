@@ -35,9 +35,9 @@ function getProfile(): AthleteProfile | null {
     name:               record?.full_name              ?? legacy?.name              ?? '',
     gradYear:           record?.graduation_year        ?? legacy?.gradYear          ?? new Date().getFullYear() + 2,
     position:           record?.primary_position       ?? legacy?.position          ?? '',
-    // The new editor schema doesn't capture gender or size — keep legacy
-    // values so the matcher keeps picking the right coach roster column.
-    gender:             legacy?.gender                 ?? 'womens',
+    // Prefer the gender the athlete picked in onboarding; fall back to
+    // legacy (older accounts) only if the new record is missing it.
+    gender:             record?.gender                 ?? legacy?.gender ?? 'womens',
     clubTeam:           record?.current_club           ?? legacy?.clubTeam          ?? '',
     clubLeague:         record?.current_league_or_division ?? legacy?.clubLeague    ?? '',
     gpa:                record?.gpa                    ?? legacy?.gpa               ?? 0,

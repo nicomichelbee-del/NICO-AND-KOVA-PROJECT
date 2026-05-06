@@ -20,9 +20,10 @@ type RegionTab = typeof REGION_TABS[number]
 
 export function Emails() {
   const { user } = useAuth()
+  const profileForDefaults = getProfile()
   const [school, setSchool] = useState('')
   const [division, setDivision] = useState<Division>('D2')
-  const [gender, setGender] = useState<'mens' | 'womens'>('womens')
+  const [gender, setGender] = useState<'mens' | 'womens'>(profileForDefaults?.gender ?? 'womens')
   const [coachName, setCoachName] = useState('')
   const [coachEmail, setCoachEmail] = useState('')
   const [coachSource, setCoachSource] = useState<FindCoachResult['source'] | null>(null)

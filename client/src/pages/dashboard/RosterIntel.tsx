@@ -25,7 +25,7 @@ const SOCCER_POSITIONS = [
 
 export function RosterIntel() {
   const profile = getProfile()
-  const [gender, setGender] = useState<'mens' | 'womens'>('womens')
+  const [gender, setGender] = useState<'mens' | 'womens'>(profile?.gender ?? 'womens')
   const [division, setDivision] = useState<Division | 'all'>('all')
   const [regionFilter, setRegionFilter] = useState<Region>('any')
   const [positionSearch, setPositionSearch] = useState('')
