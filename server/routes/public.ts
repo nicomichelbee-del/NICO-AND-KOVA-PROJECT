@@ -3,6 +3,7 @@ import { createClient } from '@supabase/supabase-js'
 import { promises as fs } from 'fs'
 import path from 'path'
 import rosterPrograms from '../data/rosterPrograms.json'
+import { publicWriteLimiter } from '../lib/rateLimits'
 
 const router = Router()
 
@@ -192,7 +193,7 @@ router.get('/sitemap', (req, res) => {
 // POST /api/public/waitlist — collect Pro/Family waitlist signups while billing
 // is on hold. Writes to Supabase if a `waitlist_signups` table exists; always
 // also appends to a local JSON log so we never lose a signup.
-router.post('/waitlist', async (req, res) => {
+router.post('/waitlist', publicWriteLimiter, async (req, res) => {
   const { email, feature, tier, source } = (req.body ?? {}) as {
     email?: string; feature?: string; tier?: string; source?: string
   }

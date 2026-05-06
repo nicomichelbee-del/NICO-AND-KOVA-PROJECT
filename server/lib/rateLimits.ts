@@ -37,3 +37,11 @@ export const aiHeavyLimiter = buildLimiter({
   windowMs: 60_000,
   max: 8,
 })
+
+// Public, unauthenticated routes — keyed strictly by IP. Tight enough to
+// neuter scripted spam against the waitlist endpoint without stopping a
+// real human who fat-fingers their email a few times.
+export const publicWriteLimiter = buildLimiter({
+  windowMs: 10 * 60_000,
+  max: 10,
+})
