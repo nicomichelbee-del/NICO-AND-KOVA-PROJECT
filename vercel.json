@@ -4,8 +4,8 @@
   "outputDirectory": "dist",
   "framework": "vite",
   "rewrites": [
-    { "source": "/api/:path*", "destination": "https://REPLACE-WITH-RAILWAY-URL/api/:path*" },
-    { "source": "/sitemap.xml", "destination": "https://REPLACE-WITH-RAILWAY-URL/sitemap.xml" }
+    { "source": "/api/:path*", "destination": "https://api.kickriq.com/api/:path*" },
+    { "source": "/sitemap.xml", "destination": "https://api.kickriq.com/sitemap.xml" }
   ],
   "headers": [
     {

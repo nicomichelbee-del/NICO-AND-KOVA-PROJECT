@@ -1,0 +1,30 @@
+services:
+  - type: web
+    name: kickriq-api
+    runtime: node
+    plan: free
+    region: oregon
+    buildCommand: npm install
+    startCommand: npm run start:server
+    healthCheckPath: /api/public/health
+    envVars:
+      - key: NODE_VERSION
+        value: 20
+      - key: CLIENT_URL
+        value: https://kickriq.com
+      - key: PUBLIC_BASE_URL
+        value: https://kickriq.com
+      - key: GOOGLE_REDIRECT_URI
+        value: https://api.kickriq.com/api/gmail/callback
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: SUPABASE_SERVICE_KEY
+        sync: false
+      - key: VITE_SUPABASE_URL
+        sync: false
+      - key: VITE_SUPABASE_ANON_KEY
+        sync: false
+      - key: GOOGLE_CLIENT_ID
+        sync: false
+      - key: GOOGLE_CLIENT_SECRET
+        sync: false
