@@ -3,7 +3,7 @@ import { KickrIQLogo } from '../components/ui/KickrIQLogo'
 
 const LAST_UPDATED = 'May 3, 2026'
 const COMPANY = 'KickrIQ Athletics, Inc.'
-const CONTACT_EMAIL = 'info@fahga.org'
+const CONTACT_EMAIL = 'infokickriq@gmail.com'
 const GOVERNING_STATE = 'the State of Delaware, USA'
 
 export function Terms() {
