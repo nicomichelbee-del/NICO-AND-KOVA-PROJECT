@@ -75,6 +75,14 @@ export function OnboardingProfile() {
     }
   }, [profile])
 
+  // Returning users with a completed profile shouldn't see onboarding unless
+  // they explicitly clicked "Edit profile" (?edit=1).
+  useEffect(() => {
+    if (!loading && !isEdit && profile?.profile_completed) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [loading, isEdit, profile?.profile_completed, navigate])
+
   const step = STEPS[stepIdx]
   const isLast = stepIdx === STEPS.length - 1
 

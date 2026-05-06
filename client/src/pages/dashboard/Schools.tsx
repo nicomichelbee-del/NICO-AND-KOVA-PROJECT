@@ -218,7 +218,7 @@ export function Schools() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [filter, setFilter] = useState<'all' | School['category']>('all')
-  const [sort, setSort] = useState<SortKey>('shot')
+  const [sort, setSort] = useState<SortKey>('match')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const [selected, setSelected] = useState<School | null>(null)
 
@@ -403,8 +403,8 @@ export function Schools() {
   }
 
   const SORT_OPTIONS: { key: SortKey; label: string }[] = [
-    { key: 'shot',     label: 'Recruitable shot' },
     { key: 'match',    label: 'Match score' },
+    { key: 'shot',     label: 'Recruitable shot' },
     { key: 'athletic', label: 'Athletic fit' },
     { key: 'academic', label: 'Academic fit' },
     { key: 'cost',     label: 'Cost' },

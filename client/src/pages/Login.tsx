@@ -1,25 +1,40 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { KickrIQLogo } from '../components/ui/KickrIQLogo'
 
 export function Login() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [signedIn, setSignedIn] = useState(false)
+
+  // Wait for AuthContext to register the new session before navigating, or
+  // ProtectedRoute will bounce us back to /login on the first render.
+  useEffect(() => {
+    if (signedIn && user) {
+      navigate('/dashboard', { replace: true })
+    }
+  }, [signedIn, user, navigate])
 
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
     setLoading(true)
     const { error } = await supabase.auth.signInWithPassword({ email, password })
-    if (error) { setError(error.message); setLoading(false) }
-    else navigate('/dashboard')
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
+    setSignedIn(true)
   }
 
   async function handleGoogle() {

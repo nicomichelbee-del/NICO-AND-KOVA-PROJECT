@@ -19,6 +19,30 @@ export const POSITION_LABELS: Record<string, string> = {
   ST: 'Striker',
 }
 
+// Side- and formation-aware codes used by the pitch picker. Kept separate from
+// POSITION_LABELS so onboarding's chip grid stays small while the dashboard
+// pitch can show role-specific slots (e.g. "LCB" vs "RCB").
+export const EXTENDED_POSITION_LABELS: Record<string, string> = {
+  LCB: 'Left Center Back',
+  RCB: 'Right Center Back',
+  CCB: 'Center Back (middle)',
+  LWB: 'Left Wing Back',
+  RWB: 'Right Wing Back',
+  LDM: 'Left Defensive Mid',
+  RDM: 'Right Defensive Mid',
+  LCM: 'Left Center Mid',
+  RCM: 'Right Center Mid',
+  LM: 'Left Mid',
+  RM: 'Right Mid',
+  LST: 'Left Striker',
+  RST: 'Right Striker',
+}
+
+export const ALL_POSITION_LABELS: Record<string, string> = {
+  ...POSITION_LABELS,
+  ...EXTENDED_POSITION_LABELS,
+}
+
 export type DivisionTarget = 'D1' | 'D2' | 'D3' | 'NAIA' | 'JUCO'
 
 export const DIVISION_TARGET_LABELS: Record<string, string> = {

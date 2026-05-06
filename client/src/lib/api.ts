@@ -103,8 +103,17 @@ export function getGmailStatus(userId: string) {
   return get<{ connected: boolean; email: string | null }>(`/api/gmail/status?userId=${encodeURIComponent(userId)}`)
 }
 
-export function gmailSend(userId: string, to: string, subject: string, body: string) {
-  return post<{ success: boolean }>('/api/gmail/send', { userId, to, subject, body })
+export function gmailSend(
+  userId: string,
+  to: string,
+  subject: string,
+  body: string,
+  contactId?: string,
+) {
+  return post<{ success: boolean; threadId: string; messageId: string }>(
+    '/api/gmail/send',
+    { userId, to, subject, body, contactId },
+  )
 }
 
 export function gmailSync(userId: string, contacts: { id: string; coachEmail: string }[]) {

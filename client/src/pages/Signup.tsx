@@ -1,18 +1,29 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
+import { useAuth } from '../context/AuthContext'
 import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { KickrIQLogo } from '../components/ui/KickrIQLogo'
 
 export function Signup() {
   const navigate = useNavigate()
+  const { user } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
+  const [signedUp, setSignedUp] = useState(false)
+  const [confirmSent, setConfirmSent] = useState(false)
+
+  // Once Supabase has confirmed the new session, route to onboarding.
+  useEffect(() => {
+    if (signedUp && user) {
+      navigate('/onboarding/profile', { replace: true })
+    }
+  }, [signedUp, user, navigate])
 
   async function handleGoogle() {
     setGoogleLoading(true)
@@ -27,13 +38,54 @@ export function Signup() {
     e.preventDefault()
     setError('')
     setLoading(true)
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: { data: { full_name: name } },
     })
-    if (error) { setError(error.message); setLoading(false) }
-    else navigate('/dashboard')
+    if (error) {
+      setError(error.message)
+      setLoading(false)
+      return
+    }
+    if (data.session) {
+      // Auto-confirm enabled — session is live. Effect above will navigate
+      // once AuthContext picks up the new user.
+      setSignedUp(true)
+    } else {
+      // Email confirmation required — surface a "check your email" view.
+      setLoading(false)
+      setConfirmSent(true)
+    }
+  }
+
+  if (confirmSent) {
+    return (
+      <div className="kr-auth-shell flex items-center justify-center px-4 py-16">
+        <div className="relative w-full max-w-[440px]" data-reveal-on-load>
+          <Link to="/" className="flex flex-col items-center gap-3 mb-10 no-underline">
+            <KickrIQLogo height={32} />
+            <span className="font-mono text-[10.5px] tracking-[0.22em] uppercase text-ink-2">
+              Recruiting · Counselor
+            </span>
+          </Link>
+
+          <div className="kr-panel kr-panel-warm">
+            <span className="kr-eyebrow mb-3">Almost there</span>
+            <h1 className="kr-h1 mt-3">
+              Check your <span className="kr-accent">email</span>.
+            </h1>
+            <p className="text-[15px] text-ink-1 mt-3 leading-[1.6]">
+              We sent a confirmation link to <span className="text-ink-0 font-medium">{email}</span>.
+              Click it and we'll drop you straight into your profile setup.
+            </p>
+            <p className="text-sm text-ink-3 mt-5 leading-[1.6]">
+              Wrong address? <button onClick={() => { setConfirmSent(false); setLoading(false) }} className="text-gold hover:underline underline-offset-4">Use a different email</button>.
+            </p>
+          </div>
+        </div>
+      </div>
+    )
   }
 
   return (

@@ -224,22 +224,62 @@ export function resolveCoachName(senderName: string, senderEmail: string): strin
   return cleaned.replace(/<.*$/, '').trim() || senderEmail.split('@')[0]
 }
 
+// Recursively find the first part of `mimeType` anywhere in the MIME tree.
+// Gmail nests text/plain and text/html inside multipart/alternative, which is itself
+// often nested inside multipart/mixed when attachments or quoted history are present.
+function findPart(payload: any, mimeType: string): any {
+  if (!payload) return null
+  if (payload.mimeType === mimeType && payload.body?.data) return payload
+  for (const part of payload.parts ?? []) {
+    const hit = findPart(part, mimeType)
+    if (hit) return hit
+  }
+  return null
+}
+
+function decodeBase64Url(data: string): string {
+  return Buffer.from(data, 'base64url').toString('utf-8')
+}
+
+function htmlToText(html: string): string {
+  return html
+    .replace(/<style[\s\S]*?<\/style>/gi, '')
+    .replace(/<script[\s\S]*?<\/script>/gi, '')
+    .replace(/<\/(p|div|br|li|tr|h[1-6])>/gi, '\n')
+    .replace(/<[^>]*>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;|&apos;/g, "'")
+    .replace(/&#(\d+);/g, (_, n) => String.fromCharCode(parseInt(n, 10)))
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+}
+
+// Pure filter for the sync auto-rate batch. Pinned by tests so a future edit cannot
+// silently regress the token-leak guarantees:
+//   1. Already-rated contacts (interestRating !== 'pending') are NEVER re-rated.
+//   2. Contacts with no reply snippet are excluded — nothing to analyse, no spend.
+//   3. Per-sync cap is enforced — extras roll to the next sync.
+export const AUTO_RATE_CAP = 20
+export function selectContactsToAutoRate<T extends { interestRating: string; lastReplySnippet?: string | null }>(
+  contacts: T[],
+  cap: number = AUTO_RATE_CAP,
+): T[] {
+  return contacts
+    .filter((c) => c.interestRating === 'pending' && (c.lastReplySnippet ?? '').trim().length > 0)
+    .slice(0, cap)
+}
+
 export function decodeMessageBody(payload: any): string {
   if (!payload) return ''
-  if (payload.parts) {
-    for (const part of payload.parts) {
-      if (part.mimeType === 'text/plain' && part.body?.data) {
-        return Buffer.from(part.body.data, 'base64url').toString('utf-8')
-      }
-    }
-    for (const part of payload.parts) {
-      if (part.mimeType === 'text/html' && part.body?.data) {
-        return Buffer.from(part.body.data, 'base64url').toString('utf-8').replace(/<[^>]*>/g, '')
-      }
-    }
-  }
-  if (payload.body?.data) {
-    return Buffer.from(payload.body.data, 'base64url').toString('utf-8')
-  }
+  const plain = findPart(payload, 'text/plain')
+  if (plain) return decodeBase64Url(plain.body.data)
+  const html = findPart(payload, 'text/html')
+  if (html) return htmlToText(decodeBase64Url(html.body.data))
+  if (payload.body?.data) return decodeBase64Url(payload.body.data)
   return ''
 }

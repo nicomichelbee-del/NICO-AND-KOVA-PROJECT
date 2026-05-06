@@ -3,8 +3,8 @@ import { useProfile } from '../../context/ProfileContext'
 import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
 import { PageHeader } from '../../components/ui/PageHeader'
+import { PitchPositionPicker } from '../../components/profile/PitchPositionPicker'
 import {
-  POSITION_LABELS,
   DIVISION_TARGET_LABELS,
   type ProfileVisibility,
   type AthleteProfileRecord,
@@ -225,42 +225,25 @@ export function Profile() {
 
       {/* Soccer */}
       <Section title="Soccer">
-        <Field label="Primary position">
-          <ChipRow>
-            {Object.entries(POSITION_LABELS).map(([code, label]) => (
-              <Chip
-                key={code}
-                active={draft.primary_position === code}
-                onClick={() => { update('primary_position', code); persist({ primary_position: code }) }}
-              >
-                <span className="font-bold text-xs">{code}</span>
-                <span className="block text-[10px] text-[#9a9385] mt-0.5">{label}</span>
-              </Chip>
-            ))}
-          </ChipRow>
-        </Field>
-
-        <Field label="Secondary position (optional)">
-          <ChipRow>
-            <Chip
-              active={!draft.secondary_position}
-              onClick={() => { update('secondary_position', null); persist({ secondary_position: null }) }}
-            >
-              <span className="font-bold text-xs">None</span>
-            </Chip>
-            {Object.entries(POSITION_LABELS)
-              .filter(([code]) => code !== draft.primary_position)
-              .map(([code, label]) => (
-                <Chip
-                  key={code}
-                  active={draft.secondary_position === code}
-                  onClick={() => { update('secondary_position', code); persist({ secondary_position: code }) }}
-                >
-                  <span className="font-bold text-xs">{code}</span>
-                  <span className="block text-[10px] text-[#9a9385] mt-0.5">{label}</span>
-                </Chip>
-              ))}
-          </ChipRow>
+        <Field label="Position on the field">
+          <PitchPositionPicker
+            primary={draft.primary_position ?? null}
+            secondary={draft.secondary_position ?? null}
+            onPickPrimary={(code) => {
+              update('primary_position', code)
+              // If the new primary equals the current secondary, clear secondary too.
+              const patch: Partial<AthleteProfileRecord> = { primary_position: code }
+              if (draft.secondary_position === code) {
+                update('secondary_position', null)
+                patch.secondary_position = null
+              }
+              persist(patch)
+            }}
+            onPickSecondary={(code) => {
+              update('secondary_position', code)
+              persist({ secondary_position: code })
+            }}
+          />
         </Field>
 
         <Field label="Preferred foot">

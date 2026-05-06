@@ -17,7 +17,9 @@ export function AuthCallback() {
 
     const { data: { subscription } } = supabase.auth.onAuthStateChange((event, session) => {
       if (session) {
-        navigate('/dashboard', { replace: true })
+        // Send everyone through onboarding — OnboardingProfile redirects
+        // returning users with a completed profile straight to the dashboard.
+        navigate('/onboarding/profile', { replace: true })
       } else if (event === 'SIGNED_OUT') {
         setError('Sign-in failed. Please try again.')
       }

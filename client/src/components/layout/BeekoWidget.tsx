@@ -17,6 +17,10 @@ const STARTERS = [
   { q: 'How do I stand out at ID camps?', emoji: '⛺' },
 ]
 
+const SUPPORT_PHONE_DISPLAY = '(415) 619-9477'
+const SUPPORT_PHONE_TEL = '+14156199477'
+const SUPPORT_EMAIL = 'infokickriq@gmail.com'
+
 function getProfile(): AthleteProfile | null {
   try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
 }
@@ -145,6 +149,46 @@ export function BeekoWidget() {
                   {q}
                 </button>
               ))}
+
+              <div className="mt-4 pt-4 border-t border-[rgba(245,241,232,0.06)]">
+                <div className="font-mono text-[10px] tracking-[0.20em] uppercase text-ink-3 text-center pb-2.5">
+                  Contact us directly
+                </div>
+                <div className="flex flex-col gap-2">
+                  <a
+                    href={`tel:${SUPPORT_PHONE_TEL}`}
+                    className="group flex items-center gap-3 px-3.5 py-2.5 rounded-xl border border-[rgba(240,182,90,0.18)] bg-[rgba(240,182,90,0.04)] text-ink-1 hover:border-[rgba(240,182,90,0.50)] hover:bg-[rgba(240,182,90,0.08)] hover:text-ink-0 transition-[border-color,background,color]"
+                  >
+                    <span className="shrink-0 w-7 h-7 rounded-full bg-[rgba(240,182,90,0.12)] border border-[rgba(240,182,90,0.30)] flex items-center justify-center text-gold">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                      </svg>
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-ink-3 leading-none mb-1">Call</div>
+                      <div className="text-[13px] font-medium leading-none">{SUPPORT_PHONE_DISPLAY}</div>
+                    </div>
+                  </a>
+                  <a
+                    href={`mailto:${SUPPORT_EMAIL}`}
+                    className="group flex items-center gap-3 px-3.5 py-2.5 rounded-xl border border-[rgba(240,182,90,0.18)] bg-[rgba(240,182,90,0.04)] text-ink-1 hover:border-[rgba(240,182,90,0.50)] hover:bg-[rgba(240,182,90,0.08)] hover:text-ink-0 transition-[border-color,background,color]"
+                  >
+                    <span className="shrink-0 w-7 h-7 rounded-full bg-[rgba(240,182,90,0.12)] border border-[rgba(240,182,90,0.30)] flex items-center justify-center text-gold">
+                      <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                        <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                        <path d="M22 6l-10 7L2 6"/>
+                      </svg>
+                    </span>
+                    <div className="flex-1 min-w-0">
+                      <div className="font-mono text-[9.5px] tracking-[0.16em] uppercase text-ink-3 leading-none mb-1">Email</div>
+                      <div className="text-[13px] font-medium leading-none truncate">{SUPPORT_EMAIL}</div>
+                    </div>
+                  </a>
+                </div>
+                <div className="font-mono text-[9.5px] tracking-[0.14em] uppercase text-ink-3 text-center pt-2.5 leading-relaxed">
+                  Mon–Fri · 9am–6pm PT
+                </div>
+              </div>
             </div>
           ) : (
             <>
@@ -187,6 +231,39 @@ export function BeekoWidget() {
           )}
           <div ref={bottomRef} />
         </div>
+
+        {/* Contact strip — always reachable */}
+        {messages.length > 0 && (
+          <div className="px-4 pt-2 pb-2.5 border-t border-[rgba(245,241,232,0.08)] shrink-0">
+            <div className="font-mono text-[9px] tracking-[0.22em] uppercase text-ink-3 text-center mb-1.5">
+              Contact us
+            </div>
+            <div className="flex items-center justify-center gap-3">
+              <a
+                href={`tel:${SUPPORT_PHONE_TEL}`}
+                className="inline-flex items-center gap-1.5 text-[11px] text-ink-1 hover:text-gold transition-colors"
+                aria-label={`Call ${SUPPORT_PHONE_DISPLAY}`}
+              >
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gold/70">
+                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/>
+                </svg>
+                {SUPPORT_PHONE_DISPLAY}
+              </a>
+              <span className="w-px h-3 bg-[rgba(245,241,232,0.14)]" aria-hidden="true" />
+              <a
+                href={`mailto:${SUPPORT_EMAIL}`}
+                className="inline-flex items-center gap-1.5 text-[11px] text-ink-1 hover:text-gold transition-colors max-w-[180px]"
+                aria-label={`Email ${SUPPORT_EMAIL}`}
+              >
+                <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-gold/70 shrink-0">
+                  <path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/>
+                  <path d="M22 6l-10 7L2 6"/>
+                </svg>
+                <span className="truncate">{SUPPORT_EMAIL}</span>
+              </a>
+            </div>
+          </div>
+        )}
 
         {/* Input */}
         <div className="px-4 py-3 border-t border-[rgba(245,241,232,0.08)] shrink-0">

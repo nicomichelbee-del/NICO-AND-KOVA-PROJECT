@@ -1,14 +1,15 @@
-import { useState, useMemo } from 'react'
+import { Fragment, useState, useMemo } from 'react'
 import { getRosterIntel } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { REGIONS, regionFromLocation } from '../../lib/region'
+import { readLegacyProfile } from '../../lib/profileAdapter'
 import type { Division, Region, RosterProgram, PositionNeed, AthleteProfile } from '../../types'
 
 function getProfile(): AthleteProfile | null {
-  try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
+  return readLegacyProfile()
 }
 
 const demandColor: Record<'High' | 'Medium' | 'Low', string> = {
@@ -219,9 +220,8 @@ export function RosterIntel() {
               </thead>
               <tbody>
                 {filteredPrograms.map((prog) => (
-                  <>
+                  <Fragment key={prog.id}>
                     <tr
-                      key={prog.id}
                       onClick={() => setExpandedRow(expandedRow === prog.id ? null : prog.id)}
                       className="border-b border-[rgba(245,241,232,0.04)] hover:bg-[rgba(255,255,255,0.02)] transition-colors cursor-pointer"
                     >
@@ -244,7 +244,7 @@ export function RosterIntel() {
                       </td>
                     </tr>
                     {expandedRow === prog.id && (
-                      <tr key={`${prog.id}-exp`} className="border-b border-[rgba(245,241,232,0.04)] bg-[rgba(234,179,8,0.02)]">
+                      <tr className="border-b border-[rgba(245,241,232,0.04)] bg-[rgba(234,179,8,0.02)]">
                         <td colSpan={6} className="px-5 py-4">
                           <div className="grid grid-cols-2 gap-6">
                             <div>
@@ -271,7 +271,7 @@ export function RosterIntel() {
                         </td>
                       </tr>
                     )}
-                  </>
+                  </Fragment>
                 ))}
               </tbody>
             </table>

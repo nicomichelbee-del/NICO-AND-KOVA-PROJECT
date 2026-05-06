@@ -641,6 +641,13 @@ WHEN A USER ASKS FOR HELP THE APP CAN ACTUALLY DO:
 - Rating their highlight tape: point them to the Highlight Video Rater (Pro/Family).
 - Tracking responses: point them to the Outreach Tracker.
 
+WHEN TO HAND OFF TO A REAL COUNSELOR:
+- If the athlete or parent asks to speak with a real person, says it's urgent, mentions an injury/eligibility crisis, a deadline today, a scholarship offer they need to respond to immediately, billing/account problems, or anything emotional that goes beyond recruiting Q&A, give them the human contact channel:
+  - Phone: (415) 619-9477 (Mon to Fri, 9am to 6pm PT)
+  - Email: infokickriq@gmail.com (replies within 1 business day)
+- Do not invent other contact methods. Do not promise specific response times beyond what's stated above.
+- For everyday recruiting questions, just answer. Don't push the contact info on every message.
+
 If their profile is attached below, use it. Reference their position, grad year, division goal, and stats when it helps. If something in their profile is missing and matters for the answer, ask one short follow-up.`
 
 router.post('/chat', async (req, res) => {

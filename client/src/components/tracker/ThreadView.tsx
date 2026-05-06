@@ -25,24 +25,43 @@ export function ThreadView({ userId, threadId, contactId, coachEmail, coachName,
     setLoading(true)
     gmailGetThread(userId, threadId)
       .then(({ messages: msgs }) => {
+        // A blank coachEmail would make `.includes('')` true for every message and cause
+        // us to rate the athlete's own outbound. Only tag isFromCoach when we have an
+        // actual address to match.
+        const lowerCoachEmail = coachEmail.trim().toLowerCase()
         const tagged = msgs.map((m) => ({
           ...m,
-          isFromCoach: m.sender.toLowerCase().includes(coachEmail.toLowerCase()),
+          isFromCoach: !!lowerCoachEmail && m.sender.toLowerCase().includes(lowerCoachEmail),
         }))
         setMessages(tagged)
-        // Auto-rate if there's a coach reply
+
         const lastCoachMsg = [...tagged].reverse().find((m) => m.isFromCoach)
-        if (lastCoachMsg) {
-          setRatingLoading(true)
-          gmailRateAndLog(userId, contactId, lastCoachMsg.body, coachName, school)
-            .then((r) => setRating(r))
-            .catch(() => {})
-            .finally(() => setRatingLoading(false))
-        }
+        if (!lastCoachMsg) return
+
+        // Cache the rating per-message in localStorage. Re-expanding the row, switching
+        // tabs, or navigating back must not trigger another Claude call — the rating only
+        // re-runs when a NEW coach message arrives (different message id).
+        const cacheKey = `kr-rate-${contactId}-${lastCoachMsg.id}`
+        try {
+          const cached = localStorage.getItem(cacheKey)
+          if (cached) {
+            setRating(JSON.parse(cached))
+            return
+          }
+        } catch { /* corrupt entry — fall through to fresh rate */ }
+
+        setRatingLoading(true)
+        gmailRateAndLog(userId, contactId, lastCoachMsg.body, coachName, school)
+          .then((r) => {
+            setRating(r)
+            try { localStorage.setItem(cacheKey, JSON.stringify(r)) } catch { /* quota — non-fatal */ }
+          })
+          .catch(() => {})
+          .finally(() => setRatingLoading(false))
       })
       .catch(() => setMessages([]))
       .finally(() => setLoading(false))
-  }, [threadId, userId])
+  }, [threadId, userId, coachEmail, contactId, coachName, school])
 
   const lastCoachMessage = [...messages].reverse().find((m) => m.isFromCoach)
 

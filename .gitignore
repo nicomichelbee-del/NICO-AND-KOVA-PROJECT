@@ -6,6 +6,8 @@ server.log
 .playwright-mcp/
 .superpowers/
 .claude/settings.local.json
+.claude/scheduled_tasks.lock
+.tmp/
 
 # transient enrichment diagnostic; gets overwritten each run
 server/data/scorecardUnmatched.json

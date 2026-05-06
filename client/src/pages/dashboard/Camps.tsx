@@ -6,10 +6,11 @@ import { Badge } from '../../components/ui/Badge'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { CampDetailModal } from '../../components/camps/CampDetailModal'
 import { REGIONS, regionFromLocation } from '../../lib/region'
+import { readLegacyProfile } from '../../lib/profileAdapter'
 import type { AthleteProfile, IdCamp, CampCoach, Division, IdEvent, IdCampEntry, Region, StaffTier } from '../../types'
 
 function getProfile(): AthleteProfile | null {
-  try { return JSON.parse(localStorage.getItem('athleteProfile') ?? '') } catch { return null }
+  return readLegacyProfile()
 }
 
 type GeneratedEmail = { coachName: string; subject: string; body: string }

@@ -1,8 +1,9 @@
 import { Router } from 'express'
 import { google } from 'googleapis'
 import { createClient } from '@supabase/supabase-js'
-import { categorizeEmail, isBulkMessage, classifyCoachMessage, isNewsletterEmail, getHeader, decodeMessageBody, resolveSchoolFromEmail, resolveCoachName } from '../lib/gmailUtils'
+import { categorizeEmail, isBulkMessage, classifyCoachMessage, isNewsletterEmail, getHeader, decodeMessageBody, resolveSchoolFromEmail, resolveCoachName, selectContactsToAutoRate, AUTO_RATE_CAP } from '../lib/gmailUtils'
 import { rateCoachReply, filterRealCoachEmails, batchRateCoachEmails } from '../lib/aiClient'
+import type { BatchEmailRating } from '../lib/aiClient'
 import schoolsData from '../data/schools.json'
 
 const router = Router()
@@ -178,6 +179,20 @@ router.post('/send', async (req, res) => {
       })).catch((err: Error) => {
         console.error('sent_emails insert failed:', err.message)
       })
+      // Backfill the contact's gmail_thread_id when this is the first send through the app —
+      // ensures the Outreach Tracker can expand the thread under that row immediately.
+      if (contactId) {
+        void Promise.resolve(
+          supabase
+            .from('outreach_contacts')
+            .update({ gmail_thread_id: threadId })
+            .eq('id', contactId)
+            .eq('user_id', userId)
+            .is('gmail_thread_id', null),
+        ).catch((err: Error) => {
+          console.error('contact thread backfill failed:', err.message)
+        })
+      }
     }
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed to send' })
@@ -310,14 +325,42 @@ router.get('/threads', async (req, res) => {
     .select('*')
     .eq('user_id', userId)
 
-  // Sync reply data for tracked contacts
-  const tracked = []
+  // Sync reply data for tracked contacts. Contacts with coach_email but no thread_id
+  // are "orphans" — try to link the newest matching thread before giving up. Without
+  // this, manually-added contacts stay forever blank in the tracker.
+  const tracked: any[] = []
   for (const contact of contacts ?? []) {
-    if (!contact.gmail_thread_id) { tracked.push(mapContact(contact)); continue }
+    let threadId: string | null = contact.gmail_thread_id
+    let resolvedRow = contact
+
+    if (!threadId && contact.coach_email) {
+      try {
+        const r: any = await gmail.users.threads.list({
+          userId: 'me',
+          q: `from:${contact.coach_email} OR to:${contact.coach_email}`,
+          maxResults: 1,
+        })
+        const found = r.data.threads?.[0]?.id
+        if (found) {
+          threadId = found
+          await supabase
+            .from('outreach_contacts')
+            .update({ gmail_thread_id: threadId })
+            .eq('id', contact.id)
+            .eq('user_id', userId)
+          resolvedRow = { ...contact, gmail_thread_id: threadId }
+        }
+      } catch {
+        /* search failure is non-fatal — the contact stays unlinked for this sync */
+      }
+    }
+
+    if (!threadId) { tracked.push(mapContact(resolvedRow)); continue }
+
     try {
       const thread = await gmail.users.threads.get({
         userId: 'me',
-        id: contact.gmail_thread_id,
+        id: threadId,
         format: 'metadata',
         metadataHeaders: ['From', 'Date'],
       })
@@ -334,12 +377,46 @@ router.get('/threads', async (req, res) => {
           last_reply_at: lastReplyAt,
           status: 'replied',
         }).eq('id', contact.id).eq('user_id', userId)
-        tracked.push(mapContact({ ...contact, last_reply_snippet: snippet, last_reply_at: lastReplyAt, status: 'replied' }))
+        tracked.push(mapContact({ ...resolvedRow, last_reply_snippet: snippet, last_reply_at: lastReplyAt, status: 'replied' }))
       } else {
-        tracked.push(mapContact(contact))
+        tracked.push(mapContact(resolvedRow))
       }
     } catch {
-      tracked.push(mapContact(contact))
+      tracked.push(mapContact(resolvedRow))
+    }
+  }
+
+  // Auto-rate any contact that has a coach reply but no interest rating yet — single
+  // batched Claude call, capped at AUTO_RATE_CAP per sync to control token spend. The
+  // next sync picks up any leftovers, so this is bounded even with hundreds of contacts.
+  const toRate = selectContactsToAutoRate(tracked, AUTO_RATE_CAP)
+  if (toRate.length > 0) {
+    try {
+      const ratings: BatchEmailRating[] = await batchRateCoachEmails(
+        toRate.map((c) => ({
+          threadId: c.id, // reuse threadId field as the row id for mapping back
+          senderName: c.coachName || c.schoolName,
+          subject: '',
+          snippet: (c.lastReplySnippet ?? '').slice(0, 300),
+          messageCount: 2, // we know there's at least one outbound + one reply
+        })),
+      )
+      const ratingMap = new Map(ratings.map((r) => [r.threadId, r]))
+      // Persist + reflect the rating in the response payload so the UI shows it instantly.
+      await Promise.all(
+        toRate.map(async (c) => {
+          const r = ratingMap.get(c.id)
+          if (!r) return
+          await supabase
+            .from('outreach_contacts')
+            .update({ interest_rating: r.rating })
+            .eq('id', c.id)
+            .eq('user_id', userId)
+          c.interestRating = r.rating
+        }),
+      )
+    } catch (e) {
+      console.error('auto-rate failed:', e instanceof Error ? e.message : e)
     }
   }
 
