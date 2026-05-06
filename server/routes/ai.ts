@@ -540,7 +540,14 @@ const DEFAULT_RECRUITING_NEEDS: RosterProgram['typicalRecruitingNeeds'] = [
 
 interface CoachEntry { coachName: string; coachEmail: string; status: string }
 const COACH_LOOKUP = coachesData as Record<string, CoachEntry>
-const USEFUL_COACH_STATUSES = new Set(['success', 'partial', 'ai-inferred', 'email-inferred', 'web-verified', 'web-name-only'])
+// Statuses that produced a real coach name (and usually an email). Must stay in
+// sync with fillCoachGaps.ts, which writes 'haiku-verified' / 'sonnet-verified'
+// when the AI research pass fills gaps left by the initial scrape.
+const USEFUL_COACH_STATUSES = new Set([
+  'success', 'partial', 'email-inferred',
+  'web-verified', 'web-name-only',
+  'haiku-verified', 'sonnet-verified',
+])
 
 function buildRosterPrograms(gender: 'mens' | 'womens', division: string): RosterProgram[] {
   const schools = schoolsData as SchoolRecord[]
@@ -573,6 +580,19 @@ function buildRosterPrograms(gender: 'mens' | 'womens', division: string): Roste
   return out
 }
 
+// Athlete profile positions ("Right Back", "Left Wing") don't always match the
+// terminology used in roster recruiting needs ("Outside Back", "Winger").
+// Normalize to the substrings our data actually uses so the sort works.
+function normalizeAthletePosition(raw: string): string {
+  const p = raw.toLowerCase().trim()
+  if (p.includes('right back') || p.includes('left back') || p === 'fullback' || p === 'full back') return 'outside back'
+  if (p.includes('wing') && !p.includes('back')) return 'winger'
+  if (p === 'central mid' || p === 'center mid' || p.includes('central midfield')) return 'central midfielder'
+  if (p === 'defensive mid' || p.includes('defensive midfield')) return 'defensive midfielder'
+  if (p === 'attacking mid' || p.includes('attacking midfield')) return 'attacking midfielder'
+  return p
+}
+
 router.post('/roster-intel', async (req, res) => {
   try {
     const { gender, division, athletePosition } = req.body as { gender: 'mens' | 'womens'; division: string; athletePosition: string }
@@ -580,7 +600,7 @@ router.post('/roster-intel', async (req, res) => {
     let programs = buildRosterPrograms(gender, division)
 
     if (athletePosition) {
-      const pos = athletePosition.toLowerCase()
+      const pos = normalizeAthletePosition(athletePosition)
       programs.sort((a, b) => {
         const aHigh = a.typicalRecruitingNeeds.some((n) => n.position.toLowerCase().includes(pos) && n.level === 'High') ? 1 : 0
         const bHigh = b.typicalRecruitingNeeds.some((n) => n.position.toLowerCase().includes(pos) && n.level === 'High') ? 1 : 0

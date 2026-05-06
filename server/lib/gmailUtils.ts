@@ -148,23 +148,27 @@ export function isCoachEmail(senderEmail: string, subject: string): boolean {
   return categorizeEmail(senderEmail, subject) !== 'other'
 }
 
+type SchoolMeta = { id: string; name: string; division?: string }
+
 /**
- * Best-effort school-name resolver from a coach email + sender display name.
+ * Best-effort school resolver from a coach email + sender display name.
+ * Returns the matched school's name + division when found, or a name-only fallback
+ * (no division) when the domain can't be matched against schools.json.
+ *
  * Strategy:
  *   1. Strip subdomains, take the bare domain root (e.g. mail.athletics.harvard.edu → harvard)
  *   2. Match against schools.json by `id` or fuzzy name containment
  *   3. Look at the sender's display name for embedded school references ("UNC Soccer", "Harvard Athletics")
- *   4. Fallback: title-case the domain root
- * Returns the best-guess school name; empty string only if nothing usable was found.
+ *   4. Fallback: title-case the domain root, no division
  */
-export function resolveSchoolFromEmail(
+export function resolveSchoolMetaFromEmail(
   senderEmail: string,
   senderName: string,
-  schools: { id: string; name: string }[],
-): string {
+  schools: SchoolMeta[],
+): { name: string; division: string | null } {
   const email = senderEmail.toLowerCase().trim()
   const domain = email.split('@')[1] ?? ''
-  if (!domain) return ''
+  if (!domain) return { name: '', division: null }
 
   const parts = domain.split('.').filter(Boolean)
   // For .edu, root = second-to-last (harvard.edu → "harvard"). For other TLDs, same logic works.
@@ -173,7 +177,7 @@ export function resolveSchoolFromEmail(
 
   // Direct id match — schools.json ids like "harvard", "unc", "stanford"
   const byId = schools.find((s) => s.id.toLowerCase() === rootLower)
-  if (byId) return byId.name
+  if (byId) return { name: byId.name, division: byId.division ?? null }
 
   // Fuzzy: school id is contained in domain root (e.g. unc.edu vs id "unc-charlotte")
   // or domain root is contained in school name (without spaces/punctuation)
@@ -184,7 +188,7 @@ export function resolveSchoolFromEmail(
       const nameClean = s.name.toLowerCase().replace(/[^a-z]/g, '')
       return idClean === cleanedRoot || nameClean.includes(cleanedRoot) || cleanedRoot.includes(idClean)
     })
-    if (fuzzy) return fuzzy.name
+    if (fuzzy) return { name: fuzzy.name, division: fuzzy.division ?? null }
   }
 
   // Sender display name often carries the school: "Coach Smith — UNC Soccer", "Harvard Athletics"
@@ -196,11 +200,20 @@ export function resolveSchoolFromEmail(
       const nameLower = s.name.toLowerCase()
       return lower.includes(idLower) || lower.includes(nameLower)
     })
-    if (byName) return byName.name
+    if (byName) return { name: byName.name, division: byName.division ?? null }
   }
 
-  // Last resort: title-case the domain root so the user sees something recognizable
-  return root.charAt(0).toUpperCase() + root.slice(1)
+  // Last resort: title-case the domain root, no division match
+  return { name: root.charAt(0).toUpperCase() + root.slice(1), division: null }
+}
+
+/** @deprecated — use resolveSchoolMetaFromEmail to also pick up the matched division. */
+export function resolveSchoolFromEmail(
+  senderEmail: string,
+  senderName: string,
+  schools: SchoolMeta[],
+): string {
+  return resolveSchoolMetaFromEmail(senderEmail, senderName, schools).name
 }
 
 /**
@@ -264,7 +277,11 @@ function htmlToText(html: string): string {
 //   1. Already-rated contacts (interestRating !== 'pending') are NEVER re-rated.
 //   2. Contacts with no reply snippet are excluded — nothing to analyse, no spend.
 //   3. Per-sync cap is enforced — extras roll to the next sync.
-export const AUTO_RATE_CAP = 20
+// Cap balances "rate everything in one go" against Claude token spend per sync.
+// At 75, batchRateCoachEmails fans out to ~4 parallel Claude calls (chunks of 20),
+// covering >95% of users' inboxes in a single sync. Heavier inboxes finish over the
+// next sync or two — once rated, contacts are never re-rated.
+export const AUTO_RATE_CAP = 75
 export function selectContactsToAutoRate<T extends { interestRating: string; lastReplySnippet?: string | null }>(
   contacts: T[],
   cap: number = AUTO_RATE_CAP,

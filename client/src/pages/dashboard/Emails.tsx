@@ -1,11 +1,12 @@
 import { useEffect, useMemo, useState } from 'react'
-import { generateEmail, findCoach, listAllSchools, type FindCoachResult } from '../../lib/api'
+import { generateEmail, findCoach, listAllSchools, getGmailStatus, gmailSend, type FindCoachResult } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { Card } from '../../components/ui/Card'
 import { Badge } from '../../components/ui/Badge'
 import { PageHeader } from '../../components/ui/PageHeader'
 import { readLegacyProfile } from '../../lib/profileAdapter'
+import { useAuth } from '../../context/AuthContext'
 import type { Division, CoachEmail, AthleteProfile, SchoolDirectoryEntry } from '../../types'
 
 function getProfile(): AthleteProfile | null {
@@ -18,6 +19,7 @@ const REGION_TABS = ['All', 'West', 'Southwest', 'Midwest', 'Southeast', 'Northe
 type RegionTab = typeof REGION_TABS[number]
 
 export function Emails() {
+  const { user } = useAuth()
   const [school, setSchool] = useState('')
   const [division, setDivision] = useState<Division>('D2')
   const [gender, setGender] = useState<'mens' | 'womens'>('womens')
@@ -29,8 +31,15 @@ export function Emails() {
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
   const [generated, setGenerated] = useState<{ subject: string; body: string } | null>(null)
+  const [generatedId, setGeneratedId] = useState<string | null>(null)
   const [history, setHistory] = useState<CoachEmail[]>([])
   const [copied, setCopied] = useState(false)
+
+  const [gmailConnected, setGmailConnected] = useState(false)
+  const [gmailEmail, setGmailEmail] = useState<string | null>(null)
+  const [gmailLoading, setGmailLoading] = useState(false)
+  const [sending, setSending] = useState(false)
+  const [sentMsg, setSentMsg] = useState('')
 
   // Snapshot of the school/division/gender used for the last successful coach
   // lookup. When the user edits fields after a coach is found, surface a Save
@@ -58,6 +67,58 @@ export function Emails() {
       .then((res) => setDirectory(res.schools))
       .catch(() => { /* directory is optional; the manual entry path still works */ })
   }, [])
+
+  useEffect(() => {
+    if (!user?.id) return
+    getGmailStatus(user.id)
+      .then((s) => { setGmailConnected(s.connected); setGmailEmail(s.email) })
+      .catch(() => { /* status check is non-fatal */ })
+  }, [user?.id])
+
+  useEffect(() => {
+    function handleMessage(e: MessageEvent) {
+      if (e.data?.type === 'gmail-connected') {
+        setGmailConnected(true)
+        setGmailEmail(e.data.email ?? null)
+        setGmailLoading(false)
+      } else if (e.data?.type === 'gmail-error') {
+        setGmailLoading(false)
+      }
+    }
+    window.addEventListener('message', handleMessage)
+    return () => window.removeEventListener('message', handleMessage)
+  }, [])
+
+  async function connectGmail() {
+    if (!user?.id) return
+    setGmailLoading(true)
+    try {
+      const res = await fetch(`/api/gmail/auth?userId=${encodeURIComponent(user.id)}`)
+      const data = await res.json()
+      if (!res.ok || !data.url) throw new Error(data.error ?? 'Failed to get auth URL')
+      window.open(data.url, 'gmail-auth', 'width=500,height=600,left=200,top=100')
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to start Gmail auth')
+      setGmailLoading(false)
+    }
+  }
+
+  async function handleSend() {
+    if (!user?.id || !generated || !coachEmail) return
+    setSending(true); setError(''); setSentMsg('')
+    try {
+      await gmailSend(user.id, coachEmail, generated.subject, generated.body, { emailType: 'initial_outreach' })
+      setSentMsg(`Sent to ${coachEmail}`)
+      if (generatedId) {
+        setHistory((prev) => prev.map((h) =>
+          h.id === generatedId ? { ...h, status: 'sent', sentAt: new Date().toISOString() } : h,
+        ))
+      }
+      setTimeout(() => setSentMsg(''), 4000)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to send email')
+    } finally { setSending(false) }
+  }
 
   // Conferences available within the current region tab and division.
   const conferenceOptions = useMemo(() => {
@@ -122,12 +183,14 @@ export function Emails() {
     const profile = getProfile()
     if (!profile?.name) { setError('Please complete your athlete profile first.'); return }
     if (!school || !coachName) { setError('Please find or enter a coach name.'); return }
-    setError(''); setLoading(true)
+    setError(''); setLoading(true); setSentMsg('')
     try {
       const result = await generateEmail(profile, school, division, coachName, gender)
       setGenerated(result)
+      const id = crypto.randomUUID()
+      setGeneratedId(id)
       setHistory((prev) => [{
-        id: crypto.randomUUID(), school, division, coachName, coachEmail,
+        id, school, division, coachName, coachEmail,
         subject: result.subject, body: result.body, status: 'draft',
         createdAt: new Date().toISOString(),
       }, ...prev])
@@ -152,6 +215,24 @@ export function Emails() {
         eyebrow="Coach outreach"
         title={<>Email a <span className="kr-accent">coach</span>.</>}
         lede={`Browse ${directory.length || 'all'} programs by region or conference, or type a school directly. We'll find the coach and draft your outreach.`}
+        aside={
+          <div className="flex flex-col items-end gap-2">
+            {gmailConnected ? (
+              <div>
+                <div className="flex items-center gap-2">
+                  <span className="w-1.5 h-1.5 rounded-full bg-pitch-light shadow-[0_0_8px_var(--pitch-2)] inline-block" />
+                  <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-pitch-light">Gmail connected</span>
+                </div>
+                {gmailEmail && <div className="text-[12px] text-ink-2 mt-1">{gmailEmail}</div>}
+              </div>
+            ) : (
+              <Button onClick={connectGmail} disabled={gmailLoading || !user?.id} size="sm">
+                {gmailLoading ? 'Connecting…' : 'Connect Gmail'}
+              </Button>
+            )}
+            {!user?.id && <div className="font-mono text-[10px] tracking-[0.16em] uppercase text-ink-3">Sign in to connect</div>}
+          </div>
+        }
       />
 
       {/* School browser: region tabs → optional conference filter → school list */}
@@ -366,12 +447,43 @@ export function Emails() {
         <div className="col-span-3">
           {generated ? (
             <Card className="p-6 h-full">
-              <div className="flex items-center justify-between mb-5">
+              <div className="flex items-center justify-between mb-5 gap-3 flex-wrap">
                 <Badge variant="green">✓ Generated</Badge>
-                <Button variant="outline" size="sm" onClick={handleCopy}>
-                  {copied ? '✓ Copied' : 'Copy email'}
-                </Button>
+                <div className="flex items-center gap-2">
+                  <Button variant="outline" size="sm" onClick={handleCopy}>
+                    {copied ? '✓ Copied' : 'Copy email'}
+                  </Button>
+                  {gmailConnected ? (
+                    <Button
+                      size="sm"
+                      onClick={handleSend}
+                      disabled={sending || !coachEmail}
+                      title={!coachEmail ? 'Add a coach email to send' : `Send from ${gmailEmail ?? 'your Gmail'}`}
+                    >
+                      {sending ? 'Sending…' : '✉️ Send via Gmail'}
+                    </Button>
+                  ) : (
+                    <Button
+                      size="sm"
+                      variant="outline"
+                      onClick={connectGmail}
+                      disabled={gmailLoading || !user?.id}
+                    >
+                      {gmailLoading ? 'Connecting…' : 'Connect Gmail to send'}
+                    </Button>
+                  )}
+                </div>
               </div>
+              {sentMsg && (
+                <div className="mb-4 px-3 py-2 rounded-lg text-xs text-[#4ade80] bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.25)]">
+                  ✓ {sentMsg}
+                </div>
+              )}
+              {gmailConnected && gmailEmail && (
+                <div className="text-[11px] text-[#9a9385] mb-4">
+                  Sending from <span className="text-[#f5f1e8]">{gmailEmail}</span> — replies go straight to your inbox.
+                </div>
+              )}
               <div className="mb-4">
                 <div className="text-xs font-semibold text-[#9a9385] uppercase tracking-widest mb-1.5">Subject</div>
                 <div className="text-sm font-medium text-[#f5f1e8] bg-[rgba(245,241,232,0.04)] px-3 py-2 rounded-lg">

@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from 'react'
 import { useSearchParams } from 'react-router-dom'
-import { generateFollowUp, getGmailStatus, gmailGetThreads, gmailGetThread } from '../../lib/api'
+import { generateFollowUp, getGmailStatus, gmailGetThreads, gmailGetThread, gmailSend } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Textarea } from '../../components/ui/Textarea'
 import { Card } from '../../components/ui/Card'
@@ -60,6 +60,15 @@ export function FollowUp() {
   const [inboxLoading, setInboxLoading] = useState(false)
   const [pickingThreadId, setPickingThreadId] = useState<string | null>(null)
   const [showInbox, setShowInbox] = useState(false)
+
+  // Send-via-Gmail state — populated when picking from the inbox so the user
+  // can send the generated reply straight back into the existing coach thread.
+  const [recipientEmail, setRecipientEmail] = useState('')
+  const [subject, setSubject] = useState('')
+  const [replyThreadId, setReplyThreadId] = useState<string | null>(null)
+  const [contactId, setContactId] = useState<string | null>(null)
+  const [sending, setSending] = useState(false)
+  const [sentMsg, setSentMsg] = useState('')
 
   useEffect(() => {
     const prefillType = searchParams.get('type') as 'followup' | 'thankyou' | 'answer' | null
@@ -141,6 +150,11 @@ export function FollowUp() {
     setShowInbox(false)
     setResult('')
     setAdvice('')
+    setSentMsg('')
+    setRecipientEmail(contact.coachEmail ?? '')
+    setReplyThreadId(contact.gmailThreadId ?? null)
+    setContactId(contact.id ?? null)
+    setSubject(`Following up — ${contact.schoolName}`)
     // Fetch the FULL latest coach message — far better context than 150-char snippet.
     if (contact.gmailThreadId) {
       setPickingThreadId(contact.gmailThreadId)
@@ -167,6 +181,11 @@ export function FollowUp() {
     setShowInbox(false)
     setResult('')
     setAdvice('')
+    setSentMsg('')
+    setRecipientEmail(thread.senderEmail)
+    setReplyThreadId(thread.threadId)
+    setContactId(null)
+    setSubject(thread.subject || 'Following up')
     setPickingThreadId(thread.threadId)
     try {
       const { messages } = await gmailGetThread(user.id, thread.threadId)
@@ -212,6 +231,23 @@ export function FollowUp() {
   async function handleCopy() {
     await navigator.clipboard.writeText(result)
     setCopied(true); setTimeout(() => setCopied(false), 2000)
+  }
+
+  async function handleSend() {
+    if (!user?.id || !result || !recipientEmail) return
+    setSending(true); setError(''); setSentMsg('')
+    try {
+      await gmailSend(user.id, recipientEmail, subject || 'Following up', result, {
+        contactId: contactId ?? undefined,
+        threadId: replyThreadId ?? undefined,
+        emailType: type === 'thankyou' ? 'thank_you' : type === 'answer' ? 'answer' : 'followup',
+      })
+      const dest = recipientEmail
+      setSentMsg(replyThreadId ? `Replied in thread to ${dest}` : `Sent to ${dest}`)
+      setTimeout(() => setSentMsg(''), 4500)
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Failed to send email')
+    } finally { setSending(false) }
   }
 
   return (
@@ -408,12 +444,56 @@ export function FollowUp() {
           {result ? (
             <>
               <Card className="p-5 flex flex-col">
-                <div className="flex items-center justify-between mb-4">
+                <div className="flex items-center justify-between mb-4 gap-3 flex-wrap">
                   <Badge variant="green">✓ Ready to send</Badge>
-                  <Button variant="outline" size="sm" onClick={handleCopy}>
-                    {copied ? '✓ Copied' : 'Copy'}
-                  </Button>
+                  <div className="flex items-center gap-2">
+                    <Button variant="outline" size="sm" onClick={handleCopy}>
+                      {copied ? '✓ Copied' : 'Copy'}
+                    </Button>
+                    {gmailConnected ? (
+                      <Button
+                        size="sm"
+                        onClick={handleSend}
+                        disabled={sending || !recipientEmail}
+                        title={!recipientEmail ? 'Add a recipient email to send' : replyThreadId ? 'Reply in the existing coach thread' : `Send from ${gmailEmail ?? 'your Gmail'}`}
+                      >
+                        {sending ? 'Sending…' : replyThreadId ? '✉️ Send reply' : '✉️ Send via Gmail'}
+                      </Button>
+                    ) : (
+                      <Button size="sm" variant="outline" onClick={connectGmail} disabled={gmailLoading || !user?.id}>
+                        {gmailLoading ? 'Connecting…' : 'Connect Gmail to send'}
+                      </Button>
+                    )}
+                  </div>
                 </div>
+
+                {/* Recipient + subject — auto-filled when picking from inbox, editable otherwise */}
+                <div className="flex flex-col gap-2 mb-4">
+                  <Input
+                    label="To"
+                    value={recipientEmail}
+                    onChange={(e) => setRecipientEmail(e.target.value)}
+                    placeholder="coach@school.edu"
+                  />
+                  <Input
+                    label="Subject"
+                    value={subject}
+                    onChange={(e) => setSubject(e.target.value)}
+                    placeholder={type === 'thankyou' ? 'Thank you for the visit' : type === 'answer' ? 'Re:' : 'Following up'}
+                  />
+                  {replyThreadId && (
+                    <p className="text-[11px] text-[#9a9385]">
+                      This will reply in the existing thread — Gmail prepends "Re:" automatically.
+                    </p>
+                  )}
+                </div>
+
+                {sentMsg && (
+                  <div className="mb-3 px-3 py-2 rounded-lg text-xs text-[#4ade80] bg-[rgba(74,222,128,0.08)] border border-[rgba(74,222,128,0.25)]">
+                    ✓ {sentMsg}
+                  </div>
+                )}
+
                 <pre className="text-sm text-[#f5f1e8] whitespace-pre-wrap font-sans leading-relaxed overflow-y-auto scrollbar-hide max-h-64">
                   {result}
                 </pre>

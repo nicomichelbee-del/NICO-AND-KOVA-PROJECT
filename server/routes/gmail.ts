@@ -1,7 +1,7 @@
 import { Router } from 'express'
 import { google } from 'googleapis'
 import { createClient } from '@supabase/supabase-js'
-import { categorizeEmail, isBulkMessage, classifyCoachMessage, isNewsletterEmail, getHeader, decodeMessageBody, resolveSchoolFromEmail, resolveCoachName, selectContactsToAutoRate, AUTO_RATE_CAP } from '../lib/gmailUtils'
+import { categorizeEmail, isBulkMessage, classifyCoachMessage, isNewsletterEmail, getHeader, decodeMessageBody, resolveSchoolMetaFromEmail, resolveCoachName, selectContactsToAutoRate, AUTO_RATE_CAP } from '../lib/gmailUtils'
 import { rateCoachReply, filterRealCoachEmails, batchRateCoachEmails } from '../lib/aiClient'
 import type { BatchEmailRating } from '../lib/aiClient'
 import schoolsData from '../data/schools.json'
@@ -144,9 +144,9 @@ router.get('/status', async (req, res) => {
 
 // POST /api/gmail/send
 router.post('/send', async (req, res) => {
-  const { userId, to, subject, body, contactId, emailType } = req.body as {
+  const { userId, to, subject, body, contactId, emailType, threadId: replyThreadId } = req.body as {
     userId: string; to: string; subject: string; body: string
-    contactId?: string; emailType?: string
+    contactId?: string; emailType?: string; threadId?: string
   }
   const supabase = getSupabase()
   const { data: tokenRow } = await supabase
@@ -158,11 +158,45 @@ router.post('/send', async (req, res) => {
   const oauth2Client = getOAuth2Client()
   oauth2Client.setCredentials({ refresh_token: tokenRow.refresh_token })
   const gmail = google.gmail({ version: 'v1', auth: oauth2Client })
-  const raw = Buffer.from(
-    `To: ${to}\r\nContent-Type: text/plain; charset=utf-8\r\nMIME-Version: 1.0\r\nSubject: ${subject}\r\n\r\n${body}`
-  ).toString('base64url')
+
+  // For an in-thread reply, Gmail requires matching In-Reply-To/References headers + a
+  // "Re: " subject + the threadId in the request. Fetch the latest message's Message-Id
+  // from the existing thread to satisfy that threading contract.
+  let inReplyTo = ''
+  let references = ''
+  let finalSubject = subject
+  if (replyThreadId) {
+    try {
+      const thread = await gmail.users.threads.get({
+        userId: 'me', id: replyThreadId,
+        format: 'metadata', metadataHeaders: ['Message-Id', 'References'],
+      })
+      const msgs = thread.data.messages ?? []
+      const last = msgs[msgs.length - 1]
+      const headers = last?.payload?.headers ?? []
+      const lastMsgId = headers.find((h: any) => h.name?.toLowerCase() === 'message-id')?.value ?? ''
+      const lastRefs = headers.find((h: any) => h.name?.toLowerCase() === 'references')?.value ?? ''
+      if (lastMsgId) {
+        inReplyTo = lastMsgId
+        references = lastRefs ? `${lastRefs} ${lastMsgId}` : lastMsgId
+      }
+      if (!/^re:\s/i.test(finalSubject)) finalSubject = `Re: ${finalSubject}`
+    } catch { /* fall through — send as new thread if we can't read the original */ }
+  }
+
+  const headerLines = [
+    `To: ${to}`,
+    'Content-Type: text/plain; charset=utf-8',
+    'MIME-Version: 1.0',
+    `Subject: ${finalSubject}`,
+  ]
+  if (inReplyTo) headerLines.push(`In-Reply-To: ${inReplyTo}`)
+  if (references) headerLines.push(`References: ${references}`)
+  const raw = Buffer.from(headerLines.join('\r\n') + '\r\n\r\n' + body).toString('base64url')
   try {
-    const sent = await gmail.users.messages.send({ userId: 'me', requestBody: { raw } })
+    const requestBody: { raw: string; threadId?: string } = { raw }
+    if (replyThreadId) requestBody.threadId = replyThreadId
+    const sent = await gmail.users.messages.send({ userId: 'me', requestBody })
     const threadId = sent.data.threadId ?? ''
     const messageId = sent.data.id ?? ''
     res.json({ success: true, threadId, messageId })
@@ -173,7 +207,7 @@ router.post('/send', async (req, res) => {
         contact_id: contactId ?? null,
         gmail_thread_id: threadId,
         gmail_message_id: messageId,
-        subject,
+        subject: finalSubject,
         body,
         email_type: emailType ?? 'initial_outreach',
       })).catch((err: Error) => {
@@ -608,14 +642,21 @@ router.post('/auto-import', async (req, res) => {
     }
 
     // Build insert rows for everything not yet tracked.
+    // Carry senderName/snippet/category alongside each row so we can rate them in one
+    // batch right after insert without re-fetching from Gmail.
     const toInsert: any[] = []
+    const insertMeta: { senderName: string; snippet: string; isIdCamp: boolean }[] = []
     let skipped = 0
     for (const c of byEmail.values()) {
       if (existingEmails.has(c.senderEmail) || existingThreads.has(c.threadId)) {
         skipped++
         continue
       }
-      const schoolName = resolveSchoolFromEmail(c.senderEmail, c.senderName, schoolsData as any[])
+      const { name: schoolName, division: resolvedDivision } = resolveSchoolMetaFromEmail(
+        c.senderEmail,
+        c.senderName,
+        schoolsData as any[],
+      )
       const coachName = resolveCoachName(c.senderName, c.senderEmail)
       // Status defaults to 'replied' when there's a recent message — auto-imports
       // are coming from existing inbox threads, so the user has already been contacted.
@@ -624,15 +665,23 @@ router.post('/auto-import', async (req, res) => {
         coach_name: coachName,
         school_name: schoolName,
         coach_email: c.senderEmail,
-        division: 'D1', // best default; user can edit per row
+        // Division is resolved from schools.json by domain match; only fall back to D1
+        // when the domain doesn't map to a known school (rare — keeps the field non-null).
+        division: resolvedDivision ?? 'D1',
         gmail_thread_id: c.threadId,
         last_reply_at: c.lastReplyAt,
         last_reply_snippet: c.snippet,
         status: 'replied',
       })
+      insertMeta.push({
+        senderName: c.senderName || schoolName,
+        snippet: c.snippet,
+        isIdCamp: c.category === 'id_camp',
+      })
     }
 
     let imported = 0
+    let insertedRows: any[] = []
     if (toInsert.length > 0) {
       const { data, error } = await supabase
         .from('outreach_contacts')
@@ -643,6 +692,46 @@ router.post('/auto-import', async (req, res) => {
         return res.status(500).json({ error: error.message })
       }
       imported = data?.length ?? 0
+      insertedRows = data ?? []
+    }
+
+    // Auto-rate every freshly imported contact in one batched Claude call so the tracker
+    // shows an interest level next to every row immediately. We pair inserted rows with
+    // the metadata we kept around (senderName/snippet/isIdCamp). Capped at AUTO_RATE_CAP
+    // per import; leftovers will be picked up by the next /threads sync.
+    if (insertedRows.length > 0) {
+      try {
+        const pairs = insertedRows
+          .map((row: any, i: number) => ({ row, meta: insertMeta[i] }))
+          .filter(({ row, meta }) => row?.id && (meta?.snippet ?? '').trim().length > 0)
+          .slice(0, AUTO_RATE_CAP)
+        if (pairs.length > 0) {
+          const ratings: BatchEmailRating[] = await batchRateCoachEmails(
+            pairs.map(({ row, meta }) => ({
+              threadId: row.id, // reuse threadId field as the row id for mapping back
+              senderName: meta.senderName,
+              subject: '',
+              snippet: meta.snippet.slice(0, 300),
+              messageCount: 2,
+              isIdCamp: meta.isIdCamp,
+            })),
+          )
+          const ratingMap = new Map(ratings.map((r) => [r.threadId, r]))
+          await Promise.all(
+            pairs.map(async ({ row }) => {
+              const r = ratingMap.get(row.id)
+              if (!r) return
+              await supabase
+                .from('outreach_contacts')
+                .update({ interest_rating: r.rating })
+                .eq('id', row.id)
+                .eq('user_id', userId)
+            }),
+          )
+        }
+      } catch (e) {
+        console.error('auto-import rating failed:', e instanceof Error ? e.message : e)
+      }
     }
 
     const { data: allContacts } = await supabase

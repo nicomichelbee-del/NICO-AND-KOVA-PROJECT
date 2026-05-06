@@ -108,11 +108,11 @@ export function gmailSend(
   to: string,
   subject: string,
   body: string,
-  contactId?: string,
+  opts?: { contactId?: string; threadId?: string; emailType?: string },
 ) {
   return post<{ success: boolean; threadId: string; messageId: string }>(
     '/api/gmail/send',
-    { userId, to, subject, body, contactId },
+    { userId, to, subject, body, ...(opts ?? {}) },
   )
 }
 

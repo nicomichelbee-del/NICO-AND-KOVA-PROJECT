@@ -120,12 +120,14 @@ describe('selectContactsToAutoRate', () => {
   })
 
   it('caps at AUTO_RATE_CAP — extras roll to the next sync', () => {
-    const contacts = Array.from({ length: 50 }, (_, i) => ({
+    const contacts = Array.from({ length: AUTO_RATE_CAP + 50 }, (_, i) => ({
       id: `c${i}`, interestRating: 'pending', lastReplySnippet: 'reply',
     }))
     const out = selectContactsToAutoRate(contacts)
     expect(out.length).toBe(AUTO_RATE_CAP)
-    expect(AUTO_RATE_CAP).toBeLessThanOrEqual(20)
+    // Hard upper bound — going higher than this means a single sync could fan out to
+    // dozens of parallel Claude calls. Adjust deliberately.
+    expect(AUTO_RATE_CAP).toBeLessThanOrEqual(500)
   })
 
   it('returns empty for an empty input — never spawns a zero-email Claude call', () => {

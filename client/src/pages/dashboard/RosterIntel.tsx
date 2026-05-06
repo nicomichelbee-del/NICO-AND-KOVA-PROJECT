@@ -19,8 +19,8 @@ const demandColor: Record<'High' | 'Medium' | 'Low', string> = {
 }
 
 const SOCCER_POSITIONS = [
-  'Goalkeeper', 'Center Back', 'Right Back', 'Left Back', 'Defensive Mid',
-  'Central Mid', 'Attacking Mid', 'Right Winger', 'Left Winger', 'Striker', 'Forward',
+  'Goalkeeper', 'Center Back', 'Outside Back', 'Defensive Midfielder',
+  'Central Midfielder', 'Attacking Midfielder', 'Winger', 'Forward', 'Striker',
 ]
 
 export function RosterIntel() {

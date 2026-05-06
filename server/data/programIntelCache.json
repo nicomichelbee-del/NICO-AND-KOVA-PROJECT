@@ -543,5 +543,49 @@
     ],
     "cachedAt": "2026-05-04T03:35:04.207Z",
     "source": "ai-generated"
+  },
+  "csub:womens": {
+    "schoolId": "csub",
+    "schoolName": "California State University, Bakersfield",
+    "gender": "womens",
+    "formation": "Unknown — see search links",
+    "formationVariants": [],
+    "playstyle": "Unknown — insufficient specific knowledge of recent tactical approach.",
+    "tacticalNotes": [],
+    "recentForm": "Unknown — see search links for recent season records and NCAA tournament appearances",
+    "staffStability": "Unknown — verify current head coach and tenure via official CSU Bakersfield athletics site",
+    "recruitingProfile": "Unknown — typical Big West recruiting profile may emphasize athleticism and regional development, but CSU Bakersfield specifics are not known to me",
+    "confidence": "low",
+    "caveats": [
+      "CSU Bakersfield Women's Soccer is a smaller-profile D1 program with limited public tactical documentation available to me.",
+      "I do not have reliable recent (2022–2024) information on formation, playstyle, or coaching staff changes.",
+      "Verify current head coach name, tenure, and recent roster composition directly via the official CSU Bakersfield Athletics website.",
+      "Big West Conference context suggests mid-tier competitive level, but this program's specific tactical identity and recent results require verification through official sources.",
+      "Any tactical claims about this program would be speculation; please contact the coaching staff or review game footage for accurate analysis."
+    ],
+    "searchQueries": [
+      {
+        "label": "YouTube highlights",
+        "url": "https://www.youtube.com/results?search_query=California%20State%20University%2C%20Bakersfield%20women's%20soccer%20highlights%202024"
+      },
+      {
+        "label": "YouTube full match",
+        "url": "https://www.youtube.com/results?search_query=California%20State%20University%2C%20Bakersfield%20women's%20soccer%20full%20match"
+      },
+      {
+        "label": "Official roster + schedule",
+        "url": "https://www.google.com/search?q=California%20State%20University%2C%20Bakersfield%20women's%20soccer%20roster%20site%3Aedu"
+      },
+      {
+        "label": "Recent season recap",
+        "url": "https://www.google.com/search?q=California%20State%20University%2C%20Bakersfield%20women's%20soccer%202024%20season%20recap"
+      },
+      {
+        "label": "Conference standings",
+        "url": "https://www.google.com/search?q=Big%20West%20women's%20soccer%20standings%202024"
+      }
+    ],
+    "cachedAt": "2026-05-06T03:54:34.543Z",
+    "source": "ai-generated"
   }
 }

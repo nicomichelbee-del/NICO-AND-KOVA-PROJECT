@@ -321,24 +321,34 @@ type SortKey = 'match' | 'school' | 'tier'
  * Match score for a single ID camp against the athlete's profile.
  * Returns 0–100. Athlete profile is optional — when missing, returns null.
  *
- *  - Division match (athlete's targetDivision === camp.division): +35
+ *  - Division match (camp.division ∈ profile.targetDivisions): +35
+ *  - Adjacent division (one tier off any target): +18
  *  - Gender alignment: +20 (camp gender === athlete or camp is "both")
  *  - Region preference (athlete.locationPreference === camp.region): +20 (any → +5)
  *  - Tier quality: S +20, A +15, B +10, C +5, D 0
  *  - GPA proxy: D3/Ivy-leaning prospect days reward higher GPAs slightly
  */
+const ADJACENT: Record<Division, Division[]> = {
+  D1:   ['D2'],
+  D2:   ['D1', 'D3'],
+  D3:   ['D2', 'NAIA'],
+  NAIA: ['D3', 'JUCO'],
+  JUCO: ['NAIA'],
+}
+
 function computeCampMatch(camp: IdCampEntry, profile: AthleteProfile | null): number | null {
   if (!profile) return null
   let score = 0
 
-  if (profile.targetDivision === camp.division) score += 35
-  else if (
-    (profile.targetDivision === 'D1' && camp.division === 'D2') ||
-    (profile.targetDivision === 'D2' && (camp.division === 'D1' || camp.division === 'D3')) ||
-    (profile.targetDivision === 'D3' && (camp.division === 'D2' || camp.division === 'NAIA')) ||
-    (profile.targetDivision === 'NAIA' && (camp.division === 'D3' || camp.division === 'JUCO')) ||
-    (profile.targetDivision === 'JUCO' && camp.division === 'NAIA')
-  ) {
+  // Treat every entry in targetDivisions as a first-class target. Falls back
+  // to the single targetDivision when no multi-target list is set.
+  const targets: Division[] = profile.targetDivisions?.length
+    ? profile.targetDivisions
+    : [profile.targetDivision]
+
+  if (targets.includes(camp.division)) {
+    score += 35
+  } else if (targets.some((t) => ADJACENT[t].includes(camp.division))) {
     score += 18
   }
 
@@ -430,8 +440,12 @@ function IdCampsTab() {
 
   const filtered = useMemo(() => {
     const q = search.trim().toLowerCase()
+    const excluded = new Set(profile?.excludedDivisions ?? [])
     const rows = camps
       .filter((c) => {
+        // Hard exclusions from profile take precedence over chip filters —
+        // an athlete who said "no JUCO" should never see JUCO camps.
+        if (excluded.has(c.division)) return false
         if (divFilter !== 'any' && c.division !== divFilter) return false
         if (regionFilter !== 'any' && c.region !== regionFilter) return false
         if (genderFilter !== 'any' && c.gender !== 'both' && c.gender !== genderFilter) return false
