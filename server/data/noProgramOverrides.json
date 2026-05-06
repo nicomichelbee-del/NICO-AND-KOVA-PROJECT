@@ -1,0 +1,66 @@
+{
+  "_README": "Manual no-program overrides. Takes precedence over coachesScraped.json status. Used by schoolMatcher to drop schools that don't field a varsity program of a given gender, in cases where the scraper produced a false positive (e.g. Alabama mens, where the women's head coach was mis-scraped into the men's slot). Format: '<schoolId>:<gender>': true. To re-enable a school, set the value to false or remove the key. Add a brief reason as a sibling _reason key (optional, for documentation).",
+
+  "alabama:mens": true,
+  "_reason_alabama:mens": "SEC — no men's varsity soccer. Scraper picked up Ashley Johnston (women's head coach) as the men's coach.",
+
+  "tennessee:mens": true,
+  "_reason_tennessee:mens": "SEC — no men's varsity soccer. Scraper found a performance staffer, not a coach.",
+
+  "florida:mens": true,
+  "_reason_florida:mens": "SEC — no men's varsity soccer.",
+
+  "georgia:mens": true,
+  "_reason_georgia:mens": "SEC — no men's varsity soccer.",
+
+  "missouri:mens": true,
+  "_reason_missouri:mens": "SEC — no men's varsity soccer.",
+
+  "lsu:mens": true,
+  "_reason_lsu:mens": "SEC — no men's varsity soccer (already 'no-program' in scrape; redundant safety).",
+
+  "ole-miss:mens": true,
+  "_reason_ole-miss:mens": "SEC — no men's varsity soccer.",
+
+  "mississippi-state:mens": true,
+  "_reason_mississippi-state:mens": "SEC — no men's varsity soccer.",
+
+  "texas:mens": true,
+  "_reason_texas:mens": "Big 12 — no men's varsity soccer (UT Austin).",
+
+  "texas-am:mens": true,
+  "_reason_texas-am:mens": "SEC — no men's varsity soccer.",
+
+  "texas-tech:mens": true,
+  "_reason_texas-tech:mens": "Big 12 — no men's varsity soccer.",
+
+  "baylor:mens": true,
+  "_reason_baylor:mens": "Big 12 — no men's varsity soccer.",
+
+  "oklahoma:mens": true,
+  "_reason_oklahoma:mens": "Big 12 — no men's varsity soccer (OU Norman).",
+
+  "oklahoma-state:mens": true,
+  "_reason_oklahoma-state:mens": "Big 12 — no men's varsity soccer.",
+
+  "kansas:mens": true,
+  "_reason_kansas:mens": "Big 12 — no men's varsity soccer.",
+
+  "kansas-state:mens": true,
+  "_reason_kansas-state:mens": "Big 12 — no men's varsity soccer.",
+
+  "iowa-state:mens": true,
+  "_reason_iowa-state:mens": "Big 12 — no men's varsity soccer.",
+
+  "minnesota:mens": true,
+  "_reason_minnesota:mens": "Big Ten — no men's varsity soccer.",
+
+  "purdue:mens": true,
+  "_reason_purdue:mens": "Big Ten — no men's varsity soccer.",
+
+  "iowa:mens": true,
+  "_reason_iowa:mens": "Big Ten — no men's varsity soccer (already 'no-program' in scrape; redundant safety).",
+
+  "illinois:mens": true,
+  "_reason_illinois:mens": "Big Ten — no men's varsity soccer."
+}

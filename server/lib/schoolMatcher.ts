@@ -98,6 +98,12 @@ export function academicTier(schoolId: string): AcademicTier {
 // We treat status === 'no-program' as the canonical "this school doesn't
 // have a men's/women's team" signal. Missing entries are treated as
 // "unknown" and pass through (the scraper just hasn't reached the school).
+//
+// noProgramOverrides.json is a manual fallback for known scraper false
+// positives — schools where status === 'success' is wrong because the
+// scraper picked up a staff page that mis-references the wrong gender
+// (e.g. Alabama mens, where the women's head coach was scraped into the
+// men's slot). Always wins over scrape data when set to true.
 
 interface ScrapedCoachLite { status: string }
 
@@ -120,7 +126,26 @@ function getCoachStatus(schoolId: string, gender: 'mens' | 'womens'): string | n
   return entry?.status ?? null
 }
 
+let noProgramOverrideCache: Set<string> | null = null
+function isNoProgramOverride(schoolId: string, gender: 'mens' | 'womens'): boolean {
+  if (noProgramOverrideCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'noProgramOverrides.json')
+      const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, unknown>
+      noProgramOverrideCache = new Set()
+      for (const [k, v] of Object.entries(raw)) {
+        if (k.startsWith('_')) continue   // skip _README and _reason_* annotations
+        if (v === true) noProgramOverrideCache.add(k)
+      }
+    } catch {
+      noProgramOverrideCache = new Set()
+    }
+  }
+  return noProgramOverrideCache.has(`${schoolId}:${gender}`)
+}
+
 function hasProgramOfGender(schoolId: string, gender: 'mens' | 'womens'): boolean {
+  if (isNoProgramOverride(schoolId, gender)) return false
   return getCoachStatus(schoolId, gender) !== 'no-program'
 }
 
