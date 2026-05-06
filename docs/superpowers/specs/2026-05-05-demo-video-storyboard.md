@@ -21,17 +21,18 @@
 | # | Time | Feature | What you record | On-screen text |
 |---|------|---------|-----------------|----------------|
 | 1 | 0:00–0:02 | **Cold open** | Black screen → KickrIQ logo punch-in (use logo asset) | `your shot at college soccer` |
-| 2 | 0:02–0:06 | **Position picker** | Drag the player marker across the pitch — fast confident motion | `drag your position` |
+| 2 | 0:02–0:06 | **Position picker** | Click positions on the pitch — gold glow moves between them | `pick your spot on the pitch` |
 | 3 | 0:06–0:11 | **Schools matcher** | Schools page loads, Reach/Target/Safety cards stagger in | `matched to 1,800+ programs` |
-| 4 | 0:11–0:16 | **Coach email gen** | Click "Generate" → email types itself out, stats auto-fill | `personalized emails in seconds` |
-| 5 | 0:16–0:21 | **Video Rater** | Paste a YouTube URL → rating reveals (aim for 8.5–9.0 score) | `your highlight, rated by AI` |
-| 6 | 0:21–0:25 | **Tracker** | Slow scroll past Tracker rows with green "responded" badges | `every coach, tracked` |
-| 7 | 0:25–0:29 | **Beeko chat** | Pre-typed question → reply streams in fast | `your AI counselor, 24/7` |
-| 8 | 0:29–0:32 | **Camps + Roster Intel** | Camp cards, then quick cut to a roster spot opening notification | `ID camps. open spots.` |
-| 9 | 0:32–0:34 | **Coach portal** | Cut to the coach dashboard viewing your athlete profile | `and coaches see you` |
-| 10 | 0:34–0:40 | **End card** | Logo lock-up + URL + tagline. Hold for 6s while the music fades out gently | `KickrIQ` / `your shot at college soccer` / `kickriq.com` |
+| 4 | 0:11–0:17 | **Coach email gen** | Click "Generate" → email types itself out, stats auto-fill | `personalized emails in seconds` |
+| 5 | 0:17–0:22 | **Video Rater** | Paste a YouTube URL → rating reveals (aim for 8.5–9.0 score) | `your highlight, rated by AI` |
+| 6 | 0:22–0:26 | **Tracker** | Slow scroll past Tracker rows with green "responded" badges | `every coach, tracked` |
+| 7 | 0:26–0:30 | **Beeko chat** | Pre-typed question → reply streams in fast | `your AI counselor, 24/7` |
+| 8 | 0:30–0:34 | **Camps + Roster Intel** | Camp cards, then Ctrl+Tab to a roster spot opening | `ID camps. open spots.` |
+| 9 | 0:34–0:40 | **End card** | Logo lock-up + URL + tagline. Hold for 6s while the music fades out gently | `KickrIQ` / `your shot at college soccer` / `kickriq.com` |
 
-Beat 10 is where the music fades. Land the logo on the cleanest beat marker near 0:34. Music fades to silence over the last 2 seconds — calm confidence, not a slammed ending.
+Beat 9 is where the music fades. Land the logo on the cleanest beat marker near 0:34. Music fades to silence over the last 2 seconds — calm confidence, not a slammed ending.
+
+> **Coach portal beat removed for v1** — feature isn't shipped yet. Add as beat 9 in v2 once the coach dashboard is live; the 2 seconds was redistributed into Coach Email (now 6s, the magic moment gets more room) and Camps combo (now 4s).
 
 ---
 
