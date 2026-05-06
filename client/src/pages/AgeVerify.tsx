@@ -1,5 +1,5 @@
-import { useState } from 'react'
-import { Link, useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { Link, Navigate, useNavigate } from 'react-router-dom'
 import { supabase } from '../lib/supabase'
 import { useAuth } from '../context/AuthContext'
 import { Button } from '../components/ui/Button'
@@ -21,12 +21,29 @@ function computeAge(birthYear: number): number {
 
 export function AgeVerify() {
   const navigate = useNavigate()
-  const { user, signOut } = useAuth()
+  const { user, loading, signOut } = useAuth()
   const [birthYear, setBirthYear] = useState<number | ''>('')
   const [parentEmail, setParentEmail] = useState('')
   const [parentConsent, setParentConsent] = useState(false)
   const [error, setError] = useState('')
   const [saving, setSaving] = useState(false)
+
+  // Idempotency: if the user already has birth_year set, this page has nothing
+  // to do — bounce them straight to onboarding. Prevents the "filled the form
+  // already, why am I here again" confusion from manual URL visits.
+  const meta = (user?.user_metadata ?? {}) as Record<string, unknown>
+  const alreadyVerified = typeof meta.birth_year === 'number'
+
+  useEffect(() => {
+    // Don't run hooks during the initial Supabase session load.
+    if (loading) return
+    if (!user) return // unauthed → render <Navigate /> below
+    if (alreadyVerified) navigate('/onboarding/profile', { replace: true })
+  }, [loading, user, alreadyVerified, navigate])
+
+  if (loading) return null
+  if (!user) return <Navigate to="/login" replace />
+  if (alreadyVerified) return null
 
   const ageApprox =
     typeof birthYear === 'number' && birthYear >= MIN_BIRTH_YEAR && birthYear <= MAX_BIRTH_YEAR
@@ -74,6 +91,10 @@ export function AgeVerify() {
       setSaving(false)
       return
     }
+    // Force the local AuthContext to pick up the new user_metadata before we
+    // navigate. Without this we race with the USER_UPDATED event and the
+    // ProtectedRoute guard can bounce us right back here (looks like a loop).
+    await supabase.auth.refreshSession()
     navigate('/onboarding/profile', { replace: true })
   }
 
