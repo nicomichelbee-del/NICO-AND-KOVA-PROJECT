@@ -309,7 +309,37 @@ function isGoalkeeper(position: string): boolean {
 
 function isForward(position: string): boolean {
   const p = position.toLowerCase()
-  return p.includes('forward') || p.includes('striker') || p.includes('wing') || p === 'cf' || p === 'lw' || p === 'rw'
+  // Wingers can be wing-mids OR wing-forwards. We previously labeled them all
+  // as forwards, but that overcounted goal expectations for wing-backs (e.g.
+  // "left wing-back" or "right wing"). Require an actual forward keyword.
+  return p.includes('forward') || p.includes('striker') || p === 'cf' || p === 'lw' || p === 'rw' || p === 'st'
+    || (p.includes('wing') && !p.includes('back'))
+}
+
+// Defenders — center backs, fullbacks, sweepers, and "wing back" variants.
+// Includes defensive midfielder ('cdm', 'dm', 'defensive mid', 'holding mid')
+// since those players are evaluated on defensive duties, not goal-scoring.
+// Critically, defenders should NOT be compared to goalsForwardAvg or
+// goalsMidAvg — center backs scoring 4 goals/season is exceptional, not
+// "below typical midfielder."
+function isDefender(position: string): boolean {
+  const p = position.toLowerCase()
+  if (p === 'cb' || p === 'lb' || p === 'rb' || p === 'fb' || p === 'sweeper') return true
+  if (p === 'cdm' || p === 'dm') return true
+  if (p.includes('back')) return true        // "center back", "fullback", "wing back"
+  if (p.includes('defender') || p.includes('defense')) return true
+  if (p.includes('defensive mid') || p.includes('holding mid')) return true
+  return false
+}
+
+// Single source of truth for the human-readable position label used in
+// reasons + breakdown verdicts. Returns the plural ("forwards"). Default to
+// 'midfielders' so an unknown position string doesn't surface as 'players'.
+function positionLabel(position: string): 'keepers' | 'defenders' | 'midfielders' | 'forwards' {
+  if (isGoalkeeper(position)) return 'keepers'
+  if (isDefender(position))   return 'defenders'
+  if (isForward(position))    return 'forwards'
+  return 'midfielders'
 }
 
 // ── v2 algorithm: two first-class fit axes ───────────────────────────────
@@ -383,12 +413,16 @@ function tapeSkill(v: VideoRating): number {
 function athleticFit(profile: AthleteProfile, school: SchoolRecord, video?: VideoRating | null): number {
   const gk = isGoalkeeper(profile.position)
   const fwd = isForward(profile.position)
+  const def = isDefender(profile.position)
 
-  // Stats delta — only meaningful when both athlete and school have data.
-  // For keepers we have no good signal yet (no save/clean-sheet data on the
-  // profile); treat as neutral so academic + division dominate.
+  // Stats delta — only meaningful for attacking players. We treat keepers
+  // and defenders as neutral so academic + division dominate; comparing a
+  // center back's goal count against forward/midfielder averages produces
+  // wrong "below typical midfielder" verdicts (defenders shouldn't score
+  // like midfielders by design). Once we add defender-specific signals
+  // (tackles won, clean sheets, blocks), revisit this.
   let statsDelta = 0
-  if (!gk && profile.goals > 0) {
+  if (!gk && !def && profile.goals > 0) {
     const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
     if (expected > 0) {
       // Half the typical scoring rate = 1 unit of separation in either direction.
@@ -483,7 +517,8 @@ function buildReasons(
   const reasons: string[] = []
   const gk  = isGoalkeeper(profile.position)
   const fwd = isForward(profile.position)
-  const positionLabel = gk ? 'keepers' : fwd ? 'forwards' : 'midfielders'
+  const def = isDefender(profile.position)
+  const posLabel = positionLabel(profile.position)
 
   // ── Top-line fit summary (always first) ──────────────────────────────
   // We build the headline from the actual gaps in the data, not generic
@@ -494,8 +529,10 @@ function buildReasons(
   const gpaAvg = school.gpaAvg ?? 0
   const gpaDelta = gpaAvg > 0 ? profile.gpa - gpaAvg : 0
   const programStrength = school.programStrength ?? 5
-  const expectedGoals = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
-  const goalsDelta = !gk && profile.goals > 0 && expectedGoals > 0 ? profile.goals - expectedGoals : 0
+  // Goal benchmark only applies to attacking players. Defenders and keepers
+  // shouldn't be measured against forward/midfielder averages.
+  const expectedGoals = !gk && !def ? ((fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0) : 0
+  const goalsDelta = !gk && !def && profile.goals > 0 && expectedGoals > 0 ? profile.goals - expectedGoals : 0
   const admPct = acad?.admissionRate != null ? acad.admissionRate * 100 : null
 
   // Specific gap descriptors — used to assemble human-readable reasons.
@@ -511,7 +548,7 @@ function buildReasons(
       gaps.push(`top-tier program (${programStrength}/10 strength)`)
     }
     if (goalsDelta <= -5 && expectedGoals > 0) {
-      gaps.push(`typical ${positionLabel} score ${expectedGoals} (you have ${profile.goals})`)
+      gaps.push(`typical ${posLabel} score ${expectedGoals} (you have ${profile.goals})`)
     }
     if (video) {
       const tape = tapeSkill(video)
@@ -584,14 +621,11 @@ function buildReasons(
   // my position" is the user's #1 stated factor and the most actionable
   // signal we have. Drops to bottom if no roster data on file.
   if (roster) {
-    const positionLabel = isGoalkeeper(profile.position) ? 'keepers'
-                       : isForward(profile.position) ? 'forwards'
-                       : 'midfielders'
-    const positionSing = positionLabel.replace(/s$/, '')
+    const positionSing = posLabel.replace(/s$/, '')
     if (roster.openSpots >= 3) {
       reasons.push(`${roster.graduatingByYear} graduating + ${roster.juniorsAtPosition} juniors at your position — ~${roster.openSpots} spots opening up.`)
     } else if (roster.totalAtPosition >= 7) {
-      reasons.push(`Stocked at your position (${roster.totalAtPosition} ${positionLabel}) — competitive for playing time.`)
+      reasons.push(`Stocked at your position (${roster.totalAtPosition} ${posLabel}) — competitive for playing time.`)
     } else if (roster.graduatingByYear >= 1) {
       reasons.push(`${roster.graduatingByYear} ${pluralize(roster.graduatingByYear, positionSing)} graduating from this program.`)
     } else if (roster.totalAtPosition >= 1) {
@@ -608,11 +642,15 @@ function buildReasons(
   }
 
   // ── Athletic specifics ──────────────────────────────────────────────
-  if (!gk && profile.goals > 0) {
+  // Goal-scoring benchmarks only apply to attacking players. For defenders
+  // and keepers we don't have a position-specific signal yet; suppress the
+  // misleading "below typical midfielders" line entirely until we add
+  // tackles / clean-sheets data.
+  if (!gk && !def && profile.goals > 0) {
     const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
     if (expected > 0) {
-      if (profile.goals >= expected + 4) reasons.push(`Your ${profile.goals} goals exceed this program's typical ${positionLabel} (avg ${expected}).`)
-      else if (profile.goals < Math.max(2, expected - 4)) reasons.push(`Your ${profile.goals} ${pluralize(profile.goals, 'goal')} is below typical ${positionLabel} here (avg ${expected}).`)
+      if (profile.goals >= expected + 4) reasons.push(`Your ${profile.goals} goals exceed this program's typical ${posLabel} (avg ${expected}).`)
+      else if (profile.goals < Math.max(2, expected - 4)) reasons.push(`Your ${profile.goals} ${pluralize(profile.goals, 'goal')} is below typical ${posLabel} here (avg ${expected}).`)
     }
   }
 
@@ -1144,6 +1182,7 @@ function buildBreakdown(
 ): MatchBreakdown {
   const gk = isGoalkeeper(profile.position)
   const fwd = isForward(profile.position)
+  const def = isDefender(profile.position)
 
   // Some schools.json entries are partial (e.g., bethel-university-tn). Treat
   // missing numerics as 0 here so the verdict logic doesn't crash on toFixed().
@@ -1162,21 +1201,24 @@ function buildBreakdown(
         ? `Your GPA clears the floor (${gpaMin.toFixed(1)}) but is below the typical ${gpaAvg.toFixed(1)}.`
         : `Below this program's typical academic profile (avg ${gpaAvg.toFixed(1)}, min ~${gpaMin.toFixed(1)}).`
 
-  // Stats axis (skip for goalkeepers).
+  // Stats axis — only meaningful for attacking players. Defenders and
+  // keepers don't have a position-specific goal-scoring benchmark; comparing
+  // a centerback's goals to midfielder averages produced misleading verdicts
+  // ("below typical midfielders") that the user flagged as wrong.
   let stats: MatchBreakdown['stats'] = null
-  if (!gk) {
+  if (!gk && !def) {
     const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
-    const positionLabel = fwd ? 'forwards' : 'midfielders'
+    const label = fwd ? 'forwards' : 'midfielders'
     const score = expected > 0
       ? Math.max(0, Math.min(100, Math.round((profile.goals / expected) * 100)))
       : 50
     const verdict = expected === 0
       ? 'No goal-scoring benchmark on file for this program.'
       : profile.goals >= expected
-        ? `You out-scored this program's typical ${positionLabel} (${expected} goals).`
+        ? `You out-scored this program's typical ${label} (${expected} goals).`
         : profile.goals >= expected * 0.7
-          ? `You're within range of this program's typical ${positionLabel} (${expected} goals).`
-          : `Below this program's typical ${positionLabel} (${expected} goals).`
+          ? `You're within range of this program's typical ${label} (${expected} goals).`
+          : `Below this program's typical ${label} (${expected} goals).`
     stats = { score, yourValue: profile.goals, typicalValue: expected, verdict }
   }
 
