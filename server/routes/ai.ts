@@ -1,6 +1,6 @@
 import { Router } from 'express'
 import type { AthleteProfile, Division, RosterProgram, PositionNeed, SchoolRecord } from '../../client/src/types/index'
-import { matchSchools, listSchools } from '../lib/schoolMatcher'
+import { matchSchools, listSchools, scoreSingleSchool } from '../lib/schoolMatcher'
 import { getProgramIntel } from '../lib/programIntel'
 import { getScrapedCoach } from '../lib/scrapedCoaches'
 import { ask, askWithImages, chat, parseJSON, rateCoachReply } from '../lib/aiClient'
@@ -107,9 +107,36 @@ Rules:
 
 router.post('/schools', async (req, res) => {
   try {
-    const { profile, video } = req.body as { profile: AthleteProfile; video?: import('../../client/src/types/index').VideoRating | null }
-    const schools = matchSchools(profile, 25, video ?? null)
+    const { profile, video, topN } = req.body as {
+      profile: AthleteProfile
+      video?: import('../../client/src/types/index').VideoRating | null
+      topN?: number
+    }
+    // Hard-cap topN at 100. The matcher is pure local logic (no AI cost),
+    // so this is purely a safety bound — a 100-item list is already past
+    // the point most athletes will scroll.
+    const requested = typeof topN === 'number' && topN > 0 ? Math.min(100, Math.floor(topN)) : 25
+    const schools = matchSchools(profile, requested, video ?? null)
     res.json({ schools })
+  } catch (e) {
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
+  }
+})
+
+// Score a single school by id — used by the search-a-school UI so users can
+// look up any program in the dataset and see their match score immediately,
+// regardless of whether it would have made the top-25 list. No AI cost.
+router.post('/score-school', async (req, res) => {
+  try {
+    const { profile, schoolId, video } = req.body as {
+      profile: AthleteProfile
+      schoolId: string
+      video?: import('../../client/src/types/index').VideoRating | null
+    }
+    if (!schoolId) return res.status(400).json({ error: 'schoolId required' })
+    const school = scoreSingleSchool(profile, schoolId, video ?? null)
+    if (!school) return res.status(404).json({ error: 'school not found' })
+    res.json({ school })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
   }

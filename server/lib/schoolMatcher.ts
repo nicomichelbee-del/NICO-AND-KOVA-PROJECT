@@ -38,6 +38,61 @@ function getAcademic(schoolId: string): AcademicRecord | undefined {
   return academicCache[schoolId]
 }
 
+// ── Academic tier (1 = most selective … 5 = open admission) ───────────────
+// Composite of admission rate, SAT 75th percentile, and graduation rate. We
+// don't have a US News dataset, so we approximate "ranking-like" tier from
+// the Scorecard signals we do have. Tiers are stable: a 1540 / 4.0 athlete
+// who insists on "top 50" can hard-filter SUNY Cortland (T5) without cutting
+// out flagship state schools (T2/T3).
+//
+// Roughly:
+//   T1 — Most selective:  Ivies, Stanford, MIT, Duke, top liberal arts
+//   T2 — Highly selective: T50 flagship publics, well-known privates
+//   T3 — Selective:        decent state schools, mid-tier privates
+//   T4 — Moderately selective
+//   T5 — Open admission / unknown
+export type AcademicTier = 1 | 2 | 3 | 4 | 5
+
+export function academicTier(schoolId: string): AcademicTier {
+  const acad = getAcademic(schoolId)
+  if (!acad) return 5
+
+  // Weighted composite — admission rate is the strongest single signal so
+  // it gets the largest weight. We only count dimensions that are populated
+  // (Scorecard gaps are real for some smaller schools).
+  let score = 0
+  let weights = 0
+
+  if (acad.admissionRate != null) {
+    // 5% → 100, 25% → 75, 50% → 50, 75% → 25
+    const s = Math.max(0, 100 - acad.admissionRate * 200)
+    score += s * 0.55
+    weights += 0.55
+  }
+  const sat = acad.sat75 ?? acad.satMid
+  if (sat != null) {
+    // 1550+ → 100, 1300 → 50, 1050 → 0
+    const s = Math.max(0, Math.min(100, (sat - 1050) / 5))
+    score += s * 0.30
+    weights += 0.30
+  }
+  if (acad.graduationRate != null) {
+    // 95% → 100, 70% → 50, 45% → 0
+    const s = Math.max(0, Math.min(100, (acad.graduationRate * 100 - 45) * 2))
+    score += s * 0.15
+    weights += 0.15
+  }
+
+  if (weights === 0) return 5
+  const norm = score / weights
+
+  if (norm >= 80) return 1
+  if (norm >= 65) return 2
+  if (norm >= 50) return 3
+  if (norm >= 30) return 4
+  return 5
+}
+
 // ── Roster data (open spots) ──────────────────────────────────────────────
 // Sources from server/data/rostersScraped.json (built by scrapeRosters.ts).
 // Used to estimate how many spots open up at the athlete's position
@@ -693,6 +748,82 @@ interface Candidate {
 // bucket is short.
 const DEFAULT_BUCKET_CAPS = { safety: 8, target: 10, reach: 8 } as const
 
+// Score a single school against the athlete's profile, ignoring bucket caps,
+// stretch logic, the academic floor, and the excluded-divisions filter. Used
+// by the search-a-school feature so users can ask "what's my score for X?"
+// for any school in the dataset, even ones the matcher would normally hide.
+// Returns null when the schoolId isn't in schools.json.
+export function scoreSingleSchool(
+  profile: AthleteProfile,
+  schoolId: string,
+  video?: VideoRating | null,
+): School | null {
+  const gender = profile.gender ?? 'womens'
+  const school = (schoolsData as SchoolRecord[]).find((s) => s.id === schoolId)
+  if (!school) return null
+
+  const athletic = athleticFit(profile, school, video ?? null)
+  const academic = academicFit(profile, school)
+  // bucketFor returns null when the school is genuinely a non-fit. For
+  // search we still want to return a result — fall back to 'reach' so the
+  // UI can render the card. The matchScore makes the actual fit obvious.
+  const bucket = bucketFor(athletic, academic) ?? 'reach'
+
+  let blended = athletic * 0.55 + academic * 0.45
+  const rawDivGapForScore = effectiveDivGap(school.division, profile)
+  if (rawDivGapForScore === 2) blended -= 8
+  else if (rawDivGapForScore === 3) blended -= 16
+  else if (rawDivGapForScore >= 4) blended -= 22
+  const matchScore = Math.max(0, Math.min(100, round1(blended + preferenceBoost(profile, school))))
+
+  const academicData = getAcademic(school.id)
+  const rosterSignal = computeRosterSignal(profile, school.id) ?? undefined
+  const rawDivGap = divIdx(school.division) - divIdx(profile.targetDivision)
+  const programGap = (school.programStrength ?? 5) - 5
+  const shot = recruitableShot(athletic, academic, Math.max(-2, Math.min(2, rawDivGap)), programGap, rosterSignal ?? null)
+
+  return {
+    id: school.id,
+    name: school.name,
+    division: school.division,
+    location: school.location,
+    region: school.region,
+    size: school.size,
+    enrollment: school.enrollment,
+    conference: school.conference,
+    coachName: gender === 'womens' ? school.womensCoach : school.mensCoach,
+    coachEmail: gender === 'womens' ? school.womensCoachEmail : school.mensCoachEmail,
+    category: bucket,
+    matchScore,
+    athleticFit: athletic,
+    academicFit: academic,
+    reasons: buildReasons(profile, school, athletic, academic, bucket, academicData, rosterSignal, video, false),
+    notes: school.notes ?? '',
+    programStrength: school.programStrength,
+    scholarships: school.scholarships,
+    gpaAvg: school.gpaAvg,
+    goalsForwardAvg: school.goalsForwardAvg,
+    goalsMidAvg: school.goalsMidAvg,
+    breakdown: buildBreakdown(profile, school, athletic, academic),
+    satMid:             academicData?.satMid,
+    sat25:              academicData?.sat25,
+    sat75:              academicData?.sat75,
+    admissionRate:      academicData?.admissionRate,
+    costOfAttendance:   academicData?.costOfAttendance,
+    tuitionInState:     academicData?.tuitionInState,
+    tuitionOutOfState:  academicData?.tuitionOutOfState,
+    pellGrantRate:      academicData?.pellGrantRate,
+    graduationRate:     academicData?.graduationRate,
+    academicTier:       academicTier(school.id),
+    rosterSignal,
+    recruitableShot:    shot,
+    dataConfidence:     dataConfidence(school, academicData, rosterSignal ?? null),
+    state:              extractState(school.location),
+    record:             getProgramRecord(school.id, gender) ?? null,
+    recruitingClass:    getRecruitingClass(school.id, gender) ?? null,
+  }
+}
+
 export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRating | null): School[] {
   const gender = profile.gender ?? 'womens'
   // Hard exclusions — divisions the athlete has explicitly opted out of.
@@ -705,8 +836,18 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
     (profile.excludedDivisions ?? []).filter((d) => !targetSetForExclusion.has(d)),
   )
 
+  // Academic minimum tier (1 = T25-ish, 5 = no preference). Hardish filter:
+  // schools whose tier is *strictly worse* than the floor are dropped from
+  // the candidate pool entirely so the athlete doesn't have to scroll past
+  // open-admission schools when she's pre-committed to T50.
+  const academicFloor: AcademicTier | null = profile.academicMinimum ?? null
+
   const scored: Candidate[] = (schoolsData as SchoolRecord[])
     .filter((s) => !excluded.has(s.division))
+    .filter((s) => {
+      if (!academicFloor || academicFloor >= 5) return true
+      return academicTier(s.id) <= academicFloor
+    })
     .map((s) => {
       const athletic = athleticFit(profile, s, video)
       const academic = academicFit(profile, s)
@@ -848,6 +989,10 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
   const stretchPool: Candidate[] = eligibleForStretch
     ? (schoolsData as SchoolRecord[])
         .filter((s) => !excluded.has(s.division))
+        // Intentionally NOT filtered by academicFloor — stretch reaches are
+        // aspirational by design. Letting one slightly-below-floor dream
+        // school through is the "flexible" half of the academic-minimum
+        // contract: hard filter for the regular list, soft for stretches.
         .filter((s) => divIdx(s.division) < topIdx)  // strictly above the highest target
         .filter((s) => {
           // Skip schools without a coach for the athlete's gender — surfacing
@@ -953,6 +1098,7 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
       tuitionOutOfState:  academic?.tuitionOutOfState,
       pellGrantRate:      academic?.pellGrantRate,
       graduationRate:     academic?.graduationRate,
+      academicTier:       academicTier(c.school.id),
       rosterSignal,
       recruitableShot:    shot,
       dataConfidence:     dataConfidence(c.school, academic, rosterSignal ?? null),

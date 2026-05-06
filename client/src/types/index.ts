@@ -31,6 +31,11 @@ export interface AthleteProfile {
   // user's targetDivision is always implicitly allowed (UI prevents it
   // from being added here).
   excludedDivisions?: Division[]
+  // Academic floor (1 = T25-equivalent, 5 = no preference). Schools whose
+  // composite academic tier is *worse* than this floor are dropped from the
+  // candidate pool entirely. 1540/4.0 athletes who insist on a top-tier
+  // school no longer see SUNY Cortland in their list.
+  academicMinimum?: 1 | 2 | 3 | 4 | 5
 }
 
 export interface MatchBreakdown {
@@ -85,6 +90,10 @@ export interface School {
   tuitionOutOfState?: number | null
   pellGrantRate?: number | null     // 0–1
   graduationRate?: number | null    // 0–1
+  // Composite academic tier (1 = most selective ≈ T25, 5 = open admission).
+  // Computed server-side from admission rate + SAT 75th + graduation rate.
+  // Used by the "academic minimum" filter and the tier badge on cards.
+  academicTier?: 1 | 2 | 3 | 4 | 5
   // Roster signal (optional, present when rostersScraped.json has the school).
   // Lets the UI surface "open spots at your position" without re-computing.
   rosterSignal?: {

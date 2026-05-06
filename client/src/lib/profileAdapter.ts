@@ -92,5 +92,6 @@ export function readLegacyProfile(): AthleteProfile | null {
     locationPreference,
     sizePreference: 'any',
     excludedDivisions: undefined,
+    academicMinimum: r.academic_minimum ?? undefined,
   }
 }

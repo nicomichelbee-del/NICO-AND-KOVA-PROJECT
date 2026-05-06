@@ -73,12 +73,16 @@ export function findCoach(school: string, division: Division, gender: 'mens' | '
 
 export type { FindCoachResult }
 
-export function matchSchools(profile: AthleteProfile, video?: VideoRating | null) {
-  return post<{ schools: School[] }>('/api/ai/schools', { profile, video: video ?? null })
+export function matchSchools(profile: AthleteProfile, video?: VideoRating | null, topN?: number) {
+  return post<{ schools: School[] }>('/api/ai/schools', { profile, video: video ?? null, topN })
 }
 
 export function listAllSchools() {
   return get<{ schools: SchoolDirectoryEntry[] }>('/api/ai/schools-directory')
+}
+
+export function scoreSingleSchool(profile: AthleteProfile, schoolId: string, video?: VideoRating | null) {
+  return post<{ school: School }>('/api/ai/score-school', { profile, schoolId, video: video ?? null })
 }
 
 export function getProgramIntel(schoolId: string, gender: 'mens' | 'womens', refresh = false) {

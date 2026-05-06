@@ -70,6 +70,10 @@ export interface AthleteProfileRecord {
   ncaa_eligibility_id: string | null
   desired_division_levels: string[]
   regions_of_interest: string[]
+  // Academic floor (1 = top-tier ~T25, 5 = no preference). Drives the
+  // matcher's hard-ish filter — schools below this tier are dropped from
+  // the candidate pool. Null/undefined behaves the same as 5 (no filter).
+  academic_minimum?: 1 | 2 | 3 | 4 | 5 | null
   highlight_video_url: string | null
   slug: string | null
   profile_visibility: ProfileVisibility

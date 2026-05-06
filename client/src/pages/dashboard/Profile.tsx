@@ -24,6 +24,14 @@ const FOOT_OPTIONS = [
 
 const REGIONS = ['Northeast', 'Southeast', 'Midwest', 'South', 'Southwest', 'West', 'Northwest']
 
+const ACADEMIC_TIER_OPTIONS: { value: 1 | 2 | 3 | 4 | 5 | null; label: string; detail: string }[] = [
+  { value: 1,    label: 'Top tier only',         detail: 'Roughly top-25 selectivity (Ivy / Stanford / Duke caliber).' },
+  { value: 2,    label: 'Highly selective+',     detail: 'Roughly top-50. Includes flagship publics like UNC, UVA.' },
+  { value: 3,    label: 'Selective+',            detail: 'Roughly top-100. Most flagship state schools.' },
+  { value: 4,    label: 'Moderately selective+', detail: 'Excludes only open-admission programs.' },
+  { value: null, label: 'No preference',         detail: 'Show every match regardless of academic tier.' },
+]
+
 // Build the grad-year chip list: the four current high-school classes plus
 // next year's incoming freshman (rising 9th graders planning ahead).
 // Academic year flips in September, so before Sep we're still in the previous one.
@@ -348,6 +356,27 @@ export function Profile() {
                 onClick={() => toggleArray('regions_of_interest', r)}
               >
                 {r}
+              </Chip>
+            ))}
+          </ChipRow>
+        </Field>
+
+        <Field label="Academic floor">
+          <p className="text-[11px] text-ink-3 leading-[1.5] -mt-1">
+            Drop schools below this caliber from your matches. Composite of admission rate, SAT range, and graduation rate.
+          </p>
+          <ChipRow cols={1}>
+            {ACADEMIC_TIER_OPTIONS.map((opt) => (
+              <Chip
+                key={opt.value ?? 'any'}
+                active={(draft.academic_minimum ?? null) === opt.value}
+                onClick={() => {
+                  update('academic_minimum', opt.value)
+                  persist({ academic_minimum: opt.value })
+                }}
+              >
+                <span className="font-bold text-xs">{opt.label}</span>
+                <span className="block text-[10px] text-[#9a9385] mt-0.5">{opt.detail}</span>
               </Chip>
             ))}
           </ChipRow>

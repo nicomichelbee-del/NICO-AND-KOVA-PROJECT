@@ -29,6 +29,21 @@ const FOOT_OPTIONS = [
   { value: 'both', label: 'Both' },
 ]
 
+// Academic floor tiers — composite signal from admission rate / SAT / grad
+// rate. Tiers map to roughly:
+//   1 → Top-tier (~T25):       Ivy, Stanford, Duke, top liberal arts
+//   2 → Highly selective (~T50): UNC, UVA, Notre Dame, BC
+//   3 → Selective (~T100):     most flagship state schools, mid-tier privates
+//   4 → Moderately selective:  regional colleges
+//   5 → No preference:         everything in the dataset (default)
+const ACADEMIC_TIER_OPTIONS: { value: 1 | 2 | 3 | 4 | 5 | null; label: string; detail: string }[] = [
+  { value: 1,    label: 'Top tier only',         detail: 'Roughly top-25 selectivity (Ivy / Stanford / Duke caliber).' },
+  { value: 2,    label: 'Highly selective+',     detail: 'Roughly top-50. Includes flagship publics like UNC, UVA.' },
+  { value: 3,    label: 'Selective+',            detail: 'Roughly top-100. Most flagship state schools.' },
+  { value: 4,    label: 'Moderately selective+', detail: 'Excludes only open-admission programs.' },
+  { value: null, label: 'No preference',         detail: 'Show every match regardless of academic tier.' },
+]
+
 function slugify(name: string): string {
   return name
     .toLowerCase()
@@ -308,6 +323,23 @@ export function OnboardingProfile() {
                   {REGIONS.map((r) => (
                     <Chip key={r} active={(form.regions_of_interest ?? []).includes(r)} onClick={() => toggleArray('regions_of_interest', r)}>
                       {r}
+                    </Chip>
+                  ))}
+                </div>
+
+                <FieldLabel>Academic floor</FieldLabel>
+                <p className="text-xs text-ink-3 leading-[1.6] -mt-1">
+                  Drop schools below this caliber from your matches. Composite of admission rate, SAT range, and graduation rate.
+                </p>
+                <div className="grid grid-cols-1 gap-2">
+                  {ACADEMIC_TIER_OPTIONS.map((opt) => (
+                    <Chip
+                      key={opt.value ?? 'any'}
+                      active={(form.academic_minimum ?? null) === opt.value}
+                      onClick={() => update('academic_minimum', opt.value)}
+                    >
+                      <span className="block font-mono text-[12px] tracking-[0.10em] font-semibold">{opt.label}</span>
+                      <span className="block text-[10px] text-ink-3 mt-1">{opt.detail}</span>
                     </Chip>
                   ))}
                 </div>

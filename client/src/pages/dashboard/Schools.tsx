@@ -1,11 +1,13 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
-import { matchSchools, getProgramIntel, findCoach, type FindCoachResult } from '../../lib/api'
+import { matchSchools, scoreSingleSchool, getProgramIntel, findCoach, type FindCoachResult } from '../../lib/api'
 import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
 import { Card } from '../../components/ui/Card'
 import { PageHeader } from '../../components/ui/PageHeader'
 import type { AthleteProfile, Division, Region, School, ProgramIntel, VideoRating } from '../../types'
 import type { AthleteProfileRecord } from '../../types/profile'
+import { useAuth } from '../../context/AuthContext'
+import { loadRatings, saveRating, buildPreferences, applyAffinity, affinityBoost, type SchoolRatings, type Rating } from '../../lib/preferences'
 
 // Builds the matcher's AthleteProfile from the live profile editor. The new
 // editor (Profile.tsx + OnboardingProfile.tsx) writes everything into
@@ -51,6 +53,7 @@ function getProfile(): AthleteProfile | null {
     locationPreference: regions[0] ?? legacy?.locationPreference ?? 'any',
     sizePreference:     legacy?.sizePreference         ?? 'any',
     excludedDivisions:  legacy?.excludedDivisions,
+    academicMinimum:    record?.academic_minimum       ?? undefined,
   }
 }
 
@@ -214,6 +217,9 @@ function shotBucket(shot: number): { label: string; color: string; bg: string; r
 }
 
 export function Schools() {
+  const { user } = useAuth()
+  const userId = user?.id ?? null
+
   const [schools, setSchools] = useState<School[]>([])
   const [loading, setLoading] = useState(false)
   const [error, setError] = useState('')
@@ -221,6 +227,38 @@ export function Schools() {
   const [sort, setSort] = useState<SortKey>('match')
   const [sortDir, setSortDir] = useState<'asc' | 'desc'>('desc')
   const [selected, setSelected] = useState<School | null>(null)
+
+  // Result-set size: 25 by default, 100 when "Show all matches" is on. The
+  // matcher is pure local logic (no AI cost) so the difference is purely UX.
+  const [showAll, setShowAll] = useState(false)
+  const requestedTopN = showAll ? 100 : 25
+
+  // Search-a-school: free-text input that scores any school in the dataset
+  // through the same matcher. Result lives separately from the main list.
+  const [searchQuery, setSearchQuery] = useState('')
+  const [searchedSchool, setSearchedSchool] = useState<School | null>(null)
+  const [searchLoading, setSearchLoading] = useState(false)
+  const [searchError, setSearchError] = useState('')
+
+  // 1–5 ratings per school. Drives the affinity-based re-ranking — schools
+  // that share features with highly-rated programs surface higher next match.
+  const [ratings, setRatings] = useState<SchoolRatings>(() => loadRatings(userId))
+  useEffect(() => {
+    setRatings(loadRatings(userId))
+    function refresh() { setRatings(loadRatings(userId)) }
+    window.addEventListener('kickriq:ratings-changed', refresh)
+    return () => window.removeEventListener('kickriq:ratings-changed', refresh)
+  }, [userId])
+
+  function rateSchool(schoolId: string, rating: Rating | null) {
+    saveRating(userId, schoolId, rating)
+    setRatings((prev) => {
+      const next = { ...prev }
+      if (rating == null) delete next[schoolId]
+      else next[schoolId] = rating
+      return next
+    })
+  }
 
   // Simulated profile (drives the What-If panel). null = use the real
   // profile from localStorage. When set, the Schools list is the projected
@@ -295,7 +333,7 @@ export function Schools() {
       // Pull the latest highlight-video rating (if any) so per-school athletic
       // fit reflects what the AI actually saw on tape, not just GPA + goals.
       const video = getLatestVideoRating()
-      const { schools } = await matchSchools(profile, video)
+      const { schools } = await matchSchools(profile, video, requestedTopN)
       setSchools(schools)
       // Only persist when matching against the *real* profile — we don't want
       // simulated runs to pollute the dashboard's other surfaces.
@@ -321,7 +359,7 @@ export function Schools() {
           ...simProfile,
           excludedDivisions: excludedDivisions.filter((d) => d !== simProfile.targetDivision),
         }
-        const { schools } = await matchSchools(payload, video)
+        const { schools } = await matchSchools(payload, video, requestedTopN)
         setSchools(schools)
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Simulation failed')
@@ -330,7 +368,7 @@ export function Schools() {
       }
     }, 350)
     return () => { if (simTimer.current) clearTimeout(simTimer.current) }
-  }, [simProfile, excludedDivisions])
+  }, [simProfile, excludedDivisions, requestedTopN])
 
   function resetSimulation() {
     // Cancel any in-flight simulation timer so a stale slider event can't
@@ -339,6 +377,55 @@ export function Schools() {
     setSimulating(false)
     setSimProfile(null)
     void handleMatch()  // re-fetch with real profile
+  }
+
+  // Re-run the match when the user flips between 25 and 100 results. Skip
+  // when no match has been run yet (avoids errors on missing GPA/position).
+  // Also skip during simulation — the simulator's own effect handles topN.
+  const showAllRef = useRef(showAll)
+  useEffect(() => {
+    if (showAllRef.current === showAll) return
+    showAllRef.current = showAll
+    if (schools.length === 0) return
+    if (simProfile) return  // simulator effect picks up requestedTopN itself
+    void handleMatch()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [showAll])
+
+  // Search-a-school handler. Resolves a free-text query to a school id by
+  // matching against the displayed match list first, then the broader
+  // dataset via name substring (server-side scoring covers the long tail).
+  async function handleSearch(query: string) {
+    setSearchError('')
+    const q = query.trim()
+    if (!q) { setSearchedSchool(null); return }
+    // First, see if it's already in the current matches — instant result.
+    const inResults = schools.find((s) =>
+      s.name.toLowerCase().includes(q.toLowerCase()) ||
+      s.id.toLowerCase() === q.toLowerCase(),
+    )
+    if (inResults) { setSearchedSchool(inResults); return }
+    // Not in results — score it server-side. Need a profile.
+    const baseProfile = getProfile()
+    if (!baseProfile?.name || !baseProfile.gpa || !baseProfile.position) {
+      setSearchError('Complete your profile (name, position, GPA) before searching.')
+      return
+    }
+    setSearchLoading(true)
+    try {
+      // Resolve query → schoolId. Try exact id, then name match in the
+      // current dataset by hitting the schools-directory endpoint isn't
+      // necessary; the server's score-school does its own lookup. We pass
+      // the query as the id and let the server 404 if it can't resolve.
+      const slug = q.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-+|-+$/g, '')
+      const { school } = await scoreSingleSchool(baseProfile, slug, getLatestVideoRating())
+      setSearchedSchool(school)
+    } catch (e) {
+      setSearchError(e instanceof Error ? e.message : 'School not found in our dataset.')
+      setSearchedSchool(null)
+    } finally {
+      setSearchLoading(false)
+    }
   }
 
   // Apply power filters. Done client-side since filtering after matching
@@ -363,14 +450,28 @@ export function Schools() {
 
   const filtered = filter === 'all' ? filteredByPower : filteredByPower.filter((s) => s.category === filter)
 
-  // Sort once per (filtered, sort, sortDir) change rather than every render.
-  // ~25 schools makes this immaterial today, but cheap insurance against
-  // future result-list growth and keeps re-renders snappy on the simulator.
+  // Build the affinity-preference table from the user's ratings against any
+  // school we've ever seen (current results + the rated set, since some
+  // ratings may be on schools no longer in the list). meaningfulCount < 2
+  // means we don't have enough signal to nudge ranking yet.
+  const preferences = useMemo(() => {
+    return buildPreferences(ratings, schools)
+  }, [ratings, schools])
+
+  // Sort once per (filtered, sort, sortDir, preferences) change rather than
+  // every render. ~25 schools makes this immaterial today, but cheap
+  // insurance against future result-list growth (now up to 100) and keeps
+  // re-renders snappy on the simulator. Affinity boost only applies to the
+  // 'match' sort — other sorts are explicit user-driven orderings.
   const sorted = useMemo(() => {
     return [...filtered].sort((a, b) => {
       const dir = sortDir === 'desc' ? -1 : 1
       switch (sort) {
-        case 'match':    return dir * (a.matchScore - b.matchScore)
+        case 'match': {
+          const aDisplay = a.matchScore + affinityBoost(preferences, a)
+          const bDisplay = b.matchScore + affinityBoost(preferences, b)
+          return dir * (aDisplay - bDisplay)
+        }
         case 'shot':     return dir * ((a.recruitableShot ?? 0) - (b.recruitableShot ?? 0))
         case 'athletic': return dir * ((a.athleticFit ?? 0) - (b.athleticFit ?? 0))
         case 'academic': return dir * ((a.academicFit ?? 0) - (b.academicFit ?? 0))
@@ -539,6 +640,41 @@ export function Schools() {
             />
           )}
 
+          {/* Search any school in the dataset — runs the same matcher against
+              the single school the user typed. Useful for "what's my score
+              for Stanford?" without scrolling through reaches. */}
+          <SearchBar
+            query={searchQuery}
+            onQueryChange={setSearchQuery}
+            onSubmit={() => handleSearch(searchQuery)}
+            loading={searchLoading}
+            error={searchError}
+          />
+          {searchedSchool && (
+            <div className="mb-6">
+              <div className="flex items-center justify-between mb-2.5">
+                <span className="font-mono text-[10px] tracking-[0.20em] uppercase text-gold">
+                  Searched · {searchedSchool.name}
+                </span>
+                <button
+                  onClick={() => { setSearchedSchool(null); setSearchQuery('') }}
+                  className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-3 hover:text-ink-0"
+                >
+                  clear
+                </button>
+              </div>
+              <SchoolCard
+                school={searchedSchool}
+                onClick={() => setSelected(searchedSchool)}
+                isSaved={savedIds.includes(searchedSchool.id)}
+                onToggleSave={() => toggleSaved(searchedSchool.id)}
+                rating={ratings[searchedSchool.id] ?? null}
+                onRate={(r) => rateSchool(searchedSchool.id, r)}
+                affinityBoost={affinityBoost(preferences, searchedSchool)}
+              />
+            </div>
+          )}
+
           <div className="grid grid-cols-3 gap-4 mb-8">
             {(['reach', 'target', 'safety'] as const).map((cat) => {
               const inBucket = filteredByPower.filter((s) => s.category === cat)
@@ -624,8 +760,22 @@ export function Schools() {
                 onClick={() => setSelected(school)}
                 isSaved={savedIds.includes(school.id)}
                 onToggleSave={() => toggleSaved(school.id)}
+                rating={ratings[school.id] ?? null}
+                onRate={(r) => rateSchool(school.id, r)}
+                affinityBoost={affinityBoost(preferences, school)}
               />
             ))}
+          </div>
+
+          {/* Show all 100 toggle. Re-fetches the match with topN=100 (or back
+              to 25). Pure local-data lookup — no AI cost. */}
+          <div className="mt-6 flex justify-center">
+            <button
+              onClick={() => setShowAll((v) => !v)}
+              className="px-5 py-2.5 rounded-full font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-1 border border-[rgba(245,241,232,0.12)] hover:border-gold hover:text-gold transition-colors"
+            >
+              {showAll ? 'Show top 25 only' : `Show all 100 matches${schools.length === 25 ? '' : ` · loaded ${schools.length}`}`}
+            </button>
           </div>
         </>
       )}
@@ -1257,9 +1407,14 @@ interface SchoolCardProps {
   onClick: () => void
   isSaved: boolean
   onToggleSave: () => void
+  rating: Rating | null
+  onRate: (rating: Rating | null) => void
+  // Affinity nudge from the user's prior 1–5 ratings — surface it as a small
+  // ± delta next to matchScore so the user understands why the order changed.
+  affinityBoost: number
 }
 
-function SchoolCard({ school, onClick, isSaved, onToggleSave }: SchoolCardProps) {
+function SchoolCard({ school, onClick, isSaved, onToggleSave, rating, onRate, affinityBoost: boost }: SchoolCardProps) {
   const shot = school.recruitableShot
   const bucket = shot != null ? shotBucket(shot) : null
 
@@ -1331,6 +1486,16 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave }: SchoolCardProps)
             {school.matchScore.toFixed(1)}
           </div>
           <div className="font-mono text-[9.5px] tracking-[0.18em] uppercase text-ink-3 mt-1.5">match score</div>
+          {Math.abs(boost) >= 0.5 && (
+            <div
+              className={`font-mono text-[9.5px] tracking-[0.16em] uppercase mt-1.5 ${
+                boost > 0 ? 'text-[#4ade80]' : 'text-[rgba(227,90,90,0.85)]'
+              }`}
+              title="Boost from your 1–5 ratings on similar schools."
+            >
+              {boost > 0 ? '+' : ''}{boost.toFixed(1)} affinity
+            </div>
+          )}
           {school.dataConfidence === 'low' && (
             <div className="font-mono text-[9px] tracking-widest uppercase text-[#fbbf24] mt-1">
               ⚠ low confidence
@@ -1338,8 +1503,8 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave }: SchoolCardProps)
           )}
         </div>
       </button>
-      {/* Right rail — save button on top, chevron below. Sibling of the main
-          click target so taps don't ambiguously hit either. */}
+      {/* Right rail — save button on top, 1–5 rating in middle, chevron below.
+          Sibling of the main click target so taps don't ambiguously hit either. */}
       <div className="flex flex-col items-center justify-between py-5 sm:py-6 pr-3 sm:pr-4 pl-1 gap-2 flex-shrink-0">
         <button
           onClick={onToggleSave}
@@ -1354,6 +1519,7 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave }: SchoolCardProps)
         >
           {isSaved ? '♥' : '♡'}
         </button>
+        <RatingDots value={rating} onChange={onRate} />
         <div
           aria-hidden
           className="text-ink-3 text-lg group-hover:text-gold group-hover:translate-x-0.5 transition-[color,transform]"
@@ -1361,6 +1527,81 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave }: SchoolCardProps)
           →
         </div>
       </div>
+    </div>
+  )
+}
+
+// Search-a-school input. Submits on Enter. Server resolves the query to a
+// schoolId via slug fallback inside the route — close-enough matching for a
+// dataset of 771 well-known programs. Errors render inline.
+function SearchBar({
+  query, onQueryChange, onSubmit, loading, error,
+}: {
+  query: string
+  onQueryChange: (v: string) => void
+  onSubmit: () => void
+  loading: boolean
+  error: string
+}) {
+  return (
+    <div className="mb-5">
+      <div className="flex items-center gap-2 px-3 py-2 rounded-xl border border-[rgba(245,241,232,0.10)] bg-[rgba(245,241,232,0.03)] focus-within:border-[rgba(240,182,90,0.45)]">
+        <span className="font-mono text-[10.5px] tracking-[0.18em] uppercase text-ink-3 flex-shrink-0">
+          Find a school
+        </span>
+        <input
+          type="text"
+          value={query}
+          onChange={(e) => onQueryChange(e.target.value)}
+          onKeyDown={(e) => { if (e.key === 'Enter') onSubmit() }}
+          placeholder="e.g. Stanford, UCLA, Wake Forest"
+          className="flex-1 bg-transparent border-0 outline-none text-[14px] text-ink-0 placeholder:text-ink-3"
+        />
+        <button
+          onClick={onSubmit}
+          disabled={loading || !query.trim()}
+          className="px-3 py-1 rounded-full font-mono text-[10px] tracking-[0.18em] uppercase text-gold border border-[rgba(240,182,90,0.45)] hover:bg-[rgba(240,182,90,0.10)] disabled:opacity-40 disabled:cursor-not-allowed flex-shrink-0"
+        >
+          {loading ? '…' : 'Score it'}
+        </button>
+      </div>
+      {error && (
+        <p className="mt-2 text-xs text-crimson-light">{error}</p>
+      )}
+    </div>
+  )
+}
+
+// Compact 1–5 dot rating, vertical for the card right rail. Click any dot to
+// set the rating; click the same dot again to clear. Drives the affinity
+// algorithm — see preferences.ts.
+function RatingDots({ value, onChange }: { value: Rating | null; onChange: (r: Rating | null) => void }) {
+  return (
+    <div
+      className="flex flex-col items-center gap-0.5 px-1 py-1 rounded-md hover:bg-[rgba(245,241,232,0.04)]"
+      title={value != null
+        ? `You rated this ${value}/5 — click again to clear.`
+        : 'Rate 1–5 to teach the matcher what you like.'
+      }
+      onClick={(e) => e.stopPropagation()}
+    >
+      {([5, 4, 3, 2, 1] as const).map((r) => {
+        const active = value != null && value >= r
+        const isCurrent = value === r
+        return (
+          <button
+            key={r}
+            onClick={(e) => { e.stopPropagation(); onChange(isCurrent ? null : r) }}
+            className={`w-2.5 h-2.5 rounded-full transition-colors ${
+              active
+                ? r >= 4 ? 'bg-[#4ade80]' : r <= 2 ? 'bg-[rgba(227,90,90,0.75)]' : 'bg-gold'
+                : 'bg-[rgba(245,241,232,0.10)] hover:bg-[rgba(245,241,232,0.25)]'
+            }`}
+            aria-label={`Rate ${r} out of 5`}
+            title={`Rate ${r}/5`}
+          />
+        )
+      })}
     </div>
   )
 }
