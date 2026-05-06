@@ -5,11 +5,11 @@ import { Button } from '../../components/ui/Button'
 import { Input } from '../../components/ui/Input'
 import { KickrIQLogo } from '../../components/ui/KickrIQLogo'
 import {
-  POSITION_LABELS,
   DIVISION_TARGET_LABELS,
   type AthleteProfileRecord,
   type DivisionTarget,
 } from '../../types/profile'
+import { PitchPositionPicker } from '../../components/profile/PitchPositionPicker'
 
 type StepKey = 'basics' | 'soccer' | 'academics' | 'goals' | 'video'
 
@@ -228,31 +228,13 @@ export function OnboardingProfile() {
 
             {step.key === 'soccer' && (
               <>
-                <FieldLabel>Primary position</FieldLabel>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                  {Object.entries(POSITION_LABELS).map(([code, label]) => (
-                    <Chip key={code} active={form.primary_position === code} onClick={() => update('primary_position', code)}>
-                      <span className="block font-mono text-[11px] tracking-[0.12em] font-semibold">{code}</span>
-                      <span className="block text-[10px] text-ink-3 mt-1">{label}</span>
-                    </Chip>
-                  ))}
-                </div>
-
-                <FieldLabel>Secondary position (optional)</FieldLabel>
-                <div className="grid grid-cols-3 sm:grid-cols-5 gap-2">
-                  <Chip active={!form.secondary_position} onClick={() => update('secondary_position', null)}>
-                    <span className="block font-mono text-[11px] tracking-[0.12em] font-semibold">—</span>
-                    <span className="block text-[10px] text-ink-3 mt-1">None</span>
-                  </Chip>
-                  {Object.entries(POSITION_LABELS)
-                    .filter(([code]) => code !== form.primary_position)
-                    .map(([code, label]) => (
-                      <Chip key={code} active={form.secondary_position === code} onClick={() => update('secondary_position', code)}>
-                        <span className="block font-mono text-[11px] tracking-[0.12em] font-semibold">{code}</span>
-                        <span className="block text-[10px] text-ink-3 mt-1">{label}</span>
-                      </Chip>
-                    ))}
-                </div>
+                <FieldLabel>Position on the pitch</FieldLabel>
+                <PitchPositionPicker
+                  primary={form.primary_position ?? null}
+                  secondary={form.secondary_position ?? null}
+                  onPickPrimary={(code) => update('primary_position', code)}
+                  onPickSecondary={(code) => update('secondary_position', code)}
+                />
 
                 <FieldLabel>Preferred foot</FieldLabel>
                 <div className="grid grid-cols-3 gap-2">
