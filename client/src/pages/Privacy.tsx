@@ -1,7 +1,7 @@
 import { Link } from 'react-router-dom'
 import { KickrIQLogo } from '../components/ui/KickrIQLogo'
 
-const LAST_UPDATED = 'May 3, 2026'
+const LAST_UPDATED = 'May 6, 2026'
 const COMPANY = 'KickrIQ Athletics, Inc.'
 const CONTACT_EMAIL = 'infokickriq@gmail.com'
 
@@ -40,7 +40,8 @@ export function Privacy() {
           <Section title="2. What we collect">
             <p>When you create an account or use the product, we collect:</p>
             <ul>
-              <li><strong>Account information</strong> — name, email, password (hashed), and the auth provider you used (e.g. Google).</li>
+              <li><strong>Account information</strong> — name, email, password (hashed), the auth provider you used (e.g. Google), and your year of birth (used to confirm you are 13 or older).</li>
+              <li><strong>Parent or guardian email</strong> — if you are between 13 and 17, we also collect a parent or guardian's email at signup so they can be contacted if needed.</li>
               <li><strong>Athlete profile</strong> — graduation year, position, club team, GPA, test scores, stats, location, division goal, highlight video URL, and similar recruiting information you enter yourself.</li>
               <li><strong>Outreach activity</strong> — the schools and coaches you target, emails you draft and send through KickrIQ, and replies you log.</li>
               <li><strong>Gmail data (only if you connect Gmail)</strong> — we read message metadata and reply threads strictly to power the outreach tracker. We do not read unrelated mail and we do not sell or train models on it.</li>
@@ -75,14 +76,18 @@ export function Privacy() {
           <Section title="5. Athletes under 18 / under 13">
             <p>
               Our users are mostly high school athletes, which means many are under 18.
-              KickrIQ is intended for users <strong>13 and older</strong>. If you are under
-              13, do not create an account.
+              KickrIQ is intended for users <strong>13 and older</strong>. We ask for your
+              year of birth at signup and will not create an account for anyone under 13.
+              If we ever discover that an account was created for a child under 13, we will
+              delete it.
             </p>
             <p>
-              If you are under 18, we ask for a parent or guardian email during signup so a
-              parent can be looped in. Parents can request access, correction, or deletion
-              of a minor’s data by emailing{' '}
-              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>.
+              If you are between 13 and 17, signup also requires a parent or guardian email
+              and a confirmation that a parent or guardian has approved your use of KickrIQ.
+              Parents can request access, correction, or deletion of a minor's data — or
+              ask to revoke consent and have the account closed — by emailing{' '}
+              <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a>. We will respond within
+              30 days.
             </p>
           </Section>
 
@@ -92,7 +97,9 @@ export function Privacy() {
               <li><strong>Stripe</strong> — payment processing.</li>
               <li><strong>Anthropic (Claude)</strong> — AI email and analysis generation.</li>
               <li><strong>Google (Gmail API + OAuth)</strong> — sign-in and outreach tracking, only if you opt in.</li>
-              <li><strong>Hosting + analytics providers</strong> we use to run the site (e.g. Vercel, Sentry).</li>
+              <li><strong>Vercel</strong> — web hosting and Vercel Analytics (anonymized pageview and Web Vitals data).</li>
+              <li><strong>PostHog</strong> — product analytics: pageviews, feature usage, and per-user event timelines (keyed to your account ID, not your name). PostHog data is stored in the United States.</li>
+              <li><strong>Render</strong> — hosting for the API server.</li>
             </ul>
             <p>
               Each is bound by their own terms and is given only the data needed to do its
@@ -104,9 +111,11 @@ export function Privacy() {
             <p>You can:</p>
             <ul>
               <li>See and edit your profile from the dashboard.</li>
-              <li>Export your data on request.</li>
-              <li>Delete your account at any time, which deletes your profile and outreach history within 30 days.</li>
-              <li>Disconnect Gmail at any time; we stop syncing immediately.</li>
+              <li>Export your data — email{' '}
+                <a href={`mailto:${CONTACT_EMAIL}`}>{CONTACT_EMAIL}</a> and we will send a copy within 30 days.
+              </li>
+              <li>Delete your account — email us and we will delete your profile, outreach history, and Gmail tokens within 30 days. (A self-serve delete button is on our roadmap.)</li>
+              <li>Disconnect Gmail — revoke KickrIQ at <a href="https://myaccount.google.com/permissions" target="_blank" rel="noreferrer">your Google account permissions page</a>; we stop syncing as soon as the token is revoked.</li>
             </ul>
             <p>
               California (CCPA) and EU/UK (GDPR) residents have additional rights, including
@@ -123,10 +132,12 @@ export function Privacy() {
             </p>
           </Section>
 
-          <Section title="9. Cookies">
+          <Section title="9. Cookies and local storage">
             <p>
-              We use cookies and similar storage to keep you signed in and to measure
-              product usage. We do not use third-party advertising cookies.
+              We use cookies and browser local storage to keep you signed in (Supabase
+              session token), remember your draft profile entries between visits, and
+              measure product usage via PostHog and Vercel Analytics. We do not use
+              third-party advertising cookies.
             </p>
           </Section>
 

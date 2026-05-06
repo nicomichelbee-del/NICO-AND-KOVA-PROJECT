@@ -6,17 +6,40 @@ import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { KickrIQLogo } from '../components/ui/KickrIQLogo'
 
+// Earliest plausible year a current high-school junior could be born.
+// We use it as the upper bound on the birth-year input so a typo can't pass.
+const CURRENT_YEAR = new Date().getFullYear()
+const MIN_BIRTH_YEAR = CURRENT_YEAR - 80
+const MAX_BIRTH_YEAR = CURRENT_YEAR
+
+function computeAge(birthYear: number): number {
+  // Approximate — we don't ask DOB, just year. Treat anyone whose birth-year
+  // is N years ago as "could be N or N-1 depending on month". The under-13
+  // block uses N-1 to be safe (if you turn 13 this calendar year you're in).
+  return CURRENT_YEAR - birthYear
+}
+
 export function Signup() {
   const navigate = useNavigate()
   const { user } = useAuth()
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [name, setName] = useState('')
+  const [birthYear, setBirthYear] = useState<number | ''>('')
+  const [parentEmail, setParentEmail] = useState('')
+  const [parentConsent, setParentConsent] = useState(false)
   const [error, setError] = useState('')
   const [loading, setLoading] = useState(false)
   const [googleLoading, setGoogleLoading] = useState(false)
   const [signedUp, setSignedUp] = useState(false)
   const [confirmSent, setConfirmSent] = useState(false)
+
+  const ageApprox = typeof birthYear === 'number' && birthYear >= MIN_BIRTH_YEAR && birthYear <= MAX_BIRTH_YEAR
+    ? computeAge(birthYear)
+    : null
+  const tooYoung = ageApprox !== null && ageApprox < 13
+  const isMinor = ageApprox !== null && ageApprox >= 13 && ageApprox < 18
+  const needsParentInfo = isMinor
 
   // Once Supabase has confirmed the new session, route to onboarding.
   useEffect(() => {
@@ -37,11 +60,43 @@ export function Signup() {
   async function handleSubmit(e: React.FormEvent) {
     e.preventDefault()
     setError('')
+
+    // Age gate. Block under-13 outright (COPPA — collecting an email + name
+    // from a child this young requires verifiable parental consent we don't
+    // have infrastructure for, so we simply don't accept the signup).
+    if (tooYoung) {
+      setError('You must be 13 or older to use KickrIQ. Please come back when you are.')
+      return
+    }
+    if (typeof birthYear !== 'number' || ageApprox === null) {
+      setError('Please enter your year of birth.')
+      return
+    }
+    if (needsParentInfo) {
+      if (!parentEmail.trim() || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(parentEmail.trim())) {
+        setError('Please enter a parent or guardian email.')
+        return
+      }
+      if (!parentConsent) {
+        setError('Please confirm a parent or guardian has approved your account.')
+        return
+      }
+    }
+
     setLoading(true)
+    const metadata: Record<string, unknown> = {
+      full_name: name,
+      birth_year: birthYear,
+      age_verified_at: new Date().toISOString(),
+    }
+    if (needsParentInfo) {
+      metadata.parent_email = parentEmail.trim().toLowerCase()
+      metadata.parent_consent_at = new Date().toISOString()
+    }
     const { data, error } = await supabase.auth.signUp({
       email,
       password,
-      options: { data: { full_name: name } },
+      options: { data: metadata },
     })
     if (error) {
       setError(error.message)
@@ -168,7 +223,54 @@ export function Signup() {
             <Input label="Full name" type="text" placeholder="Alex Johnson" value={name} onChange={(e) => setName(e.target.value)} required />
             <Input label="Email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
             <Input label="Password" type="password" placeholder="At least 8 characters" value={password} onChange={(e) => setPassword(e.target.value)} required minLength={8} />
-            <Button type="submit" disabled={loading} className="w-full mt-2">
+            <Input
+              label="Year of birth"
+              type="number"
+              inputMode="numeric"
+              placeholder={String(CURRENT_YEAR - 16)}
+              min={MIN_BIRTH_YEAR}
+              max={MAX_BIRTH_YEAR}
+              value={birthYear === '' ? '' : birthYear}
+              onChange={(e) => setBirthYear(e.target.value === '' ? '' : Number(e.target.value))}
+              required
+            />
+
+            {tooYoung && (
+              <div className="p-3 rounded-lg bg-[rgba(227,90,90,0.08)] border border-[rgba(227,90,90,0.28)] text-sm text-crimson-light">
+                You must be 13 or older to use KickrIQ. We can't create an account for someone under 13.
+              </div>
+            )}
+
+            {needsParentInfo && (
+              <>
+                <div className="p-3 rounded-lg bg-[rgba(240,182,90,0.06)] border border-[rgba(240,182,90,0.22)] text-xs text-ink-1 leading-[1.6]">
+                  You're under 18. Please add a parent or guardian email so they can be looped in on what KickrIQ collects and sends on your behalf.
+                </div>
+                <Input
+                  label="Parent or guardian email"
+                  type="email"
+                  placeholder="parent@example.com"
+                  value={parentEmail}
+                  onChange={(e) => setParentEmail(e.target.value)}
+                  required
+                />
+                <label className="flex items-start gap-2 text-xs text-ink-2 leading-[1.6] cursor-pointer select-none">
+                  <input
+                    type="checkbox"
+                    checked={parentConsent}
+                    onChange={(e) => setParentConsent(e.target.checked)}
+                    className="mt-[3px] accent-gold"
+                    required
+                  />
+                  <span>
+                    A parent or guardian has approved my using KickrIQ and reviewed our{' '}
+                    <Link to="/privacy" className="text-gold hover:underline underline-offset-4">Privacy Policy</Link>.
+                  </span>
+                </label>
+              </>
+            )}
+
+            <Button type="submit" disabled={loading || tooYoung} className="w-full mt-2">
               {loading ? 'Creating account…' : 'Create free account'}
             </Button>
           </form>

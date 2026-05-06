@@ -8,6 +8,7 @@ import profileRouter from './routes/profile'
 import publicRouter from './routes/public'
 import coachRouter from './routes/coach'
 import { requireCompleteProfile } from './lib/profileGate'
+import { aiInteractiveLimiter } from './lib/rateLimits'
 
 // Keep the API server alive on unexpected promise rejections (otherwise Node
 // 15+ exits the process and every subsequent request gets ECONNREFUSED).
@@ -45,9 +46,9 @@ app.get('/sitemap.xml', (req, res, next) => {
 // Every other authenticated feature router sits behind the gate. Anonymous
 // callers still get rejected first (401), so this also tightens auth on
 // routers that previously passed userId in the body.
-app.use('/api/ai', requireCompleteProfile, aiRouter)
+app.use('/api/ai', requireCompleteProfile, aiInteractiveLimiter, aiRouter)
 app.use('/api/gmail', requireCompleteProfile, gmailRouter)
-app.use('/api/camps', requireCompleteProfile, campsRouter)
+app.use('/api/camps', requireCompleteProfile, aiInteractiveLimiter, campsRouter)
 // Coach portal — does NOT use requireCompleteProfile (that gate is for athletes).
 // Auth is enforced inside each handler via the userId/userEmail params.
 app.use('/api/coach', coachRouter)

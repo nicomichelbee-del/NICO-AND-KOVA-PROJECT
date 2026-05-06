@@ -27,6 +27,7 @@ import { OpenSpots } from './pages/OpenSpots'
 import { About } from './pages/About'
 import { Privacy } from './pages/Privacy'
 import { Terms } from './pages/Terms'
+import { AgeVerify } from './pages/AgeVerify'
 
 function LoadingScreen() {
   return (
@@ -41,7 +42,17 @@ function LoadingScreen() {
 function ProtectedRoute({ children }: { children: React.ReactNode }) {
   const { user, loading } = useAuth()
   if (loading) return <LoadingScreen />
-  return user ? <>{children}</> : <Navigate to="/login" replace />
+  if (!user) return <Navigate to="/login" replace />
+  // COPPA / parental-consent gate. Anyone whose user_metadata is missing
+  // birth_year (existing accounts before the gate shipped, or any Google
+  // OAuth account) goes through /age-verify before reaching the dashboard.
+  // Test-mode users bypass this — they have no Supabase metadata.
+  const meta = (user.user_metadata ?? {}) as Record<string, unknown>
+  const isTestUser = user.id === 'test-mode-user'
+  if (!isTestUser && typeof meta.birth_year !== 'number') {
+    return <Navigate to="/age-verify" replace />
+  }
+  return <>{children}</>
 }
 
 // Gates everything dashboard-side: redirects to /onboarding/profile until the
@@ -73,6 +84,7 @@ export default function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/leaderboard" element={<Leaderboard />} />
             <Route path="/auth/callback" element={<AuthCallback />} />
+            <Route path="/age-verify" element={<AgeVerify />} />
             <Route path="/players/:slug" element={<PublicProfile />} />
             <Route path="/open-spots" element={<OpenSpots />} />
             <Route path="/open-spots/:gender" element={<OpenSpots />} />
