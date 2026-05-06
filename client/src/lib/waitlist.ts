@@ -4,6 +4,8 @@
 // (1 use per feature, per user) and a waitlist signup. Preview counters live
 // in localStorage; waitlist signups POST to /api/public/waitlist.
 
+import { track } from './analytics'
+
 export type ProFeature = 'tracker' | 'followup' | 'video'
 
 export const PRO_FEATURE_LABEL: Record<ProFeature, string> = {
@@ -84,9 +86,11 @@ export async function joinWaitlist(input: {
     if (!res.ok && res.status !== 409) {
       // Still remember locally so the UI doesn't repeatedly nag this user
       rememberWaitlist(email)
+      track('waitlist_joined', { email, feature: input.feature ?? 'general', tier: input.tier ?? 'pro' })
       return { ok: true }
     }
     rememberWaitlist(email)
+    track('waitlist_joined', { email, feature: input.feature ?? 'general', tier: input.tier ?? 'pro' })
     return { ok: true }
   } catch {
     // Network down — don't block the user; remember locally

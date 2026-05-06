@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState, ReactNode } from 'react'
 import { supabase } from '../lib/supabase'
+import { identify, resetAnalytics } from '../lib/analytics'
 import type { User as SupabaseUser } from '@supabase/supabase-js'
 
 export const TEST_MODE_KEY = 'TEST_MODE_USER'
@@ -36,13 +37,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       return
     }
     const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setUser(session?.user ?? null)
+      const next = session?.user ?? null
+      setUser(next)
       setLoading(false)
+      if (next) identify(next.id, { email: next.email })
     })
     return () => subscription.unsubscribe()
   }, [])
 
   async function signOut() {
+    resetAnalytics()
     if (isTestMode()) {
       localStorage.removeItem(TEST_MODE_KEY)
       localStorage.removeItem('athleteProfileRecord')
