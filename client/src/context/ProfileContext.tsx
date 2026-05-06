@@ -23,6 +23,7 @@ function storageKeyFor(userId: string) {
 function defaultProfile(): AthleteProfileRecord {
   return {
     full_name: null,
+    gender: null,
     graduation_year: null,
     primary_position: null,
     secondary_position: null,

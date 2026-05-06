@@ -29,6 +29,11 @@ const FOOT_OPTIONS = [
   { value: 'both', label: 'Both' },
 ]
 
+const GENDER_OPTIONS = [
+  { value: 'mens' as const, label: "Men's soccer" },
+  { value: 'womens' as const, label: "Women's soccer" },
+]
+
 function slugify(name: string): string {
   return name
     .toLowerCase()
@@ -42,6 +47,7 @@ function slugify(name: string): string {
 function computeStrength(p: Partial<AthleteProfileRecord>): number {
   const checks: boolean[] = [
     !!p.full_name,
+    !!p.gender,
     !!p.graduation_year,
     !!p.high_school_name,
     !!p.primary_position,
@@ -88,7 +94,7 @@ export function OnboardingProfile() {
 
   const stepValid = useMemo(() => {
     if (step.key === 'basics') {
-      return !!form.full_name && !!form.graduation_year && !!form.high_school_name
+      return !!form.full_name && !!form.gender && !!form.graduation_year && !!form.high_school_name
     }
     if (step.key === 'soccer') {
       return !!form.primary_position && !!form.preferred_foot && !!form.current_club && !!form.current_league_or_division
@@ -240,6 +246,19 @@ export function OnboardingProfile() {
             {step.key === 'basics' && (
               <>
                 <Input label="Full name" placeholder="Alex Morgan" value={form.full_name ?? ''} onChange={(e) => update('full_name', e.target.value)} />
+
+                <FieldLabel>I play</FieldLabel>
+                <div className="grid grid-cols-2 gap-2">
+                  {GENDER_OPTIONS.map((g) => (
+                    <Chip key={g.value} active={form.gender === g.value} onClick={() => update('gender', g.value)}>
+                      <span className="font-medium">{g.label}</span>
+                    </Chip>
+                  ))}
+                </div>
+                <p className="text-xs text-ink-3 leading-[1.6] -mt-2">
+                  This determines which programs you'll see — college soccer rosters are gendered.
+                </p>
+
                 <Input label="Graduation year" type="number" inputMode="numeric" placeholder="2027" min={2024} max={2032} value={form.graduation_year ?? ''} onChange={(e) => update('graduation_year', e.target.value ? Number(e.target.value) : null)} />
                 <Input label="High school" placeholder="Lincoln High School" value={form.high_school_name ?? ''} onChange={(e) => update('high_school_name', e.target.value)} />
               </>

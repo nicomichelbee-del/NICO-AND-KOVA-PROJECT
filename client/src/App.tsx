@@ -51,6 +51,10 @@ function RequireCompleteProfile({ children }: { children: React.ReactNode }) {
   const { profile, loading } = useProfile()
   if (loading) return <LoadingScreen />
   if (!profile?.profile_completed) return <Navigate to="/onboarding/profile" replace />
+  // Backfill: pre-existing users completed onboarding before gender was a
+  // required field. Bounce them through edit mode so matching/emails/roster
+  // intel stop defaulting to "mens".
+  if (!profile.gender) return <Navigate to="/onboarding/profile?edit=1" replace />
   return <>{children}</>
 }
 

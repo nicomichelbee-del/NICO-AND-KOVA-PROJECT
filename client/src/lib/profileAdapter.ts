@@ -69,10 +69,7 @@ export function readLegacyProfile(): AthleteProfile | null {
     VALID_REGIONS.includes(reg as Region))
   const locationPreference: Region = regions[0] ?? 'any'
 
-  // Onboarding doesn't capture gender today. Default to 'mens' so the gender
-  // filter is deterministic; once gender is added to the profile schema,
-  // wire it through here.
-  const gender: 'mens' | 'womens' = 'mens'
+  const gender: 'mens' | 'womens' = r.gender ?? 'mens'
 
   return {
     name: r.full_name ?? '',

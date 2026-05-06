@@ -53,10 +53,13 @@ export const DIVISION_TARGET_LABELS: Record<string, string> = {
   JUCO: 'JUCO',
 }
 
+export type AthleteGender = 'mens' | 'womens'
+
 export interface AthleteProfileRecord {
   id?: string
   user_id?: string
   full_name: string | null
+  gender: AthleteGender | null
   graduation_year: number | null
   primary_position: string | null
   secondary_position: string | null
