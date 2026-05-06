@@ -1,7 +1,8 @@
-name: Scrape coaches + refresh academic data (monthly)
+name: Scrape coaches + rosters + Scorecard (monthly)
 
 # Monthly refresh of:
 #   • server/data/coachesScraped.json (via scrapeCoaches.ts + inferEmails.ts)
+#   • server/data/rostersScraped.json (via scrapeRosters.ts)
 #   • server/data/schoolsAcademic.json (via enrichWithScorecard.ts)
 # Opens a single PR with all changes. Manual trigger is also enabled.
 #
@@ -53,6 +54,11 @@ jobs:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: npx tsx server/scripts/inferEmails.ts
 
+      - name: Refresh rosters (--resume)
+        run: |
+          CONCURRENCY="${{ github.event.inputs.concurrency || '5' }}"
+          npx tsx server/scripts/scrapeRosters.ts --resume --concurrency=$CONCURRENCY
+
       - name: Refresh College Scorecard academic data
         env:
           COLLEGE_SCORECARD_API_KEY: ${{ secrets.COLLEGE_SCORECARD_API_KEY }}
@@ -61,21 +67,25 @@ jobs:
       - name: Open PR with cache changes
         uses: peter-evans/create-pull-request@v6
         with:
-          commit-message: 'chore: monthly data refresh (coaches + Scorecard)'
-          title: 'Monthly data refresh — coaches + College Scorecard'
+          commit-message: 'chore: monthly data refresh (coaches + rosters + Scorecard)'
+          title: 'Monthly data refresh — coaches + rosters + Scorecard'
           body: |
             Automated monthly refresh of:
 
             - `server/data/coachesScraped.json` — re-scrape + email inference
+            - `server/data/rostersScraped.json` — roster open-spots refresh
             - `server/data/schoolsAcademic.json` — College Scorecard refresh
 
             Review before merging:
             - Flips from `email-inferred` → `partial` mean the inference pass
               had no new names. Flips to `success` mean the site was fixed.
+            - Roster diffs reflect player turnover — graduating seniors leave,
+              freshmen arrive. Open-spots numbers should drift each year.
             - Scorecard data only changes when ED publishes new annual updates,
               so most monthly diffs there will be small.
           branch: bot/data-refresh
           delete-branch: true
           add-paths: |
             server/data/coachesScraped.json
+            server/data/rostersScraped.json
             server/data/schoolsAcademic.json
