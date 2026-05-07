@@ -31,7 +31,14 @@ export function ForCoaches() {
       if (err) throw err
       setSentTo(email.trim())
     } catch (e) {
-      setError(e instanceof Error ? e.message : 'Could not send link')
+      const raw = e instanceof Error ? e.message : 'Could not send link'
+      // Translate common Supabase auth errors into coach-readable copy.
+      const friendly = /invalid/i.test(raw)
+        ? "That email address doesn't look right. Use your school's official .edu coach email."
+        : /rate.?limit/i.test(raw)
+        ? 'Too many requests. Wait a minute and try again.'
+        : raw
+      setError(friendly)
     } finally { setSending(false) }
   }
 
@@ -48,7 +55,7 @@ export function ForCoaches() {
           </div>
         </header>
 
-        <section className="section" style={{ paddingTop: 100 }}>
+        <section className="section" style={{ paddingTop: 140 }}>
           <div className="wrap" style={{ maxWidth: 880 }}>
             <div className="text-center">
               <span className="section-marker" style={{ justifyContent: 'center' }}>For College Coaches</span>
@@ -76,12 +83,23 @@ export function ForCoaches() {
             <Card className="p-8 mt-10 max-w-lg mx-auto">
               {sentTo ? (
                 <div className="text-center">
-                  <div className="text-3xl mb-3">✉️</div>
+                  <div className="mx-auto mb-4 w-12 h-12 rounded-full bg-[rgba(240,182,90,0.12)] flex items-center justify-center">
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#f0b65a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true">
+                      <rect x="3" y="5" width="18" height="14" rx="2" />
+                      <polyline points="3 7 12 13 21 7" />
+                    </svg>
+                  </div>
                   <div className="font-serif text-lg font-bold text-[#f5f1e8] mb-2">Check your inbox</div>
                   <p className="text-sm text-[#9a9385]">
                     We sent a magic sign-in link to <span className="text-[#f0b65a]">{sentTo}</span>.
                     Click it to land on your coach dashboard.
                   </p>
+                  <button
+                    onClick={() => { setSentTo(null); setEmail('') }}
+                    className="text-[11px] font-mono uppercase tracking-wider text-[#9a9385] hover:text-[#f0b65a] mt-4"
+                  >
+                    Use a different email
+                  </button>
                 </div>
               ) : (
                 <form

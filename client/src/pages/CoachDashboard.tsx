@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { KickrIQLogo } from '../components/ui/KickrIQLogo'
 import { Card } from '../components/ui/Card'
-import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { useAuth } from '../context/AuthContext'
 import {
@@ -114,7 +113,7 @@ export function CoachDashboard() {
           </div>
         </header>
 
-        <section className="section" style={{ paddingTop: 100 }}>
+        <section className="section" style={{ paddingTop: 140 }}>
           <div className="wrap" style={{ maxWidth: 980 }}>
             {loading ? (
               <div className="text-center py-16 text-sm text-[#9a9385]">Loading…</div>
