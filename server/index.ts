@@ -63,6 +63,27 @@ app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   if (!res.headersSent) res.status(500).json({ error: message })
 })
 
-app.listen(PORT, () => {
+const server = app.listen(PORT, () => {
   console.log(`API server running on port ${PORT}`)
 })
+
+// Graceful shutdown — without this, tsx watch (Ctrl+C) can't kill the
+// server cleanly because app.listen() keeps the event loop alive forever.
+// Tsx escalates to SIGKILL after 5s, producing the "Process didn't exit
+// in 5s. Force killing..." loop. Closing the HTTP server lets keep-alive
+// connections drain and the event loop empty so Node exits naturally.
+function shutdown(signal: string) {
+  console.log(`[${signal}] shutting down…`)
+  server.close(() => {
+    console.log('[server] closed; exiting')
+    process.exit(0)
+  })
+  // Hard timeout in case a hanging request prevents close() from firing.
+  // Shorter than tsx's 5s SIGKILL escalation so we at least exit ourselves.
+  setTimeout(() => {
+    console.warn('[server] close() timed out after 3s; force exiting')
+    process.exit(0)
+  }, 3000).unref()
+}
+process.on('SIGTERM', () => shutdown('SIGTERM'))
+process.on('SIGINT',  () => shutdown('SIGINT'))
