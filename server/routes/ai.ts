@@ -107,16 +107,20 @@ Rules:
 
 router.post('/schools', async (req, res) => {
   try {
-    const { profile, video, topN } = req.body as {
+    const { profile, video, topN, preferences } = req.body as {
       profile: AthleteProfile
       video?: import('../../client/src/types/index').VideoRating | null
       topN?: number
+      // Affinity-from-ratings payload. Optional. Validated below before use.
+      preferences?: unknown
     }
     // Hard-cap topN at 100. The matcher is pure local logic (no AI cost),
     // so this is purely a safety bound — a 100-item list is already past
     // the point most athletes will scroll.
     const requested = typeof topN === 'number' && topN > 0 ? Math.min(100, Math.floor(topN)) : 25
-    const schools = matchSchools(profile, requested, video ?? null)
+    const { isValidPreferences } = await import('../lib/affinityBoost')
+    const validPrefs = isValidPreferences(preferences) ? preferences : null
+    const schools = matchSchools(profile, requested, video ?? null, validPrefs)
     res.json({ schools })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })

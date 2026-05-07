@@ -3,6 +3,7 @@ import path from 'path'
 import schoolsData from '../data/schools.json'
 import type { AthleteProfile, MatchBreakdown, School, SchoolDirectoryEntry, VideoRating } from '../../client/src/types/index'
 import type { ProgramRecord, RecruitingClass } from '../../client/src/types/athletic'
+import { affinityBoost, type ServerPreferences } from './affinityBoost'
 
 const round1 = (n: number): number => Math.round(n * 10) / 10
 
@@ -842,6 +843,25 @@ interface Candidate {
 // bucket is short.
 const DEFAULT_BUCKET_CAPS = { safety: 8, target: 10, reach: 8 } as const
 
+// Blend weights between athletic and academic fit when computing matchScore.
+// Default leans athletic (this IS a recruiting tool), but for academically
+// elite students we shift toward academic so a 1540/4.0 athlete doesn't end
+// up with safety buckets full of programs where she's wildly over-qualified
+// academically. The threshold is intentionally generous — anyone clearly
+// "above the median college applicant" gets the academic-leaning blend.
+function blendWeights(profile: AthleteProfile): { athletic: number; academic: number } {
+  const sat = (() => {
+    const raw = (profile.satAct ?? '').replace(/[^0-9]/g, '')
+    const n = Number(raw)
+    return Number.isFinite(n) && n >= 400 && n <= 1600 ? n : 0
+  })()
+  const eliteAcademic = profile.gpa >= 3.7 || sat >= 1400
+  const veryEliteAcademic = profile.gpa >= 3.9 || sat >= 1500
+  if (veryEliteAcademic) return { athletic: 0.35, academic: 0.65 }
+  if (eliteAcademic)     return { athletic: 0.45, academic: 0.55 }
+  return                        { athletic: 0.55, academic: 0.45 }
+}
+
 // Score a single school against the athlete's profile, ignoring bucket caps,
 // stretch logic, the academic floor, and the excluded-divisions filter. Used
 // by the search-a-school feature so users can ask "what's my score for X?"
@@ -863,7 +883,8 @@ export function scoreSingleSchool(
   // UI can render the card. The matchScore makes the actual fit obvious.
   const bucket = bucketFor(athletic, academic) ?? 'reach'
 
-  let blended = athletic * 0.55 + academic * 0.45
+  const w = blendWeights(profile)
+  let blended = athletic * w.athletic + academic * w.academic
   const rawDivGapForScore = effectiveDivGap(school.division, profile)
   if (rawDivGapForScore === 2) blended -= 8
   else if (rawDivGapForScore === 3) blended -= 16
@@ -918,7 +939,12 @@ export function scoreSingleSchool(
   }
 }
 
-export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRating | null): School[] {
+export function matchSchools(
+  profile: AthleteProfile,
+  topN = 25,
+  video?: VideoRating | null,
+  preferences?: ServerPreferences | null,
+): School[] {
   const gender = profile.gender ?? 'womens'
   // Hard exclusions — divisions the athlete has explicitly opted out of.
   // Any division in the target set is never excludable (defensive guard
@@ -934,7 +960,23 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
   // schools whose tier is *strictly worse* than the floor are dropped from
   // the candidate pool entirely so the athlete doesn't have to scroll past
   // open-admission schools when she's pre-committed to T50.
-  const academicFloor: AcademicTier | null = profile.academicMinimum ?? null
+  //
+  // Auto-defaulting: if the athlete has elite credentials and hasn't picked
+  // a floor explicitly, infer a sensible one. The matcher's academicFit
+  // saturates for over-qualified students (a 4.0/1540 vs a 3.0-avg school
+  // = ~98 academicFit), so without a floor those programs flood the list.
+  // Users can opt out of the auto-default by setting academicMinimum: 5
+  // (no preference) explicitly in their profile.
+  let academicFloor: AcademicTier | null = profile.academicMinimum ?? null
+  if (academicFloor == null) {
+    const sat = (() => {
+      const raw = (profile.satAct ?? '').replace(/[^0-9]/g, '')
+      const n = Number(raw)
+      return Number.isFinite(n) && n >= 400 && n <= 1600 ? n : 0
+    })()
+    if (profile.gpa >= 3.9 || sat >= 1500) academicFloor = 3       // top-100
+    else if (profile.gpa >= 3.7 || sat >= 1400) academicFloor = 4  // skip open-admission
+  }
 
   const scored: Candidate[] = (schoolsData as SchoolRecord[])
     .filter((s) => !excluded.has(s.division))
@@ -949,12 +991,15 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
       const bucket = bucketFor(athletic, academic)
       if (!bucket) return null
 
-      // Display matchScore = weighted blend (athletics-leaning since this is a
-      // recruiting tool) + soft preference boost. Bucket assignment already
-      // happened above; this is just for ranking + UI display. One decimal
-      // place so the score actually varies across the list — without
-      // decimals every athlete sees a wall of 90 / 91 / 92s.
-      let blended = athletic * 0.55 + academic * 0.45
+      // Display matchScore = weighted blend + soft preference boost. The
+      // weights shift toward academic for elite-credential students so a
+      // 1540/4.0 forward sees Cal / Wisconsin / Ivies surface above lower-
+      // tier programs where she'd dominate athletically but be wildly
+      // over-qualified academically. One decimal place so the score
+      // actually varies across the list — without decimals every athlete
+      // sees a wall of 90 / 91 / 92s.
+      const w = blendWeights(profile)
+      let blended = athletic * w.athletic + academic * w.academic
       // Honesty penalty for "deep below" target. A D1-target athlete should
       // never see a JUCO score 100 — even if she'd dominate athletically,
       // it isn't a "match" to her stated goals. Graded so:
@@ -967,7 +1012,22 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
       if (rawDivGapForScore === 2) blended -= 8
       else if (rawDivGapForScore === 3) blended -= 16
       else if (rawDivGapForScore >= 4) blended -= 22
-      const matchScore = Math.max(0, Math.min(100, round1(blended + preferenceBoost(profile, s))))
+      // Tinder-style affinity boost — applies the user's 1–5 ratings to nudge
+      // schools toward features they've liked. Range ~ ±15 once the user has
+      // 2+ meaningful ratings; below that returns 0. Crucially this is
+      // applied BEFORE the bucket caps slice, so highly-rated patterns
+      // surface NEW schools, not just re-rank the existing 25.
+      const affinity = preferences
+        ? affinityBoost(preferences, {
+            division: s.division,
+            size: s.size,
+            region: s.region,
+            conference: s.conference,
+            programStrength: s.programStrength,
+            academicTier: academicTier(s.id),
+          })
+        : 0
+      const matchScore = Math.max(0, Math.min(100, round1(blended + preferenceBoost(profile, s) + affinity)))
       return {
         school: s,
         athletic,

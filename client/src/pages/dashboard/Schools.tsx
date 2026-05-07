@@ -212,6 +212,11 @@ export function Schools() {
     return () => window.removeEventListener('kickriq:ratings-changed', refresh)
   }, [userId])
 
+  // Schedule a rematch shortly after the user rates a school so the result
+  // list reflects the new affinity signal — without making rating feel like
+  // it triggers a heavy operation. 500ms is short enough to feel responsive,
+  // long enough to coalesce multiple rapid ratings into one request.
+  const rateRematchTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   function rateSchool(schoolId: string, rating: Rating | null) {
     saveRating(userId, schoolId, rating)
     setRatings((prev) => {
@@ -220,6 +225,9 @@ export function Schools() {
       else next[schoolId] = rating
       return next
     })
+    if (schools.length === 0) return  // no list yet — nothing to rematch
+    if (rateRematchTimer.current) clearTimeout(rateRematchTimer.current)
+    rateRematchTimer.current = setTimeout(() => { void handleMatch() }, 500)
   }
 
   // Simulated profile (drives the What-If panel). null = use the real
@@ -295,11 +303,15 @@ export function Schools() {
       // Pull the latest highlight-video rating (if any) so per-school athletic
       // fit reflects what the AI actually saw on tape, not just GPA + goals.
       const video = getLatestVideoRating()
-      const { schools } = await matchSchools(profile, video, requestedTopN)
-      setSchools(schools)
+      // Send the affinity preferences server-side so highly-rated patterns
+      // surface NEW schools, not just re-rank the existing 25. preferences
+      // is null until the user has 2+ meaningful (non-3) ratings on file.
+      const prefs = buildPreferences(loadRatings(userId), schools)
+      const { schools: nextSchools } = await matchSchools(profile, video, requestedTopN, prefs.meaningfulCount >= 2 ? prefs : null)
+      setSchools(nextSchools)
       // Only persist when matching against the *real* profile — we don't want
       // simulated runs to pollute the dashboard's other surfaces.
-      if (!profileOverride) localStorage.setItem('matchedSchools', JSON.stringify(schools))
+      if (!profileOverride) localStorage.setItem('matchedSchools', JSON.stringify(nextSchools))
     } catch (e) {
       setError(e instanceof Error ? e.message : 'Failed to match schools')
     } finally { setLoading(false) }
@@ -321,8 +333,9 @@ export function Schools() {
           ...simProfile,
           excludedDivisions: excludedDivisions.filter((d) => d !== simProfile.targetDivision),
         }
-        const { schools } = await matchSchools(payload, video, requestedTopN)
-        setSchools(schools)
+        const prefs = buildPreferences(loadRatings(userId), schools)
+        const { schools: simSchools } = await matchSchools(payload, video, requestedTopN, prefs.meaningfulCount >= 2 ? prefs : null)
+        setSchools(simSchools)
       } catch (e) {
         setError(e instanceof Error ? e.message : 'Simulation failed')
       } finally {
@@ -1386,7 +1399,8 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave, rating, onRate, af
   // unambiguously — no `absolute` positioning over the score column, which
   // caused visible overlap on narrow phones.
   return (
-    <div className="bg-[linear-gradient(180deg,rgba(31,27,40,0.82)_0%,rgba(24,20,32,0.82)_100%)] border border-[rgba(245,241,232,0.08)] rounded-2xl transition-[border-color,box-shadow] duration-200 hover:border-[rgba(240,182,90,0.45)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.30)] group flex items-stretch">
+    <div className="bg-[linear-gradient(180deg,rgba(31,27,40,0.82)_0%,rgba(24,20,32,0.82)_100%)] border border-[rgba(245,241,232,0.08)] rounded-2xl transition-[border-color,box-shadow] duration-200 hover:border-[rgba(240,182,90,0.45)] hover:shadow-[0_12px_30px_rgba(0,0,0,0.30)] group flex flex-col">
+    <div className="flex items-stretch">
       <button onClick={onClick} className="text-left flex-1 min-w-0 flex items-start gap-4 sm:gap-6 cursor-pointer p-5 sm:p-6">
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2 sm:gap-3 mb-2 flex-wrap">
@@ -1486,7 +1500,6 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave, rating, onRate, af
         >
           {isSaved ? '♥' : '♡'}
         </button>
-        <RatingDots value={rating} onChange={onRate} />
         <div
           aria-hidden
           className="text-ink-3 text-lg group-hover:text-gold group-hover:translate-x-0.5 transition-[color,transform]"
@@ -1494,6 +1507,8 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave, rating, onRate, af
           →
         </div>
       </div>
+      </div>
+      <RatingStars value={rating} onChange={onRate} />
     </div>
   )
 }
@@ -1586,36 +1601,52 @@ function SearchBar({
   )
 }
 
-// Compact 1–5 dot rating, vertical for the card right rail. Click any dot to
-// set the rating; click the same dot again to clear. Drives the affinity
-// algorithm — see preferences.ts.
-function RatingDots({ value, onChange }: { value: Rating | null; onChange: (r: Rating | null) => void }) {
+// Horizontal 5-star rating row anchored below the card body. Click a star
+// to set the rating (5 = love it, 1 = pass), click the same star again to
+// clear. Drives the affinity algorithm — see preferences.ts. The strip
+// itself stops click propagation so tapping a star doesn't open the
+// detail modal underneath.
+function RatingStars({ value, onChange }: { value: Rating | null; onChange: (r: Rating | null) => void }) {
+  const labels: Record<Rating, string> = {
+    1: 'pass', 2: 'not really', 3: 'maybe', 4: 'strong interest', 5: 'love it',
+  }
   return (
     <div
-      className="flex flex-col items-center gap-0.5 px-1 py-1 rounded-md hover:bg-[rgba(245,241,232,0.04)]"
-      title={value != null
-        ? `You rated this ${value}/5 — click again to clear.`
-        : 'Rate 1–5 to teach the matcher what you like.'
-      }
+      className="flex items-center gap-2 px-5 sm:px-6 py-3 border-t border-[rgba(245,241,232,0.06)] flex-wrap"
       onClick={(e) => e.stopPropagation()}
     >
-      {([5, 4, 3, 2, 1] as const).map((r) => {
-        const active = value != null && value >= r
-        const isCurrent = value === r
-        return (
-          <button
-            key={r}
-            onClick={(e) => { e.stopPropagation(); onChange(isCurrent ? null : r) }}
-            className={`w-2.5 h-2.5 rounded-full transition-colors ${
-              active
-                ? r >= 4 ? 'bg-[#4ade80]' : r <= 2 ? 'bg-[rgba(227,90,90,0.75)]' : 'bg-gold'
-                : 'bg-[rgba(245,241,232,0.10)] hover:bg-[rgba(245,241,232,0.25)]'
-            }`}
-            aria-label={`Rate ${r} out of 5`}
-            title={`Rate ${r}/5`}
-          />
-        )
-      })}
+      <span className="font-mono text-[10px] tracking-[0.18em] uppercase text-ink-3 mr-1">
+        How interested?
+      </span>
+      <div className="flex items-center gap-0.5">
+        {([1, 2, 3, 4, 5] as const).map((r) => {
+          const active = value != null && value >= r
+          const isCurrent = value === r
+          return (
+            <button
+              key={r}
+              type="button"
+              onClick={(e) => { e.stopPropagation(); onChange(isCurrent ? null : r) }}
+              className={`w-7 h-7 flex items-center justify-center text-[18px] leading-none transition-colors rounded ${
+                active ? 'text-gold' : 'text-[rgba(245,241,232,0.18)] hover:text-[rgba(240,182,90,0.55)]'
+              }`}
+              aria-label={`Rate ${r} out of 5: ${labels[r]}`}
+              title={labels[r]}
+            >
+              ★
+            </button>
+          )
+        })}
+      </div>
+      {value != null && (
+        <span className="font-mono text-[10px] tracking-[0.16em] uppercase text-gold ml-1">
+          {labels[value]}
+        </span>
+      )}
+      <div className="flex-1" />
+      <span className="font-mono text-[9px] tracking-[0.18em] uppercase text-ink-3 hidden sm:inline">
+        Trains the matcher
+      </span>
     </div>
   )
 }

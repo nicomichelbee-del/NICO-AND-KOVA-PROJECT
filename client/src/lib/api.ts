@@ -73,8 +73,18 @@ export function findCoach(school: string, division: Division, gender: 'mens' | '
 
 export type { FindCoachResult }
 
-export function matchSchools(profile: AthleteProfile, video?: VideoRating | null, topN?: number) {
-  return post<{ schools: School[] }>('/api/ai/schools', { profile, video: video ?? null, topN })
+export function matchSchools(
+  profile: AthleteProfile,
+  video?: VideoRating | null,
+  topN?: number,
+  preferences?: unknown,
+) {
+  return post<{ schools: School[] }>('/api/ai/schools', {
+    profile,
+    video: video ?? null,
+    topN,
+    preferences: preferences ?? null,
+  })
 }
 
 export function listAllSchools() {
