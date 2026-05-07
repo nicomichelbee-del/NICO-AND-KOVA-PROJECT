@@ -69,11 +69,11 @@ export function readLegacyProfile(): AthleteProfile | null {
     VALID_REGIONS.includes(reg as Region))
   const locationPreference: Region = regions[0] ?? 'any'
 
-  // Gender lives on the AthleteProfileRecord directly. We do NOT default
-  // anymore — the matcher needs a real choice to filter out programs of the
-  // wrong gender. Falls back to whatever the legacy record had if the new
-  // field is null (rare, only for users mid-migration).
-  const gender: 'mens' | 'womens' = (r.gender ?? 'mens') as 'mens' | 'womens'
+  // Gender lives on the AthleteProfileRecord directly. The matcher needs
+  // a real choice to filter out programs of the wrong gender. The 'mens'
+  // fallback is for the brief window between record creation and the
+  // user picking gender in onboarding (where it's required to advance).
+  const gender: 'mens' | 'womens' = r.gender ?? 'mens'
 
   return {
     name: r.full_name ?? '',
