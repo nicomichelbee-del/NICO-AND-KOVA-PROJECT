@@ -23,6 +23,7 @@ import path from 'path'
 
 const DATA_DIR = path.join(__dirname, '..', 'data')
 const OVERRIDE_PATH    = path.join(DATA_DIR, 'noProgramOverrides.json')
+const EADA_PATH        = path.join(DATA_DIR, 'eadaPrograms.json')
 const SPONSORED_PATH   = path.join(DATA_DIR, 'sponsoredPrograms.json')
 const VERIFICATION_PATH = path.join(DATA_DIR, 'programVerifications.json')
 const COACHES_PATH     = path.join(DATA_DIR, 'coachesScraped.json')
@@ -31,12 +32,17 @@ interface VerificationEntry { hasProgram: boolean; confidence: 'high' | 'medium'
 interface CoachEntry { status: string }
 
 const overrides    = JSON.parse(fs.readFileSync(OVERRIDE_PATH, 'utf8')) as Record<string, unknown>
+const eada         = JSON.parse(fs.readFileSync(EADA_PATH, 'utf8')) as Record<string, unknown>
 const sponsored    = JSON.parse(fs.readFileSync(SPONSORED_PATH, 'utf8')) as Record<string, unknown>
 const verification = JSON.parse(fs.readFileSync(VERIFICATION_PATH, 'utf8')) as Record<string, unknown>
 const coaches      = JSON.parse(fs.readFileSync(COACHES_PATH, 'utf8')) as Record<string, CoachEntry>
 
 // Mirror schoolMatcher.hasProgramOfGender's logic minus the override step.
 function hasProgramWithoutOverride(key: string): { result: boolean; via: string } {
+  // EADA — federal source of truth, highest authority below override
+  const e = eada[key]
+  if (e === true)  return { result: true,  via: 'EADA=true' }
+  if (e === false) return { result: false, via: 'EADA=false' }
   // AI verification (high or medium confidence)
   const v = verification[key]
   if (v && typeof v === 'object'
