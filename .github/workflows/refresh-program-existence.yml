@@ -39,6 +39,9 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
+      - name: Refresh EADA federal data (auto-fetches latest year)
+        run: npx tsx server/scripts/buildEadaPrograms.ts
+
       - name: Regenerate sponsoredPrograms from Wikipedia data
         run: npx tsx server/scripts/buildSponsoredPrograms.ts
 
@@ -75,6 +78,7 @@ jobs:
           branch: bot/program-existence-refresh
           delete-branch: true
           add-paths: |
+            server/data/eadaPrograms.json
             server/data/sponsoredPrograms.json
             server/data/programDisagreements.json
             server/data/programVerifications.json
