@@ -1,0 +1,988 @@
+{
+  "_meta": {
+    "generatedAt": "2026-05-07T01:09:55.844Z",
+    "model": "claude-haiku-4-5",
+    "totalChecked": 98,
+    "totalVerified": 98
+  },
+  "ucla:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "UCLA fields an NCAA D1 women's varsity soccer program in the Pac-12.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Gof Boyoko"
+    }
+  },
+  "fsu:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Florida State University fields an NCAA D1 men's varsity soccer program in the ACC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Brian Pensky"
+    }
+  },
+  "tamu:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Texas A&M does not field a men's varsity soccer program despite being a major football school.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Bobby Shuttleworth"
+    }
+  },
+  "ucf:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "University of Central Florida fields an NCAA D1 women's varsity soccer program in the American Athletic Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Tiffany Roberts Sahaydak"
+    }
+  },
+  "appstate:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Appalachian State University fields an NCAA D1 men's varsity soccer program in the Sun Belt Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jason O'Keefe"
+    }
+  },
+  "utrgv:womens": {
+    "hasProgram": true,
+    "confidence": "medium",
+    "reason": "UT Rio Grande Valley fields an NCAA D1 women's varsity soccer program in the WAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Nataki Stewart"
+    }
+  },
+  "ewu:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Eastern Washington University does not field a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Dan Monson"
+    }
+  },
+  "valdostaState:mens": {
+    "hasProgram": true,
+    "confidence": "medium",
+    "reason": "Valdosta State University fields an NCAA D2 men's varsity soccer program in the Peach Belt Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "J.D. Hulse"
+    }
+  },
+  "minnStateMankato:mens": {
+    "hasProgram": true,
+    "confidence": "medium",
+    "reason": "Minnesota State University Mankato fields an NCAA D2 men's varsity soccer program in the NSIC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Andy Stocks"
+    }
+  },
+  "northtexas:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "University of North Texas does not field a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jordan Diaz"
+    }
+  },
+  "shippensburg:mens": {
+    "hasProgram": true,
+    "confidence": "medium",
+    "reason": "Shippensburg University fields an NCAA D2 men's varsity soccer program in the PSAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "web-name-only",
+      "scraperCoachName": "Jeremy Spering"
+    }
+  },
+  "shippensburg:womens": {
+    "hasProgram": true,
+    "confidence": "medium",
+    "reason": "Shippensburg University fields an NCAA D2 women's varsity soccer program in the PSAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Rob Fulton"
+    }
+  },
+  "mst:mens": {
+    "hasProgram": false,
+    "confidence": "medium",
+    "reason": "Missouri S&T does not field a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Robert Cummings"
+    }
+  },
+  "mst:womens": {
+    "hasProgram": false,
+    "confidence": "medium",
+    "reason": "Missouri S&T does not field a women's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Matthew Perry"
+    }
+  },
+  "centralMissouri:mens": {
+    "hasProgram": true,
+    "confidence": "medium",
+    "reason": "University of Central Missouri fields an NCAA D2 men's varsity soccer program in the MIAA.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Tyler Davis"
+    }
+  },
+  "gvsu:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Grand Valley State University fields an NCAA D2 men's varsity soccer program in the GLIAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jordan Keur"
+    }
+  },
+  "missState:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Mississippi State University does not field a men's varsity soccer program despite being a major athletic school.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Shaud Williams"
+    }
+  },
+  "olemiss:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "University of Mississippi does not field a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Spirit Squads"
+    }
+  },
+  "usc:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "University of Southern California fields an NCAA D1 women's varsity soccer program in the Pac-12.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jane Alukonis"
+    }
+  },
+  "okstate:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Oklahoma State University does not field a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Annie Young"
+    }
+  },
+  "houston:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "University of Houston fields an NCAA D1 men's varsity soccer program in the American Athletic Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Ben Williams"
+    }
+  },
+  "cincinnati:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "University of Cincinnati fields an NCAA D1 men's varsity soccer program in the American Athletic Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Hylton Dayes"
+    }
+  },
+  "kstate:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Kansas State University does not field a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Kennedy Felice"
+    }
+  },
+  "iowastate:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Iowa State University does not field a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Matt Fannon"
+    }
+  },
+  "utah:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "University of Utah fields an NCAA D1 women's varsity soccer program in the Pac-12.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Hideki Nakada"
+    }
+  },
+  "ucsb:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "UC Santa Barbara fields an NCAA D1 women's varsity soccer program in the Big West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Paul Stumpf"
+    }
+  },
+  "williamary:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "College of William & Mary fields an NCAA D1 women's varsity soccer program in the Colonial Athletic Association.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Julie Shackford"
+    }
+  },
+  "uci:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "UC Irvine fields an NCAA D1 women's varsity soccer program in the Big West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Scott Juniper"
+    }
+  },
+  "tampa2:mens": {
+    "hasProgram": true,
+    "confidence": "medium",
+    "reason": "American International College fields an NCAA D2 men's varsity soccer program in the Northeast-10 Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jake Durham"
+    }
+  },
+  "tampa2:womens": {
+    "hasProgram": true,
+    "confidence": "medium",
+    "reason": "American International College fields an NCAA D2 women's varsity soccer program in the Northeast-10 Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Sam Mitchell"
+    }
+  },
+  "umass:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "University of Massachusetts Amherst fields an NCAA D1 women's varsity soccer program in the MAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jason Dowiak"
+    }
+  },
+  "unlv:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "University of Nevada, Las Vegas fields an NCAA D1 women's varsity soccer program in the Mountain West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Kacey Bingham"
+    }
+  },
+  "san-jose-state:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "San Jose State University fields an NCAA D1 men's varsity soccer program in the Mountain West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Simon Tobin"
+    }
+  },
+  "colorado-state:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Colorado State University fields an NCAA D1 men's varsity soccer program in the Mountain West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Dawn Burton"
+    }
+  },
+  "san-jose-state:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "San Jose State University fields an NCAA D1 women's varsity soccer program in the Mountain West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Sonia Curvelo"
+    }
+  },
+  "nevada:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "University of Nevada fields an NCAA D1 women's varsity soccer program in the Mountain West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jeremy Evans"
+    }
+  },
+  "wyoming:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "University of Wyoming fields an NCAA D1 men's varsity soccer program in the Mountain West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Sundance Wicks"
+    }
+  },
+  "fresno-state:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "California State University, Fresno fields an NCAA D1 men's varsity soccer program in the Mountain West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jason Drake"
+    }
+  },
+  "utah-state:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Utah State University fields an NCAA D1 men's varsity soccer program in the Mountain West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Kody Cooke"
+    }
+  },
+  "utah-state:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Utah State University fields an NCAA D1 women's varsity soccer program in the Mountain West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Manny Martins"
+    }
+  },
+  "cal-poly:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Cal Poly SLO fields an NCAA Division I women's soccer program in the Big West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Bernardo Silva"
+    }
+  },
+  "hawaii:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Hawaiʻi fields an NCAA Division I women's soccer program in the Big West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Michele Nagamine"
+    }
+  },
+  "cal-poly:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Cal Poly SLO fields an NCAA Division I men's soccer program in the Big West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Oige Kennedy"
+    }
+  },
+  "csulb:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Long Beach State fields an NCAA Division I men's soccer program in the Big West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Danny Leyva"
+    }
+  },
+  "hawaii:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Hawaiʻi fields an NCAA Division I men's soccer program in the Big West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Rich Hill"
+    }
+  },
+  "uc-riverside:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "UC Riverside fields an NCAA Division I women's soccer program in the Big West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Mike Dibbini"
+    }
+  },
+  "uc-davis:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "UC Davis fields an NCAA Division I women's soccer program in the Big West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Kat Mertz"
+    }
+  },
+  "ucsd:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "UC San Diego fields an NCAA Division I women's soccer program in the Big West Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Trent Painter"
+    }
+  },
+  "samford:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Samford fields an NCAA Division I men's soccer program in the Southern Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Tony David"
+    }
+  },
+  "western-carolina:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Western Carolina fields an NCAA Division I men's soccer program in the Southern Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Alan Beck"
+    }
+  },
+  "unca:womens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "UNC Asheville does not field a varsity men's or women's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Andy McNab"
+    }
+  },
+  "eastern-kentucky:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Eastern Kentucky fields an NCAA Division I men's soccer program in the ASUN Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jan Weisberg"
+    }
+  },
+  "austin-peay:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Austin Peay dropped its men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Roland Fanning"
+    }
+  },
+  "north-alabama:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "University of North Alabama fields an NCAA Division I men's soccer program in the ASUN Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jad Prachniak"
+    }
+  },
+  "maine:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Maine fields an NCAA Division I men's soccer program in the America East Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "partial",
+      "scraperCoachName": "Brittany Madden"
+    }
+  },
+  "towson:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Towson fields an NCAA Division I women's soccer program in the CAA.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Katherine Vettori"
+    }
+  },
+  "towson:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Towson fields an NCAA Division I men's soccer program in the CAA.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Matt Tyner"
+    }
+  },
+  "murray-state:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Murray State does not field a varsity men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Josh Medler"
+    }
+  },
+  "tennessee-tech:womens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Tennessee Tech does not field a varsity women's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Corey Boyd"
+    }
+  },
+  "morehead-state:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Morehead State does not field a varsity men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jordan Gembarski"
+    }
+  },
+  "south-dakota-state:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "South Dakota State does not field a varsity men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Spirit Squad"
+    }
+  },
+  "wagner:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Wagner College fields an NCAA Division I men's soccer program in the NEC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Craig Noto"
+    }
+  },
+  "mtsu:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Middle Tennessee State fields an NCAA Division I men's soccer program in Conference USA.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Brian Stewart"
+    }
+  },
+  "louisiana-tech:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Louisiana Tech does not field a varsity men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Lane Burroughs"
+    }
+  },
+  "western-kentucky:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Western Kentucky does not field a varsity men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Alli Lumpkin"
+    }
+  },
+  "arkansas-state:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Arkansas State does not field a varsity men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Mike Silva"
+    }
+  },
+  "troy:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Troy does not field a varsity men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Jake Wyman"
+    }
+  },
+  "louisiana:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Louisiana-Lafayette does not field a varsity men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Spirit Groups"
+    }
+  },
+  "miami-ohio:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Miami University (Ohio) fields an NCAA Division I women's soccer program in the MAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Courtney Sirmans"
+    }
+  },
+  "ohio:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Ohio University does not field a varsity men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Becky Dicken"
+    }
+  },
+  "miami-ohio:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Miami University (Ohio) fields an NCAA Division I men's soccer program in the MAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Courtney Sirmans"
+    }
+  },
+  "central-michigan:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Central Michigan fields an NCAA Division I men's soccer program in the MAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Christine MacDonald"
+    }
+  },
+  "toledo:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Toledo fields an NCAA Division I women's soccer program in the MAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Mark Batman"
+    }
+  },
+  "ball-state:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Ball State fields an NCAA Division I men's soccer program in the MAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "partial",
+      "scraperCoachName": "Spirit Squads"
+    }
+  },
+  "bradley:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Bradley fields an NCAA Division I women's soccer program in the MVC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Justin Dedman"
+    }
+  },
+  "indiana-state:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Indiana State does not field a varsity men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Logan Spung"
+    }
+  },
+  "valparaiso:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Valparaiso fields an NCAA Division I men's soccer program in the MVC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Kaylee Pancek"
+    }
+  },
+  "tarleton-state:mens": {
+    "hasProgram": true,
+    "confidence": "medium",
+    "reason": "Tarleton State fields an NCAA Division I men's soccer program in the WAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Fuller Smith"
+    }
+  },
+  "lamar:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Lamar fields an NCAA Division I men's soccer program in the Southland Conference.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Will Davis"
+    }
+  },
+  "stephen-f-austin:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Stephen F. Austin fields an NCAA Division I men's soccer program in the WAC.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Trey Schroeder"
+    }
+  },
+  "northwestern-state:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Northwestern State competes in D1 (ASUN) but does not field a men's soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Chris Bertrand"
+    }
+  },
+  "mcneese-state:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "McNeese State (Southland Conference D1) does not sponsor men's varsity soccer.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Sandi Rodriguez"
+    }
+  },
+  "se-louisiana:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Southeastern Louisiana (Southland Conference D1) does not sponsor men's varsity soccer.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Layla Ruffin"
+    }
+  },
+  "sc-state:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "South Carolina State (MEAC D1) does not field a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Byron Larrymore"
+    }
+  },
+  "prairie-view:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Prairie View A&M (SWAC D1) does not sponsor men's varsity soccer.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Chris Collins"
+    }
+  },
+  "texas-southern:womens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Texas Southern (SWAC D1) does not field a women's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Danesha Adams"
+    }
+  },
+  "texas-southern:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "Texas Southern (SWAC D1) does not sponsor men's varsity soccer.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Christopher Seroka"
+    }
+  },
+  "henderson-state:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Henderson State (Great American Conference D2) fields a women's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Rusty Oglesby"
+    }
+  },
+  "henderson-state:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Henderson State (Great American Conference D2) fields a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Samantha Spieler"
+    }
+  },
+  "millersville:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Millersville University (PSAC D2) fields a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Steve Widdowson"
+    }
+  },
+  "millersville:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Millersville University (PSAC D2) fields a women's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Matt Procopio"
+    }
+  },
+  "iup:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Indiana University of Pennsylvania (PSAC D2) fields a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Dan Braun"
+    }
+  },
+  "nm-highlands:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "New Mexico Highlands University (Rocky Mountain Athletic Conference D2) fields a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Daniel Ford"
+    }
+  },
+  "concordia-st-paul:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Concordia University, St. Paul (Northern Sun Intercollegiate Conference D2) fields a women's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Steve Bellis"
+    }
+  },
+  "concordia-st-paul:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Concordia University, St. Paul (NSIC D2) fields a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Neil Lerner"
+    }
+  },
+  "umn-duluth:mens": {
+    "hasProgram": false,
+    "confidence": "high",
+    "reason": "University of Minnesota Duluth (NSIC D2) does not field a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Cory Chapp"
+    }
+  },
+  "nebraska-kearney:mens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "University of Nebraska at Kearney (MIAA D2) fields a men's varsity soccer program.",
+    "previously": {
+      "wikipedia": false,
+      "scraperStatus": "success",
+      "scraperCoachName": "Shawn Rodehorst"
+    }
+  },
+  "georgia-tech:womens": {
+    "hasProgram": true,
+    "confidence": "high",
+    "reason": "Georgia Institute of Technology (ACC D1) fields a women's varsity soccer program.",
+    "previously": {
+      "wikipedia": true,
+      "scraperStatus": "no-program",
+      "scraperCoachName": ""
+    }
+  }
+}

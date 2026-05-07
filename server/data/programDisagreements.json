@@ -1,0 +1,3807 @@
+{
+  "_meta": {
+    "generatedAt": "2026-05-07T01:04:46.383Z",
+    "counts": {
+      "falsePositives": 97,
+      "falseNegatives": 1,
+      "lowerDivPositives": 310,
+      "lowerDivNoProgram": 2
+    }
+  },
+  "falsePositives": [
+    {
+      "key": "ucla:womens",
+      "schoolName": "UCLA",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Gof Boyoko",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "fsu:mens",
+      "schoolName": "Florida State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brian Pensky",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "tamu:mens",
+      "schoolName": "Texas A&M University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Bobby Shuttleworth",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "ucf:womens",
+      "schoolName": "University of Central Florida",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Tiffany Roberts Sahaydak",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "appstate:mens",
+      "schoolName": "Appalachian State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jason O'Keefe",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "utrgv:womens",
+      "schoolName": "UT Rio Grande Valley",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Nataki Stewart",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "ewu:mens",
+      "schoolName": "Eastern Washington University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dan Monson",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "valdostaState:mens",
+      "schoolName": "Valdosta State University",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "J.D. Hulse",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "minnStateMankato:mens",
+      "schoolName": "Minnesota State University Mankato",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Andy Stocks",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "northtexas:mens",
+      "schoolName": "University of North Texas",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jordan Diaz",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "shippensburg:mens",
+      "schoolName": "Shippensburg University",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "web-name-only",
+      "scraperCoachName": "Jeremy Spering",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "shippensburg:womens",
+      "schoolName": "Shippensburg University",
+      "division": "D2",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Rob Fulton",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "mst:mens",
+      "schoolName": "Missouri S&T",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Robert Cummings",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "mst:womens",
+      "schoolName": "Missouri S&T",
+      "division": "D2",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Matthew Perry",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "centralMissouri:mens",
+      "schoolName": "University of Central Missouri",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Tyler Davis",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "gvsu:mens",
+      "schoolName": "Grand Valley State University",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jordan Keur",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "missState:mens",
+      "schoolName": "Mississippi State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Shaud Williams",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "olemiss:mens",
+      "schoolName": "University of Mississippi",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Spirit Squads",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "usc:womens",
+      "schoolName": "University of Southern California",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jane Alukonis",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "okstate:mens",
+      "schoolName": "Oklahoma State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Annie Young",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "houston:mens",
+      "schoolName": "University of Houston",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Ben Williams",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "cincinnati:mens",
+      "schoolName": "University of Cincinnati",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Hylton Dayes",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "kstate:mens",
+      "schoolName": "Kansas State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Kennedy Felice",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "iowastate:mens",
+      "schoolName": "Iowa State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Matt Fannon",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "utah:womens",
+      "schoolName": "University of Utah",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Hideki Nakada",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "ucsb:womens",
+      "schoolName": "UC Santa Barbara",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Paul Stumpf",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "williamary:womens",
+      "schoolName": "College of William & Mary",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Julie Shackford",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "uci:womens",
+      "schoolName": "UC Irvine",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Scott Juniper",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "tampa2:mens",
+      "schoolName": "AIC (American International College)",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jake Durham",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "tampa2:womens",
+      "schoolName": "AIC (American International College)",
+      "division": "D2",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Sam Mitchell",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "umass:womens",
+      "schoolName": "University of Massachusetts Amherst",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jason Dowiak",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "unlv:womens",
+      "schoolName": "University of Nevada, Las Vegas",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kacey Bingham",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "san-jose-state:mens",
+      "schoolName": "San Jose State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Simon Tobin",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "colorado-state:mens",
+      "schoolName": "Colorado State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Dawn Burton",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "san-jose-state:womens",
+      "schoolName": "San Jose State University",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Sonia Curvelo",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "nevada:womens",
+      "schoolName": "University of Nevada",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jeremy Evans",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "wyoming:mens",
+      "schoolName": "University of Wyoming",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Sundance Wicks",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "fresno-state:mens",
+      "schoolName": "California State University, Fresno",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jason Drake",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "utah-state:mens",
+      "schoolName": "Utah State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kody Cooke",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "utah-state:womens",
+      "schoolName": "Utah State University",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Manny Martins",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "cal-poly:womens",
+      "schoolName": "California Polytechnic State University",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Bernardo Silva",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "hawaii:womens",
+      "schoolName": "University of Hawaiʻi at Mānoa",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Michele Nagamine",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "cal-poly:mens",
+      "schoolName": "California Polytechnic State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Oige Kennedy",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "csulb:mens",
+      "schoolName": "California State University, Long Beach",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Danny Leyva",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "hawaii:mens",
+      "schoolName": "University of Hawaiʻi at Mānoa",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Rich Hill",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "uc-riverside:womens",
+      "schoolName": "University of California, Riverside",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Mike Dibbini",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "uc-davis:womens",
+      "schoolName": "University of California, Davis",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kat Mertz",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "ucsd:womens",
+      "schoolName": "University of California, San Diego",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Trent Painter",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "samford:mens",
+      "schoolName": "Samford University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Tony David",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "western-carolina:mens",
+      "schoolName": "Western Carolina University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Alan Beck",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "unca:womens",
+      "schoolName": "University of North Carolina Asheville",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Andy McNab",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "eastern-kentucky:mens",
+      "schoolName": "Eastern Kentucky University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jan Weisberg",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "austin-peay:mens",
+      "schoolName": "Austin Peay State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Roland Fanning",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "north-alabama:mens",
+      "schoolName": "University of North Alabama",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jad Prachniak",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "maine:mens",
+      "schoolName": "University of Maine",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "partial",
+      "scraperCoachName": "Brittany Madden",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "towson:womens",
+      "schoolName": "Towson University",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Katherine Vettori",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "towson:mens",
+      "schoolName": "Towson University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Matt Tyner",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "murray-state:mens",
+      "schoolName": "Murray State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Josh Medler",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "tennessee-tech:womens",
+      "schoolName": "Tennessee Technological University",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Corey Boyd",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "morehead-state:mens",
+      "schoolName": "Morehead State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jordan Gembarski",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "south-dakota-state:mens",
+      "schoolName": "South Dakota State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Spirit Squad",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "wagner:mens",
+      "schoolName": "Wagner College",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Craig Noto",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "mtsu:mens",
+      "schoolName": "Middle Tennessee State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Brian Stewart",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "louisiana-tech:mens",
+      "schoolName": "Louisiana Tech University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Lane Burroughs",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "western-kentucky:mens",
+      "schoolName": "Western Kentucky University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Alli Lumpkin",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "arkansas-state:mens",
+      "schoolName": "Arkansas State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Mike Silva",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "troy:mens",
+      "schoolName": "Troy University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jake Wyman",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "louisiana:mens",
+      "schoolName": "University of Louisiana at Lafayette",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Spirit Groups",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "miami-ohio:womens",
+      "schoolName": "Miami University",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Courtney Sirmans",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "ohio:mens",
+      "schoolName": "Ohio University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Becky Dicken",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "miami-ohio:mens",
+      "schoolName": "Miami University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Courtney Sirmans",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "central-michigan:mens",
+      "schoolName": "Central Michigan University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Christine MacDonald",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "toledo:womens",
+      "schoolName": "University of Toledo",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Mark Batman",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "ball-state:mens",
+      "schoolName": "Ball State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "partial",
+      "scraperCoachName": "Spirit Squads",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "bradley:womens",
+      "schoolName": "Bradley University",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Justin Dedman",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "indiana-state:mens",
+      "schoolName": "Indiana State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Logan Spung",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "valparaiso:mens",
+      "schoolName": "Valparaiso University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kaylee Pancek",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "tarleton-state:mens",
+      "schoolName": "Tarleton State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Fuller Smith",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "lamar:mens",
+      "schoolName": "Lamar University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Will Davis",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "stephen-f-austin:mens",
+      "schoolName": "Stephen F. Austin State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Trey Schroeder",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "northwestern-state:mens",
+      "schoolName": "Northwestern State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Chris Bertrand",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "mcneese-state:mens",
+      "schoolName": "McNeese State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Sandi Rodriguez",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "se-louisiana:mens",
+      "schoolName": "Southeastern Louisiana University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Layla Ruffin",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "sc-state:mens",
+      "schoolName": "South Carolina State University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Byron Larrymore",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "prairie-view:mens",
+      "schoolName": "Prairie View A&M University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Chris Collins",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "texas-southern:womens",
+      "schoolName": "Texas Southern University",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Danesha Adams",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "texas-southern:mens",
+      "schoolName": "Texas Southern University",
+      "division": "D1",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Christopher Seroka",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "henderson-state:womens",
+      "schoolName": "Henderson State University",
+      "division": "D2",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Rusty Oglesby",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "henderson-state:mens",
+      "schoolName": "Henderson State University",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Samantha Spieler",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "millersville:mens",
+      "schoolName": "Millersville University",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Steve Widdowson",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "millersville:womens",
+      "schoolName": "Millersville University",
+      "division": "D2",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Matt Procopio",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "iup:mens",
+      "schoolName": "Indiana University of Pennsylvania",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dan Braun",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "nm-highlands:mens",
+      "schoolName": "New Mexico Highlands University",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Daniel Ford",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "concordia-st-paul:womens",
+      "schoolName": "Concordia University, St. Paul",
+      "division": "D2",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Steve Bellis",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "concordia-st-paul:mens",
+      "schoolName": "Concordia University, St. Paul",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Neil Lerner",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "umn-duluth:mens",
+      "schoolName": "University of Minnesota Duluth",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Cory Chapp",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    },
+    {
+      "key": "nebraska-kearney:mens",
+      "schoolName": "University of Nebraska at Kearney",
+      "division": "D2",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Shawn Rodehorst",
+      "wikiSays": false,
+      "reason": "Wikipedia: not a member program | Scraper: claims coach found"
+    }
+  ],
+  "falseNegatives": [
+    {
+      "key": "georgia-tech:womens",
+      "schoolName": "Georgia Institute of Technology",
+      "division": "D1",
+      "gender": "womens",
+      "scraperStatus": "no-program",
+      "scraperCoachName": "",
+      "wikiSays": true,
+      "reason": "Wikipedia: program exists | Scraper: marked no-program"
+    }
+  ],
+  "lowerDivPositives": [
+    {
+      "key": "amherst:mens",
+      "schoolName": "Amherst College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Justin Serpone",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "amherst:womens",
+      "schoolName": "Amherst College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jen Hughes",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "middlebury:mens",
+      "schoolName": "Middlebury College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Alex Elias",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "williams:womens",
+      "schoolName": "Williams College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Sarah Raymond",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "tufts:mens",
+      "schoolName": "Tufts University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kyle Dezotell",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "tufts:womens",
+      "schoolName": "Tufts University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Martha Whiting",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "middlebury:womens",
+      "schoolName": "Middlebury College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Peter Kim",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bowdoin:mens",
+      "schoolName": "Bowdoin College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Scott Wiercinski",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hamilton:mens",
+      "schoolName": "Hamilton College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brendan Ujvary",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bowdoin:womens",
+      "schoolName": "Bowdoin College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brianne Smithson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hamilton:womens",
+      "schoolName": "Hamilton College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Colette Gilligan",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bates:womens",
+      "schoolName": "Bates College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Joe Vari",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "williams:mens",
+      "schoolName": "Williams College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Steffen Siebert",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bates:mens",
+      "schoolName": "Bates College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Ben Brewster",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wesleyan:mens",
+      "schoolName": "Wesleyan University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Geoff Wheeler",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wesleyan:womens",
+      "schoolName": "Wesleyan University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Eva Meredith",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "emory:mens",
+      "schoolName": "Emory University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Cory Greiner",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "emory:womens",
+      "schoolName": "Emory University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Sue Patberg",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "washu:mens",
+      "schoolName": "Washington University in St. Louis",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Andrew Bordelon",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "washu:womens",
+      "schoolName": "Washington University in St. Louis",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jim Conlon",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "colby:mens",
+      "schoolName": "Colby College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Sean Elvert",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "colby:womens",
+      "schoolName": "Colby College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Seth Benjamin",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "carnegieMellon:mens",
+      "schoolName": "Carnegie Mellon University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brandon Bowman",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "trinityHartford:mens",
+      "schoolName": "Trinity College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Methembe Ndlovu",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "brandeis:mens",
+      "schoolName": "Brandeis University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "web-verified",
+      "scraperCoachName": "Gabe Margolis",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "brandeis:womens",
+      "schoolName": "Brandeis University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Mary Shimko",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "carnegieMellon:womens",
+      "schoolName": "Carnegie Mellon University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Yon Struble",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "nyu:womens",
+      "schoolName": "New York University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Scott Waddell",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "nyu:mens",
+      "schoolName": "New York University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kim Wyant",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "rochester:mens",
+      "schoolName": "University of Rochester",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Ben Cross",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "rochester:womens",
+      "schoolName": "University of Rochester",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Ashley Van Vechten",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "messiah:mens",
+      "schoolName": "Messiah University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brad McCarty",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "messiah:womens",
+      "schoolName": "Messiah University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Scott Frey",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "franklinMarshall:mens",
+      "schoolName": "Franklin & Marshall College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dan Wagner",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "franklinMarshall:womens",
+      "schoolName": "Franklin & Marshall College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "John Sumoski",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "dickinson:mens",
+      "schoolName": "Dickinson College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jorge Chapoy",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "dickinson:womens",
+      "schoolName": "Dickinson College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Ted Zingman",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "gettysburg:mens",
+      "schoolName": "Gettysburg College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dan Malone",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "gettysburg:womens",
+      "schoolName": "Gettysburg College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Rebecca Quimby",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "uchicago:womens",
+      "schoolName": "University of Chicago",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Amy Howley Reifert",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "trinityHartford:womens",
+      "schoolName": "Trinity College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Rachael Schroeder",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "uchicago:mens",
+      "schoolName": "University of Chicago",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Phillip Kroft",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wheaton:mens",
+      "schoolName": "Wheaton College (IL)",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Steve McCrath",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "muhlenberg:womens",
+      "schoolName": "Muhlenberg College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kathy Prescott",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wheaton:womens",
+      "schoolName": "Wheaton College (IL)",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Patrick Gilliam",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "muhlenberg:mens",
+      "schoolName": "Muhlenberg College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Sean Topping",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "ohioWesleyan:mens",
+      "schoolName": "Ohio Wesleyan University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Matt Weiss",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "denison:mens",
+      "schoolName": "Denison University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brandon Bianco",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "ohioWesleyan:womens",
+      "schoolName": "Ohio Wesleyan University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Pat Ferguson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "chapman:mens",
+      "schoolName": "Chapman University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Romeo Aguinaldo",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "chapman:womens",
+      "schoolName": "Chapman University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "TJ Perez",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "calvin:mens",
+      "schoolName": "Calvin University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Ryan Souders",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "calvin:womens",
+      "schoolName": "Calvin University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Emily Ottenhoff",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hope:mens",
+      "schoolName": "Hope College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "David Blahnik",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hope:womens",
+      "schoolName": "Hope College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Holly Van Noord",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "cwru:mens",
+      "schoolName": "Case Western Reserve University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Carter Poe",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "denison:womens",
+      "schoolName": "Denison University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Sarah Brink",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "pomona:womens",
+      "schoolName": "Pomona-Pitzer Colleges",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Miranda Armstrong",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "cwru:womens",
+      "schoolName": "Case Western Reserve University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Alyssa Johnson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "rowan:mens",
+      "schoolName": "Rowan University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Scott Baker",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "pomona:mens",
+      "schoolName": "Pomona-Pitzer Colleges",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Clint Moore",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "cortland:mens",
+      "schoolName": "SUNY Cortland",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Steve Axtell",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "rowan:womens",
+      "schoolName": "Rowan University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Scott Leacott",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "cortland:womens",
+      "schoolName": "SUNY Cortland",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Heidi Axtell",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "mhbu:mens",
+      "schoolName": "Mary Hardin-Baylor University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "web-name-only",
+      "scraperCoachName": "Ben Allen",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "mhbu:womens",
+      "schoolName": "Mary Hardin-Baylor University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "web-verified",
+      "scraperCoachName": "Barry Elkins",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hardinSimmons:womens",
+      "schoolName": "Hardin-Simmons University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Rusty Oglesby",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "lycoming:mens",
+      "schoolName": "Lycoming College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "John Schwien",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hardinSimmons:mens",
+      "schoolName": "Hardin-Simmons University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Samantha Spieler",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "lindseywilson:mens",
+      "schoolName": "Lindsey Wilson College",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "web-verified",
+      "scraperCoachName": "Sicelo Buthelezi",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "grandview:mens",
+      "schoolName": "Grand View University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "David Groves",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "grandview:womens",
+      "schoolName": "Grand View University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Ventsi Stoimirov",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "ithaca:mens",
+      "schoolName": "Ithaca College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Gabe Kuhn",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "ithaca:womens",
+      "schoolName": "Ithaca College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Mindy Quigg",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "morningside:mens",
+      "schoolName": "Morningside University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "web-verified",
+      "scraperCoachName": "Tom Maxon",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "keiser:mens",
+      "schoolName": "Keiser University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "web-name-only",
+      "scraperCoachName": "Gavin Oldham",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "keiser:womens",
+      "schoolName": "Keiser University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "web-name-only",
+      "scraperCoachName": "Alex Adams",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "northwesternIowa:womens",
+      "schoolName": "Northwestern College (IA)",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Vitor Pereira",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "northwesternIowa:mens",
+      "schoolName": "Northwestern College (IA)",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dan Swier",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "indianatech:mens",
+      "schoolName": "Indiana Tech",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Keelan Barker",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "indianatech:womens",
+      "schoolName": "Indiana Tech",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Andrea Gorton",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "lycoming:womens",
+      "schoolName": "Lycoming College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kenny Fern",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "jhu:mens",
+      "schoolName": "Johns Hopkins University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Craig Appleby",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "jhu:womens",
+      "schoolName": "Johns Hopkins University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dan Weiler",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "haverford:mens",
+      "schoolName": "Haverford College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kevin Brenner",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "haverford:womens",
+      "schoolName": "Haverford College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jamie Schneck",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "washcoll:mens",
+      "schoolName": "Washington College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Roy Dunshee",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "washcoll:womens",
+      "schoolName": "Washington College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Tom Reilly",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "cms:mens",
+      "schoolName": "Claremont-Mudd-Scripps",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Edward Cartee",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "occidental:mens",
+      "schoolName": "Occidental College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Rod Lafaurie",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "occidental:womens",
+      "schoolName": "Occidental College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Lydia Mitchell",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "caltech:mens",
+      "schoolName": "California Institute of Technology",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Duncan Gillis",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "caltech:womens",
+      "schoolName": "California Institute of Technology",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Scott Wilson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "rit:mens",
+      "schoolName": "Rochester Institute of Technology",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Bill Garno",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "rit:womens",
+      "schoolName": "Rochester Institute of Technology",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Liz Masterson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "swarthmore:womens",
+      "schoolName": "Swarthmore College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Todd Anckaitis",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "vassar:womens",
+      "schoolName": "Vassar College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Keith Simons",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "swarthmore:mens",
+      "schoolName": "Swarthmore College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Eric Wagner",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "stolaf:mens",
+      "schoolName": "St. Olaf College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Justin Oliver",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "carleton:mens",
+      "schoolName": "Carleton College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Bob Carlson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "carleton:womens",
+      "schoolName": "Carleton College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jessica Mueller",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "macalester:mens",
+      "schoolName": "Macalester College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Gregg Olson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "skidmore:womens",
+      "schoolName": "Skidmore College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Lacey Walsh",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "skidmore:mens",
+      "schoolName": "Skidmore College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brad Campion",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "vassar:mens",
+      "schoolName": "Vassar College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Andrew Mpasiakos",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "kenyon:mens",
+      "schoolName": "Kenyon College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Travis Wall",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "kenyon:womens",
+      "schoolName": "Kenyon College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Sarah McClellan",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "macalester:womens",
+      "schoolName": "Macalester College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Madeline Buckley",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wittenberg:mens",
+      "schoolName": "Wittenberg University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Dwight Burgess",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wittenberg:womens",
+      "schoolName": "Wittenberg University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Katie Robinson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "depauw:womens",
+      "schoolName": "DePauw University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Cristin Allen",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "gustavus:mens",
+      "schoolName": "Gustavus Adolphus College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Tyler Oliver",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "gustavus:womens",
+      "schoolName": "Gustavus Adolphus College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Lauren Johnson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wlu:mens",
+      "schoolName": "Washington and Lee University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Lumumba Shabazz",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wlu:womens",
+      "schoolName": "Washington and Lee University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Tiffany Pins",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "mit:mens",
+      "schoolName": "Massachusetts Institute of Technology",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Ken Bovell",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "mit:womens",
+      "schoolName": "Massachusetts Institute of Technology",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Martin Desmarais",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "lynchburg:womens",
+      "schoolName": "University of Lynchburg",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dr. Todd Olsen",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "stevens:womens",
+      "schoolName": "Stevens Institute of Technology",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Stuart Moran",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "stevens:mens",
+      "schoolName": "Stevens Institute of Technology",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dale Jordan",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "cnu:womens",
+      "schoolName": "Christopher Newport University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jamie Gunderson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "cnu:mens",
+      "schoolName": "Christopher Newport University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Justin Chezem",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "rpi:womens",
+      "schoolName": "Rensselaer Polytechnic Institute",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Bre Nasypany-Cicero",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "rpi:mens",
+      "schoolName": "Rensselaer Polytechnic Institute",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Adam Clinton",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "conncoll:mens",
+      "schoolName": "Connecticut College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Reuben Burk",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "loras:womens",
+      "schoolName": "Loras College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Matt Pucci",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "lynchburg:mens",
+      "schoolName": "University of Lynchburg",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Chris Yeager",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "depauw:mens",
+      "schoolName": "DePauw University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Steven McCarthy",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "otterbein:womens",
+      "schoolName": "Otterbein University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brandon Koons",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "otterbein:mens",
+      "schoolName": "Otterbein University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jason Griffiths",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "smith:mens",
+      "schoolName": "Smith College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Lynn Hersey",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wabash:mens",
+      "schoolName": "Wabash College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Chris Keller",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "trinitytx:mens",
+      "schoolName": "Trinity University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Paul McGinlay",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "brynmawr:womens",
+      "schoolName": "Bryn Mawr College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Claire Scanlan",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "brynmawr:mens",
+      "schoolName": "Bryn Mawr College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Courtney Morris",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "trinitytx:womens",
+      "schoolName": "Trinity University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dylan Harrison",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "smith:womens",
+      "schoolName": "Smith College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kathy Brawn",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "babson-college:mens",
+      "schoolName": "Babson College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "EJ Reutemann",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "babson-college:womens",
+      "schoolName": "Babson College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Tim Mason",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "clark-university:womens",
+      "schoolName": "Clark University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Brienne Smith",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "gordon-college:mens",
+      "schoolName": "Gordon College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Kellen Kasiguran",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "gordon-college:womens",
+      "schoolName": "Gordon College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Chuck Breton",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "springfield-college:womens",
+      "schoolName": "Springfield College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Kursten Shade",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "umass-dartmouth:mens",
+      "schoolName": "University of Massachusetts Dartmouth",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Andrew Schaefer",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "umass-dartmouth:womens",
+      "schoolName": "University of Massachusetts Dartmouth",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Bobby Desilets",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "umass-boston:mens",
+      "schoolName": "University of Massachusetts Boston",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jake Beverlin",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bridgewater-state:mens",
+      "schoolName": "Bridgewater State University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brendan Adams",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bridgewater-state:womens",
+      "schoolName": "Bridgewater State University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Yasmina Carvalho",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "roger-williams-university:womens",
+      "schoolName": "Roger Williams University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Katy LaBella",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "roger-williams-university:mens",
+      "schoolName": "Roger Williams University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "James Greenslit",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "salve-regina-university:mens",
+      "schoolName": "Salve Regina University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Bill Lawler",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "salve-regina-university:womens",
+      "schoolName": "Salve Regina University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Tanya Roberts",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "university-of-southern-maine:mens",
+      "schoolName": "University of Southern Maine",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jim Hopkins",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "university-of-southern-maine:womens",
+      "schoolName": "University of Southern Maine",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Martyn Keen",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "suny-geneseo:womens",
+      "schoolName": "SUNY Geneseo",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Nate Wiley",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "suny-oswego:mens",
+      "schoolName": "SUNY Oswego",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dan Kane",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "suny-oswego:womens",
+      "schoolName": "SUNY Oswego",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brian McGrane",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "suny-new-paltz:mens",
+      "schoolName": "SUNY New Paltz",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Kyle Clancy",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "suny-new-paltz:womens",
+      "schoolName": "SUNY New Paltz",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Brad Bolton",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "suny-brockport:mens",
+      "schoolName": "SUNY Brockport",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Gary A LaPietra",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "suny-brockport:womens",
+      "schoolName": "SUNY Brockport",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Mike Idland",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "suny-plattsburgh:mens",
+      "schoolName": "SUNY Plattsburgh",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Chris Taylor",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "st-john-fisher-college:mens",
+      "schoolName": "St. John Fisher University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jack Burgasser",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "st-john-fisher-college:womens",
+      "schoolName": "St. John Fisher University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Molly Romano",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "utica-university:mens",
+      "schoolName": "Utica University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brian Marcantonio",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "utica-university:womens",
+      "schoolName": "Utica University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brooke Barbuto",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "nazareth-college:womens",
+      "schoolName": "Nazareth University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Gail Mann",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "alfred-university:mens",
+      "schoolName": "Alfred University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Garret Eldridge",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "alfred-university:womens",
+      "schoolName": "Alfred University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Craig Yanni",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hartwick-college:mens",
+      "schoolName": "Hartwick College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "John Scott",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hartwick-college:womens",
+      "schoolName": "Hartwick College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Brian Knapp",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hobart-and-william-smith:mens",
+      "schoolName": "Hobart and William Smith Colleges",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Shawn Griffin",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hobart-and-william-smith:womens",
+      "schoolName": "Hobart and William Smith Colleges",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Historical Roster",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "st-lawrence-university:mens",
+      "schoolName": "St. Lawrence University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Mike Toshack",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "union-college:mens",
+      "schoolName": "Union College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "John Ciano",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "union-college:womens",
+      "schoolName": "Union College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Karen Perron",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "drew-university:mens",
+      "schoolName": "Drew University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Lenny Armuth",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "college-of-new-jersey:mens",
+      "schoolName": "The College of New Jersey",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Steve DeMatteo",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "college-of-new-jersey:womens",
+      "schoolName": "The College of New Jersey",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Danny Blank",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "montclair-state-university:mens",
+      "schoolName": "Montclair State University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Todd Tumelty",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "montclair-state-university:womens",
+      "schoolName": "Montclair State University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Patrick Naughter",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "ramapo-college:mens",
+      "schoolName": "Ramapo College of New Jersey",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "DJ Pinton",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "ramapo-college:womens",
+      "schoolName": "Ramapo College of New Jersey",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Abby Shiffler",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "kean-university:mens",
+      "schoolName": "Kean University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jairo Munoz",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "kean-university:womens",
+      "schoolName": "Kean University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Brian Doherty",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "fdu-florham:mens",
+      "schoolName": "Fairleigh Dickinson University–Florham",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Tight Ends\tTyler Pucci",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "fdu-florham:womens",
+      "schoolName": "Fairleigh Dickinson University–Florham",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Kristin Giotta",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "albright-college:mens",
+      "schoolName": "Albright College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Pat Stanco",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "ursinus-college:mens",
+      "schoolName": "Ursinus College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Colin Klingman",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "lebanon-valley-college:mens",
+      "schoolName": "Lebanon Valley College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Charlie Grimes",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "ursinus-college:womens",
+      "schoolName": "Ursinus College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jeannine Calhoun",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "elizabethtown-college:mens",
+      "schoolName": "Elizabethtown College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Evan Scheffey",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "moravian-university:mens",
+      "schoolName": "Moravian University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Bob Wilkinson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "moravian-university:womens",
+      "schoolName": "Moravian University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jeff Ykoruk",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "susquehanna-university:mens",
+      "schoolName": "Susquehanna University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jim Findlay",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "susquehanna-university:womens",
+      "schoolName": "Susquehanna University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Nick Hoover",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "goucher-college:mens",
+      "schoolName": "Goucher College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Bryan Laut",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "goucher-college:womens",
+      "schoolName": "Goucher College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Angela Amato",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hood-college:mens",
+      "schoolName": "Hood College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Geoff Moore",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hood-college:womens",
+      "schoolName": "Hood College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Molly Kovarik",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "mcdaniel-college:mens",
+      "schoolName": "McDaniel College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Steve Corrieri",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "mcdaniel-college:womens",
+      "schoolName": "McDaniel College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Michael Scott",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "salisbury-university:womens",
+      "schoolName": "Salisbury University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Kwame Lloyd",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "york-college-pa:mens",
+      "schoolName": "York College of Pennsylvania",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Nate Gibboney",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "york-college-pa:womens",
+      "schoolName": "York College of Pennsylvania",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Ovid Cusu",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "randolph-macon-college:mens",
+      "schoolName": "Randolph-Macon College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Josh Laux",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "roanoke-college:womens",
+      "schoolName": "Roanoke College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Phil Benne",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "randolph-macon-college:womens",
+      "schoolName": "Randolph-Macon College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Patrick Corbett",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "roanoke-college:mens",
+      "schoolName": "Roanoke College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Ryan Pflugrad",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bridgewater-college-va:mens",
+      "schoolName": "Bridgewater College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Ryan W. Bennison",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bridgewater-college-va:womens",
+      "schoolName": "Bridgewater College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Mike Van Horn",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "virginia-wesleyan-university:womens",
+      "schoolName": "Virginia Wesleyan University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jeffrey L. Bowers",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "virginia-wesleyan-university:mens",
+      "schoolName": "Virginia Wesleyan University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Shane Kohler",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "methodist-university:mens",
+      "schoolName": "Methodist University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Justin Terranova",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "methodist-university:womens",
+      "schoolName": "Methodist University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Bryan Madej",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "rhodes-college:mens",
+      "schoolName": "Rhodes College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Matt Lamb",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "rhodes-college:womens",
+      "schoolName": "Rhodes College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "McKinnon Pennell",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "sewanee:mens",
+      "schoolName": "University of the South (Sewanee)",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Tony Pacella",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "sewanee:womens",
+      "schoolName": "University of the South (Sewanee)",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Greg Cathell",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "centre-college:womens",
+      "schoolName": "Centre College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jay Hoffman",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "transylvania-university:mens",
+      "schoolName": "Transylvania University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Ben Federici",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "john-carroll-university:mens",
+      "schoolName": "John Carroll University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dejan Mladenovic",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "john-carroll-university:womens",
+      "schoolName": "John Carroll University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Michael Marich",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "ohio-northern-university:mens",
+      "schoolName": "Ohio Northern University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Chris Matejka",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "heidelberg-university:womens",
+      "schoolName": "Heidelberg University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Madalynn McLaughlin",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "heidelberg-university:mens",
+      "schoolName": "Heidelberg University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Michael Wright",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "capital-university:mens",
+      "schoolName": "Capital University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Corey Kirk",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "capital-university:womens",
+      "schoolName": "Capital University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Matt Ogden",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "mount-union:mens",
+      "schoolName": "University of Mount Union",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "David Krems",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "mount-union:womens",
+      "schoolName": "University of Mount Union",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Asheli Freed",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "alma-college:mens",
+      "schoolName": "Alma College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Alister Newby",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "albion-college:mens",
+      "schoolName": "Albion College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Wytse Molenaar",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "alma-college:womens",
+      "schoolName": "Alma College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Sam Sibilski",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "kalamazoo-college:mens",
+      "schoolName": "Kalamazoo College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Mike Haines",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "kalamazoo-college:womens",
+      "schoolName": "Kalamazoo College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jill Leibforth",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "olivet-college:mens",
+      "schoolName": "Olivet College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Doug Carter",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wisconsin-la-crosse:mens",
+      "schoolName": "University of Wisconsin–La Crosse",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Chris Schwarz",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wisconsin-eau-claire:womens",
+      "schoolName": "University of Wisconsin–Eau Claire",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Sean Yengo",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "olivet-college:womens",
+      "schoolName": "Olivet College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Justin Loveless",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wisconsin-eau-claire:mens",
+      "schoolName": "University of Wisconsin–Eau Claire",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Casey Holm",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wisconsin-la-crosse:womens",
+      "schoolName": "University of Wisconsin–La Crosse",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jason Murphy",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wisconsin-oshkosh:womens",
+      "schoolName": "University of Wisconsin–Oshkosh",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Erin Coppernoll",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wisconsin-platteville:womens",
+      "schoolName": "University of Wisconsin–Platteville",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Eliza Denmeade",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wisconsin-river-falls:mens",
+      "schoolName": "University of Wisconsin–River Falls",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Evan Sassano",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wisconsin-stevens-point:mens",
+      "schoolName": "University of Wisconsin–Stevens Point",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jordan Kayser",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wisconsin-stout:mens",
+      "schoolName": "University of Wisconsin–Stout",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Cole Schwartz",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wisconsin-stout:womens",
+      "schoolName": "University of Wisconsin–Stout",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Marcos Rodriguez",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "augustana-college-il:womens",
+      "schoolName": "Augustana College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Scott Mejia",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "north-central-college:mens",
+      "schoolName": "North Central College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Enzo Fuschino",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "north-central-college:womens",
+      "schoolName": "North Central College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Andrew Gamarra",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "wartburg-college:mens",
+      "schoolName": "Wartburg College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Christian Coridon",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "luther-college:mens",
+      "schoolName": "Luther College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Chris Garcia-Prats",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "luther-college:womens",
+      "schoolName": "Luther College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Hollie Gray III",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "university-of-dubuque:womens",
+      "schoolName": "University of Dubuque",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jason Berna",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "university-of-dubuque:mens",
+      "schoolName": "University of Dubuque",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Andrew Mathys",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "simpson-college:mens",
+      "schoolName": "Simpson College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Rick Isaacson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "simpson-college:womens",
+      "schoolName": "Simpson College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jeremy Reinert",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "central-college-ia:mens",
+      "schoolName": "Central College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Garry Laidlaw",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hamline-university:mens",
+      "schoolName": "Hamline University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "John Pucci",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "central-college-ia:womens",
+      "schoolName": "Central College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Mike Kobylinski",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "hamline-university:womens",
+      "schoolName": "Hamline University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Michael Prunty",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bethel-university-mn:mens",
+      "schoolName": "Bethel University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jeremy Iwaszkowiec",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bethel-university-mn:womens",
+      "schoolName": "Bethel University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Sheila McGill",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "pacific-university:mens",
+      "schoolName": "Pacific University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Andres Ochoa",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "pacific-university:womens",
+      "schoolName": "Pacific University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jeff Freeman",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "whitman-college:womens",
+      "schoolName": "Whitman College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Michelle Voiland",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "whitman-college:mens",
+      "schoolName": "Whitman College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Jose Cedeno",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "lewis-and-clark-college:mens",
+      "schoolName": "Lewis & Clark College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Fraser Morrison",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "lewis-and-clark-college:womens",
+      "schoolName": "Lewis & Clark College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jim Tursi",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "willamette-university:womens",
+      "schoolName": "Willamette University",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Lisa Ljubicic",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "linfield-university:mens",
+      "schoolName": "Linfield University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Andrew Duvall",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "willamette-university:mens",
+      "schoolName": "Willamette University",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Matt Corti-Young",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "austin-college:womens",
+      "schoolName": "Austin College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Kevin Gregory",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "lagrange-college:womens",
+      "schoolName": "LaGrange College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kaine Baker",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "lagrange-college:mens",
+      "schoolName": "LaGrange College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Ryan Dickson",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "berry-college:mens",
+      "schoolName": "Berry College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Richard Vardy",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "berry-college:womens",
+      "schoolName": "Berry College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Kathy Insel-Brown",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "colorado-college:mens",
+      "schoolName": "Colorado College",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Scott Palguta",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "colorado-college:womens",
+      "schoolName": "Colorado College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "haiku-verified",
+      "scraperCoachName": "Keri Sanchez",
+      "reason": "Wikipedia: not covered (D3) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "avila-university:mens",
+      "schoolName": "Avila University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Robert Kelly",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "avila-university:womens",
+      "schoolName": "Avila University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Katie LaForge",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bethel-university-tn:mens",
+      "schoolName": "Bethel University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Malang Jarju",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bethel-university-tn:womens",
+      "schoolName": "Bethel University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Misty Aird",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bryan-college:mens",
+      "schoolName": "Bryan College",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jeremy Davidson",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "bryan-college:womens",
+      "schoolName": "Bryan College",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jake Warren",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "college-of-idaho:mens",
+      "schoolName": "College of Idaho",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Thom Baker",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "college-of-idaho:womens",
+      "schoolName": "College of Idaho",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Brian Smith",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "corban-university:womens",
+      "schoolName": "Corban University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "National Stat Leaders",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "corban-university:mens",
+      "schoolName": "Corban University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Tim Kagey",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "john-brown-university:womens",
+      "schoolName": "John Brown University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Dr. Kathleen Paulsen",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "kansas-wesleyan-university:womens",
+      "schoolName": "Kansas Wesleyan University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Joe Schwartz",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "john-brown-university:mens",
+      "schoolName": "John Brown University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Samuel Estrada",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "kansas-wesleyan-university:mens",
+      "schoolName": "Kansas Wesleyan University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Cody Bartlow",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "tennessee-wesleyan-university:mens",
+      "schoolName": "Tennessee Wesleyan University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Kathryn Whartenby",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "life-university:mens",
+      "schoolName": "Life University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Alex Pama",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "life-university:womens",
+      "schoolName": "Life University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Meg McGonigle",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "tennessee-wesleyan-university:womens",
+      "schoolName": "Tennessee Wesleyan University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Babak Abouzar",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "olivet-nazarene-university:mens",
+      "schoolName": "Olivet Nazarene University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jon Forsythe",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "olivet-nazarene-university:womens",
+      "schoolName": "Olivet Nazarene University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Bill Bahr",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "science-and-arts-oklahoma:mens",
+      "schoolName": "University of Science and Arts of Oklahoma",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Tony Orsi",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "science-and-arts-oklahoma:womens",
+      "schoolName": "University of Science and Arts of Oklahoma",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Niall Crick",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "viterbo-university:womens",
+      "schoolName": "Viterbo University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Scott Pirnstill",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "viterbo-university:mens",
+      "schoolName": "Viterbo University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Roberto Yepez",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "webber-international:mens",
+      "schoolName": "Webber International University",
+      "division": "NAIA",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Bryan Mejia",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "webber-international:womens",
+      "schoolName": "Webber International University",
+      "division": "NAIA",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Jack Paris",
+      "reason": "Wikipedia: not covered (NAIA) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "colby-cc:mens",
+      "schoolName": "Colby Community College",
+      "division": "JUCO",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Sean Elvert",
+      "reason": "Wikipedia: not covered (JUCO) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "colby-cc:womens",
+      "schoolName": "Colby Community College",
+      "division": "JUCO",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Seth Benjamin",
+      "reason": "Wikipedia: not covered (JUCO) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "parkland-college:mens",
+      "schoolName": "Parkland College",
+      "division": "JUCO",
+      "gender": "mens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Mark Sikora",
+      "reason": "Wikipedia: not covered (JUCO) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "parkland-college:womens",
+      "schoolName": "Parkland College",
+      "division": "JUCO",
+      "gender": "womens",
+      "scraperStatus": "success",
+      "scraperCoachName": "Zack Pych",
+      "reason": "Wikipedia: not covered (JUCO) | Scraper: claims coach found — should we verify?"
+    },
+    {
+      "key": "modesto-junior-college:womens",
+      "schoolName": "Modesto Junior College",
+      "division": "JUCO",
+      "gender": "womens",
+      "scraperStatus": "email-inferred",
+      "scraperCoachName": "Steve Aristotelous",
+      "reason": "Wikipedia: not covered (JUCO) | Scraper: claims coach found — should we verify?"
+    }
+  ],
+  "lowerDivNoProgram": [
+    {
+      "key": "wabash:womens",
+      "schoolName": "Wabash College",
+      "division": "D3",
+      "gender": "womens",
+      "scraperStatus": "no-program",
+      "scraperCoachName": "",
+      "reason": "Wikipedia: not covered (D3) | Scraper: no-program (already filtered, no action needed)"
+    },
+    {
+      "key": "wisconsin-oshkosh:mens",
+      "schoolName": "University of Wisconsin–Oshkosh",
+      "division": "D3",
+      "gender": "mens",
+      "scraperStatus": "no-program",
+      "scraperCoachName": "",
+      "reason": "Wikipedia: not covered (D3) | Scraper: no-program (already filtered, no action needed)"
+    }
+  ]
+}
