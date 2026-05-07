@@ -4,6 +4,13 @@ dist/
 .env.local
 server.log
 .playwright-mcp/
+polish-*.png
+verify-*.png
+overview-*.png
+heatmap-*.png
+final-cta-*.png
+onboarding-*.png
+pitch-*.png
 .superpowers/
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
