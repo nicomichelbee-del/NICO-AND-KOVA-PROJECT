@@ -10,9 +10,9 @@ import {
   claimCoachProgram,
   getCoachMe,
   updateCoachNeeds,
-  getCoachInbound,
   type CoachProgram,
 } from '../lib/api'
+import { InboundFeed } from '../components/coach/InboundFeed'
 
 const POSITIONS = [
   'Goalkeeper', 'Center Back', 'Outside Back', 'Defensive Midfielder',
@@ -32,9 +32,6 @@ export function CoachDashboard() {
   const [searchResults, setSearchResults] = useState<{ id: string; school: string; conference: string; division: string; gender: 'mens' | 'womens'; location: string }[]>([])
   const [claiming, setClaiming] = useState<string | null>(null)
 
-  // Inbound athletes
-  const [inbound, setInbound] = useState<{ id: string; schoolName: string; division: string; position: string | null; status: string; interestRating: string; lastReplyAt: string | null; createdAt: string }[]>([])
-
   useEffect(() => {
     if (!user) { navigate('/for-coaches', { replace: true }); return }
     setLoading(true)
@@ -45,11 +42,6 @@ export function CoachDashboard() {
       .catch((e) => setError(e instanceof Error ? e.message : 'Failed to load'))
       .finally(() => setLoading(false))
   }, [user, navigate])
-
-  useEffect(() => {
-    if (!user || !program) return
-    getCoachInbound(user.id).then(({ athletes }) => setInbound(athletes)).catch(() => {})
-  }, [user, program])
 
   useEffect(() => {
     if (!searchQ.trim() || program) { setSearchResults([]); return }
@@ -165,8 +157,8 @@ export function CoachDashboard() {
                       <div className="text-sm text-[#9a9385]">{program.conference} · {program.division} · {program.gender === 'mens' ? "Men's" : "Women's"} · {program.location}</div>
                     </div>
                     <div className="text-right">
-                      <div className="text-xs font-mono uppercase tracking-wider text-[#9a9385]">Athletes interested</div>
-                      <div className="font-serif text-3xl font-black text-[#f0b65a]">{inbound.length}</div>
+                      <div className="text-xs font-mono uppercase tracking-wider text-[#9a9385]">Status</div>
+                      <div className="font-serif text-sm font-bold text-[#4ade80]">Active</div>
                     </div>
                   </div>
                 </Card>
@@ -235,36 +227,9 @@ export function CoachDashboard() {
                 {/* Inbound athletes */}
                 <Card className="p-6">
                   <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a] mb-3">
-                    Athletes who emailed you ({inbound.length})
+                    Athletes who emailed you
                   </div>
-                  {inbound.length === 0 ? (
-                    <p className="text-sm text-[#9a9385]">
-                      No KickrIQ athletes have emailed you yet. As they reach out using your program's contact info, they'll appear here.
-                    </p>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-[rgba(245,241,232,0.08)]">
-                            {['Athlete', 'Position', 'Status', 'Last reply', 'First contact'].map((h) => (
-                              <th key={h} className="text-left px-3 py-2 text-xs font-semibold text-[#9a9385] uppercase tracking-wider">{h}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {inbound.map((a) => (
-                            <tr key={a.id} className="border-b border-[rgba(245,241,232,0.04)]">
-                              <td className="px-3 py-3 text-[#f5f1e8] font-mono text-xs">{a.id.slice(0, 8)}…</td>
-                              <td className="px-3 py-3 text-[#9a9385]">{a.position ?? '—'}</td>
-                              <td className="px-3 py-3"><span className="px-2 py-0.5 rounded text-[10px] uppercase tracking-wider border border-[rgba(245,241,232,0.10)] text-[#f0b65a]">{a.status}</span></td>
-                              <td className="px-3 py-3 text-xs text-[#9a9385]">{a.lastReplyAt ? new Date(a.lastReplyAt).toLocaleDateString() : '—'}</td>
-                              <td className="px-3 py-3 text-xs text-[#9a9385]">{new Date(a.createdAt).toLocaleDateString()}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
+                  <InboundFeed coachUserId={user!.id} />
                 </Card>
               </div>
             )}

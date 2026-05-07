@@ -59,7 +59,8 @@ export function ReplyComposer({ coachUserId, athlete, onClose, onSent }: Props) 
 
   return (
     <div className="fixed inset-0 z-50 bg-black/70 flex items-start justify-center p-4 overflow-y-auto" onClick={onClose}>
-      <Card className="w-full max-w-2xl mt-12 p-6" onClick={(e) => e.stopPropagation()}>
+      <div className="w-full max-w-2xl mt-12" onClick={(e) => e.stopPropagation()}>
+      <Card className="p-6">
         <div className="flex items-center justify-between mb-4">
           <div>
             <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a]">Reply to</div>
@@ -100,6 +101,7 @@ export function ReplyComposer({ coachUserId, athlete, onClose, onSent }: Props) 
           </>
         )}
       </Card>
+      </div>
     </div>
   )
 }
