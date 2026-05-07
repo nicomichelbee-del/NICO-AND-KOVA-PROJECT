@@ -480,6 +480,12 @@ export function Emails() {
                   ✓ {sentMsg}
                 </div>
               )}
+              {gmailConnected && (
+                <p className="text-[11px] text-[#9a9385] leading-relaxed mb-3 px-3 py-2 rounded border border-[rgba(245,241,232,0.06)] bg-[rgba(245,241,232,0.02)]">
+                  By sending this, you're sharing your KickrIQ profile with this coach so they can review your fit.
+                  You can review which coaches have accessed your profile in your settings.
+                </p>
+              )}
               {gmailConnected && gmailEmail && (
                 <div className="text-[11px] text-[#9a9385] mb-4">
                   Sending from <span className="text-[#f5f1e8]">{gmailEmail}</span> — replies go straight to your inbox.
