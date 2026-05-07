@@ -1,10 +1,16 @@
 import { supabase } from './supabase'
+import { TEST_MODE_KEY } from '../context/AuthContext'
 import type { AthleteProfile, Division, School, SchoolDirectoryEntry, ProgramIntel, VideoRating, CoachResponse, FindCoachResult, IdCamp, CampCoach, LeaderboardEntry, RosterProgram, PositionNeed, IdEvent, IdCampEntry, OutreachContact, SentEmail, ThreadMessage, UntrackedThread, HistoryEmail, CampRatingSummary, CampComment } from '../types'
 
 // The server-side profile gate runs on /api/ai, /api/gmail, and /api/camps,
 // so every fetch needs the user's bearer token. Centralising it here means
-// individual API helpers don't have to think about auth.
+// individual API helpers don't have to think about auth. Test mode (the dev
+// "Skip login" button) sends a magic token the server's profileGate accepts
+// when NODE_ENV !== 'production', so test-mode users can hit authed routes.
 async function authedHeaders(): Promise<Record<string, string>> {
+  if (import.meta.env.DEV && localStorage.getItem(TEST_MODE_KEY) === 'true') {
+    return { Authorization: 'Bearer kickriq-test-mode' }
+  }
   const { data } = await supabase.auth.getSession()
   const token = data.session?.access_token
   return token ? { Authorization: `Bearer ${token}` } : {}

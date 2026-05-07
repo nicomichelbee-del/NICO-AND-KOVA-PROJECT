@@ -26,6 +26,14 @@ const supabaseAnonKey = process.env.VITE_SUPABASE_ANON_KEY ?? ''
 const supabase =
   supabaseUrl && supabaseAnonKey ? createClient(supabaseUrl, supabaseAnonKey) : null
 
+// Dev-only sentinel for the test-mode user. The client's "Skip login"
+// button (Login.tsx / Signup.tsx) doesn't have a real Supabase JWT, so
+// when running locally (NODE_ENV !== 'production') we accept this magic
+// bearer string and treat the caller as the seeded test athlete. Stripped
+// from production behavior — the env check fails closed in deploys.
+const TEST_MODE_TOKEN = 'kickriq-test-mode'
+const isDev = process.env.NODE_ENV !== 'production'
+
 export async function requireCompleteProfile(
   req: Request,
   res: Response,
@@ -44,6 +52,15 @@ export async function requireCompleteProfile(
     return res.status(401).json({ error: 'Missing Authorization bearer token.' })
   }
   const token = match[1].trim()
+
+  // Dev test-mode shortcut — recognize the magic token and skip the live
+  // Supabase round-trip so the "Skip login" button actually works against
+  // local API routes. Production builds set NODE_ENV=production and never
+  // hit this branch.
+  if (isDev && token === TEST_MODE_TOKEN) {
+    req.user = { id: 'test-mode-user', email: 'test@kickriq.local' }
+    return next()
+  }
 
   try {
     const { data, error } = await supabase.auth.getUser(token)
