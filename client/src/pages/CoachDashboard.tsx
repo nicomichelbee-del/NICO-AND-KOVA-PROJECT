@@ -14,6 +14,7 @@ import {
 } from '../lib/api'
 import { InboundFeed } from '../components/coach/InboundFeed'
 import { NotificationPrefs } from '../components/coach/NotificationPrefs'
+import { GmailConnectBanner } from '../components/coach/GmailConnectBanner'
 
 const POSITIONS = [
   'Goalkeeper', 'Center Back', 'Outside Back', 'Defensive Midfielder',
@@ -27,11 +28,19 @@ export function CoachDashboard() {
   const [loading, setLoading] = useState(true)
   const [program, setProgram] = useState<CoachProgram | null>(null)
   const [error, setError] = useState('')
+  const [savedAt, setSavedAt] = useState<number | null>(null)
 
   // Claim state
   const [searchQ, setSearchQ] = useState('')
   const [searchResults, setSearchResults] = useState<{ id: string; school: string; conference: string; division: string; gender: 'mens' | 'womens'; location: string }[]>([])
   const [claiming, setClaiming] = useState<string | null>(null)
+
+  // Auto-clear the "Saved ✓" badge ~2s after the last save.
+  useEffect(() => {
+    if (!savedAt) return
+    const t = setTimeout(() => setSavedAt(null), 2000)
+    return () => clearTimeout(t)
+  }, [savedAt])
 
   useEffect(() => {
     if (!user) { navigate('/for-coaches', { replace: true }); return }
@@ -69,14 +78,22 @@ export function CoachDashboard() {
     const next = program.needs.filter((n) => n.position !== position)
     if (level) next.push({ position, level })
     setProgram({ ...program, needs: next })
-    try { await updateCoachNeeds(user.id, { needs: next }) } catch (e) {
+    try {
+      await updateCoachNeeds(user.id, { needs: next })
+      setSavedAt(Date.now())
+    } catch (e) {
       setError(e instanceof Error ? e.message : 'Save failed')
     }
   }
 
   async function handleNotesBlur(notes: string) {
     if (!user || !program) return
-    try { await updateCoachNeeds(user.id, { notes }) } catch { /* silent */ }
+    try {
+      await updateCoachNeeds(user.id, { notes })
+      setSavedAt(Date.now())
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Save failed')
+    }
   }
 
   return (
@@ -147,20 +164,22 @@ export function CoachDashboard() {
               </div>
             ) : (
               <div className="flex flex-col gap-6">
+                {error && (
+                  <div className="rounded-lg border border-red-500/30 bg-red-500/5 px-4 py-3 text-xs text-red-300">
+                    {error}
+                  </div>
+                )}
+
+                <GmailConnectBanner coachUserId={user!.id} />
+
                 {/* Program header */}
                 <Card className="p-6">
-                  <div className="flex items-start justify-between gap-4 flex-wrap">
-                    <div>
-                      <span className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-[#4ade80]">
-                        ✓ Verified · Claimed
-                      </span>
-                      <h1 className="font-serif text-2xl font-black text-[#f5f1e8] mt-2">{program.school}</h1>
-                      <div className="text-sm text-[#9a9385]">{program.conference} · {program.division} · {program.gender === 'mens' ? "Men's" : "Women's"} · {program.location}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs font-mono uppercase tracking-wider text-[#9a9385]">Status</div>
-                      <div className="font-serif text-sm font-bold text-[#4ade80]">Active</div>
-                    </div>
+                  <div className="min-w-0">
+                    <span className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-[#4ade80]">
+                      ✓ Verified · Claimed
+                    </span>
+                    <h1 className="font-serif text-2xl font-black text-[#f5f1e8] mt-2 leading-tight">{program.school}</h1>
+                    <div className="text-sm text-[#9a9385]">{program.conference} · {program.division} · {program.gender === 'mens' ? "Men's" : "Women's"} · {program.location}</div>
                   </div>
                 </Card>
 
@@ -168,8 +187,15 @@ export function CoachDashboard() {
 
                 {/* Roster needs editor */}
                 <Card className="p-6">
-                  <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a] mb-1">
-                    Your roster needs
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a]">
+                      Your roster needs
+                    </div>
+                    {savedAt && (
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#4ade80]">
+                        ✓ Saved
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-[#9a9385] mb-4">
                     Set the level for each position. Changes update the public Open Spots feed within a minute.

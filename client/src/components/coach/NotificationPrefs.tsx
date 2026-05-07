@@ -20,7 +20,17 @@ export function NotificationPrefs({ coachUserId }: Props) {
     await setCoachNotifPrefs(coachUserId, { [key]: v })
   }
 
-  if (loading) return null
+  if (loading) {
+    return (
+      <Card className="p-6">
+        <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a] mb-3">Email me when</div>
+        <div className="flex flex-col gap-3 animate-pulse">
+          <div className="h-4 w-3/4 rounded bg-[rgba(245,241,232,0.06)]" />
+          <div className="h-4 w-2/3 rounded bg-[rgba(245,241,232,0.06)]" />
+        </div>
+      </Card>
+    )
+  }
 
   return (
     <Card className="p-6">
