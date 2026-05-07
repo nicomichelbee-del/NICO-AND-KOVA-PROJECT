@@ -1,0 +1,80 @@
+name: Refresh program existence (sponsored + verified)
+
+# Monthly refresh of the program-existence pipeline:
+#   • server/data/sponsoredPrograms.json   (regenerate from wikipediaPrograms.json)
+#   • server/data/programDisagreements.json (Wikipedia vs scraper diffs)
+#   • server/data/programVerifications.json (Claude-resolved diffs)
+#
+# Runs the day after scrape-coaches.yml so any new coach data feeds into
+# fresh disagreement detection. Wikipedia data itself is currently refreshed
+# manually (via WebFetch in a Claude conversation) — the script reads from
+# the static wikipediaPrograms.json. When programs are added or dropped at
+# the D1/D2 level (program announcements, NCAA realignments), trigger a
+# Wikipedia re-fetch separately and update wikipediaPrograms.json by hand.
+#
+# Required secrets:
+#   ANTHROPIC_API_KEY — for verifyDisagreements.ts (Haiku verification, ~$0.50/run)
+
+on:
+  schedule:
+    - cron: '0 4 2 * *'  # 04:00 UTC, 2nd of each month (after scrape-coaches)
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: write
+
+jobs:
+  refresh:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Regenerate sponsoredPrograms from Wikipedia data
+        run: npx tsx server/scripts/buildSponsoredPrograms.ts
+
+      - name: Find Wikipedia/scraper disagreements
+        run: npx tsx server/scripts/findProgramDisagreements.ts
+
+      - name: AI-verify disagreements
+        env:
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+        run: npx tsx server/scripts/verifyDisagreements.ts
+
+      - name: Audit override file (informational only)
+        run: npx tsx server/scripts/auditOverrides.ts || true
+
+      - name: Open PR with refresh changes
+        uses: peter-evans/create-pull-request@v6
+        with:
+          commit-message: 'chore: monthly program-existence refresh'
+          title: 'Monthly program-existence refresh — sponsored + verified'
+          body: |
+            Automated monthly refresh of the matcher's program-existence pipeline:
+
+            - `server/data/sponsoredPrograms.json` — regenerated from wikipediaPrograms.json
+            - `server/data/programDisagreements.json` — fresh Wikipedia vs scraper audit
+            - `server/data/programVerifications.json` — Claude resolutions for new disagreements
+
+            **Review before merging:**
+            - New `flippedToYes` entries mean Wikipedia missed a school the AI knows is sponsored — usually fine to accept.
+            - New `flippedToNo` entries mean a previously-trusted school is now confirmed no-program — verify with the cited reason.
+            - The override audit (in the workflow log) lists redundant entries that can be safely removed.
+
+            **What this workflow does NOT do:**
+            - Re-fetch Wikipedia program lists. The static `wikipediaPrograms.json` file is the input to `buildSponsoredPrograms.ts`. When NCAA programs are added or dropped (rare — happens during conference realignment or program cuts), update `wikipediaPrograms.json` manually by re-running WebFetch on the four Wikipedia list pages.
+          branch: bot/program-existence-refresh
+          delete-branch: true
+          add-paths: |
+            server/data/sponsoredPrograms.json
+            server/data/programDisagreements.json
+            server/data/programVerifications.json
