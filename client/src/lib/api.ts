@@ -298,10 +298,35 @@ export async function updateCoachNeeds(userId: string, payload: { needs?: { posi
   return handlePublicResponse<{ success: true }>(res)
 }
 
+export interface CoachInboundAthlete {
+  consentId: string
+  athleteId: string
+  consentedAt: string
+  name: string
+  slug: string | null
+  position: string | null
+  secondaryPosition: string | null
+  gradYear: number | null
+  gpa: number | null
+  club: string | null
+  clubLeague: string | null
+  heightCm: number | null
+  intendedMajor: string | null
+  photoUrl: string | null
+  highlightUrl: string | null
+  location: string
+  desiredDivisions: string[]
+  contactId: string | null
+  status: string
+  interestRating: 'hot' | 'warm' | 'cold' | 'not_interested' | 'pending'
+  lastReplyAt: string | null
+  lastReplySnippet: string | null
+  gmailThreadId: string | null
+}
+
 export function getCoachInbound(userId: string) {
-  return get<{ athletes: { id: string; schoolName: string; division: string; position: string | null; status: string; interestRating: string; lastReplyAt: string | null; createdAt: string }[] }>(
-    `/api/coach/inbound?userId=${encodeURIComponent(userId)}`,
-  )
+  return fetch(`/api/coach/inbound?userId=${encodeURIComponent(userId)}`)
+    .then(handlePublicResponse<{ athletes: CoachInboundAthlete[] }>)
 }
 
 async function handlePublicResponse<T>(res: Response): Promise<T> {
