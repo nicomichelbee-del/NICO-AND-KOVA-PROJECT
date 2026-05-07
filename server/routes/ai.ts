@@ -24,6 +24,45 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000
 
 // ───────────────────────────────────────────────────────────────────────────
 
+router.post('/coach-reply-draft', async (req, res) => {
+  try {
+    const { athleteName, athletePosition, athleteGradYear, athleteClub, athleteHighlight,
+            athleteLastMessage, programName, programDivision, coachName, programNotes } = req.body as {
+      athleteName: string; athletePosition: string | null; athleteGradYear: number | null
+      athleteClub: string | null; athleteHighlight: string | null
+      athleteLastMessage: string; programName: string; programDivision: string
+      coachName: string; programNotes: string | null
+    }
+
+    const prompt = `You are ${coachName}, a college soccer coach at ${programName} (${programDivision}).
+A high-school recruit emailed you through KickrIQ. Draft a SHORT, warm, personal reply (80-120 words).
+
+Recruit:
+- Name: ${athleteName}
+- Position: ${athletePosition ?? 'unspecified'}
+- Grad year: ${athleteGradYear ?? 'unspecified'}
+- Club: ${athleteClub ?? 'unspecified'}
+- Highlight video: ${athleteHighlight ?? 'not provided'}
+- Their email said: "${athleteLastMessage.slice(0, 600)}"
+
+Your program notes (for tone/positioning, do not quote verbatim): ${programNotes ?? '(none)'}
+
+Rules:
+- Coach-to-recruit voice — first name, conversational, no corporate language
+- Reference one specific thing about the recruit (position, club, video)
+- Make ONE clear next step (camp invite, phone call, request more video, request transcripts)
+- Sign off with the coach's first name only
+- 80-120 words, no preamble, no bullet points
+
+Respond with JSON only: { "subject": "...", "body": "..." }`
+
+    const text = await ask(prompt, 600)
+    res.json(parseJSON(text, { subject: '', body: '' }))
+  } catch (e) {
+    res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
+  }
+})
+
 router.post('/email', async (req, res) => {
   try {
     const { profile, school, division, coachName, gender } = req.body as {

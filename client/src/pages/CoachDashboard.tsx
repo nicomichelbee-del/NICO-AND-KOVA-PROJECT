@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react'
 import { Link, useNavigate } from 'react-router-dom'
 import { KickrIQLogo } from '../components/ui/KickrIQLogo'
 import { Card } from '../components/ui/Card'
-import { Button } from '../components/ui/Button'
 import { Input } from '../components/ui/Input'
 import { useAuth } from '../context/AuthContext'
 import {
@@ -10,9 +9,11 @@ import {
   claimCoachProgram,
   getCoachMe,
   updateCoachNeeds,
-  getCoachInbound,
   type CoachProgram,
 } from '../lib/api'
+import { InboundFeed } from '../components/coach/InboundFeed'
+import { NotificationPrefs } from '../components/coach/NotificationPrefs'
+import { GmailConnectBanner } from '../components/coach/GmailConnectBanner'
 
 const POSITIONS = [
   'Goalkeeper', 'Center Back', 'Outside Back', 'Defensive Midfielder',
@@ -26,14 +27,19 @@ export function CoachDashboard() {
   const [loading, setLoading] = useState(true)
   const [program, setProgram] = useState<CoachProgram | null>(null)
   const [error, setError] = useState('')
+  const [savedAt, setSavedAt] = useState<number | null>(null)
 
   // Claim state
   const [searchQ, setSearchQ] = useState('')
   const [searchResults, setSearchResults] = useState<{ id: string; school: string; conference: string; division: string; gender: 'mens' | 'womens'; location: string }[]>([])
   const [claiming, setClaiming] = useState<string | null>(null)
 
-  // Inbound athletes
-  const [inbound, setInbound] = useState<{ id: string; schoolName: string; division: string; position: string | null; status: string; interestRating: string; lastReplyAt: string | null; createdAt: string }[]>([])
+  // Auto-clear the "Saved ✓" badge ~2s after the last save.
+  useEffect(() => {
+    if (!savedAt) return
+    const t = setTimeout(() => setSavedAt(null), 2000)
+    return () => clearTimeout(t)
+  }, [savedAt])
 
   useEffect(() => {
     if (!user) { navigate('/for-coaches', { replace: true }); return }
@@ -45,11 +51,6 @@ export function CoachDashboard() {
       .catch((e) => setError(e instanceof Error ? e.message : 'Failed to load'))
       .finally(() => setLoading(false))
   }, [user, navigate])
-
-  useEffect(() => {
-    if (!user || !program) return
-    getCoachInbound(user.id).then(({ athletes }) => setInbound(athletes)).catch(() => {})
-  }, [user, program])
 
   useEffect(() => {
     if (!searchQ.trim() || program) { setSearchResults([]); return }
@@ -76,14 +77,22 @@ export function CoachDashboard() {
     const next = program.needs.filter((n) => n.position !== position)
     if (level) next.push({ position, level })
     setProgram({ ...program, needs: next })
-    try { await updateCoachNeeds(user.id, { needs: next }) } catch (e) {
+    try {
+      await updateCoachNeeds(user.id, { needs: next })
+      setSavedAt(Date.now())
+    } catch (e) {
       setError(e instanceof Error ? e.message : 'Save failed')
     }
   }
 
   async function handleNotesBlur(notes: string) {
     if (!user || !program) return
-    try { await updateCoachNeeds(user.id, { notes }) } catch { /* silent */ }
+    try {
+      await updateCoachNeeds(user.id, { notes })
+      setSavedAt(Date.now())
+    } catch (e) {
+      setError(e instanceof Error ? e.message : 'Save failed')
+    }
   }
 
   return (
@@ -104,7 +113,7 @@ export function CoachDashboard() {
           </div>
         </header>
 
-        <section className="section" style={{ paddingTop: 100 }}>
+        <section className="section" style={{ paddingTop: 140 }}>
           <div className="wrap" style={{ maxWidth: 980 }}>
             {loading ? (
               <div className="text-center py-16 text-sm text-[#9a9385]">Loading…</div>
@@ -154,27 +163,38 @@ export function CoachDashboard() {
               </div>
             ) : (
               <div className="flex flex-col gap-6">
+                {error && (
+                  <div className="rounded-lg border border-red-500/30 bg-red-500/5 px-4 py-3 text-xs text-red-300">
+                    {error}
+                  </div>
+                )}
+
+                <GmailConnectBanner coachUserId={user!.id} />
+
                 {/* Program header */}
                 <Card className="p-6">
-                  <div className="flex items-start justify-between gap-4 flex-wrap">
-                    <div>
-                      <span className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-[#4ade80]">
-                        ✓ Verified · Claimed
-                      </span>
-                      <h1 className="font-serif text-2xl font-black text-[#f5f1e8] mt-2">{program.school}</h1>
-                      <div className="text-sm text-[#9a9385]">{program.conference} · {program.division} · {program.gender === 'mens' ? "Men's" : "Women's"} · {program.location}</div>
-                    </div>
-                    <div className="text-right">
-                      <div className="text-xs font-mono uppercase tracking-wider text-[#9a9385]">Athletes interested</div>
-                      <div className="font-serif text-3xl font-black text-[#f0b65a]">{inbound.length}</div>
-                    </div>
+                  <div className="min-w-0">
+                    <span className="text-[10.5px] font-mono uppercase tracking-[0.22em] text-[#4ade80]">
+                      ✓ Verified · Claimed
+                    </span>
+                    <h1 className="font-serif text-2xl font-black text-[#f5f1e8] mt-2 leading-tight">{program.school}</h1>
+                    <div className="text-sm text-[#9a9385]">{program.conference} · {program.division} · {program.gender === 'mens' ? "Men's" : "Women's"} · {program.location}</div>
                   </div>
                 </Card>
 
+                <NotificationPrefs coachUserId={user!.id} />
+
                 {/* Roster needs editor */}
                 <Card className="p-6">
-                  <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a] mb-1">
-                    Your roster needs
+                  <div className="flex items-center justify-between mb-1">
+                    <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a]">
+                      Your roster needs
+                    </div>
+                    {savedAt && (
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#4ade80]">
+                        ✓ Saved
+                      </span>
+                    )}
                   </div>
                   <p className="text-sm text-[#9a9385] mb-4">
                     Set the level for each position. Changes update the public Open Spots feed within a minute.
@@ -222,7 +242,14 @@ export function CoachDashboard() {
 
                 {/* Notes */}
                 <Card className="p-6">
-                  <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a] mb-3">Program notes (public)</div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a]">Program notes (public)</div>
+                    {savedAt && (
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#4ade80]">
+                        ✓ Saved
+                      </span>
+                    )}
+                  </div>
                   <textarea
                     defaultValue={program.notes}
                     onBlur={(e) => handleNotesBlur(e.target.value)}
@@ -235,36 +262,9 @@ export function CoachDashboard() {
                 {/* Inbound athletes */}
                 <Card className="p-6">
                   <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a] mb-3">
-                    Athletes who emailed you ({inbound.length})
+                    Athletes who emailed you
                   </div>
-                  {inbound.length === 0 ? (
-                    <p className="text-sm text-[#9a9385]">
-                      No KickrIQ athletes have emailed you yet. As they reach out using your program's contact info, they'll appear here.
-                    </p>
-                  ) : (
-                    <div className="overflow-x-auto">
-                      <table className="w-full text-sm">
-                        <thead>
-                          <tr className="border-b border-[rgba(245,241,232,0.08)]">
-                            {['Athlete', 'Position', 'Status', 'Last reply', 'First contact'].map((h) => (
-                              <th key={h} className="text-left px-3 py-2 text-xs font-semibold text-[#9a9385] uppercase tracking-wider">{h}</th>
-                            ))}
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {inbound.map((a) => (
-                            <tr key={a.id} className="border-b border-[rgba(245,241,232,0.04)]">
-                              <td className="px-3 py-3 text-[#f5f1e8] font-mono text-xs">{a.id.slice(0, 8)}…</td>
-                              <td className="px-3 py-3 text-[#9a9385]">{a.position ?? '—'}</td>
-                              <td className="px-3 py-3"><span className="px-2 py-0.5 rounded text-[10px] uppercase tracking-wider border border-[rgba(245,241,232,0.10)] text-[#f0b65a]">{a.status}</span></td>
-                              <td className="px-3 py-3 text-xs text-[#9a9385]">{a.lastReplyAt ? new Date(a.lastReplyAt).toLocaleDateString() : '—'}</td>
-                              <td className="px-3 py-3 text-xs text-[#9a9385]">{new Date(a.createdAt).toLocaleDateString()}</td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
+                  <InboundFeed coachUserId={user!.id} />
                 </Card>
               </div>
             )}

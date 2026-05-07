@@ -1,0 +1,30 @@
+name: Coach daily digest
+
+# Sends each opted-in coach a digest of new athletes who reached out in the
+# last 24h. Runs once a day at 12:00 UTC (~8am ET / 5am PT). The actual send
+# logic lives in /api/coach/notifications/send-digest — this workflow just
+# pings that endpoint with the shared secret.
+
+on:
+  schedule:
+    - cron: '0 12 * * *'
+  workflow_dispatch: {}
+
+jobs:
+  send:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Call send-digest endpoint
+        env:
+          API_BASE: ${{ secrets.COACH_DIGEST_API_BASE }}
+          SECRET: ${{ secrets.COACH_DIGEST_SECRET }}
+        run: |
+          if [ -z "$API_BASE" ] || [ -z "$SECRET" ]; then
+            echo "Missing COACH_DIGEST_API_BASE or COACH_DIGEST_SECRET secret"
+            exit 1
+          fi
+          response=$(curl -sS -X POST "$API_BASE/api/coach/notifications/send-digest" \
+            -H "X-Coach-Digest-Secret: $SECRET" \
+            -w "\nHTTP %{http_code}\n")
+          echo "$response"
+          echo "$response" | grep -q "HTTP 200" || exit 1

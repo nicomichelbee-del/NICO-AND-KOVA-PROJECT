@@ -1,0 +1,319 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<title>KickrIQ — Executive Summary</title>
+<style>
+  @page { size: letter; margin: 0.55in 0.6in; }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  body {
+    font-family: Georgia, "Times New Roman", serif;
+    font-size: 10.5pt;
+    line-height: 1.45;
+    color: #1a1a1a;
+    background: #f5f1e8;
+  }
+  .page {
+    max-width: 7.3in;
+    margin: 0 auto;
+    padding: 0.55in 0.6in;
+    background: #fffdf8;
+  }
+  @media print {
+    body { background: #fffdf8; }
+    .page { padding: 0; max-width: none; box-shadow: none; }
+    .no-print { display: none; }
+    h2 { page-break-after: avoid; }
+    table, .card, .quote { page-break-inside: avoid; }
+  }
+  @media screen {
+    body { padding: 24px 0; }
+    .page { box-shadow: 0 8px 40px rgba(0,0,0,0.08); border-radius: 6px; }
+  }
+
+  /* Header */
+  .head {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    border-bottom: 2px solid #1a1a1a;
+    padding-bottom: 10px;
+    margin-bottom: 18px;
+  }
+  .brand {
+    font-family: "Saira Condensed", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 900;
+    font-style: italic;
+    font-size: 32pt;
+    letter-spacing: -0.5px;
+    line-height: 1;
+  }
+  .brand .iq { color: #c89234; }
+  .head .meta {
+    text-align: right;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 1.2px;
+    color: #5a5246;
+    line-height: 1.5;
+  }
+  .head .meta strong { color: #1a1a1a; }
+
+  /* Eyebrow */
+  .eyebrow {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 8pt;
+    text-transform: uppercase;
+    letter-spacing: 1.8px;
+    color: #c89234;
+    font-weight: 700;
+    margin: 0 0 4px 0;
+  }
+
+  /* Headings */
+  h1 {
+    font-size: 18pt;
+    font-weight: 700;
+    margin: 0 0 12px 0;
+    line-height: 1.15;
+  }
+  h2 {
+    font-size: 12pt;
+    font-weight: 700;
+    margin: 18px 0 8px 0;
+    border-left: 3px solid #c89234;
+    padding-left: 9px;
+    line-height: 1.2;
+  }
+  p { margin: 0 0 9px 0; }
+
+  /* Lead paragraph */
+  .lead {
+    font-size: 11.5pt;
+    line-height: 1.55;
+    color: #2a2622;
+    margin-bottom: 16px;
+  }
+  .lead strong { color: #1a1a1a; }
+
+  /* Tables */
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    margin: 6px 0 12px 0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 9.5pt;
+  }
+  th {
+    text-align: left;
+    background: #1a1a1a;
+    color: #f5f1e8;
+    padding: 6px 9px;
+    font-size: 8.5pt;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+    font-weight: 600;
+  }
+  td {
+    padding: 6px 9px;
+    border-bottom: 1px solid #e8dfc8;
+    vertical-align: top;
+  }
+  tr:last-child td { border-bottom: none; }
+  td.num {
+    font-family: "SF Mono", "Consolas", monospace;
+    font-size: 9pt;
+    color: #c89234;
+    font-weight: 600;
+    white-space: nowrap;
+  }
+
+  /* Lists */
+  ul, ol { margin: 4px 0 10px 0; padding-left: 18px; }
+  li { margin-bottom: 4px; }
+  li strong { color: #1a1a1a; }
+
+  /* Stat row */
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 10px;
+    margin: 8px 0 14px 0;
+  }
+  .stat {
+    background: #1a1a1a;
+    color: #f5f1e8;
+    padding: 10px 12px;
+    border-radius: 4px;
+    text-align: left;
+  }
+  .stat .n {
+    font-family: "Saira Condensed", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 800;
+    font-size: 18pt;
+    color: #c89234;
+    line-height: 1;
+    display: block;
+    margin-bottom: 4px;
+  }
+  .stat .l {
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 7.5pt;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: #d8c98e;
+    line-height: 1.2;
+  }
+
+  /* Quote / bottom line */
+  .bottom {
+    background: #1a1a1a;
+    color: #f5f1e8;
+    padding: 14px 18px;
+    border-radius: 4px;
+    margin-top: 16px;
+  }
+  .bottom .eyebrow { color: #c89234; margin-bottom: 6px; }
+  .bottom p { margin: 0 0 6px 0; font-size: 10.5pt; line-height: 1.5; }
+  .bottom p:last-child { margin: 0; }
+  .bottom strong { color: #c89234; }
+
+  /* Footer */
+  .foot {
+    margin-top: 18px;
+    padding-top: 10px;
+    border-top: 1px solid #e8dfc8;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+    font-size: 8pt;
+    color: #6b6356;
+    display: flex;
+    justify-content: space-between;
+  }
+
+  /* Print button */
+  .no-print {
+    text-align: center;
+    margin: 12px 0 24px 0;
+    font-family: "Helvetica Neue", Arial, sans-serif;
+  }
+  .no-print button {
+    background: #1a1a1a;
+    color: #f5f1e8;
+    border: none;
+    padding: 10px 20px;
+    font-size: 10pt;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    cursor: pointer;
+    border-radius: 4px;
+    font-weight: 600;
+  }
+  .no-print button:hover { background: #c89234; color: #1a1a1a; }
+  .no-print .hint { font-size: 9pt; color: #6b6356; margin-top: 6px; }
+</style>
+</head>
+<body>
+
+<div class="no-print">
+  <button onclick="window.print()">Save as PDF</button>
+  <div class="hint">Press the button above, then choose "Save as PDF" as the destination.</div>
+</div>
+
+<div class="page">
+
+  <div class="head">
+    <div class="brand">Kickr<span class="iq"><i>iQ</i></span></div>
+    <div class="meta">
+      <div>Executive Summary</div>
+      <div><strong>kickriq.com</strong></div>
+      <div>May 2026</div>
+    </div>
+  </div>
+
+  <div class="eyebrow">In one paragraph</div>
+  <h1>The smartest way to get recruited.</h1>
+  <p class="lead">
+    KickrIQ is an AI college soccer recruitment counselor that does the work athletes used to pay <strong>$1,200 to $6,000 a year</strong> for. It builds the recruiting profile, matches across <strong>771 college programs</strong>, drafts coach emails that get replies, rates highlight videos with computer vision, and tracks the entire pipeline from first contact to commitment. Two founders. No outside capital. <strong>~$50 a month to operate.</strong> Free for every user at launch, with paid tiers held behind a waitlist.
+  </p>
+
+  <div class="stats">
+    <div class="stat"><span class="n">771</span><span class="l">College Programs</span></div>
+    <div class="stat"><span class="n">1,542</span><span class="l">Coach Records</span></div>
+    <div class="stat"><span class="n">98.8%</span><span class="l">Academic Coverage</span></div>
+    <div class="stat"><span class="n">115</span><span class="l">Commits in 8 Days</span></div>
+  </div>
+
+  <h2>What it does</h2>
+  <table>
+    <tr><th style="width:24%">Feature</th><th>What it does</th></tr>
+    <tr><td><strong>Profile Builder</strong></td><td>40+ structured fields feeding every downstream feature.</td></tr>
+    <tr><td><strong>School Matcher</strong></td><td>Ranks 771 programs (D1 to JUCO) on athletic fit and academic fit.</td></tr>
+    <tr><td><strong>Coach Email Generator</strong></td><td>Personalized outreach with division-specific tone. D1 stat-heavy, D3 fit-led, NAIA playing-time-led.</td></tr>
+    <tr><td><strong>Outreach Tracker + Gmail</strong></td><td>OAuth into the athlete's own Gmail. Auto-syncs replies. AI rates each response hot, warm, or cold.</td></tr>
+    <tr><td><strong>Highlight Video Rater</strong></td><td>Claude Vision on 24-frame composites returns a 1 to 10 rating with position-specific feedback.</td></tr>
+    <tr><td><strong>Roster Intelligence</strong></td><td>Forecasts which programs will open spots at the athlete's position 1 to 2 years out.</td></tr>
+  </table>
+
+  <h2>Why it wins</h2>
+  <table>
+    <tr><th>Competitor</th><th>Pricing</th><th>Their weakness</th></tr>
+    <tr><td><strong>NCSA Sports</strong></td><td class="num">$1.2k to $6k/yr</td><td>Coaches blacklist their templates on sight.</td></tr>
+    <tr><td><strong>SportsRecruits</strong></td><td class="num">$99/mo</td><td>No AI. Club-locked distribution.</td></tr>
+    <tr><td><strong>FieldLevel</strong></td><td class="num">$10 to $49/mo</td><td>Soccer is much thinner than baseball.</td></tr>
+    <tr><td><strong>CaptainU</strong></td><td class="num">$22 to $40/mo</td><td>Cancellation friction is the top user complaint.</td></tr>
+  </table>
+  <p><strong>Five differentiators no competitor has matched:</strong></p>
+  <ol>
+    <li><strong>Own-Gmail outreach.</strong> Sends from the athlete's address, not a flagged template farm.</li>
+    <li><strong>AI Highlight Video Rater.</strong> Claude Vision on composite frames. Universal pain point.</li>
+    <li><strong>Soccer-only depth.</strong> Position and division specific vs. generic 20-sport tools.</li>
+    <li><strong>Roster Intelligence.</strong> Proactive open-spot forecasting vs. reactive coach databases.</li>
+    <li><strong>Transparent self-serve pricing.</strong> $0 to $29 published vs. competitor sales-call gates.</li>
+  </ol>
+
+  <h2>Business model</h2>
+  <table>
+    <tr><th>Tier</th><th>Price</th><th>Includes</th><th>Status</th></tr>
+    <tr><td><strong>Free</strong></td><td class="num">$0</td><td>3 coach emails, 5 school matches, full profile, public profile</td><td>Live</td></tr>
+    <tr><td><strong>Pro</strong></td><td class="num">$19/mo</td><td>Unlimited emails, Gmail Tracker, Follow-ups, Video Rater</td><td>Waitlist</td></tr>
+    <tr><td><strong>Family</strong></td><td class="num">$29/mo</td><td>Pro + parent dashboard, multi-athlete</td><td>Waitlist</td></tr>
+  </table>
+  <p>Stripe is wired in code. Switching from waitlist to live billing is one feature flag.</p>
+
+  <h2>Operations and posture</h2>
+  <ul>
+    <li><strong>Live in production</strong> at kickriq.com since May 5, 2026.</li>
+    <li><strong>COPPA-compliant from day one.</strong> Under-13 blocked. Ages 13 to 17 require parental consent.</li>
+    <li><strong>Security.</strong> Real auth on every route, RLS on every table, per-user and per-IP rate limits.</li>
+    <li><strong>Auto-deploy.</strong> Push to <code>main</code>, Vercel and Render redeploy in parallel.</li>
+    <li><strong>Stack.</strong> React + TypeScript, Express, Supabase, Anthropic Claude, Gmail OAuth, Puppeteer, PostHog. Hosted free across Vercel, Render, Cloudflare, Supabase.</li>
+  </ul>
+
+  <h2>90-day roadmap (ranked by ROI)</h2>
+  <ol>
+    <li><strong>AI reply analyzer + auto-draft response.</strong> Small effort. Pure moat extension.</li>
+    <li><strong>Programmatic SEO for "Open Spots Live."</strong> 1,500+ pages, organic acquisition.</li>
+    <li><strong>NCAA Eligibility workflow + transcript vault.</strong> Closes NCSA's biggest moat.</li>
+    <li><strong>KickrIQ Player Rating public badge.</strong> Viral when athletes share.</li>
+    <li><strong>Coach portal expansion.</strong> Network effect, canonical roster truth.</li>
+    <li><strong>iOS and Android apps.</strong> Daily-engagement use case.</li>
+    <li><strong>Club / HS team licensing</strong> ($299/yr/team). Distribution channel that subsidizes Pro.</li>
+  </ol>
+
+  <div class="bottom">
+    <div class="eyebrow">Bottom line</div>
+    <p>A fully-shipped, in-production, COPPA-compliant, two-founder, <strong>$50-a-month-burn</strong> product that does what NCSA charges <strong>$6,000</strong> for, with three differentiators no competitor has matched: own-Gmail outreach, Claude Vision video rating, and roster-spot forecasting.</p>
+    <p>The product is real. The data moat is built. The compliance posture is clean. The only remaining question is <strong>distribution</strong>, and the competitive set has handed us the opening to win it.</p>
+  </div>
+
+  <div class="foot">
+    <span>kickriq.com · infokickriq@gmail.com</span>
+    <span>Confidential · May 2026</span>
+  </div>
+
+</div>
+
+</body>
+</html>

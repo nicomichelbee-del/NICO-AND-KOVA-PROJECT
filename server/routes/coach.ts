@@ -178,35 +178,82 @@ router.get('/inbound', async (req, res) => {
   const { userId } = req.query as { userId?: string }
   if (!userId) return res.status(400).json({ error: 'userId required' })
   const supabase = getSupabase()
+
   const { data: claim } = await supabase
     .from('claimed_programs')
-    .select('coach_email, school_id')
+    .select('coach_email, school_id, school_name, gender')
     .eq('coach_user_id', userId)
     .maybeSingle()
   if (!claim) return res.json({ athletes: [] })
 
-  // Cross-reference any outreach_contact whose coach_email matches this coach.
-  const { data: contacts } = await supabase
-    .from('outreach_contacts')
-    .select('*')
+  // Pull every consent row for this coach. Athletes appear once per
+  // coach_email — even if they emailed twice — because of the unique index.
+  const { data: consents } = await supabase
+    .from('coach_inbound_consents')
+    .select('athlete_id, outreach_id, created_at')
     .ilike('coach_email', claim.coach_email)
+    .eq('consent', true)
     .order('created_at', { ascending: false })
-    .limit(100)
+    .limit(200)
 
-  // Drop user_id from the response — we don't expose other athletes' user ids
-  // to the coach, but we do show their school + outreach metadata.
-  const shaped = (contacts ?? []).map((c: any) => ({
-    id: c.id,
-    athleteEmail: c.user_id,  // user id only — not their actual email
-    schoolName: c.school_name,
-    division: c.division,
-    position: c.position,
-    status: c.status,
-    interestRating: c.interest_rating,
-    lastReplyAt: c.last_reply_at,
-    createdAt: c.created_at,
-  }))
-  res.json({ athletes: shaped })
+  if (!consents || consents.length === 0) return res.json({ athletes: [] })
+
+  const athleteIds = [...new Set(consents.map((c: any) => c.athlete_id))]
+
+  // Athlete profile + outreach contact join — both keyed on athlete user ids.
+  const [{ data: profiles }, { data: contacts }] = await Promise.all([
+    supabase
+      .from('athlete_profiles')
+      .select('user_id, slug, full_name, primary_position, secondary_position, graduation_year, gpa, current_club, current_league_or_division, height_cm, intended_major, profile_photo_url, highlight_video_url, city, state, desired_division_levels')
+      .in('user_id', athleteIds),
+    supabase
+      .from('outreach_contacts')
+      .select('id, user_id, status, interest_rating, last_reply_at, last_reply_snippet, gmail_thread_id, created_at')
+      .in('user_id', athleteIds)
+      .ilike('coach_email', claim.coach_email),
+  ])
+
+  const profileMap = new Map((profiles ?? []).map((p: any) => [p.user_id, p]))
+  // One outreach row per (athlete, coach) — pick the most recent if duplicates.
+  const contactMap = new Map<string, any>()
+  for (const c of contacts ?? []) {
+    const prev = contactMap.get(c.user_id)
+    if (!prev || new Date(c.created_at) > new Date(prev.created_at)) contactMap.set(c.user_id, c)
+  }
+
+  const athletes = consents.map((cs: any) => {
+    const p = profileMap.get(cs.athlete_id)
+    const c = contactMap.get(cs.athlete_id)
+    return {
+      consentId: cs.athlete_id,
+      athleteId: cs.athlete_id,
+      consentedAt: cs.created_at,
+      // Profile (only present if athlete has completed profile + visibility allows)
+      name: p?.full_name ?? 'KickrIQ Athlete',
+      slug: p?.slug ?? null,
+      position: p?.primary_position ?? null,
+      secondaryPosition: p?.secondary_position ?? null,
+      gradYear: p?.graduation_year ?? null,
+      gpa: p?.gpa ?? null,
+      club: p?.current_club ?? null,
+      clubLeague: p?.current_league_or_division ?? null,
+      heightCm: p?.height_cm ?? null,
+      intendedMajor: p?.intended_major ?? null,
+      photoUrl: p?.profile_photo_url ?? null,
+      highlightUrl: p?.highlight_video_url ?? null,
+      location: [p?.city, p?.state].filter(Boolean).join(', '),
+      desiredDivisions: p?.desired_division_levels ?? [],
+      // Outreach status (may be missing if the consent row exists but no contact)
+      contactId: c?.id ?? null,
+      status: c?.status ?? 'contacted',
+      interestRating: c?.interest_rating ?? 'pending',
+      lastReplyAt: c?.last_reply_at ?? null,
+      lastReplySnippet: c?.last_reply_snippet ?? null,
+      gmailThreadId: c?.gmail_thread_id ?? null,
+    }
+  })
+
+  res.json({ athletes })
 })
 
 export default router
