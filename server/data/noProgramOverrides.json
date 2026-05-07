@@ -71,5 +71,8 @@
   "_reason_utah:mens": "Big 12 / Pac-12 — no men's varsity soccer (women's only). Scraper picked up the women's head coach (Carly Dockendorf) for the men's slot.",
 
   "byu:mens": true,
-  "_reason_byu:mens": "Big 12 — no men's varsity soccer (program dropped in 2014). Scraper resolved to a club-team coach."
+  "_reason_byu:mens": "Big 12 — no men's varsity soccer (program dropped in 2014). Scraper resolved to a club-team coach.",
+
+  "miami:mens": true,
+  "_reason_miami:mens": "ACC — no men's varsity soccer (women's only). Status was 'failed' so the scraper didn't surface a no-program signal."
 }
