@@ -6,6 +6,18 @@ import type { CoachInboundAthlete } from '../../lib/api'
 interface Props {
   athlete: CoachInboundAthlete
   onReply: (a: CoachInboundAthlete) => void
+  gmailConnected?: boolean
+}
+
+function consentedAgo(iso: string): string {
+  const ms = Date.now() - new Date(iso).getTime()
+  const day = 24 * 60 * 60 * 1000
+  if (ms < day) return 'today'
+  const days = Math.floor(ms / day)
+  if (days === 1) return 'yesterday'
+  if (days < 7) return `${days}d ago`
+  if (days < 30) return `${Math.floor(days / 7)}w ago`
+  return `${Math.floor(days / 30)}mo ago`
 }
 
 const STATUS_COLOR: Record<string, string> = {
@@ -16,7 +28,7 @@ const STATUS_COLOR: Record<string, string> = {
   pending: 'bg-[rgba(245,241,232,0.06)] text-[#9a9385]',
 }
 
-export function AthleteCard({ athlete: a, onReply }: Props) {
+export function AthleteCard({ athlete: a, onReply, gmailConnected = true }: Props) {
   const [open, setOpen] = useState(false)
   const initials = (a.name || 'KQ').split(' ').map((s) => s[0]).join('').slice(0, 2).toUpperCase()
   return (
@@ -32,9 +44,14 @@ export function AthleteCard({ athlete: a, onReply }: Props) {
         <div className="flex-1 min-w-0">
           <div className="flex items-baseline justify-between gap-3 flex-wrap">
             <div className="font-serif text-base font-bold text-[#f5f1e8] truncate">{a.name}</div>
-            <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${STATUS_COLOR[a.interestRating] ?? STATUS_COLOR.pending}`}>
-              {a.interestRating}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="text-[10px] font-mono uppercase tracking-wider text-[#9a9385]">
+                {consentedAgo(a.consentedAt)}
+              </span>
+              <span className={`text-[10px] font-mono uppercase tracking-wider px-2 py-0.5 rounded ${STATUS_COLOR[a.interestRating] ?? STATUS_COLOR.pending}`}>
+                {a.interestRating}
+              </span>
+            </div>
           </div>
           <div className="text-xs text-[#9a9385] mt-1">
             {[a.position, a.gradYear ? `'${String(a.gradYear).slice(-2)}` : null, a.club, a.location].filter(Boolean).join(' · ')}
@@ -63,7 +80,13 @@ export function AthleteCard({ athlete: a, onReply }: Props) {
                 Highlight video →
               </a>
             )}
-            <Button onClick={() => onReply(a)} className="ml-auto">Reply</Button>
+            <Button
+              onClick={() => onReply(a)}
+              className="ml-auto"
+              title={gmailConnected ? 'Reply via your Gmail' : 'Connect Gmail above to reply'}
+            >
+              Reply{gmailConnected ? '' : ' (connect Gmail)'}
+            </Button>
           </div>
           {a.lastReplySnippet && (
             <button onClick={() => setOpen(!open)} className="text-[11px] text-[#9a9385] mt-3 hover:text-[#f0b65a]">

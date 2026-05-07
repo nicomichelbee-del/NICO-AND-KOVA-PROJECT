@@ -12,6 +12,7 @@ export function InboundFeed({ coachUserId }: Props) {
   const [athletes, setAthletes] = useState<CoachInboundAthlete[]>([])
   const [error, setError] = useState('')
   const [replyTo, setReplyTo] = useState<CoachInboundAthlete | null>(null)
+  const [gmailConnected, setGmailConnected] = useState(false)
 
   useEffect(() => {
     setLoading(true)
@@ -19,6 +20,10 @@ export function InboundFeed({ coachUserId }: Props) {
       .then(({ athletes }) => setAthletes(athletes))
       .catch((e) => setError(e instanceof Error ? e.message : 'Failed to load'))
       .finally(() => setLoading(false))
+    fetch(`/api/gmail/status?userId=${encodeURIComponent(coachUserId)}`)
+      .then((r) => r.json())
+      .then((d) => setGmailConnected(!!d.connected))
+      .catch(() => {})
   }, [coachUserId])
 
   if (loading) {
@@ -59,7 +64,7 @@ export function InboundFeed({ coachUserId }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {athletes.map((a) => (
-        <AthleteCard key={a.athleteId} athlete={a} onReply={setReplyTo} />
+        <AthleteCard key={a.athleteId} athlete={a} onReply={setReplyTo} gmailConnected={gmailConnected} />
       ))}
       {replyTo && (
         <ReplyComposer

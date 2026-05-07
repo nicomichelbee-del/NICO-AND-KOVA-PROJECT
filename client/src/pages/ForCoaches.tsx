@@ -84,7 +84,9 @@ export function ForCoaches() {
                   </p>
                 </div>
               ) : (
-                <>
+                <form
+                  onSubmit={(e) => { e.preventDefault(); sendMagicLink() }}
+                >
                   <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a] mb-3 text-center">
                     Sign in with your coach email
                   </div>
@@ -93,19 +95,30 @@ export function ForCoaches() {
                   </p>
                   <Input
                     label="Your .edu coach email"
+                    type="email"
                     value={email}
                     onChange={(e) => setEmail(e.target.value)}
                     placeholder="coach@university.edu"
+                    autoFocus
+                    autoComplete="email"
+                    disabled={sending}
                   />
-                  {error && <p className="text-xs text-red-400 mt-2">{error}</p>}
+                  {error && (
+                    <div className="mt-3 rounded border border-red-500/30 bg-red-500/5 px-3 py-2 text-xs text-red-300">
+                      {error}
+                    </div>
+                  )}
                   <Button
-                    onClick={sendMagicLink}
-                    disabled={sending || !email.trim()}
+                    type="submit"
+                    disabled={sending || !email.trim() || !email.includes('@')}
                     className="w-full mt-4"
                   >
                     {sending ? 'Sending…' : 'Send magic link'}
                   </Button>
-                </>
+                  <p className="text-[10px] text-[#9a9385] mt-3 text-center">
+                    No password — we'll email you a one-click sign-in link.
+                  </p>
+                </form>
               )}
             </Card>
           </div>

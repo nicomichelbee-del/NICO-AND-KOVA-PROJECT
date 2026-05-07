@@ -33,6 +33,14 @@ export function ReplyComposer({ coachUserId, athlete, onClose, onSent }: Props) 
       .finally(() => setLoading(false))
   }, [coachUserId, athlete.athleteId])
 
+  // ESC closes the modal — keyboard a11y. Listener is attached at window level
+  // so it works even when focus is inside an input.
+  useEffect(() => {
+    function onKey(e: KeyboardEvent) { if (e.key === 'Escape') onClose() }
+    window.addEventListener('keydown', onKey)
+    return () => window.removeEventListener('keydown', onKey)
+  }, [onClose])
+
   async function handleSend() {
     setSending(true); setError(''); setGmailNotConnected(false)
     try {

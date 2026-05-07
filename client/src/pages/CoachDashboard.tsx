@@ -243,7 +243,14 @@ export function CoachDashboard() {
 
                 {/* Notes */}
                 <Card className="p-6">
-                  <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a] mb-3">Program notes (public)</div>
+                  <div className="flex items-center justify-between mb-3">
+                    <div className="text-xs font-mono uppercase tracking-[0.18em] text-[#f0b65a]">Program notes (public)</div>
+                    {savedAt && (
+                      <span className="text-[10px] font-mono uppercase tracking-wider text-[#4ade80]">
+                        ✓ Saved
+                      </span>
+                    )}
+                  </div>
                   <textarea
                     defaultValue={program.notes}
                     onBlur={(e) => handleNotesBlur(e.target.value)}
