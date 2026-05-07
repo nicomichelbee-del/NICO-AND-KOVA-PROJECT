@@ -266,6 +266,38 @@ router.post('/send', async (req, res) => {
         }, { onConflict: 'athlete_id,coach_email,school_id' })).catch((err: Error) => {
           console.error('coach_inbound_consents upsert failed:', err.message)
         })
+
+        // Coach portal: notify the claimed coach in real-time, if they've opted in.
+        void Promise.resolve((async () => {
+          try {
+            const coachEmail = to.toLowerCase()
+            const { data: claim } = await supabase
+              .from('claimed_programs')
+              .select('coach_user_id, coach_name, school_name, notify_per_inbound')
+              .ilike('coach_email', coachEmail)
+              .maybeSingle()
+            if (!claim?.coach_user_id || !claim.notify_per_inbound) return
+
+            const { data: profile } = await supabase
+              .from('athlete_profiles')
+              .select('full_name, slug, primary_position, graduation_year')
+              .eq('user_id', userId)
+              .maybeSingle()
+
+            const { renderInboundEmail, sendCoachEmail } = await import('../lib/coachNotifications')
+            const rendered = renderInboundEmail({
+              coachName: claim.coach_name ?? 'Coach',
+              programName: claim.school_name ?? '',
+              athleteName: profile?.full_name ?? 'A KickrIQ athlete',
+              athletePosition: profile?.primary_position ?? null,
+              athleteGradYear: profile?.graduation_year ?? null,
+              athleteSlug: profile?.slug ?? null,
+            })
+            await sendCoachEmail({ to: coachEmail, ...rendered })
+          } catch (err) {
+            console.error('per-event coach notification failed:', err instanceof Error ? err.message : err)
+          }
+        })())
       }
     }
   } catch (e) {

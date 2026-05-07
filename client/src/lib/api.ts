@@ -329,6 +329,25 @@ export function getCoachInbound(userId: string) {
     .then(handlePublicResponse<{ athletes: CoachInboundAthlete[] }>)
 }
 
+export interface CoachNotifPrefs { perInbound: boolean; dailyDigest: boolean }
+
+export async function getCoachNotifPrefs(coachUserId: string): Promise<CoachNotifPrefs> {
+  const r = await fetch(`/api/coach/notifications?coachUserId=${encodeURIComponent(coachUserId)}`)
+  if (!r.ok) throw new Error('Failed to load notification prefs')
+  return r.json()
+}
+
+export async function setCoachNotifPrefs(
+  coachUserId: string,
+  prefs: Partial<CoachNotifPrefs>,
+): Promise<void> {
+  const r = await fetch('/api/coach/notifications', {
+    method: 'PATCH', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ coachUserId, ...prefs }),
+  })
+  if (!r.ok) throw new Error('Failed to save notification prefs')
+}
+
 async function handlePublicResponse<T>(res: Response): Promise<T> {
   if (!res.ok) {
     const err = await res.json().catch(() => ({ error: 'Request failed' })) as { error?: string }

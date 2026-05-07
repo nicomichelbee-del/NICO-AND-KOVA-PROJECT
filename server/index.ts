@@ -7,6 +7,7 @@ import campsRouter from './routes/camps'
 import profileRouter from './routes/profile'
 import publicRouter from './routes/public'
 import coachRouter from './routes/coach'
+import coachReplyRouter from './routes/coachReply'
 import { requireCompleteProfile } from './lib/profileGate'
 import { aiInteractiveLimiter } from './lib/rateLimits'
 
@@ -52,6 +53,7 @@ app.use('/api/camps', requireCompleteProfile, aiInteractiveLimiter, campsRouter)
 // Coach portal — does NOT use requireCompleteProfile (that gate is for athletes).
 // Auth is enforced inside each handler via the userId/userEmail params.
 app.use('/api/coach', coachRouter)
+app.use('/api/coach', coachReplyRouter)
 
 // Final error handler — turns any error forwarded by next(err) (including the
 // async-wrapped throws from the gmail router) into a clean JSON 500 instead

@@ -13,6 +13,7 @@ import {
   type CoachProgram,
 } from '../lib/api'
 import { InboundFeed } from '../components/coach/InboundFeed'
+import { NotificationPrefs } from '../components/coach/NotificationPrefs'
 
 const POSITIONS = [
   'Goalkeeper', 'Center Back', 'Outside Back', 'Defensive Midfielder',
@@ -162,6 +163,8 @@ export function CoachDashboard() {
                     </div>
                   </div>
                 </Card>
+
+                <NotificationPrefs coachUserId={user!.id} />
 
                 {/* Roster needs editor */}
                 <Card className="p-6">
