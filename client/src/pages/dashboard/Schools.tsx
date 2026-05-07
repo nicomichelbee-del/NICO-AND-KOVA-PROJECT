@@ -4,58 +4,19 @@ import { Button } from '../../components/ui/Button'
 import { Badge } from '../../components/ui/Badge'
 import { Card } from '../../components/ui/Card'
 import { PageHeader } from '../../components/ui/PageHeader'
-import type { AthleteProfile, Division, Region, School, ProgramIntel, VideoRating } from '../../types'
-import type { AthleteProfileRecord } from '../../types/profile'
+import type { AthleteProfile, Division, School, ProgramIntel, VideoRating } from '../../types'
+import { readLegacyProfile } from '../../lib/profileAdapter'
 import { useAuth } from '../../context/AuthContext'
 import { loadRatings, saveRating, buildPreferences, applyAffinity, affinityBoost, type SchoolRatings, type Rating } from '../../lib/preferences'
 
-// Builds the matcher's AthleteProfile from the live profile editor. The new
-// editor (Profile.tsx + OnboardingProfile.tsx) writes everything into
-// `athleteProfileRecord`. The legacy `athleteProfile` localStorage key is
-// only used as a fallback for fields the new schema doesn't yet track —
-// goals, assists, gender, sizePreference, intendedMajor — so existing users
-// don't lose those values when they edit their record.
-//
-// This is what makes "I changed my target division" actually flow through
-// to the matcher: we map record.desired_division_levels → targetDivision /
-// targetDivisions on every read.
-function readJSON<T>(key: string): T | null {
-  try { return JSON.parse(localStorage.getItem(key) ?? 'null') as T | null }
-  catch { return null }
-}
+// Profile is read through profileAdapter.readLegacyProfile, which scans for
+// any user-scoped athleteProfileRecord:<userId> key in localStorage so this
+// page sees changes ProfileContext just made. The duplicate inline reader
+// that used to live here was reading the OLD global 'athleteProfileRecord'
+// key (no userId suffix) — that key is migrated/deleted on first auth load,
+// so profile edits never propagated to matches. Delegating fixes that.
 function getProfile(): AthleteProfile | null {
-  const record = readJSON<AthleteProfileRecord>('athleteProfileRecord')
-  const legacy = readJSON<AthleteProfile>('athleteProfile')
-  if (!record && !legacy) return null
-
-  const levels = (record?.desired_division_levels ?? []) as Division[]
-  const regions = (record?.regions_of_interest ?? []) as Region[]
-  const targetDivision: Division = levels[0] ?? legacy?.targetDivision ?? 'D2'
-  const targetDivisions = levels.length >= 2 ? levels : undefined
-
-  return {
-    name:               record?.full_name              ?? legacy?.name              ?? '',
-    gradYear:           record?.graduation_year        ?? legacy?.gradYear          ?? new Date().getFullYear() + 2,
-    position:           record?.primary_position       ?? legacy?.position          ?? '',
-    // Gender now lives on the new record schema. Legacy fallback is for
-    // existing browsers that haven't been re-onboarded yet — handleMatch
-    // throws a "set your gender" error if neither source has it.
-    gender:             (record?.gender as 'mens' | 'womens' | undefined) ?? legacy?.gender ?? 'womens',
-    clubTeam:           record?.current_club           ?? legacy?.clubTeam          ?? '',
-    clubLeague:         record?.current_league_or_division ?? legacy?.clubLeague    ?? '',
-    gpa:                record?.gpa                    ?? legacy?.gpa               ?? 0,
-    satAct:             record?.sat_score ?? record?.act_score ?? legacy?.satAct,
-    goals:              legacy?.goals                  ?? 0,
-    assists:            legacy?.assists                ?? 0,
-    intendedMajor:      legacy?.intendedMajor,
-    highlightUrl:       record?.highlight_video_url    ?? legacy?.highlightUrl ?? undefined,
-    targetDivision,
-    targetDivisions,
-    locationPreference: regions[0] ?? legacy?.locationPreference ?? 'any',
-    sizePreference:     legacy?.sizePreference         ?? 'any',
-    excludedDivisions:  legacy?.excludedDivisions,
-    academicMinimum:    record?.academic_minimum       ?? undefined,
-  }
+  return readLegacyProfile()
 }
 
 function getLatestVideoRating(): VideoRating | null {
@@ -1442,7 +1403,7 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave, rating, onRate, af
               </span>
             )}
           </div>
-          <div className="flex items-center gap-3 sm:gap-4 font-mono text-[10.5px] tracking-[0.14em] uppercase text-ink-3 flex-wrap mb-3">
+          <div className="flex items-center gap-3 sm:gap-4 font-mono text-[10.5px] tracking-[0.14em] uppercase text-ink-3 flex-wrap mb-2">
             <span>{school.location}</span>
             <span className="text-ink-3/60">·</span>
             <span>{school.enrollment.toLocaleString()} students</span>
@@ -1458,8 +1419,13 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave, rating, onRate, af
             )}
           </div>
 
+          {/* Academic snapshot — surfaces Scorecard data + the school's
+              typical-recruit GPA so users can self-assess fit without
+              clicking into the modal. Hidden when no data is on file. */}
+          <AcademicSnapshot school={school} />
+
           {(school.athleticFit != null || school.academicFit != null) && (
-            <div className="flex gap-4 mb-2.5 max-w-md">
+            <div className="flex gap-4 mb-2.5 max-w-md mt-2">
               <FitBar label="Athletic" value={school.athleticFit ?? 50} />
               <FitBar label="Academic" value={school.academicFit ?? 50} />
             </div>
@@ -1528,6 +1494,53 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave, rating, onRate, af
           →
         </div>
       </div>
+    </div>
+  )
+}
+
+// Inline academic snapshot under the meta row on a school card. Surfaces the
+// signals athletes asked for ("can I get in?") without making them open the
+// detail modal — acceptance rate, GPA avg / SAT 25-75 range, academic tier.
+// Renders nothing when no academic data is on file (Scorecard gaps).
+function AcademicSnapshot({ school }: { school: School }) {
+  const ar = school.admissionRate
+  const sat25 = school.sat25
+  const sat75 = school.sat75
+  const gpaAvg = school.gpaAvg
+  const tier = school.academicTier
+  const hasAny = ar != null || sat25 != null || sat75 != null || gpaAvg != null || tier != null
+  if (!hasAny) return null
+  return (
+    <div className="flex items-center gap-3 sm:gap-4 font-mono text-[10.5px] tracking-[0.14em] uppercase text-ink-3 flex-wrap mb-2">
+      {tier != null && (
+        <span
+          className="px-1.5 py-0.5 rounded border border-[rgba(245,241,232,0.10)] text-[9.5px] tracking-[0.16em] text-ink-2"
+          title="Composite tier from admission rate, SAT 75th, and graduation rate. T1 ≈ top 25, T5 ≈ open admission."
+        >
+          T{tier}
+        </span>
+      )}
+      {ar != null && (
+        <span title="Admission rate from the most recent College Scorecard release.">
+          {Math.round(ar * 100)}% admit
+        </span>
+      )}
+      {gpaAvg != null && gpaAvg > 0 && (
+        <>
+          <span className="text-ink-3/60">·</span>
+          <span title="Typical recruit's unweighted GPA at this program.">
+            avg {gpaAvg.toFixed(1)} GPA
+          </span>
+        </>
+      )}
+      {(sat25 != null || sat75 != null) && (
+        <>
+          <span className="text-ink-3/60">·</span>
+          <span title="SAT 25th–75th percentile range of the entering class.">
+            SAT {sat25 ?? '—'}–{sat75 ?? '—'}
+          </span>
+        </>
+      )}
     </div>
   )
 }

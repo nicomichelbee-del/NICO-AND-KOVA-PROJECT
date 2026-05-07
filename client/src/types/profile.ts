@@ -73,6 +73,12 @@ export interface AthleteProfileRecord {
   sat_score: string | null
   act_score: string | null
   ncaa_eligibility_id: string | null
+  // Last-season soccer stats — drives athletic-fit scoring for forwards
+  // and midfielders. Defenders and keepers don't use these (the matcher
+  // skips goal-scoring comparisons for them — see schoolMatcher.athleticFit).
+  // null means "not yet entered"; the matcher treats null as 0 (no signal).
+  goals_last_season?: number | null
+  assists_last_season?: number | null
   desired_division_levels: string[]
   regions_of_interest: string[]
   // Academic floor (1 = top-tier ~T25, 5 = no preference). Drives the

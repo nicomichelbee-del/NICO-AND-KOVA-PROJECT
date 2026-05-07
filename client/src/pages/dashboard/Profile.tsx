@@ -306,6 +306,31 @@ export function Profile() {
             />
           </Field>
         </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <Field label="Goals (last season)">
+            <TextInput
+              type="number"
+              value={draft.goals_last_season?.toString() ?? ''}
+              onChange={(v) => update('goals_last_season', v ? Number(v) : null)}
+              onBlur={() => persist({ goals_last_season: draft.goals_last_season ?? null })}
+              placeholder="e.g. 12"
+            />
+          </Field>
+          <Field label="Assists (last season)">
+            <TextInput
+              type="number"
+              value={draft.assists_last_season?.toString() ?? ''}
+              onChange={(v) => update('assists_last_season', v ? Number(v) : null)}
+              onBlur={() => persist({ assists_last_season: draft.assists_last_season ?? null })}
+              placeholder="e.g. 8"
+            />
+          </Field>
+        </div>
+        <p className="text-[11px] text-ink-3 leading-[1.5] -mt-2">
+          Goals + assists drive athletic-fit scoring for forwards and midfielders.
+          Defenders and keepers can leave these blank — the matcher skips them anyway.
+        </p>
       </Section>
 
       {/* Academics */}

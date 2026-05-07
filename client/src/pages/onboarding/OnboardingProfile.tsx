@@ -294,6 +294,28 @@ export function OnboardingProfile() {
 
                 <Input label="Club team" placeholder="Bay Area Surf" value={form.current_club ?? ''} onChange={(e) => update('current_club', e.target.value)} />
                 <Input label="League or division" placeholder="ECNL, MLS Next, NPL, etc." value={form.current_league_or_division ?? ''} onChange={(e) => update('current_league_or_division', e.target.value)} />
+
+                <FieldLabel>Last-season stats (optional)</FieldLabel>
+                <p className="text-xs text-ink-3 leading-[1.5] -mt-1">
+                  Helps the matcher rank schools where your scoring rate fits the program.
+                  Defenders and keepers can leave these blank.
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    label="Goals"
+                    type="number" inputMode="numeric" min={0} max={200}
+                    placeholder="e.g. 12"
+                    value={form.goals_last_season ?? ''}
+                    onChange={(e) => update('goals_last_season', e.target.value ? Number(e.target.value) : null)}
+                  />
+                  <Input
+                    label="Assists"
+                    type="number" inputMode="numeric" min={0} max={200}
+                    placeholder="e.g. 8"
+                    value={form.assists_last_season ?? ''}
+                    onChange={(e) => update('assists_last_season', e.target.value ? Number(e.target.value) : null)}
+                  />
+                </div>
               </>
             )}
 
