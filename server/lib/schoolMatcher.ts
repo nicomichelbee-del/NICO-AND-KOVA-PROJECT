@@ -127,6 +127,31 @@ function getCoachStatus(schoolId: string, gender: 'mens' | 'womens'): string | n
   return entry?.status ?? null
 }
 
+// sponsoredPrograms.json is the canonical D1+D2 source of truth, generated
+// from Wikipedia by server/scripts/buildSponsoredPrograms.ts. true = the
+// school fields a varsity program of this gender at its current division.
+// false = it doesn't (Wikipedia checked + school not in the list). undefined
+// = no Wikipedia data on file (D3/NAIA/JUCO, or D1/D2 school the build
+// script didn't write because it's not in schools.json).
+let sponsoredCache: Record<string, boolean> | null = null
+function getSponsored(schoolId: string, gender: 'mens' | 'womens'): boolean | undefined {
+  if (sponsoredCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'sponsoredPrograms.json')
+      const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, unknown>
+      sponsoredCache = {}
+      for (const [k, v] of Object.entries(raw)) {
+        if (k.startsWith('_')) continue
+        if (typeof v === 'boolean') sponsoredCache[k] = v
+      }
+    } catch {
+      sponsoredCache = {}
+    }
+  }
+  const entry = sponsoredCache[`${schoolId}:${gender}`]
+  return entry
+}
+
 let noProgramOverrideCache: Set<string> | null = null
 function isNoProgramOverride(schoolId: string, gender: 'mens' | 'womens'): boolean {
   if (noProgramOverrideCache === null) {
@@ -146,7 +171,23 @@ function isNoProgramOverride(schoolId: string, gender: 'mens' | 'womens'): boole
 }
 
 function hasProgramOfGender(schoolId: string, gender: 'mens' | 'womens'): boolean {
+  // Manual override always wins — last line of defense for both Wikipedia
+  // gaps (set value=false to opt a school back IN later) and stubborn
+  // scraper false positives that Wikipedia missed.
   if (isNoProgramOverride(schoolId, gender)) return false
+
+  // Wikipedia-derived sponsorship is canonical for D1 and D2. Returns
+  // undefined for divisions not covered (D3 / NAIA / JUCO) or D1/D2
+  // schools the build script didn't have data for — we fall through to
+  // the legacy coach-status check for those cases.
+  const sponsored = getSponsored(schoolId, gender)
+  if (sponsored === true)  return true
+  if (sponsored === false) return false
+
+  // Legacy fallback: scraped coach data. Only `'no-program'` is a strong
+  // negative signal; everything else (success / email-inferred / web-* /
+  // partial / failed) is treated as program-exists, since the scraper has
+  // a long tail of false positives the manual override file plugs.
   return getCoachStatus(schoolId, gender) !== 'no-program'
 }
 
