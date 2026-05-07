@@ -51,6 +51,7 @@ export function Login() {
     localStorage.setItem('athleteProfileRecord', JSON.stringify({
       full_name: 'Test Athlete',
       graduation_year: 2027,
+      gender: 'mens',
       primary_position: 'Forward',
       secondary_position: null,
       preferred_foot: 'Right',

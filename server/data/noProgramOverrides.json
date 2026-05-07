@@ -1,0 +1,24 @@
+{
+  "_README": "Manual no-program overrides. Final word for cases where the automated pipeline (Wikipedia in sponsoredPrograms.json + AI verification in programVerifications.json) is wrong. The matcher consults this file BEFORE Wikipedia and AI verification — entries here always win.\n\nFormat: '<schoolId>:<gender>': true (school does NOT field a varsity program of this gender — drop it from results). Add a sibling '_reason_<schoolId>:<gender>' key with a one-line explanation for future maintainers.\n\nTo VET an entry: run `npx tsx server/scripts/auditOverrides.ts`. The audit reports whether each entry is redundant (already handled by Wikipedia/AI) or load-bearing.\n\nMost SEC/Big-12/Big-Ten football schools without men's varsity soccer were already covered by Phase 1 (Wikipedia) and Phase 2 (AI verification). The 7 entries below are the safety net for cases where the schoolId in our schools.json doesn't match either Wikipedia's or the scraper's data. Future scraper false positives that slip through Phases 1 + 2 should be added here.",
+
+  "ole-miss:mens": true,
+  "_reason_ole-miss:mens": "SEC — no men's varsity soccer. Schools.json has no entry under 'ole-miss', but kept defensively in case it's added later.",
+
+  "mississippi-state:mens": true,
+  "_reason_mississippi-state:mens": "SEC — no men's varsity soccer.",
+
+  "texas-am:mens": true,
+  "_reason_texas-am:mens": "SEC — no men's varsity soccer.",
+
+  "texas-tech:mens": true,
+  "_reason_texas-tech:mens": "Big 12 — no men's varsity soccer.",
+
+  "oklahoma-state:mens": true,
+  "_reason_oklahoma-state:mens": "Big 12 — no men's varsity soccer.",
+
+  "kansas-state:mens": true,
+  "_reason_kansas-state:mens": "Big 12 — no men's varsity soccer.",
+
+  "iowa-state:mens": true,
+  "_reason_iowa-state:mens": "Big 12 — no men's varsity soccer."
+}

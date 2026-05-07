@@ -29,6 +29,21 @@ const FOOT_OPTIONS = [
   { value: 'both', label: 'Both' },
 ]
 
+// Academic floor tiers — composite signal from admission rate / SAT / grad
+// rate. Tiers map to roughly:
+//   1 → Top-tier (~T25):       Ivy, Stanford, Duke, top liberal arts
+//   2 → Highly selective (~T50): UNC, UVA, Notre Dame, BC
+//   3 → Selective (~T100):     most flagship state schools, mid-tier privates
+//   4 → Moderately selective:  regional colleges
+//   5 → No preference:         everything in the dataset (default)
+const ACADEMIC_TIER_OPTIONS: { value: 1 | 2 | 3 | 4 | 5 | null; label: string; detail: string }[] = [
+  { value: 1,    label: 'Top tier only',         detail: 'Roughly top-25 selectivity (Ivy / Stanford / Duke caliber).' },
+  { value: 2,    label: 'Highly selective+',     detail: 'Roughly top-50. Includes flagship publics like UNC, UVA.' },
+  { value: 3,    label: 'Selective+',            detail: 'Roughly top-100. Most flagship state schools.' },
+  { value: 4,    label: 'Moderately selective+', detail: 'Excludes only open-admission programs.' },
+  { value: null, label: 'No preference',         detail: 'Show every match regardless of academic tier.' },
+]
+
 const GENDER_OPTIONS = [
   { value: 'mens' as const, label: "Men's soccer" },
   { value: 'womens' as const, label: "Women's soccer" },
@@ -50,6 +65,7 @@ function computeStrength(p: Partial<AthleteProfileRecord>): number {
     !!p.gender,
     !!p.graduation_year,
     !!p.high_school_name,
+    !!p.gender,
     !!p.primary_position,
     !!p.preferred_foot,
     !!p.current_club,
@@ -97,7 +113,7 @@ export function OnboardingProfile() {
       return !!form.full_name && !!form.gender && !!form.graduation_year && !!form.high_school_name
     }
     if (step.key === 'soccer') {
-      return !!form.primary_position && !!form.preferred_foot && !!form.current_club && !!form.current_league_or_division
+      return !!form.gender && !!form.primary_position && !!form.preferred_foot && !!form.current_club && !!form.current_league_or_division
     }
     if (step.key === 'academics') {
       return form.gpa != null
@@ -266,6 +282,18 @@ export function OnboardingProfile() {
 
             {step.key === 'soccer' && (
               <>
+                <FieldLabel>Soccer program</FieldLabel>
+                <div className="grid grid-cols-2 gap-2">
+                  <Chip active={form.gender === 'mens'} onClick={() => update('gender', 'mens')}>
+                    <span className="block font-mono text-[12px] tracking-[0.10em] font-semibold">Men's</span>
+                    <span className="block text-[10px] text-ink-3 mt-1">I'd play men's college soccer</span>
+                  </Chip>
+                  <Chip active={form.gender === 'womens'} onClick={() => update('gender', 'womens')}>
+                    <span className="block font-mono text-[12px] tracking-[0.10em] font-semibold">Women's</span>
+                    <span className="block text-[10px] text-ink-3 mt-1">I'd play women's college soccer</span>
+                  </Chip>
+                </div>
+
                 <FieldLabel>Position on the pitch</FieldLabel>
                 <PitchPositionPicker
                   primary={form.primary_position ?? null}
@@ -285,6 +313,28 @@ export function OnboardingProfile() {
 
                 <Input label="Club team" placeholder="Bay Area Surf" value={form.current_club ?? ''} onChange={(e) => update('current_club', e.target.value)} />
                 <Input label="League or division" placeholder="ECNL, MLS Next, NPL, etc." value={form.current_league_or_division ?? ''} onChange={(e) => update('current_league_or_division', e.target.value)} />
+
+                <FieldLabel>Last-season stats (optional)</FieldLabel>
+                <p className="text-xs text-ink-3 leading-[1.5] -mt-1">
+                  Helps the matcher rank schools where your scoring rate fits the program.
+                  Defenders and keepers can leave these blank.
+                </p>
+                <div className="grid grid-cols-2 gap-3">
+                  <Input
+                    label="Goals"
+                    type="number" inputMode="numeric" min={0} max={200}
+                    placeholder="e.g. 12"
+                    value={form.goals_last_season ?? ''}
+                    onChange={(e) => update('goals_last_season', e.target.value ? Number(e.target.value) : null)}
+                  />
+                  <Input
+                    label="Assists"
+                    type="number" inputMode="numeric" min={0} max={200}
+                    placeholder="e.g. 8"
+                    value={form.assists_last_season ?? ''}
+                    onChange={(e) => update('assists_last_season', e.target.value ? Number(e.target.value) : null)}
+                  />
+                </div>
               </>
             )}
 
@@ -327,6 +377,23 @@ export function OnboardingProfile() {
                   {REGIONS.map((r) => (
                     <Chip key={r} active={(form.regions_of_interest ?? []).includes(r)} onClick={() => toggleArray('regions_of_interest', r)}>
                       {r}
+                    </Chip>
+                  ))}
+                </div>
+
+                <FieldLabel>Academic floor</FieldLabel>
+                <p className="text-xs text-ink-3 leading-[1.6] -mt-1">
+                  Drop schools below this caliber from your matches. Composite of admission rate, SAT range, and graduation rate.
+                </p>
+                <div className="grid grid-cols-1 gap-2">
+                  {ACADEMIC_TIER_OPTIONS.map((opt) => (
+                    <Chip
+                      key={opt.value ?? 'any'}
+                      active={(form.academic_minimum ?? null) === opt.value}
+                      onClick={() => update('academic_minimum', opt.value)}
+                    >
+                      <span className="block font-mono text-[12px] tracking-[0.10em] font-semibold">{opt.label}</span>
+                      <span className="block text-[10px] text-ink-3 mt-1">{opt.detail}</span>
                     </Chip>
                   ))}
                 </div>

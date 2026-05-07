@@ -1,4 +1,4 @@
-import rateLimit, { type Options } from 'express-rate-limit'
+import rateLimit, { ipKeyGenerator, type Options } from 'express-rate-limit'
 import type { Request } from 'express'
 
 // Per-user (or per-IP for unauthed paths) limiters.
@@ -6,9 +6,16 @@ import type { Request } from 'express'
 // costs real money. The limits below are generous for legitimate athletes
 // (a normal session is ~10–20 calls) and tight enough to neuter scraping or
 // a leaked token spamming requests overnight.
+//
+// IPv6 note: ipKeyGenerator() groups addresses by /64 prefix instead of using
+// the raw IP. Without it, an IPv6 user could rotate through a /64's 18
+// quintillion addresses to bypass per-IP limits. Authed callers key by
+// req.user.id and never need the IP path.
 
 function userKey(req: Request): string {
-  return req.user?.id ?? req.ip ?? 'anonymous'
+  if (req.user?.id) return req.user.id
+  if (req.ip) return ipKeyGenerator(req.ip)
+  return 'anonymous'
 }
 
 function buildLimiter(opts: Partial<Options> & { windowMs: number; max: number }) {

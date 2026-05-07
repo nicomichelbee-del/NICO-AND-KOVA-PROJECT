@@ -69,6 +69,10 @@ export function readLegacyProfile(): AthleteProfile | null {
     VALID_REGIONS.includes(reg as Region))
   const locationPreference: Region = regions[0] ?? 'any'
 
+  // Gender lives on the AthleteProfileRecord directly. The matcher needs
+  // a real choice to filter out programs of the wrong gender. The 'mens'
+  // fallback is for the brief window between record creation and the
+  // user picking gender in onboarding (where it's required to advance).
   const gender: 'mens' | 'womens' = r.gender ?? 'mens'
 
   return {
@@ -80,8 +84,8 @@ export function readLegacyProfile(): AthleteProfile | null {
     clubLeague: r.current_league_or_division ?? '',
     gpa: r.gpa ?? 0,
     satAct: r.sat_score || r.act_score || undefined,
-    goals: 0,
-    assists: 0,
+    goals: r.goals_last_season ?? 0,
+    assists: r.assists_last_season ?? 0,
     intendedMajor: undefined,
     highlightUrl: r.highlight_video_url ?? undefined,
     targetDivision,
@@ -89,5 +93,6 @@ export function readLegacyProfile(): AthleteProfile | null {
     locationPreference,
     sizePreference: 'any',
     excludedDivisions: undefined,
+    academicMinimum: r.academic_minimum ?? undefined,
   }
 }

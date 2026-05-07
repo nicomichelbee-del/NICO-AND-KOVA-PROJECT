@@ -3,6 +3,7 @@ import path from 'path'
 import schoolsData from '../data/schools.json'
 import type { AthleteProfile, MatchBreakdown, School, SchoolDirectoryEntry, VideoRating } from '../../client/src/types/index'
 import type { ProgramRecord, RecruitingClass } from '../../client/src/types/athletic'
+import { affinityBoost, type ServerPreferences } from './affinityBoost'
 
 const round1 = (n: number): number => Math.round(n * 10) / 10
 
@@ -36,6 +37,227 @@ function getAcademic(schoolId: string): AcademicRecord | undefined {
     }
   }
   return academicCache[schoolId]
+}
+
+// ── Academic tier (1 = most selective … 5 = open admission) ───────────────
+// Composite of admission rate, SAT 75th percentile, and graduation rate. We
+// don't have a US News dataset, so we approximate "ranking-like" tier from
+// the Scorecard signals we do have. Tiers are stable: a 1540 / 4.0 athlete
+// who insists on "top 50" can hard-filter SUNY Cortland (T5) without cutting
+// out flagship state schools (T2/T3).
+//
+// Roughly:
+//   T1 — Most selective:  Ivies, Stanford, MIT, Duke, top liberal arts
+//   T2 — Highly selective: T50 flagship publics, well-known privates
+//   T3 — Selective:        decent state schools, mid-tier privates
+//   T4 — Moderately selective
+//   T5 — Open admission / unknown
+export type AcademicTier = 1 | 2 | 3 | 4 | 5
+
+export function academicTier(schoolId: string): AcademicTier {
+  const acad = getAcademic(schoolId)
+  if (!acad) return 5
+
+  // Weighted composite — admission rate is the strongest single signal so
+  // it gets the largest weight. We only count dimensions that are populated
+  // (Scorecard gaps are real for some smaller schools).
+  let score = 0
+  let weights = 0
+
+  if (acad.admissionRate != null) {
+    // 5% → 100, 25% → 75, 50% → 50, 75% → 25
+    const s = Math.max(0, 100 - acad.admissionRate * 200)
+    score += s * 0.55
+    weights += 0.55
+  }
+  const sat = acad.sat75 ?? acad.satMid
+  if (sat != null) {
+    // 1550+ → 100, 1300 → 50, 1050 → 0
+    const s = Math.max(0, Math.min(100, (sat - 1050) / 5))
+    score += s * 0.30
+    weights += 0.30
+  }
+  if (acad.graduationRate != null) {
+    // 95% → 100, 70% → 50, 45% → 0
+    const s = Math.max(0, Math.min(100, (acad.graduationRate * 100 - 45) * 2))
+    score += s * 0.15
+    weights += 0.15
+  }
+
+  if (weights === 0) return 5
+  const norm = score / weights
+
+  if (norm >= 80) return 1
+  if (norm >= 65) return 2
+  if (norm >= 50) return 3
+  if (norm >= 30) return 4
+  return 5
+}
+
+// ── Coach data (used here only for "does this school field a program of
+// the requested gender?" — full coach lookup happens in the routes layer).
+// We treat status === 'no-program' as the canonical "this school doesn't
+// have a men's/women's team" signal. Missing entries are treated as
+// "unknown" and pass through (the scraper just hasn't reached the school).
+//
+// noProgramOverrides.json is a manual fallback for known scraper false
+// positives — schools where status === 'success' is wrong because the
+// scraper picked up a staff page that mis-references the wrong gender
+// (e.g. Alabama mens, where the women's head coach was scraped into the
+// men's slot). Always wins over scrape data when set to true.
+
+interface ScrapedCoachLite { status: string }
+
+let coachStatusCache: Record<string, ScrapedCoachLite> | null = null
+function getCoachStatus(schoolId: string, gender: 'mens' | 'womens'): string | null {
+  if (coachStatusCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'coachesScraped.json')
+      const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, ScrapedCoachLite>
+      coachStatusCache = {}
+      for (const [k, v] of Object.entries(raw)) {
+        if (k.startsWith('_')) continue
+        coachStatusCache[k] = { status: v.status }
+      }
+    } catch {
+      coachStatusCache = {}
+    }
+  }
+  const entry = coachStatusCache[`${schoolId}:${gender}`]
+  return entry?.status ?? null
+}
+
+// sponsoredPrograms.json is the canonical D1+D2 source of truth, generated
+// from Wikipedia by server/scripts/buildSponsoredPrograms.ts. true = the
+// school fields a varsity program of this gender at its current division.
+// false = it doesn't (Wikipedia checked + school not in the list). undefined
+// = no Wikipedia data on file (D3/NAIA/JUCO, or D1/D2 school the build
+// script didn't write because it's not in schools.json).
+let sponsoredCache: Record<string, boolean> | null = null
+function getSponsored(schoolId: string, gender: 'mens' | 'womens'): boolean | undefined {
+  if (sponsoredCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'sponsoredPrograms.json')
+      const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, unknown>
+      sponsoredCache = {}
+      for (const [k, v] of Object.entries(raw)) {
+        if (k.startsWith('_')) continue
+        if (typeof v === 'boolean') sponsoredCache[k] = v
+      }
+    } catch {
+      sponsoredCache = {}
+    }
+  }
+  const entry = sponsoredCache[`${schoolId}:${gender}`]
+  return entry
+}
+
+let noProgramOverrideCache: Set<string> | null = null
+function isNoProgramOverride(schoolId: string, gender: 'mens' | 'womens'): boolean {
+  if (noProgramOverrideCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'noProgramOverrides.json')
+      const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, unknown>
+      noProgramOverrideCache = new Set()
+      for (const [k, v] of Object.entries(raw)) {
+        if (k.startsWith('_')) continue   // skip _README and _reason_* annotations
+        if (v === true) noProgramOverrideCache.add(k)
+      }
+    } catch {
+      noProgramOverrideCache = new Set()
+    }
+  }
+  return noProgramOverrideCache.has(`${schoolId}:${gender}`)
+}
+
+// eadaPrograms.json is the federal source of truth, generated from the
+// Department of Education's annual EADA dataset by buildEadaPrograms.ts.
+// Covers every Title-IV institution across D1, D2, D3, NAIA, and NJCAA —
+// dramatically more comprehensive than the Wikipedia D1+D2 lists. true =
+// the school reported a varsity program with PARTIC > 0; false = the
+// school filed an EADA report but listed no participants for this gender;
+// undefined = no EADA data on file (school isn't in our schools.json or
+// hasn't filed). Trusted ABOVE both AI verification and Wikipedia.
+let eadaCache: Record<string, boolean> | null = null
+function getEada(schoolId: string, gender: 'mens' | 'womens'): boolean | undefined {
+  if (eadaCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'eadaPrograms.json')
+      const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, unknown>
+      eadaCache = {}
+      for (const [k, v] of Object.entries(raw)) {
+        if (k.startsWith('_')) continue
+        if (typeof v === 'boolean') eadaCache[k] = v
+      }
+    } catch {
+      eadaCache = {}
+    }
+  }
+  return eadaCache[`${schoolId}:${gender}`]
+}
+
+// programVerifications.json is the AI-resolved set for cases where Wikipedia
+// and the scraper disagreed. Generated by server/scripts/verifyDisagreements.ts.
+// Trusted ABOVE Wikipedia because AI verification corrects two failure modes:
+//   • Wikipedia gaps (UCLA women's was missing from the scraped list, AI
+//     correctly says they DO field a program).
+//   • Scraper false positives (Iowa State men's claimed a coach via
+//     email-inferred status, AI correctly says they don't field it).
+// Low-confidence verdicts fall through to Wikipedia → coach status, so we
+// don't override a strong signal with an AI guess we're not sure about.
+interface VerificationEntry { hasProgram: boolean; confidence: 'high' | 'medium' | 'low' }
+let verificationCache: Record<string, VerificationEntry> | null = null
+function getVerification(schoolId: string, gender: 'mens' | 'womens'): VerificationEntry | undefined {
+  if (verificationCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'programVerifications.json')
+      const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, unknown>
+      verificationCache = {}
+      for (const [k, v] of Object.entries(raw)) {
+        if (k.startsWith('_')) continue
+        if (v && typeof v === 'object'
+            && typeof (v as VerificationEntry).hasProgram === 'boolean'
+            && typeof (v as VerificationEntry).confidence === 'string') {
+          verificationCache[k] = v as VerificationEntry
+        }
+      }
+    } catch {
+      verificationCache = {}
+    }
+  }
+  return verificationCache[`${schoolId}:${gender}`]
+}
+
+function hasProgramOfGender(schoolId: string, gender: 'mens' | 'womens'): boolean {
+  // Manual override always wins — last line of defense.
+  if (isNoProgramOverride(schoolId, gender)) return false
+
+  // EADA — federal source of truth. Covers all divisions (D1/D2/D3/NAIA/
+  // NJCAA) and is updated annually by every Title IV school. Trusted above
+  // every other signal because it's a self-reported, federally-mandated
+  // disclosure with PARTIC > 0 as the binary indicator.
+  const eada = getEada(schoolId, gender)
+  if (eada === true)  return true
+  if (eada === false) return false
+
+  // AI-verified resolution for known disagreement cases. Only trust high or
+  // medium confidence — low confidence falls through to the next signal.
+  const verified = getVerification(schoolId, gender)
+  if (verified && verified.confidence !== 'low') return verified.hasProgram
+
+  // Wikipedia-derived sponsorship for D1 and D2. Returns undefined for
+  // divisions not covered (D3 / NAIA / JUCO) or D1/D2 schools the build
+  // script didn't have data for — fall through to the legacy coach-status
+  // check for those cases.
+  const sponsored = getSponsored(schoolId, gender)
+  if (sponsored === true)  return true
+  if (sponsored === false) return false
+
+  // Legacy fallback: scraped coach data. Only `'no-program'` is a strong
+  // negative signal; everything else (success / email-inferred / web-* /
+  // partial / failed) is treated as program-exists, since the scraper has
+  // a long tail of false positives the manual override file plugs.
+  return getCoachStatus(schoolId, gender) !== 'no-program'
 }
 
 // ── Roster data (open spots) ──────────────────────────────────────────────
@@ -223,7 +445,37 @@ function isGoalkeeper(position: string): boolean {
 
 function isForward(position: string): boolean {
   const p = position.toLowerCase()
-  return p.includes('forward') || p.includes('striker') || p.includes('wing') || p === 'cf' || p === 'lw' || p === 'rw'
+  // Wingers can be wing-mids OR wing-forwards. We previously labeled them all
+  // as forwards, but that overcounted goal expectations for wing-backs (e.g.
+  // "left wing-back" or "right wing"). Require an actual forward keyword.
+  return p.includes('forward') || p.includes('striker') || p === 'cf' || p === 'lw' || p === 'rw' || p === 'st'
+    || (p.includes('wing') && !p.includes('back'))
+}
+
+// Defenders — center backs, fullbacks, sweepers, and "wing back" variants.
+// Includes defensive midfielder ('cdm', 'dm', 'defensive mid', 'holding mid')
+// since those players are evaluated on defensive duties, not goal-scoring.
+// Critically, defenders should NOT be compared to goalsForwardAvg or
+// goalsMidAvg — center backs scoring 4 goals/season is exceptional, not
+// "below typical midfielder."
+function isDefender(position: string): boolean {
+  const p = position.toLowerCase()
+  if (p === 'cb' || p === 'lb' || p === 'rb' || p === 'fb' || p === 'sweeper') return true
+  if (p === 'cdm' || p === 'dm') return true
+  if (p.includes('back')) return true        // "center back", "fullback", "wing back"
+  if (p.includes('defender') || p.includes('defense')) return true
+  if (p.includes('defensive mid') || p.includes('holding mid')) return true
+  return false
+}
+
+// Single source of truth for the human-readable position label used in
+// reasons + breakdown verdicts. Returns the plural ("forwards"). Default to
+// 'midfielders' so an unknown position string doesn't surface as 'players'.
+function positionLabel(position: string): 'keepers' | 'defenders' | 'midfielders' | 'forwards' {
+  if (isGoalkeeper(position)) return 'keepers'
+  if (isDefender(position))   return 'defenders'
+  if (isForward(position))    return 'forwards'
+  return 'midfielders'
 }
 
 // ── v2 algorithm: two first-class fit axes ───────────────────────────────
@@ -297,12 +549,16 @@ function tapeSkill(v: VideoRating): number {
 function athleticFit(profile: AthleteProfile, school: SchoolRecord, video?: VideoRating | null): number {
   const gk = isGoalkeeper(profile.position)
   const fwd = isForward(profile.position)
+  const def = isDefender(profile.position)
 
-  // Stats delta — only meaningful when both athlete and school have data.
-  // For keepers we have no good signal yet (no save/clean-sheet data on the
-  // profile); treat as neutral so academic + division dominate.
+  // Stats delta — only meaningful for attacking players. We treat keepers
+  // and defenders as neutral so academic + division dominate; comparing a
+  // center back's goal count against forward/midfielder averages produces
+  // wrong "below typical midfielder" verdicts (defenders shouldn't score
+  // like midfielders by design). Once we add defender-specific signals
+  // (tackles won, clean sheets, blocks), revisit this.
   let statsDelta = 0
-  if (!gk && profile.goals > 0) {
+  if (!gk && !def && profile.goals > 0) {
     const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
     if (expected > 0) {
       // Half the typical scoring rate = 1 unit of separation in either direction.
@@ -397,7 +653,8 @@ function buildReasons(
   const reasons: string[] = []
   const gk  = isGoalkeeper(profile.position)
   const fwd = isForward(profile.position)
-  const positionLabel = gk ? 'keepers' : fwd ? 'forwards' : 'midfielders'
+  const def = isDefender(profile.position)
+  const posLabel = positionLabel(profile.position)
 
   // ── Top-line fit summary (always first) ──────────────────────────────
   // We build the headline from the actual gaps in the data, not generic
@@ -408,8 +665,10 @@ function buildReasons(
   const gpaAvg = school.gpaAvg ?? 0
   const gpaDelta = gpaAvg > 0 ? profile.gpa - gpaAvg : 0
   const programStrength = school.programStrength ?? 5
-  const expectedGoals = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
-  const goalsDelta = !gk && profile.goals > 0 && expectedGoals > 0 ? profile.goals - expectedGoals : 0
+  // Goal benchmark only applies to attacking players. Defenders and keepers
+  // shouldn't be measured against forward/midfielder averages.
+  const expectedGoals = !gk && !def ? ((fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0) : 0
+  const goalsDelta = !gk && !def && profile.goals > 0 && expectedGoals > 0 ? profile.goals - expectedGoals : 0
   const admPct = acad?.admissionRate != null ? acad.admissionRate * 100 : null
 
   // Specific gap descriptors — used to assemble human-readable reasons.
@@ -425,7 +684,7 @@ function buildReasons(
       gaps.push(`top-tier program (${programStrength}/10 strength)`)
     }
     if (goalsDelta <= -5 && expectedGoals > 0) {
-      gaps.push(`typical ${positionLabel} score ${expectedGoals} (you have ${profile.goals})`)
+      gaps.push(`typical ${posLabel} score ${expectedGoals} (you have ${profile.goals})`)
     }
     if (video) {
       const tape = tapeSkill(video)
@@ -498,14 +757,11 @@ function buildReasons(
   // my position" is the user's #1 stated factor and the most actionable
   // signal we have. Drops to bottom if no roster data on file.
   if (roster) {
-    const positionLabel = isGoalkeeper(profile.position) ? 'keepers'
-                       : isForward(profile.position) ? 'forwards'
-                       : 'midfielders'
-    const positionSing = positionLabel.replace(/s$/, '')
+    const positionSing = posLabel.replace(/s$/, '')
     if (roster.openSpots >= 3) {
       reasons.push(`${roster.graduatingByYear} graduating + ${roster.juniorsAtPosition} juniors at your position — ~${roster.openSpots} spots opening up.`)
     } else if (roster.totalAtPosition >= 7) {
-      reasons.push(`Stocked at your position (${roster.totalAtPosition} ${positionLabel}) — competitive for playing time.`)
+      reasons.push(`Stocked at your position (${roster.totalAtPosition} ${posLabel}) — competitive for playing time.`)
     } else if (roster.graduatingByYear >= 1) {
       reasons.push(`${roster.graduatingByYear} ${pluralize(roster.graduatingByYear, positionSing)} graduating from this program.`)
     } else if (roster.totalAtPosition >= 1) {
@@ -522,11 +778,15 @@ function buildReasons(
   }
 
   // ── Athletic specifics ──────────────────────────────────────────────
-  if (!gk && profile.goals > 0) {
+  // Goal-scoring benchmarks only apply to attacking players. For defenders
+  // and keepers we don't have a position-specific signal yet; suppress the
+  // misleading "below typical midfielders" line entirely until we add
+  // tackles / clean-sheets data.
+  if (!gk && !def && profile.goals > 0) {
     const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
     if (expected > 0) {
-      if (profile.goals >= expected + 4) reasons.push(`Your ${profile.goals} goals exceed this program's typical ${positionLabel} (avg ${expected}).`)
-      else if (profile.goals < Math.max(2, expected - 4)) reasons.push(`Your ${profile.goals} ${pluralize(profile.goals, 'goal')} is below typical ${positionLabel} here (avg ${expected}).`)
+      if (profile.goals >= expected + 4) reasons.push(`Your ${profile.goals} goals exceed this program's typical ${posLabel} (avg ${expected}).`)
+      else if (profile.goals < Math.max(2, expected - 4)) reasons.push(`Your ${profile.goals} ${pluralize(profile.goals, 'goal')} is below typical ${posLabel} here (avg ${expected}).`)
     }
   }
 
@@ -693,7 +953,108 @@ interface Candidate {
 // bucket is short.
 const DEFAULT_BUCKET_CAPS = { safety: 8, target: 10, reach: 8 } as const
 
-export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRating | null): School[] {
+// Blend weights between athletic and academic fit when computing matchScore.
+// Default leans athletic (this IS a recruiting tool), but for academically
+// elite students we shift toward academic so a 1540/4.0 athlete doesn't end
+// up with safety buckets full of programs where she's wildly over-qualified
+// academically. The threshold is intentionally generous — anyone clearly
+// "above the median college applicant" gets the academic-leaning blend.
+function blendWeights(profile: AthleteProfile): { athletic: number; academic: number } {
+  const sat = (() => {
+    const raw = (profile.satAct ?? '').replace(/[^0-9]/g, '')
+    const n = Number(raw)
+    return Number.isFinite(n) && n >= 400 && n <= 1600 ? n : 0
+  })()
+  const eliteAcademic = profile.gpa >= 3.7 || sat >= 1400
+  const veryEliteAcademic = profile.gpa >= 3.9 || sat >= 1500
+  if (veryEliteAcademic) return { athletic: 0.35, academic: 0.65 }
+  if (eliteAcademic)     return { athletic: 0.45, academic: 0.55 }
+  return                        { athletic: 0.55, academic: 0.45 }
+}
+
+// Score a single school against the athlete's profile, ignoring bucket caps,
+// stretch logic, the academic floor, and the excluded-divisions filter. Used
+// by the search-a-school feature so users can ask "what's my score for X?"
+// for any school in the dataset, even ones the matcher would normally hide.
+// Returns null when the schoolId isn't in schools.json.
+export function scoreSingleSchool(
+  profile: AthleteProfile,
+  schoolId: string,
+  video?: VideoRating | null,
+): School | null {
+  const gender = profile.gender ?? 'womens'
+  const school = (schoolsData as SchoolRecord[]).find((s) => s.id === schoolId)
+  if (!school) return null
+
+  const athletic = athleticFit(profile, school, video ?? null)
+  const academic = academicFit(profile, school)
+  // bucketFor returns null when the school is genuinely a non-fit. For
+  // search we still want to return a result — fall back to 'reach' so the
+  // UI can render the card. The matchScore makes the actual fit obvious.
+  const bucket = bucketFor(athletic, academic) ?? 'reach'
+
+  const w = blendWeights(profile)
+  let blended = athletic * w.athletic + academic * w.academic
+  const rawDivGapForScore = effectiveDivGap(school.division, profile)
+  if (rawDivGapForScore === 2) blended -= 8
+  else if (rawDivGapForScore === 3) blended -= 16
+  else if (rawDivGapForScore >= 4) blended -= 22
+  const matchScore = Math.max(0, Math.min(100, round1(blended + preferenceBoost(profile, school))))
+
+  const academicData = getAcademic(school.id)
+  const rosterSignal = computeRosterSignal(profile, school.id) ?? undefined
+  const rawDivGap = divIdx(school.division) - divIdx(profile.targetDivision)
+  const programGap = (school.programStrength ?? 5) - 5
+  const shot = recruitableShot(athletic, academic, Math.max(-2, Math.min(2, rawDivGap)), programGap, rosterSignal ?? null)
+
+  return {
+    id: school.id,
+    name: school.name,
+    division: school.division,
+    location: school.location,
+    region: school.region,
+    size: school.size,
+    enrollment: school.enrollment,
+    conference: school.conference,
+    coachName: gender === 'womens' ? school.womensCoach : school.mensCoach,
+    coachEmail: gender === 'womens' ? school.womensCoachEmail : school.mensCoachEmail,
+    category: bucket,
+    matchScore,
+    athleticFit: athletic,
+    academicFit: academic,
+    reasons: buildReasons(profile, school, athletic, academic, bucket, academicData, rosterSignal, video, false),
+    notes: school.notes ?? '',
+    programStrength: school.programStrength,
+    scholarships: school.scholarships,
+    gpaAvg: school.gpaAvg,
+    goalsForwardAvg: school.goalsForwardAvg,
+    goalsMidAvg: school.goalsMidAvg,
+    breakdown: buildBreakdown(profile, school, athletic, academic),
+    satMid:             academicData?.satMid,
+    sat25:              academicData?.sat25,
+    sat75:              academicData?.sat75,
+    admissionRate:      academicData?.admissionRate,
+    costOfAttendance:   academicData?.costOfAttendance,
+    tuitionInState:     academicData?.tuitionInState,
+    tuitionOutOfState:  academicData?.tuitionOutOfState,
+    pellGrantRate:      academicData?.pellGrantRate,
+    graduationRate:     academicData?.graduationRate,
+    academicTier:       academicTier(school.id),
+    rosterSignal,
+    recruitableShot:    shot,
+    dataConfidence:     dataConfidence(school, academicData, rosterSignal ?? null),
+    state:              extractState(school.location),
+    record:             getProgramRecord(school.id, gender) ?? null,
+    recruitingClass:    getRecruitingClass(school.id, gender) ?? null,
+  }
+}
+
+export function matchSchools(
+  profile: AthleteProfile,
+  topN = 25,
+  video?: VideoRating | null,
+  preferences?: ServerPreferences | null,
+): School[] {
   const gender = profile.gender ?? 'womens'
   // Hard exclusions — divisions the athlete has explicitly opted out of.
   // Any division in the target set is never excludable (defensive guard
@@ -705,20 +1066,50 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
     (profile.excludedDivisions ?? []).filter((d) => !targetSetForExclusion.has(d)),
   )
 
+  // Academic minimum tier (1 = T25-ish, 5 = no preference). Hardish filter:
+  // schools whose tier is *strictly worse* than the floor are dropped from
+  // the candidate pool entirely so the athlete doesn't have to scroll past
+  // open-admission schools when she's pre-committed to T50.
+  //
+  // Auto-defaulting: if the athlete has elite credentials and hasn't picked
+  // a floor explicitly, infer a sensible one. The matcher's academicFit
+  // saturates for over-qualified students (a 4.0/1540 vs a 3.0-avg school
+  // = ~98 academicFit), so without a floor those programs flood the list.
+  // Users can opt out of the auto-default by setting academicMinimum: 5
+  // (no preference) explicitly in their profile.
+  let academicFloor: AcademicTier | null = profile.academicMinimum ?? null
+  if (academicFloor == null) {
+    const sat = (() => {
+      const raw = (profile.satAct ?? '').replace(/[^0-9]/g, '')
+      const n = Number(raw)
+      return Number.isFinite(n) && n >= 400 && n <= 1600 ? n : 0
+    })()
+    if (profile.gpa >= 3.9 || sat >= 1500) academicFloor = 3       // top-100
+    else if (profile.gpa >= 3.7 || sat >= 1400) academicFloor = 4  // skip open-admission
+  }
+
   const scored: Candidate[] = (schoolsData as SchoolRecord[])
     .filter((s) => !excluded.has(s.division))
+    .filter((s) => hasProgramOfGender(s.id, gender))
+    .filter((s) => {
+      if (!academicFloor || academicFloor >= 5) return true
+      return academicTier(s.id) <= academicFloor
+    })
     .map((s) => {
       const athletic = athleticFit(profile, s, video)
       const academic = academicFit(profile, s)
       const bucket = bucketFor(athletic, academic)
       if (!bucket) return null
 
-      // Display matchScore = weighted blend (athletics-leaning since this is a
-      // recruiting tool) + soft preference boost. Bucket assignment already
-      // happened above; this is just for ranking + UI display. One decimal
-      // place so the score actually varies across the list — without
-      // decimals every athlete sees a wall of 90 / 91 / 92s.
-      let blended = athletic * 0.55 + academic * 0.45
+      // Display matchScore = weighted blend + soft preference boost. The
+      // weights shift toward academic for elite-credential students so a
+      // 1540/4.0 forward sees Cal / Wisconsin / Ivies surface above lower-
+      // tier programs where she'd dominate athletically but be wildly
+      // over-qualified academically. One decimal place so the score
+      // actually varies across the list — without decimals every athlete
+      // sees a wall of 90 / 91 / 92s.
+      const w = blendWeights(profile)
+      let blended = athletic * w.athletic + academic * w.academic
       // Honesty penalty for "deep below" target. A D1-target athlete should
       // never see a JUCO score 100 — even if she'd dominate athletically,
       // it isn't a "match" to her stated goals. Graded so:
@@ -731,7 +1122,22 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
       if (rawDivGapForScore === 2) blended -= 8
       else if (rawDivGapForScore === 3) blended -= 16
       else if (rawDivGapForScore >= 4) blended -= 22
-      const matchScore = Math.max(0, Math.min(100, round1(blended + preferenceBoost(profile, s))))
+      // Tinder-style affinity boost — applies the user's 1–5 ratings to nudge
+      // schools toward features they've liked. Range ~ ±15 once the user has
+      // 2+ meaningful ratings; below that returns 0. Crucially this is
+      // applied BEFORE the bucket caps slice, so highly-rated patterns
+      // surface NEW schools, not just re-rank the existing 25.
+      const affinity = preferences
+        ? affinityBoost(preferences, {
+            division: s.division,
+            size: s.size,
+            region: s.region,
+            conference: s.conference,
+            programStrength: s.programStrength,
+            academicTier: academicTier(s.id),
+          })
+        : 0
+      const matchScore = Math.max(0, Math.min(100, round1(blended + preferenceBoost(profile, s) + affinity)))
       return {
         school: s,
         athletic,
@@ -848,13 +1254,12 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
   const stretchPool: Candidate[] = eligibleForStretch
     ? (schoolsData as SchoolRecord[])
         .filter((s) => !excluded.has(s.division))
+        .filter((s) => hasProgramOfGender(s.id, gender))
+        // Intentionally NOT filtered by academicFloor — stretch reaches are
+        // aspirational by design. Letting one slightly-below-floor dream
+        // school through is the "flexible" half of the academic-minimum
+        // contract: hard filter for the regular list, soft for stretches.
         .filter((s) => divIdx(s.division) < topIdx)  // strictly above the highest target
-        .filter((s) => {
-          // Skip schools without a coach for the athlete's gender — surfacing
-          // a dream school the user can't even email is worse than omitting it.
-          const email = gender === 'womens' ? s.womensCoachEmail : s.mensCoachEmail
-          return Boolean(email)
-        })
         .map((s) => {
           const athletic = athleticFit(profile, s, video)
           const academic = academicFit(profile, s)
@@ -953,6 +1358,7 @@ export function matchSchools(profile: AthleteProfile, topN = 25, video?: VideoRa
       tuitionOutOfState:  academic?.tuitionOutOfState,
       pellGrantRate:      academic?.pellGrantRate,
       graduationRate:     academic?.graduationRate,
+      academicTier:       academicTier(c.school.id),
       rosterSignal,
       recruitableShot:    shot,
       dataConfidence:     dataConfidence(c.school, academic, rosterSignal ?? null),
@@ -971,6 +1377,7 @@ function buildBreakdown(
 ): MatchBreakdown {
   const gk = isGoalkeeper(profile.position)
   const fwd = isForward(profile.position)
+  const def = isDefender(profile.position)
 
   // Some schools.json entries are partial (e.g., bethel-university-tn). Treat
   // missing numerics as 0 here so the verdict logic doesn't crash on toFixed().
@@ -989,21 +1396,24 @@ function buildBreakdown(
         ? `Your GPA clears the floor (${gpaMin.toFixed(1)}) but is below the typical ${gpaAvg.toFixed(1)}.`
         : `Below this program's typical academic profile (avg ${gpaAvg.toFixed(1)}, min ~${gpaMin.toFixed(1)}).`
 
-  // Stats axis (skip for goalkeepers).
+  // Stats axis — only meaningful for attacking players. Defenders and
+  // keepers don't have a position-specific goal-scoring benchmark; comparing
+  // a centerback's goals to midfielder averages produced misleading verdicts
+  // ("below typical midfielders") that the user flagged as wrong.
   let stats: MatchBreakdown['stats'] = null
-  if (!gk) {
+  if (!gk && !def) {
     const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
-    const positionLabel = fwd ? 'forwards' : 'midfielders'
+    const label = fwd ? 'forwards' : 'midfielders'
     const score = expected > 0
       ? Math.max(0, Math.min(100, Math.round((profile.goals / expected) * 100)))
       : 50
     const verdict = expected === 0
       ? 'No goal-scoring benchmark on file for this program.'
       : profile.goals >= expected
-        ? `You out-scored this program's typical ${positionLabel} (${expected} goals).`
+        ? `You out-scored this program's typical ${label} (${expected} goals).`
         : profile.goals >= expected * 0.7
-          ? `You're within range of this program's typical ${positionLabel} (${expected} goals).`
-          : `Below this program's typical ${positionLabel} (${expected} goals).`
+          ? `You're within range of this program's typical ${label} (${expected} goals).`
+          : `Below this program's typical ${label} (${expected} goals).`
     stats = { score, yourValue: profile.goals, typicalValue: expected, verdict }
   }
 
