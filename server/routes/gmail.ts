@@ -244,6 +244,29 @@ router.post('/send', async (req, res) => {
           console.error('contact thread backfill failed:', err.message)
         })
       }
+      // Coach portal: record the athlete's consent to share their profile with this
+      // coach. Done in the send path so consent and the email send are atomic from
+      // the user's perspective. Server-side only — coaches never write this table.
+      if (to && to.includes('@')) {
+        const { data: contact } = await supabase
+          .from('outreach_contacts')
+          .select('id, coach_email, school_name')
+          .eq('id', contactId ?? '')
+          .eq('user_id', userId)
+          .maybeSingle()
+        // Best-effort school_id lookup — schools.json is the source of truth, but
+        // matching by school_name is cheap and good enough for the consent record.
+        const schoolName = (contact?.school_name ?? '').trim()
+        void Promise.resolve(supabase.from('coach_inbound_consents').upsert({
+          athlete_id: userId,
+          coach_email: to.toLowerCase(),
+          school_id: schoolName,
+          outreach_id: contact?.id ?? null,
+          consent: true,
+        }, { onConflict: 'athlete_id,coach_email,school_id' })).catch((err: Error) => {
+          console.error('coach_inbound_consents upsert failed:', err.message)
+        })
+      }
     }
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed to send' })
