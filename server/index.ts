@@ -74,18 +74,30 @@ const server = app.listen(PORT, () => {
 // Tsx escalates to SIGKILL after 5s, producing the "Process didn't exit
 // in 5s. Force killing..." loop. Closing the HTTP server lets keep-alive
 // connections drain and the event loop empty so Node exits naturally.
+// Second SIGINT/SIGTERM forces an immediate exit so the user can mash
+// Ctrl+C to escape if a request hangs.
+let shuttingDown = false
 function shutdown(signal: string) {
+  if (shuttingDown) {
+    console.log(`[${signal}] received twice — force exiting now`)
+    process.exit(1)
+  }
+  shuttingDown = true
   console.log(`[${signal}] shutting down…`)
   server.close(() => {
     console.log('[server] closed; exiting')
     process.exit(0)
   })
   // Hard timeout in case a hanging request prevents close() from firing.
-  // Shorter than tsx's 5s SIGKILL escalation so we at least exit ourselves.
+  // 1.5s is well below tsx's 5s SIGKILL escalation. NOT unref'd so the
+  // timer keeps the loop alive when nothing else does — otherwise an
+  // already-quiet event loop would exit before this timer fires, which
+  // is fine, but if the loop is busy spinning on something we still
+  // want this to fire and exit cleanly.
   setTimeout(() => {
-    console.warn('[server] close() timed out after 3s; force exiting')
+    console.warn('[server] close() timed out after 1.5s; force exiting')
     process.exit(0)
-  }, 3000).unref()
+  }, 1500)
 }
 process.on('SIGTERM', () => shutdown('SIGTERM'))
 process.on('SIGINT',  () => shutdown('SIGINT'))
