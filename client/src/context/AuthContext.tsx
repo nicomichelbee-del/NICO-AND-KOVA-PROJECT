@@ -36,13 +36,29 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       setLoading(false)
       return
     }
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+    let active = true
+    // Hydrate the persisted session from storage immediately so a returning
+    // user is not bounced to /login on the first render. Relying on the
+    // INITIAL_SESSION event alone has bitten us — if it never fires (or fires
+    // late), `loading` stays true forever.
+    supabase.auth.getSession().then(({ data: { session } }) => {
+      if (!active) return
       const next = session?.user ?? null
       setUser(next)
       setLoading(false)
       if (next) identify(next.id, { email: next.email })
     })
-    return () => subscription.unsubscribe()
+    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
+      if (!active) return
+      const next = session?.user ?? null
+      setUser(next)
+      setLoading(false)
+      if (next) identify(next.id, { email: next.email })
+    })
+    return () => {
+      active = false
+      subscription.unsubscribe()
+    }
   }, [])
 
   async function signOut() {
