@@ -1081,15 +1081,27 @@ export function matchSchools(
   // = ~98 academicFit), so without a floor those programs flood the list.
   // Users can opt out of the auto-default by setting academicMinimum: 5
   // (no preference) explicitly in their profile.
+  //
+  // CRITICAL: the auto-floor only makes sense for athletes whose target
+  // divisions actually contain a spread of tiers. D2/NAIA/JUCO are nearly
+  // 100% T5 (open-admission) — a 3.9-GPA athlete targeting D2 with the
+  // T3 floor on would get *zero* D2 schools because every D2 school is
+  // filtered out. Only auto-floor when D1 or D3 is in the target set
+  // (those have meaningful tier spread). Explicit `academicMinimum`
+  // still applies regardless of target division (user override wins).
   let academicFloor: AcademicTier | null = profile.academicMinimum ?? null
   if (academicFloor == null) {
-    const sat = (() => {
-      const raw = (profile.satAct ?? '').replace(/[^0-9]/g, '')
-      const n = Number(raw)
-      return Number.isFinite(n) && n >= 400 && n <= 1600 ? n : 0
-    })()
-    if (profile.gpa >= 3.9 || sat >= 1500) academicFloor = 3       // top-100
-    else if (profile.gpa >= 3.7 || sat >= 1400) academicFloor = 4  // skip open-admission
+    const targets = new Set(getTargets(profile))
+    const targetHasTierSpread = targets.has('D1') || targets.has('D3')
+    if (targetHasTierSpread) {
+      const sat = (() => {
+        const raw = (profile.satAct ?? '').replace(/[^0-9]/g, '')
+        const n = Number(raw)
+        return Number.isFinite(n) && n >= 400 && n <= 1600 ? n : 0
+      })()
+      if (profile.gpa >= 3.9 || sat >= 1500) academicFloor = 3       // top-100
+      else if (profile.gpa >= 3.7 || sat >= 1400) academicFloor = 4  // skip open-admission
+    }
   }
 
   const scored: Candidate[] = (schoolsData as SchoolRecord[])

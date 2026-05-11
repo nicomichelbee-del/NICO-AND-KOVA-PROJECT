@@ -824,6 +824,14 @@ function SchoolDetailModal({ school, onClose }: { school: School; onClose: () =>
               <Badge variant={catColor[school.category]}>{school.category}</Badge>
               <Badge variant="muted">{school.division}</Badge>
               {school.conference && <Badge variant="muted">{school.conference}</Badge>}
+              {school.isStretchReach && (
+                <span
+                  className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-widest font-mono border border-[rgba(240,182,90,0.45)] text-gold bg-[rgba(240,182,90,0.08)]"
+                  title="Cross-division stretch goal: plays above your target division. Surfaces because you clear the typical recruit at your level."
+                >
+                  Stretch Goal
+                </span>
+              )}
             </div>
             <h2 className="kr-h2">{school.name}</h2>
             <p className="font-mono text-[10.5px] tracking-[0.14em] uppercase text-ink-3 mt-2">{school.location}</p>
@@ -1407,6 +1415,14 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave, rating, onRate, af
             <span className="font-medium text-ink-0 text-[16px] tracking-[-0.005em]">{school.name}</span>
             <Badge variant={catColor[school.category]}>{school.category}</Badge>
             <Badge variant="muted">{school.division}</Badge>
+            {school.isStretchReach && (
+              <span
+                className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-widest font-mono border border-[rgba(240,182,90,0.45)] text-gold bg-[rgba(240,182,90,0.08)]"
+                title="Cross-division stretch goal: this school plays one or two divisions above your target. Included because you clear the typical recruit at your target level."
+              >
+                Stretch Goal
+              </span>
+            )}
             {bucket && (
               <span
                 className="px-2 py-0.5 rounded-full text-[10px] uppercase tracking-widest font-mono border"
