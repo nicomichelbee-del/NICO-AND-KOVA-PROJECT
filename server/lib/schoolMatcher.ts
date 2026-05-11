@@ -913,7 +913,11 @@ function dataConfidence(
 }
 
 // Extract two-letter state code from school.location ("Stanford, CA").
-function extractState(location: string): string | undefined {
+// Defensive: at least one school in the expanded DB (newSchools*.json
+// merged in) is missing the `location` field — without this guard the
+// matcher crashes for every athlete profile.
+function extractState(location: string | undefined | null): string | undefined {
+  if (!location) return undefined
   const m = location.match(/,\s*([A-Z]{2})\s*$/)
   return m ? m[1] : undefined
 }
