@@ -1,4 +1,5 @@
 import { Resend } from 'resend'
+import { normalizeBaseUrl } from './baseUrl'
 
 interface InboundParams {
   coachName: string
@@ -17,7 +18,7 @@ interface DigestParams {
   coachName: string; programName: string; athletes: DigestAthlete[]
 }
 
-const APP_URL = process.env.PUBLIC_BASE_URL ?? 'https://kickriq.com'
+const APP_URL = normalizeBaseUrl(process.env.PUBLIC_BASE_URL ?? 'https://kickriq.com')
 
 function profileLink(slug: string | null): string {
   return slug ? `${APP_URL}/players/${slug}` : `${APP_URL}/for-coaches/dashboard`

@@ -4,6 +4,7 @@ import { promises as fs } from 'fs'
 import path from 'path'
 import rosterPrograms from '../data/rosterPrograms.json'
 import { publicWriteLimiter } from '../lib/rateLimits'
+import { normalizeBaseUrl } from '../lib/baseUrl'
 
 const router = Router()
 
@@ -164,7 +165,7 @@ router.get('/health', (_req, res) => {
 router.get('/sitemap', (req, res) => {
   // PUBLIC_BASE_URL takes precedence in prod so the sitemap advertises the
   // canonical domain (kickriq.com) even when this handler runs on Railway/Vercel.
-  const host = process.env.PUBLIC_BASE_URL ?? `${req.protocol}://${req.get('host')}`
+  const host = normalizeBaseUrl(process.env.PUBLIC_BASE_URL ?? `${req.protocol}://${req.get('host')}`)
   const positions = Object.keys(POSITION_ALIASES)
   const urls = [
     `${host}/`,
