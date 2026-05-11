@@ -801,7 +801,7 @@ function Parents() {
                 See the Family tier
                 <Icon name="arrow" size={16} />
               </Link>
-              <a href="#pricing" className="kbtn kbtn-link">/for-parents →</a>
+              <a href="#pricing" className="kbtn kbtn-link">See pricing →</a>
             </div>
           </div>
 
