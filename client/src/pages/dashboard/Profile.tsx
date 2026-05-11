@@ -33,6 +33,26 @@ const ACADEMIC_TIER_OPTIONS: { value: 1 | 2 | 3 | 4 | 5 | null; label: string; d
   { value: null, label: 'No preference',         detail: 'Show every match regardless of academic tier.' },
 ]
 
+// Canonical league names — match server-side clubTier() patterns exactly.
+const LEAGUE_OPTIONS: { value: string; label: string }[] = [
+  { value: 'MLS Next',                    label: "MLS Next (boys)" },
+  { value: 'ECNL',                        label: "ECNL" },
+  { value: 'ECNL Boys',                   label: "ECNL Boys" },
+  { value: 'ECNL Girls',                  label: "ECNL Girls" },
+  { value: 'Girls Academy (GA)',          label: "Girls Academy (GA)" },
+  { value: 'US Development Academy',      label: "US Development Academy (former)" },
+  { value: 'ECNL Regional League (RL)',   label: "ECNL Regional League (ECNL RL)" },
+  { value: 'NPL',                         label: "National Premier Leagues (NPL)" },
+  { value: 'US Club Soccer NPL',          label: "US Club Soccer NPL" },
+  { value: 'USL Academy',                 label: "USL Academy" },
+  { value: 'EDP',                         label: "EDP" },
+  { value: 'Super Y League',              label: "Super Y League" },
+  { value: 'US Youth Soccer Regional',    label: "US Youth Soccer (regional)" },
+  { value: 'State Cup / State League',    label: "State Cup / State League" },
+  { value: 'Other competitive league',    label: "Other competitive club league" },
+  { value: 'High school only',            label: "High school only — no club" },
+]
+
 // Build the grad-year chip list: the four current high-school classes plus
 // next year's incoming freshman (rising 9th graders planning ahead).
 // Academic year flips in September, so before Sep we're still in the previous one.
@@ -299,12 +319,24 @@ export function Profile() {
             />
           </Field>
           <Field label="League / division">
-            <TextInput
+            <select
+              className="w-full px-3 py-2.5 rounded-lg border border-[rgba(245,241,232,0.10)] bg-[rgba(245,241,232,0.04)] text-[14px] text-ink-0 focus:outline-none focus:border-[rgba(240,182,90,0.45)]"
               value={draft.current_league_or_division ?? ''}
-              onChange={(v) => update('current_league_or_division', v)}
-              onBlur={() => persist({ current_league_or_division: draft.current_league_or_division ?? null })}
-              placeholder="ECNL, MLS Next, NPL..."
-            />
+              onChange={(e) => {
+                const v = e.target.value || null
+                update('current_league_or_division', v)
+                persist({ current_league_or_division: v })
+              }}
+            >
+              <option value="">Pick a league…</option>
+              {LEAGUE_OPTIONS.map((opt) => (
+                <option key={opt.value} value={opt.value}>{opt.label}</option>
+              ))}
+            </select>
+            <p className="text-[11px] text-ink-3 leading-[1.5]">
+              The matcher uses this as the primary athletic-level signal.
+              MLS Next / ECNL / GA point at D1 readiness; smaller leagues set a more realistic D2/D3 ceiling.
+            </p>
           </Field>
         </div>
 

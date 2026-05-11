@@ -531,6 +531,13 @@ export function Schools() {
         <>
           {urgency && <UrgencyBanner urgency={urgency} />}
 
+          {/* Video-rater nudge — surfaces when the user has a highlight URL
+              on file but hasn't run it through the rater yet. Tape data is
+              the most direct signal of competitive level (playerCeiling
+              anchors on it directly), so missing tape costs the athlete
+              real fit-score accuracy. Dismissible per browser. */}
+          <VideoRaterNudge />
+
           {/* Hard nos — divisions the athlete refuses to consider. Sits up
               top so it's discoverable on every visit; auto-rematches on
               toggle. The athlete's targetDivision is locked-in (can't be
@@ -1533,6 +1540,61 @@ function SchoolCard({ school, onClick, isSaved, onToggleSave, rating, onRate, af
 // signals athletes asked for ("can I get in?") without making them open the
 // detail modal — acceptance rate, GPA avg / SAT 25-75 range, academic tier.
 // Renders nothing when no academic data is on file (Scorecard gaps).
+// One-time nudge: if the user has a highlight video URL on their profile
+// but hasn't run it through the rater, the matcher is missing its biggest
+// athletic-level signal. Showing this above the bucket grid catches the
+// "I added a URL, why are my scores still off?" case the user reported.
+// Dismissal persists across renders via localStorage so we don't nag.
+const VIDEO_NUDGE_KEY = 'kickriq:dismissed:video-rater-nudge'
+function VideoRaterNudge() {
+  const [dismissed, setDismissed] = useState(() => {
+    try { return localStorage.getItem(VIDEO_NUDGE_KEY) === 'true' } catch { return false }
+  })
+  const profileRecord = (() => {
+    try {
+      for (let i = 0; i < localStorage.length; i++) {
+        const k = localStorage.key(i)
+        if (!k || !k.startsWith('athleteProfileRecord')) continue
+        const raw = localStorage.getItem(k)
+        if (raw) return JSON.parse(raw) as { highlight_video_url?: string | null }
+      }
+    } catch { /* ignore */ }
+    return null
+  })()
+  const hasUrl = !!profileRecord?.highlight_video_url
+  const hasRating = (() => {
+    try { return !!localStorage.getItem('latestVideoRating') } catch { return false }
+  })()
+  if (dismissed || !hasUrl || hasRating) return null
+  return (
+    <div className="mb-5 flex items-center gap-3 px-4 py-3 rounded-xl border border-[rgba(240,182,90,0.28)] bg-[rgba(240,182,90,0.06)]">
+      <span className="text-xl flex-shrink-0">🎬</span>
+      <div className="flex-1 min-w-0">
+        <p className="text-[13px] text-ink-0 leading-[1.45]">
+          <span className="font-semibold">Rate your highlight video for more accurate athletic fit.</span>{' '}
+          <span className="text-ink-2">With tape data, the matcher reads your competitive level directly instead of inferring it from your club + position — scores can swing 20+ points.</span>
+        </p>
+      </div>
+      <a
+        href="/dashboard/video"
+        className="px-3.5 py-1.5 rounded-full bg-gold text-[#1a1304] text-[12px] font-semibold whitespace-nowrap"
+      >
+        Run rater →
+      </a>
+      <button
+        onClick={() => {
+          try { localStorage.setItem(VIDEO_NUDGE_KEY, 'true') } catch { /* ignore */ }
+          setDismissed(true)
+        }}
+        className="w-7 h-7 flex items-center justify-center rounded text-ink-3 hover:text-ink-0 text-lg flex-shrink-0"
+        aria-label="Dismiss"
+      >
+        ×
+      </button>
+    </div>
+  )
+}
+
 function AcademicSnapshot({ school }: { school: School }) {
   const ar = school.admissionRate
   const sat25 = school.sat25

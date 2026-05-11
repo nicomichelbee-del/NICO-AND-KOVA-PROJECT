@@ -698,82 +698,151 @@ function tapeSkill(v: VideoRating): number {
   return (v.technicalScore + v.tacticalScore + v.composureScore + v.positionPlayScore) / 4
 }
 
-function athleticFit(profile: AthleteProfile, school: SchoolRecord, video?: VideoRating | null): number {
-  const gk = isGoalkeeper(profile.position)
-  const fwd = isForward(profile.position)
-  const def = isDefender(profile.position)
-  const gender = requireGender(profile)
+// ── Player-ceiling vs school-bar model ─────────────────────────────────────
+//
+// athleticFit is computed from two single, principled numbers on a 0–100
+// "competitive level" axis: the athlete's playerCeiling (what level of
+// program they could realistically play at, aggregated from club tier,
+// position, stats, and tape) and the school's schoolExpected (what level
+// of recruit the school typically takes). The fit is a smoothed sigmoid
+// distance between them. Replaces the older additive scheme where club
+// tier, division gap, program strength, and stats each contributed
+// independently — that produced incoherent results (e.g. 45 athletic fit
+// for an MLS Next U19 centerback at his eventual D3 commit, because the
+// formula had no positive signal for top-tier club play).
 
-  // Stats delta — only meaningful for attacking players. We treat keepers
-  // and defenders as neutral so academic + division dominate; comparing a
-  // center back's goal count against forward/midfielder averages produces
-  // wrong "below typical midfielder" verdicts (defenders shouldn't score
-  // like midfielders by design). Once we add defender-specific signals
-  // (tackles won, clean sheets, blocks), revisit this.
-  //
-  // Goal expectations are gender-aware: women's college soccer typically
-  // scores at a meaningfully higher rate than men's at the same competitive
-  // tier, so the same 12 goals from a men's vs women's striker should land
-  // differently against the same school's "typical recruit" benchmark.
-  let statsDelta = 0
-  if (!gk && !def && profile.goals > 0) {
-    const expected = fwd ? goalsForwardAvgFor(school, gender) : goalsMidAvgFor(school, gender)
-    if (expected > 0) {
-      // Half the typical scoring rate = 1 unit of separation in either direction.
-      statsDelta = (profile.goals - expected) / Math.max(expected * 0.5, 3)
-    }
-  }
+// Club leagues are scored 1 (top D1 feeder) through 4 (HS-only / unknown).
+// String matching is case- and whitespace-insensitive and accepts the
+// canonical dropdown values (Step 4) plus common free-text variants users
+// typed before the dropdown landed.
+export function clubTier(leagueString: string | null | undefined): 1 | 2 | 3 | 4 {
+  if (!leagueString) return 4
+  const s = leagueString.toLowerCase().replace(/[-_]/g, ' ').replace(/\s+/g, ' ').trim()
+  // Tier 1 — top-tier US youth pipelines. MLS Next + ECNL + GA are the
+  // canonical D1 feeders; the US Development Academy was the men's-side
+  // predecessor to MLS Next, kept here for older athletes' profiles.
+  if (
+    /\bmls next\b/.test(s) ||
+    /\bgirls academy\b/.test(s) ||
+    /\bus(?: soccer)? development academy\b|\busda\b/.test(s) ||
+    (/\becnl\b/.test(s) && !/regional|rl\b/.test(s))
+  ) return 1
+  // Tier 2 — strong regional / D2-D3 feeder. Includes the ECNL Regional
+  // League (one rung below ECNL proper), the NPL pyramid, USL Academy,
+  // EDP, Super Y, and US Club Soccer's national NPL.
+  if (
+    /ecnl (regional|rl)\b/.test(s) ||
+    /\bnpl\b/.test(s) ||
+    /\busl academy\b/.test(s) ||
+    /\bedp\b/.test(s) ||
+    /\bsuper y\b/.test(s)
+  ) return 2
+  // Tier 3 — state / regional competitive. Catch-all for "premier", "state
+  // cup", "regional" plus generic "club soccer" mentions without a more
+  // specific league name.
+  if (/\bstate\b|\bregional\b|\bpremier\b|\bclub\b|\busys\b/.test(s)) return 3
+  // Tier 4 — high school only or unrecognized.
+  return 4
+}
 
-  // Division gap. We cap the *positive* side at +1 so schools 2+ levels
-  // below the athlete's target don't all get the same maxed-out bonus —
-  // otherwise a D1-targeting athlete sees JUCOs flood her safety bucket
-  // at matchScore=100. The negative side (school plays above target) keeps
-  // the −2 cap so a true reach is appropriately discouraged. effectiveDivGap
-  // returns 0 for any division in the athlete's target set, so multi-target
-  // athletes ({D1, D3}) get unpenalized scoring at both levels.
-  const rawDivGap = effectiveDivGap(school.division, profile)
-  const divGap = Math.max(-2, Math.min(1, rawDivGap))
+// Mapping the four tier buckets to a contribution against playerCeiling.
+// Tier 1 anchors the player around 80 (high D1 / top D3 territory); tier 4
+// leaves them at the baseline 50 (median competitive D3 candidate).
+const CLUB_TIER_BOOST: Record<1 | 2 | 3 | 4, number> = {
+  1: 30,
+  2: 18,
+  3: 8,
+  4: 0,
+}
 
-  // Program prestige delta — gender-aware. Stanford women's is a 10/10
-  // program; Stanford men's is mid-Pac-12 (~7). Indiana men's is the
-  // all-time blueblood (10); Indiana women's is a tier below (~6).
-  const programGap = programStrengthFor(school, gender) - 5
+// Position × club interaction — defenders and keepers get a small extra
+// bump from a top club because stats can't validate them, so the club tier
+// is doing more work as a level signal. Attackers at HS-only with no goals
+// take a small dock because the stats signal is missing.
+function positionClubInteraction(position: string, tier: 1 | 2 | 3 | 4, goals: number): number {
+  const gk = isGoalkeeper(position)
+  const def = isDefender(position)
+  const fwd = isForward(position)
+  if (def || gk) return tier === 1 ? 3 : tier === 2 ? 2 : 0
+  if (tier === 4 && (fwd || /mid/i.test(position)) && goals === 0) return -3
+  return 0
+}
 
-  // Base composition. Tuned so:
-  //   exact-fit, neutral program (statsDelta=0, divGap=0, programGap=0) → 60
-  //   over-qualified safety (statsDelta=+1, divGap=+1, programGap=-2)   → 60+15+15+10 = 100
-  //   classic reach (statsDelta=-1, divGap=-1, programGap=+4)           → 60-15-15-20 = 10
-  let score = 60 + statsDelta * 15 + divGap * 15 - programGap * 5
+// Stats contribution to playerCeiling — only attacking players; capped at
+// ±12 so a single year's goal tally can't dominate the ceiling. Defenders
+// and keepers contribute 0 (their level signal lives in club tier + tape).
+function statsCeilingContribution(profile: AthleteProfile, gender: 'mens' | 'womens', tier: 1 | 2 | 3 | 4): number {
+  if (isGoalkeeper(profile.position) || isDefender(profile.position)) return 0
+  if (profile.goals <= 0) return 0
+  // Top-club typical scoring rates from the school dataset; use the
+  // forward avg as a stand-in benchmark (mids score less but we don't
+  // have a per-tier mid average — close enough as a calibration anchor).
+  const benchmark = gender === 'womens' ? 12 : 9
+  const delta = profile.goals - benchmark
+  // ~3 goals above benchmark = +5, ~6 above = +9, plateau near +12
+  if (delta >= 0) return Math.min(12, delta * 1.8)
+  // Below benchmark: only penalize meaningfully when athlete claims top
+  // tier — a tier-1 forward with 1 goal is a real signal; a tier-3 forward
+  // with 1 goal is normal for their level.
+  if (tier <= 2) return Math.max(-8, delta * 1.2)
+  return 0
+}
 
-  // ── Highlight video signal (optional) ────────────────────────────────
-  // Replaces the "every 7.0 mid plays the same level" assumption with what
-  // the tape actually shows. Two distinct adjustments:
-  //
-  //  1) tape-vs-program-expectation: a school with programStrength 10 expects
-  //     a tape ~9.0 player; strength 5 expects ~7.0; strength 0 expects ~5.0.
-  //     A 9.0 player at a 5-strength school is well above the bar (+);
-  //     a 5.0 player at a 10-strength school is well below (−).
-  //     Multiplier ≈ 6 gives meaningful differentiation without dominating.
-  //
-  //  2) division-fit-vs-school-division: the AI's `divisionFitScore` is the
-  //     player's calibrated level vs. their *target* division. We project
-  //     that read onto each school's actual division — same division uses
-  //     the score directly; one division easier than target reads up by 1;
-  //     one division harder reads down by 1. Multiplier ≈ 3.
+export function playerCeiling(profile: AthleteProfile, video?: VideoRating | null): number {
+  const tier = clubTier(profile.clubLeague)
+  const gender = profile.gender ?? 'mens'
+
+  // When highlight tape is available, it's the dominant signal. Tape 9/10
+  // pegs the ceiling near 90; tape 5/10 caps it near 60. Club tier still
+  // contributes but at a reduced weight (the tape has direct evidence of
+  // skill level, so we down-weight the proxy).
   if (video) {
     const tape = tapeSkill(video)
-    const programExpectation = 5 + programStrengthFor(school, gender) * 0.4  // 5..9
-    const tapeVsProgram = tape - programExpectation                          // ~ −4..+4
-    score += tapeVsProgram * 6
-
-    const divDelta = effectiveDivGap(school.division, profile)
-    // Easier division → effectively higher fit; harder → lower.
-    const projectedDivFit = video.divisionFitScore + Math.max(-2, Math.min(2, divDelta))
-    const projectedVsBaseline = projectedDivFit - 7                       // 7 = "fits target"
-    score += projectedVsBaseline * 3
+    const tapeContribution = 25 + tape * 7  // tape 5 → 60 ; tape 10 → 95
+    const clubBoost = CLUB_TIER_BOOST[tier] * 0.4  // tape down-weights club proxy
+    const stats = statsCeilingContribution(profile, gender, tier) * 0.5
+    return clamp(round1(tapeContribution + clubBoost + stats), 0, 100)
   }
 
-  return Math.max(0, Math.min(100, round1(score)))
+  // No tape — club tier, position×club, and stats are the only inputs.
+  const baseline = 50
+  const clubBoost = CLUB_TIER_BOOST[tier]
+  const interaction = positionClubInteraction(profile.position, tier, profile.goals)
+  const stats = statsCeilingContribution(profile, gender, tier)
+  return clamp(round1(baseline + clubBoost + interaction + stats), 0, 100)
+}
+
+// School's expected recruit level — what playerCeiling does this program
+// typically take? Programs with stronger reputations (programStrength) and
+// schools in stronger divisions (D1 > D2 > D3 > NAIA > JUCO) demand a
+// higher ceiling. Gender-aware via programStrengthFor.
+const DIVISION_BAR_ADJ: Record<Division, number> = {
+  D1: 8, D2: 3, D3: 0, NAIA: -5, JUCO: -10,
+}
+export function schoolExpected(school: SchoolRecord, profile: AthleteProfile): number {
+  const gender = profile.gender ?? 'mens'
+  const strength = programStrengthFor(school, gender)  // 0..10
+  const divAdj = DIVISION_BAR_ADJ[school.division] ?? 0
+  // 35 + 6*strength + divAdj puts a strength-5 D3 at 65 (mid-D3 bar),
+  // a strength-8 D1 at 91 (top-25 men's bar), Stanford at 103 → clamped 100.
+  return clamp(35 + strength * 6 + divAdj, 0, 100)
+}
+
+function clamp(n: number, lo: number, hi: number): number {
+  return Math.max(lo, Math.min(hi, n))
+}
+
+function athleticFit(profile: AthleteProfile, school: SchoolRecord, video?: VideoRating | null): number {
+  const ceiling = playerCeiling(profile, video)
+  const expected = schoolExpected(school, profile)
+  const delta = ceiling - expected
+  // Smoothed sigmoid. An athlete whose ceiling exactly matches the
+  // program's expected recruit bar (delta=0) should feel like a "strong,
+  // clearly recruitable fit" — ~80, not 50/50. A delta=−8 is a real
+  // stretch (~60); delta=−16 is a reach (~32); delta=+8 saturates near 92.
+  // The +11 offset bias is what shifts the inflection so a matched
+  // athlete lands at "you fit here," not "coin flip."
+  return round1(clamp(100 / (1 + Math.exp(-(delta + 11) / 8)), 0, 100))
 }
 
 // Soft preference modifier: small bump for region/size match. Doesn't affect

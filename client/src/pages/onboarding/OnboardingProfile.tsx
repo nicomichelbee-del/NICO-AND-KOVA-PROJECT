@@ -49,6 +49,33 @@ const GENDER_OPTIONS = [
   { value: 'womens' as const, label: "Women's soccer" },
 ]
 
+// Canonical league names — values match the patterns clubTier() in
+// server/lib/schoolMatcher.ts recognizes exactly. Free-text legacy values
+// still resolve via the same case-insensitive matcher. Grouped by tier in
+// the dropdown so users can see where their league sits in the pipeline.
+const LEAGUE_OPTIONS: { value: string; label: string }[] = [
+  // Tier 1 — top D1 feeders
+  { value: 'MLS Next',                    label: "MLS Next (boys)" },
+  { value: 'ECNL',                        label: "ECNL" },
+  { value: 'ECNL Boys',                   label: "ECNL Boys" },
+  { value: 'ECNL Girls',                  label: "ECNL Girls" },
+  { value: 'Girls Academy (GA)',          label: "Girls Academy (GA)" },
+  { value: 'US Development Academy',      label: "US Development Academy (former)" },
+  // Tier 2 — strong regional / D2-D3 feeders
+  { value: 'ECNL Regional League (RL)',   label: "ECNL Regional League (ECNL RL)" },
+  { value: 'NPL',                         label: "National Premier Leagues (NPL)" },
+  { value: 'US Club Soccer NPL',          label: "US Club Soccer NPL" },
+  { value: 'USL Academy',                 label: "USL Academy" },
+  { value: 'EDP',                         label: "EDP" },
+  { value: 'Super Y League',              label: "Super Y League" },
+  // Tier 3 — state / regional competitive
+  { value: 'US Youth Soccer Regional',    label: "US Youth Soccer (regional)" },
+  { value: 'State Cup / State League',    label: "State Cup / State League" },
+  { value: 'Other competitive league',    label: "Other competitive club league" },
+  // Tier 4 — fallback
+  { value: 'High school only',            label: "High school only — no club" },
+]
+
 function slugify(name: string): string {
   return name
     .toLowerCase()
@@ -312,7 +339,22 @@ export function OnboardingProfile() {
                 </div>
 
                 <Input label="Club team" placeholder="Bay Area Surf" value={form.current_club ?? ''} onChange={(e) => update('current_club', e.target.value)} />
-                <Input label="League or division" placeholder="ECNL, MLS Next, NPL, etc." value={form.current_league_or_division ?? ''} onChange={(e) => update('current_league_or_division', e.target.value)} />
+                <FieldLabel>League or competition level</FieldLabel>
+                <p className="text-xs text-ink-3 leading-[1.5] -mt-1">
+                  The matcher uses this as the primary signal for athletic level —
+                  MLS Next / ECNL / GA point at D1 readiness, while smaller leagues
+                  set a more realistic D2/D3 ceiling.
+                </p>
+                <select
+                  className="w-full px-3 py-2.5 rounded-lg border border-[rgba(245,241,232,0.10)] bg-[rgba(245,241,232,0.04)] text-[14px] text-ink-0 focus:outline-none focus:border-[rgba(240,182,90,0.45)]"
+                  value={form.current_league_or_division ?? ''}
+                  onChange={(e) => update('current_league_or_division', e.target.value || null)}
+                >
+                  <option value="">Pick a league…</option>
+                  {LEAGUE_OPTIONS.map((opt) => (
+                    <option key={opt.value} value={opt.value}>{opt.label}</option>
+                  ))}
+                </select>
 
                 <FieldLabel>Height & weight (optional)</FieldLabel>
                 <p className="text-xs text-ink-3 leading-[1.5] -mt-1">
