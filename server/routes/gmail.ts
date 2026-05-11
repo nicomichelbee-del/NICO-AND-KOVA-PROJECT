@@ -1063,12 +1063,19 @@ router.get('/thread/:threadId', async (req, res) => {
 
 // POST /api/gmail/rate-and-log
 router.post('/rate-and-log', async (req, res) => {
-  const { userId, contactId, latestCoachMessage, coachName, school } = req.body as {
-    userId: string; contactId: string; latestCoachMessage: string; coachName: string; school: string
+  const { userId, contactId, latestCoachMessage, coachName, school, gender } = req.body as {
+    userId: string; contactId: string; latestCoachMessage: string
+    coachName: string; school: string; gender?: 'mens' | 'womens'
   }
   if (!userId || !contactId || !latestCoachMessage) return res.status(400).json({ error: 'userId, contactId, and latestCoachMessage required' })
+  // Gender required — the rating rubric calibrates against the gender's
+  // recruiting cycle. Without it the AI rates with a generic blend that
+  // misreads men's-vs-women's contact-cadence signals.
+  if (gender !== 'mens' && gender !== 'womens') {
+    return res.status(400).json({ error: 'gender ("mens" or "womens") required to rate a coach reply' })
+  }
   try {
-    const result = await rateCoachReply(school, coachName, latestCoachMessage)
+    const result = await rateCoachReply(school, coachName, latestCoachMessage, gender)
     await getSupabase()
       .from('outreach_contacts')
       .update({ interest_rating: result.rating })

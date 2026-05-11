@@ -59,6 +59,14 @@ router.post('/reply/draft', async (req, res) => {
   if (!claim) return res.status(404).json({ error: 'No claimed program' })
   if (!athlete) return res.status(404).json({ error: 'Athlete not found' })
 
+  // Gender is now a first-class field on the AI call. We used to smuggle it
+  // into programDivision ("Men's program" / "Women's program"), which lost
+  // the actual division label and forced the AI to infer gender from a
+  // pseudo-division string. The claim record carries gender directly.
+  const claimGender: 'mens' | 'womens' | null =
+    claim.gender === 'mens' || claim.gender === 'womens' ? claim.gender : null
+  if (!claimGender) return res.status(400).json({ error: 'claim missing gender — re-claim program' })
+
   const aiResp = await fetch(`http://localhost:${process.env.PORT ?? 3001}/api/ai/coach-reply-draft`, {
     method: 'POST',
     headers: {
@@ -73,9 +81,13 @@ router.post('/reply/draft', async (req, res) => {
       athleteHighlight: athlete.highlight_video_url ?? null,
       athleteLastMessage: lastEmail?.body ?? '',
       programName: claim.school_name,
-      programDivision: claim.gender === 'mens' ? "Men's program" : "Women's program",
+      // Generic division label — the AI now gets a separate `gender` field, so
+      // programDivision can be a clean placeholder until we plumb the real
+      // division (D1/D2/etc.) through from the claim/schools-data lookup.
+      programDivision: 'College',
       coachName: claim.coach_name ?? 'Coach',
       programNotes: claim.notes_override ?? null,
+      gender: claimGender,
     }),
   })
   if (!aiResp.ok) return res.status(500).json({ error: 'AI draft failed' })

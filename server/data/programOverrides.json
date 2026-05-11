@@ -1,0 +1,167 @@
+{
+  "_README": "Gender-specific program data overrides. Keyed by schoolId:gender. Each entry may set programStrength (0-10), goalsForwardAvg (typical starting forward season goals), goalsMidAvg (typical starting midfielder season goals). Any field present overrides the shared value in schools.json for this gender; missing fields fall through to the shared value. Sparse by design — only schools where men's and women's programs measurably diverge belong here. schools.json's shared values currently lean toward the women's reality (e.g., UNC forwardAvg=16 reflects women's scoring; men's college forwards typically score 8-12), so most overrides scale men's goals down rather than scale women's up.",
+  "_reason_unc_mens": "UNC men's: 2 NCAA titles (1987, 2011), consistent ACC contender but a clear tier below the 22-title women's program. Shared 10/16/7 misrepresents men's recruiting reality.",
+  "unc:mens": { "programStrength": 8, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+
+  "_reason_stanford_mens": "Stanford men's: 2 NCAA titles, but recent years mid-Pac-12. Women's = 3 NCAA titles, perennial top-5. Big gap.",
+  "stanford:mens": { "programStrength": 7, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_ucla_mens": "UCLA men's: 4 NCAA titles historically but recent decade has been inconsistent. Women's = perennial top-10. Shared 10 overrepresents current men's.",
+  "ucla:mens": { "programStrength": 8, "goalsForwardAvg": 12, "goalsMidAvg": 5 },
+
+  "_reason_notredame_mens": "Notre Dame men's: 1 NCAA title (2013), strong ACC but a tier below the 3-title women's program.",
+  "notredame:mens": { "programStrength": 8, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+
+  "_reason_pennstate_mens": "Penn State men's: mid-Big Ten, occasional NCAA bids. Women's = 1 NCAA title (2015) + perennial top-10. Large divergence.",
+  "pennstate:mens": { "programStrength": 6, "goalsForwardAvg": 9, "goalsMidAvg": 4 },
+
+  "_reason_portland_mens": "Portland men's: solid WCC, occasional NCAA. Women's = 2 NCAA titles, perennial top-10 (legacy Mia Hamm era and beyond).",
+  "portland:mens": { "programStrength": 7, "goalsForwardAvg": 9, "goalsMidAvg": 4 },
+
+  "_reason_duke_mens": "Duke men's: solid ACC but never NCAA title. Women's = 1 NCAA title (2024), consistent F4 contender.",
+  "duke:mens": { "programStrength": 7, "goalsForwardAvg": 9, "goalsMidAvg": 4 },
+
+  "_reason_virginia_womens": "Virginia: men's = 7 NCAA titles (program legend), women's = 1 NCAA title (2014). Men's tier outranks women's.",
+  "virginia:mens": { "programStrength": 10, "goalsForwardAvg": 13, "goalsMidAvg": 6 },
+  "virginia:womens": { "programStrength": 8, "goalsForwardAvg": 13, "goalsMidAvg": 5 },
+
+  "_reason_indiana_split": "Indiana: men's = 8 NCAA titles (tied for most all-time), the blueblood. Women's = mid-Big Ten. Shared 8 underrates men's, overrates women's.",
+  "indiana:mens": { "programStrength": 10, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+  "indiana:womens": { "programStrength": 6, "goalsForwardAvg": 11, "goalsMidAvg": 4 },
+
+  "_reason_maryland_split": "Maryland: men's = 4 NCAA titles (Sasho Cirovski era), perennial contender. Women's = mid-Big Ten.",
+  "maryland:mens": { "programStrength": 10, "goalsForwardAvg": 10, "goalsMidAvg": 5 },
+  "maryland:womens": { "programStrength": 6, "goalsForwardAvg": 11, "goalsMidAvg": 4 },
+
+  "_reason_wakeforest_split": "Wake Forest: men's = 1 NCAA title (2007), perennial top-5 ACC. Women's = solid ACC, no title.",
+  "wakeforest:mens": { "programStrength": 10, "goalsForwardAvg": 10, "goalsMidAvg": 5 },
+  "wakeforest:womens": { "programStrength": 7, "goalsForwardAvg": 11, "goalsMidAvg": 4 },
+
+  "_reason_slu_mens": "Saint Louis men's: 10 NCAA titles (tied for most all-time, mostly 1959-1973 era). Still strong A-10 program. Women's = mid A-10.",
+  "slu:mens": { "programStrength": 9, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+  "slu:womens": { "programStrength": 6, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_smu_mens": "SMU men's: NCAA runner-up 2024, perennial top-15. Women's = mid AAC.",
+  "smu:mens": { "programStrength": 9, "goalsForwardAvg": 10, "goalsMidAvg": 5 },
+  "smu:womens": { "programStrength": 5, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_georgetown_split": "Georgetown men's: NCAA champ 2019, consistent top-10 Big East. Women's = solid Big East but a tier below.",
+  "georgetown:mens": { "programStrength": 10, "goalsForwardAvg": 10, "goalsMidAvg": 5 },
+  "georgetown:womens": { "programStrength": 7, "goalsForwardAvg": 12, "goalsMidAvg": 5 },
+
+  "_reason_clemson_mens": "Clemson men's: 3 NCAA titles (1984, 1987, 2021). Women's = solid ACC.",
+  "clemson:mens": { "programStrength": 9, "goalsForwardAvg": 10, "goalsMidAvg": 5 },
+  "clemson:womens": { "programStrength": 6, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_ucsb_mens": "UCSB men's: 1 NCAA title (2006), perennial Big West powerhouse. Women's = mid Big West.",
+  "ucsb:mens": { "programStrength": 9, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+  "ucsb:womens": { "programStrength": 5, "goalsForwardAvg": 11, "goalsMidAvg": 4 },
+
+  "_reason_tulsa_mens": "Tulsa men's: 2024 NCAA champ, strong AAC. Women's = mid AAC.",
+  "tulsa:mens": { "programStrength": 9, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+  "tulsa:womens": { "programStrength": 5, "goalsForwardAvg": 13, "goalsMidAvg": 5 },
+
+  "_reason_creighton_mens": "Creighton men's: perennial top-15 Big East, multiple NCAA F4. Women's = solid Big East.",
+  "creighton:mens": { "programStrength": 9, "goalsForwardAvg": 10, "goalsMidAvg": 5 },
+  "creighton:womens": { "programStrength": 7, "goalsForwardAvg": 12, "goalsMidAvg": 5 },
+
+  "_reason_providence_mens": "Providence men's: strong Big East, multiple NCAA F4 appearances. Women's = mid Big East.",
+  "providence:mens": { "programStrength": 8, "goalsForwardAvg": 9, "goalsMidAvg": 4 },
+  "providence:womens": { "programStrength": 6, "goalsForwardAvg": 11, "goalsMidAvg": 4 },
+
+  "_reason_marquette_mens": "Marquette men's: strong Big East, NCAA F4 2013. Women's = mid Big East.",
+  "marquette:mens": { "programStrength": 8, "goalsForwardAvg": 9, "goalsMidAvg": 4 },
+  "marquette:womens": { "programStrength": 6, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+
+  "_reason_hofstra_mens": "Hofstra men's: recent CAA dominance, NCAA bids. Women's = mid CAA.",
+  "hofstra:mens": { "programStrength": 8, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+  "hofstra:womens": { "programStrength": 5, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_louisville_mens": "Louisville men's: NCAA runner-up 2010, perennial ACC. Women's = mid ACC.",
+  "louisville:mens": { "programStrength": 8, "goalsForwardAvg": 9, "goalsMidAvg": 4 },
+  "louisville:womens": { "programStrength": 6, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_kentucky_mens": "Kentucky men's: NCAA champ 2024 runner-up era, strong C-USA legacy. Women's = solid SEC.",
+  "kentucky:mens": { "programStrength": 8, "goalsForwardAvg": 9, "goalsMidAvg": 4 },
+  "kentucky:womens": { "programStrength": 6, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+
+  "_reason_pitt_split": "Pitt men's: 2024 NCAA runner-up, 2020 F4, perennial ACC top. Women's = mid ACC.",
+  "pitt:mens": { "programStrength": 9, "goalsForwardAvg": 10, "goalsMidAvg": 5 },
+  "pitt:womens": { "programStrength": 6, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_uconn_mens": "UConn men's: 1 NCAA title (2000), strong Big East legacy. Women's = perennial Big East top.",
+  "uconn:mens": { "programStrength": 8, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+  "uconn:womens": { "programStrength": 8, "goalsForwardAvg": 12, "goalsMidAvg": 5 },
+
+  "_reason_oregonstate_mens": "Oregon State men's: perennial Pac-12. Women's = mid Pac-12. Men's slight edge.",
+  "oregonstate:mens": { "programStrength": 8, "goalsForwardAvg": 9, "goalsMidAvg": 4 },
+  "oregonstate:womens": { "programStrength": 6, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_washington_split": "Washington women's = perennial Pac-12 top. Men's = no varsity program (cut 2009).",
+  "washington:womens": { "programStrength": 8, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+
+  "_reason_santaclara_split": "Santa Clara women's: 1 NCAA title (2001), perennial top-10 WCC. Men's = solid WCC but lower tier.",
+  "santaclara:womens": { "programStrength": 9, "goalsForwardAvg": 13, "goalsMidAvg": 5 },
+  "santaclara:mens": { "programStrength": 7, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_ncstate_womens": "NC State women's: consistent ACC, NCAA bids. Men's = no varsity (cut decades ago).",
+  "ncstate:womens": { "programStrength": 7, "goalsForwardAvg": 11, "goalsMidAvg": 4 },
+
+  "_reason_southcarolina_womens": "South Carolina women's: 1 NCAA title (2017), perennial SEC top. Men's = no varsity.",
+  "southcarolina:womens": { "programStrength": 8, "goalsForwardAvg": 12, "goalsMidAvg": 5 },
+
+  "_reason_florida_womens": "Florida women's: 1 NCAA title (1998), perennial SEC top. Men's = no varsity.",
+  "florida:womens": { "programStrength": 9, "goalsForwardAvg": 13, "goalsMidAvg": 5 },
+
+  "_reason_florida_mens_calibration": "Even where men's program exists, schools.json forwardAvg=14 looks calibrated to women's. Most men's D1 strikers score 8-12; calibrating down.",
+
+  "_reason_fsu_womens": "FSU women's: 4 NCAA titles (2014, 2018, 2021, 2023), perennial top-3. Men's = no varsity.",
+  "fsu:womens": { "programStrength": 10, "goalsForwardAvg": 13, "goalsMidAvg": 5 },
+
+  "_reason_tamu_womens": "Texas A&M women's: consistent SEC, NCAA bids. Men's = no varsity.",
+  "tamu:womens": { "programStrength": 7, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+
+  "_reason_usc_womens": "USC women's: 2 NCAA titles (2007, 2016). Men's = no varsity (cut 2020).",
+  "usc:womens": { "programStrength": 9, "goalsForwardAvg": 14, "goalsMidAvg": 6 },
+
+  "_reason_pepperdine_split": "Pepperdine women's: consistent WCC, NCAA bids. Men's = no varsity.",
+  "pepperdine:womens": { "programStrength": 7, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+
+  "_reason_furman_mens": "Furman men's: strong Southern Conference, NCAA F4 contender. Women's = mid SoCon.",
+  "furman:mens": { "programStrength": 8, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+  "furman:womens": { "programStrength": 5, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_olddominion_mens": "Old Dominion men's: strong CAA/Sun Belt. Women's = mid.",
+  "olddominion:mens": { "programStrength": 7, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+  "olddominion:womens": { "programStrength": 5, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_dartmouth_split": "Dartmouth men's: Ivy League title contender. Women's: also competitive Ivy. Roughly equal.",
+
+  "_reason_princeton_womens": "Princeton women's: NCAA F4 several appearances, strong Ivy. Men's = solid Ivy.",
+  "princeton:womens": { "programStrength": 8, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_ohiostate_split": "Ohio State men's: NCAA runner-up 2007, strong B1G. Women's = mid B1G.",
+  "ohiostate:mens": { "programStrength": 8, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+  "ohiostate:womens": { "programStrength": 6, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+
+  "_reason_michiganstate_mens": "Michigan State men's: 1 NCAA title (1968), strong B1G. Women's = mid B1G.",
+  "michiganstate:mens": { "programStrength": 8, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+  "michiganstate:womens": { "programStrength": 6, "goalsForwardAvg": 10, "goalsMidAvg": 4 },
+
+  "_reason_michigan_womens_only": "Michigan men's varsity was cut; only women's program survives. Keep women's-side calibration; men's no-program filter handles men's case.",
+  "michigan:womens": { "programStrength": 8, "goalsForwardAvg": 11, "goalsMidAvg": 5 },
+
+  "_reason_men_goal_calibration_top_d1": "Top D1 men's forwards typically score 8-12 goals; mids 3-5. Schools where shared schools.json has unusually high goalsForwardAvg (women's-calibrated) get a men's-specific scaledown. Note: the matcher's MENS_CALIBRATION_MULTIPLIER (0.70) already handles the long tail; entries here are explicit corrections for top programs where the multiplier is too generic. Removed entries for schools where men's program doesn't exist per EADA (michigan, iowa, byu, vanderbilt, arkansas, tcu, auburn) — those are no-program-filtered out of the candidate pool entirely, so the override never fires.",
+  "ucf:mens": { "goalsForwardAvg": 9, "goalsMidAvg": 4 },
+  "boston-university:mens": { "goalsForwardAvg": 8, "goalsMidAvg": 3 },
+  "american:mens": { "goalsForwardAvg": 8, "goalsMidAvg": 3 },
+  "navy:mens": { "goalsForwardAvg": 8, "goalsMidAvg": 3 },
+  "lehigh:mens": { "goalsForwardAvg": 8, "goalsMidAvg": 3 },
+  "rutgers:mens": { "goalsForwardAvg": 8, "goalsMidAvg": 3 },
+  "syracuse:mens": { "goalsForwardAvg": 9, "goalsMidAvg": 4 },
+  "northwestern:mens": { "goalsForwardAvg": 8, "goalsMidAvg": 3 },
+  "wisconsin:mens": { "goalsForwardAvg": 8, "goalsMidAvg": 3 },
+  "minnesota:mens": { "goalsForwardAvg": 8, "goalsMidAvg": 3 },
+  "cal:mens": { "goalsForwardAvg": 9, "goalsMidAvg": 4 },
+  "denver:mens": { "goalsForwardAvg": 8, "goalsMidAvg": 3 }
+}

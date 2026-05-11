@@ -22,6 +22,12 @@ export function Emails() {
   const { user } = useAuth()
   const profileForDefaults = getProfile()
   const [school, setSchool] = useState('')
+  // schoolId is the canonical matcher ID (e.g., 'unc', 'stanford'). Populated
+  // when the user picks from the directory; left empty when they type a custom
+  // school name. Passing it to /api/ai/email lets the server cross-check the
+  // coach name against coachesScraped.json and auto-correct stale names
+  // before the AI writes the email.
+  const [schoolId, setSchoolId] = useState<string>('')
   const [division, setDivision] = useState<Division>('D2')
   const [gender, setGender] = useState<'mens' | 'womens'>(profileForDefaults?.gender ?? 'womens')
   const [coachName, setCoachName] = useState('')
@@ -160,6 +166,7 @@ export function Emails() {
 
   function pickSchoolFromDirectory(entry: SchoolDirectoryEntry) {
     setSchool(entry.name)
+    setSchoolId(entry.id)
     setDivision(entry.division)
     resetCoach()
   }
@@ -183,15 +190,30 @@ export function Emails() {
   async function handleGenerate() {
     const profile = getProfile()
     if (!profile?.name) { setError('Please complete your athlete profile first.'); return }
+    // Gender required — server validates and 400s without it. Catch here so
+    // the user gets a clear "fix your profile" message instead of a generic
+    // API error toast.
+    if (profile.gender !== 'mens' && profile.gender !== 'womens') {
+      setError('Please pick a gender (Men\'s/Women\'s) in your athlete profile — emails address the right coach.'); return
+    }
     if (!school || !coachName) { setError('Please find or enter a coach name.'); return }
     setError(''); setLoading(true); setSentMsg('')
     try {
-      const result = await generateEmail(profile, school, division, coachName, gender)
-      setGenerated(result)
+      // Passing schoolId (when known) lets the server cross-check coachName
+      // against the scraped coach data and auto-correct stale "Head Coach"
+      // placeholders before the AI writes. When schoolId is empty, the
+      // server falls back to the caller-supplied coachName.
+      const result = await generateEmail(profile, school, division, coachName, gender, schoolId || undefined)
+      // If the server corrected the coach name (coachSource === 'scraped'),
+      // reflect that in the UI so the athlete sees who they're actually
+      // addressing — and update local state to match what the AI used.
+      const finalCoachName = result.coachName && result.coachSource === 'scraped' ? result.coachName : coachName
+      if (finalCoachName !== coachName) setCoachName(finalCoachName)
+      setGenerated({ subject: result.subject, body: result.body })
       const id = crypto.randomUUID()
       setGeneratedId(id)
       setHistory((prev) => [{
-        id, school, division, coachName, coachEmail,
+        id, school, division, coachName: finalCoachName, coachEmail,
         subject: result.subject, body: result.body, status: 'draft',
         createdAt: new Date().toISOString(),
       }, ...prev])
@@ -334,7 +356,14 @@ export function Emails() {
             <Input
               label="School / University"
               value={school}
-              onChange={(e) => setSchool(e.target.value)}
+              onChange={(e) => {
+                setSchool(e.target.value)
+                // Free-text edits invalidate the canonical schoolId — the
+                // user may be typing a different school than the one they
+                // picked from the directory. The server falls back to the
+                // caller-supplied coachName when schoolId is empty.
+                setSchoolId('')
+              }}
               placeholder="Wake Forest University"
             />
 

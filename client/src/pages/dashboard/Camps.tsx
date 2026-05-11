@@ -758,6 +758,12 @@ function FindCampsTab() {
   async function handleFindCamps() {
     const profile = getProfile()
     if (!profile?.name) { setError('Please complete your athlete profile first.'); return }
+    // Gender required — find-camps builds gender-specific Google queries
+    // and labels each ID camp by men's/women's program. Server returns 400
+    // without it. Used to silently default to women's.
+    if (profile.gender !== 'mens' && profile.gender !== 'womens') {
+      setError('Please pick a gender (Men\'s/Women\'s) in your athlete profile — camp searches calibrate against that.'); return
+    }
     if (targetSchools.length === 0) { setError('Add at least one school above.'); return }
     setError(''); setLoading(true); setCamps([]); setSelectedCamp(null); setEmails([]); setResultSearch('')
     try {

@@ -106,25 +106,77 @@ export function academicTier(schoolId: string): AcademicTier {
 // (e.g. Alabama mens, where the women's head coach was scraped into the
 // men's slot). Always wins over scrape data when set to true.
 
-interface ScrapedCoachLite { status: string }
+interface ScrapedCoach {
+  status: string
+  coachName?: string
+  coachEmail?: string
+}
 
-let coachStatusCache: Record<string, ScrapedCoachLite> | null = null
-function getCoachStatus(schoolId: string, gender: 'mens' | 'womens'): string | null {
-  if (coachStatusCache === null) {
+let coachCache: Record<string, ScrapedCoach> | null = null
+function loadCoachCache(): Record<string, ScrapedCoach> {
+  if (coachCache === null) {
     try {
       const p = path.join(__dirname, '..', 'data', 'coachesScraped.json')
-      const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, ScrapedCoachLite>
-      coachStatusCache = {}
+      const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, ScrapedCoach>
+      coachCache = {}
       for (const [k, v] of Object.entries(raw)) {
         if (k.startsWith('_')) continue
-        coachStatusCache[k] = { status: v.status }
+        coachCache[k] = {
+          status: v.status,
+          coachName: v.coachName,
+          coachEmail: v.coachEmail,
+        }
       }
     } catch {
-      coachStatusCache = {}
+      coachCache = {}
     }
   }
-  const entry = coachStatusCache[`${schoolId}:${gender}`]
-  return entry?.status ?? null
+  return coachCache
+}
+
+function getCoachStatus(schoolId: string, gender: 'mens' | 'womens'): string | null {
+  return loadCoachCache()[`${schoolId}:${gender}`]?.status ?? null
+}
+
+// Resolve the coach name/email for a school+gender. The scraped data
+// (coachesScraped.json, 1518 entries with ~930 real names and emails) is the
+// authoritative source — schools.json mensCoach/womensCoach are mostly stale
+// "Head Coach" placeholders left over from the initial seed and were the
+// reason the matcher used to surface generic, useless coach contact info.
+// Falls back to the schools.json values only when the scrape is missing,
+// failed, or had no real name. Placeholder "Head Coach" with no email is
+// treated as "no contact on file" (returned as empty string, not the stale
+// placeholder) so the UI can prompt the athlete to look it up themselves.
+function isRealName(name: string | undefined | null): boolean {
+  if (!name) return false
+  const trimmed = name.trim()
+  if (!trimmed) return false
+  if (trimmed.toLowerCase() === 'head coach') return false
+  return true
+}
+function resolveCoach(
+  school: SchoolRecord,
+  gender: 'mens' | 'womens',
+): { coachName: string; coachEmail: string } {
+  const scraped = loadCoachCache()[`${school.id}:${gender}`]
+  const scrapedName = scraped?.coachName
+  const scrapedEmail = scraped?.coachEmail
+  const fallbackName = gender === 'mens' ? school.mensCoach : school.womensCoach
+  const fallbackEmail = gender === 'mens' ? school.mensCoachEmail : school.womensCoachEmail
+
+  // Prefer scraped name when it looks real (not "Head Coach" placeholder).
+  // Pair it with the scraped email — if no scraped email, fall back to the
+  // schools.json email only when the names match (so we don't pair a real
+  // scraped coach with a stale email pointing at a previous coach).
+  const name = isRealName(scrapedName)
+    ? scrapedName!
+    : (isRealName(fallbackName) ? fallbackName! : '')
+
+  const email = (scrapedEmail && scrapedEmail.trim())
+    ? scrapedEmail.trim()
+    : (fallbackEmail ?? '')
+
+  return { coachName: name, coachEmail: email }
 }
 
 // sponsoredPrograms.json is the canonical D1+D2 source of truth, generated
@@ -260,6 +312,94 @@ function hasProgramOfGender(schoolId: string, gender: 'mens' | 'womens'): boolea
   return getCoachStatus(schoolId, gender) !== 'no-program'
 }
 
+// ── Gender-specific program overrides ─────────────────────────────────────
+// schools.json stores programStrength, goalsForwardAvg, and goalsMidAvg as
+// SINGLE values per school — but men's and women's soccer at the same
+// school are functionally separate programs with very different competitive
+// profiles. Stanford women's has won 3 NCAA titles (10/10) while men's is
+// mid-pack Pac-12 (~7/10). Indiana men's is the all-time blueblood (8 titles,
+// 10/10) while women's is a tier below (~6/10). Without a gender-aware lookup
+// the matcher tells a men's Stanford profile they're matching a 10/10 program
+// when they're really matching a 7/10 — and the goal-scoring expectations for
+// women's college soccer run noticeably higher than men's at the same tier.
+//
+// programOverrides.json is a sparse, hand-curated layer keyed by
+// `schoolId:gender`. Any field present overrides the shared schools.json
+// value for that gender; missing fields fall through to the shared value.
+// We deliberately keep it sparse — only schools where men's vs women's
+// programs measurably diverge — so the maintenance burden stays small.
+interface ProgramOverride {
+  programStrength?: number    // 0–10 program prestige for this gender
+  goalsForwardAvg?: number    // typical season goals by a starting forward
+  goalsMidAvg?: number        // typical season goals by a starting midfielder
+}
+
+let programOverrideCache: Record<string, ProgramOverride> | null = null
+function loadProgramOverrides(): Record<string, ProgramOverride> {
+  if (programOverrideCache === null) {
+    try {
+      const p = path.join(__dirname, '..', 'data', 'programOverrides.json')
+      const raw = JSON.parse(fs.readFileSync(p, 'utf8')) as Record<string, unknown>
+      programOverrideCache = {}
+      for (const [k, v] of Object.entries(raw)) {
+        if (k.startsWith('_')) continue
+        if (v && typeof v === 'object') programOverrideCache[k] = v as ProgramOverride
+      }
+    } catch {
+      programOverrideCache = {}
+    }
+  }
+  return programOverrideCache
+}
+function getProgramOverride(schoolId: string, gender: 'mens' | 'womens'): ProgramOverride | undefined {
+  return loadProgramOverrides()[`${schoolId}:${gender}`]
+}
+
+// Gender-aware accessors for the three program-level fields the matcher
+// reads from school records. Override wins; falls back to the shared
+// schools.json value.
+//
+// IMPORTANT — schools.json goal averages are women's-calibrated. Across the
+// dataset, top-program forwardAvg values (UNC=16, UCLA=17, Stanford=15) and
+// midAvg values (~6-7) reflect typical *women's* college soccer scoring
+// rates. Men's college soccer scores at a meaningfully lower rate at the
+// same tier — top men's D1 forwards average ~8-12 goals, midfielders ~3-5.
+// Without correction, a men's 10-goal striker would look "below typical" at
+// virtually every school that lacks an explicit override.
+//
+// MEN'S_CALIBRATION_MULTIPLIER (0.70) scales the shared schools.json values
+// down for men's profiles when there's no explicit override in
+// programOverrides.json. This is a deliberate heuristic — the override file
+// covers the ~40 schools where we have hand-curated accuracy; this
+// multiplier covers the long tail of 700+ schools where we don't.
+//
+// The number is anchored on the gap between schools.json's women's-tilted
+// values (UNC forwardAvg=16) and the public men's D1 reality (top men's
+// forwards ~10-12, average D1 men's striker ~6-8). 0.70 × 16 = 11, which
+// reads as a credible men's elite-D1 striker benchmark. 0.70 × 8 (mid-D1)
+// = 5.6, also credible. The multiplier is intentionally NOT applied to
+// override entries — overrides express our hand-checked best estimate.
+const MENS_CALIBRATION_MULTIPLIER = 0.70
+
+export function programStrengthFor(school: SchoolRecord, gender: 'mens' | 'womens'): number {
+  const o = getProgramOverride(school.id, gender)
+  return o?.programStrength ?? (school.programStrength ?? 5)
+}
+export function goalsForwardAvgFor(school: SchoolRecord, gender: 'mens' | 'womens'): number {
+  const o = getProgramOverride(school.id, gender)
+  if (o?.goalsForwardAvg !== undefined) return o.goalsForwardAvg
+  const base = school.goalsForwardAvg ?? 0
+  if (gender === 'mens' && base > 0) return Math.round(base * MENS_CALIBRATION_MULTIPLIER)
+  return base
+}
+export function goalsMidAvgFor(school: SchoolRecord, gender: 'mens' | 'womens'): number {
+  const o = getProgramOverride(school.id, gender)
+  if (o?.goalsMidAvg !== undefined) return o.goalsMidAvg
+  const base = school.goalsMidAvg ?? 0
+  if (gender === 'mens' && base > 0) return Math.round(base * MENS_CALIBRATION_MULTIPLIER)
+  return base
+}
+
 // ── Roster data (open spots) ──────────────────────────────────────────────
 // Sources from server/data/rostersScraped.json (built by scrapeRosters.ts).
 // Used to estimate how many spots open up at the athlete's position
@@ -339,7 +479,7 @@ interface RosterSignal {
 }
 
 function computeRosterSignal(profile: AthleteProfile, schoolId: string): RosterSignal | null {
-  const r = getRoster(schoolId, profile.gender ?? 'womens')
+  const r = getRoster(schoolId, requireGender(profile))
   if (!r || r.status !== 'success' || !r.players?.length) return null
   const bucket = profilePositionBucket(profile.position)
   if (!bucket) return null
@@ -387,6 +527,18 @@ type Bucket = 'reach' | 'target' | 'safety'
 
 const DIVISION_ORDER: Division[] = ['D1', 'D2', 'D3', 'NAIA', 'JUCO']
 const divIdx = (d: Division) => DIVISION_ORDER.indexOf(d)
+
+// Athlete gender drives the matcher's coach lookup, the program-existence
+// filter, and (via programOverrides.json) the gender-specific calibration of
+// program strength and goal-scoring benchmarks. Silently defaulting to
+// 'womens' when gender was null is the bug that caused men's profiles to
+// see women's coaches and women's-calibrated stats — fail loudly instead so
+// the caller fixes the missing field upstream.
+function requireGender(profile: AthleteProfile): 'mens' | 'womens' {
+  const g = (profile as { gender?: 'mens' | 'womens' | null }).gender
+  if (g === 'mens' || g === 'womens') return g
+  throw new Error('schoolMatcher: athlete profile is missing gender — every match requires "mens" or "womens"')
+}
 
 // ── Multi-target helpers ──────────────────────────────────────────────────
 // An athlete can target multiple divisions (e.g. "D1 or D3, nothing else").
@@ -550,6 +702,7 @@ function athleticFit(profile: AthleteProfile, school: SchoolRecord, video?: Vide
   const gk = isGoalkeeper(profile.position)
   const fwd = isForward(profile.position)
   const def = isDefender(profile.position)
+  const gender = requireGender(profile)
 
   // Stats delta — only meaningful for attacking players. We treat keepers
   // and defenders as neutral so academic + division dominate; comparing a
@@ -557,9 +710,14 @@ function athleticFit(profile: AthleteProfile, school: SchoolRecord, video?: Vide
   // wrong "below typical midfielder" verdicts (defenders shouldn't score
   // like midfielders by design). Once we add defender-specific signals
   // (tackles won, clean sheets, blocks), revisit this.
+  //
+  // Goal expectations are gender-aware: women's college soccer typically
+  // scores at a meaningfully higher rate than men's at the same competitive
+  // tier, so the same 12 goals from a men's vs women's striker should land
+  // differently against the same school's "typical recruit" benchmark.
   let statsDelta = 0
   if (!gk && !def && profile.goals > 0) {
-    const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
+    const expected = fwd ? goalsForwardAvgFor(school, gender) : goalsMidAvgFor(school, gender)
     if (expected > 0) {
       // Half the typical scoring rate = 1 unit of separation in either direction.
       statsDelta = (profile.goals - expected) / Math.max(expected * 0.5, 3)
@@ -576,9 +734,10 @@ function athleticFit(profile: AthleteProfile, school: SchoolRecord, video?: Vide
   const rawDivGap = effectiveDivGap(school.division, profile)
   const divGap = Math.max(-2, Math.min(1, rawDivGap))
 
-  // Program prestige delta. School at strength 10 vs neutral 5 = +5 →
-  // pulls athleticFit down (this is a tougher program).
-  const programGap = (school.programStrength ?? 5) - 5
+  // Program prestige delta — gender-aware. Stanford women's is a 10/10
+  // program; Stanford men's is mid-Pac-12 (~7). Indiana men's is the
+  // all-time blueblood (10); Indiana women's is a tier below (~6).
+  const programGap = programStrengthFor(school, gender) - 5
 
   // Base composition. Tuned so:
   //   exact-fit, neutral program (statsDelta=0, divGap=0, programGap=0) → 60
@@ -603,8 +762,8 @@ function athleticFit(profile: AthleteProfile, school: SchoolRecord, video?: Vide
   //     one division harder reads down by 1. Multiplier ≈ 3.
   if (video) {
     const tape = tapeSkill(video)
-    const programExpectation = 5 + (school.programStrength ?? 5) * 0.4  // 5..9
-    const tapeVsProgram = tape - programExpectation                      // ~ −4..+4
+    const programExpectation = 5 + programStrengthFor(school, gender) * 0.4  // 5..9
+    const tapeVsProgram = tape - programExpectation                          // ~ −4..+4
     score += tapeVsProgram * 6
 
     const divDelta = effectiveDivGap(school.division, profile)
@@ -655,6 +814,7 @@ function buildReasons(
   const fwd = isForward(profile.position)
   const def = isDefender(profile.position)
   const posLabel = positionLabel(profile.position)
+  const gender = requireGender(profile)
 
   // ── Top-line fit summary (always first) ──────────────────────────────
   // We build the headline from the actual gaps in the data, not generic
@@ -664,10 +824,12 @@ function buildReasons(
   const divGap = effectiveDivGap(school.division, profile)
   const gpaAvg = school.gpaAvg ?? 0
   const gpaDelta = gpaAvg > 0 ? profile.gpa - gpaAvg : 0
-  const programStrength = school.programStrength ?? 5
+  // Gender-aware program strength so a men's UNC profile doesn't see the
+  // 22-title women's program's reputation pinned to a 2-title men's side.
+  const programStrength = programStrengthFor(school, gender)
   // Goal benchmark only applies to attacking players. Defenders and keepers
   // shouldn't be measured against forward/midfielder averages.
-  const expectedGoals = !gk && !def ? ((fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0) : 0
+  const expectedGoals = !gk && !def ? (fwd ? goalsForwardAvgFor(school, gender) : goalsMidAvgFor(school, gender)) : 0
   const goalsDelta = !gk && !def && profile.goals > 0 && expectedGoals > 0 ? profile.goals - expectedGoals : 0
   const admPct = acad?.admissionRate != null ? acad.admissionRate * 100 : null
 
@@ -688,7 +850,7 @@ function buildReasons(
     }
     if (video) {
       const tape = tapeSkill(video)
-      const expectation = 5 + (school.programStrength ?? 5) * 0.4
+      const expectation = 5 + programStrengthFor(school, gender) * 0.4
       if (tape - expectation <= -1.5) {
         gaps.push(`tape grades ${tape.toFixed(1)}/10 vs typical ${expectation.toFixed(1)} for this level`)
       }
@@ -783,7 +945,7 @@ function buildReasons(
   // misleading "below typical midfielders" line entirely until we add
   // tackles / clean-sheets data.
   if (!gk && !def && profile.goals > 0) {
-    const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
+    const expected = fwd ? goalsForwardAvgFor(school, gender) : goalsMidAvgFor(school, gender)
     if (expected > 0) {
       if (profile.goals >= expected + 4) reasons.push(`Your ${profile.goals} goals exceed this program's typical ${posLabel} (avg ${expected}).`)
       else if (profile.goals < Math.max(2, expected - 4)) reasons.push(`Your ${profile.goals} ${pluralize(profile.goals, 'goal')} is below typical ${posLabel} here (avg ${expected}).`)
@@ -817,7 +979,7 @@ function buildReasons(
   // ── Highlight tape signal (when the athlete has rated their video) ──
   if (video) {
     const tape = tapeSkill(video)
-    const expectation = 5 + (school.programStrength ?? 5) * 0.4
+    const expectation = 5 + programStrengthFor(school, gender) * 0.4
     const delta = tape - expectation
     if (delta >= 1.2) {
       reasons.push(`Tape grades ${tape.toFixed(1)}/10 — above this program's typical recruit profile.`)
@@ -986,9 +1148,15 @@ export function scoreSingleSchool(
   schoolId: string,
   video?: VideoRating | null,
 ): School | null {
-  const gender = profile.gender ?? 'womens'
+  const gender = requireGender(profile)
   const school = (schoolsData as SchoolRecord[]).find((s) => s.id === schoolId)
   if (!school) return null
+
+  // Don't score schools that don't field a program of the athlete's gender —
+  // returning a match for a women's profile against a men's-only school is a
+  // confusing answer to "what's my score for X?". Same source-of-truth chain
+  // (EADA → AI-verified → Wikipedia → coach status) the bulk matcher uses.
+  if (!hasProgramOfGender(school.id, gender)) return null
 
   const athletic = athleticFit(profile, school, video ?? null)
   const academic = academicFit(profile, school)
@@ -999,17 +1167,22 @@ export function scoreSingleSchool(
 
   const w = blendWeights(profile)
   let blended = athletic * w.athletic + academic * w.academic
-  const rawDivGapForScore = effectiveDivGap(school.division, profile)
-  if (rawDivGapForScore === 2) blended -= 8
-  else if (rawDivGapForScore === 3) blended -= 16
-  else if (rawDivGapForScore >= 4) blended -= 22
+  // Use effectiveDivGap so multi-target athletes ({D1, D3}) don't get
+  // honesty-penalized at every targeted division. Previously this used
+  // the raw single-target gap and produced inconsistent scores between
+  // the bulk matcher (effectiveDivGap) and the search-a-school path.
+  const divGapForScore = effectiveDivGap(school.division, profile)
+  if (divGapForScore === 2) blended -= 8
+  else if (divGapForScore === 3) blended -= 16
+  else if (divGapForScore >= 4) blended -= 22
   const matchScore = Math.max(0, Math.min(100, round1(blended + preferenceBoost(profile, school))))
 
   const academicData = getAcademic(school.id)
   const rosterSignal = computeRosterSignal(profile, school.id) ?? undefined
-  const rawDivGap = divIdx(school.division) - divIdx(profile.targetDivision)
-  const programGap = (school.programStrength ?? 5) - 5
-  const shot = recruitableShot(athletic, academic, Math.max(-2, Math.min(2, rawDivGap)), programGap, rosterSignal ?? null)
+  const programGap = (programStrengthFor(school, gender) ?? 5) - 5
+  // Same effectiveDivGap clamp recruitableShot uses inside the bulk matcher,
+  // so single-target and multi-target athletes get consistent shot estimates.
+  const shot = recruitableShot(athletic, academic, Math.max(-2, Math.min(2, divGapForScore)), programGap, rosterSignal ?? null)
 
   return {
     id: school.id,
@@ -1020,19 +1193,18 @@ export function scoreSingleSchool(
     size: school.size,
     enrollment: school.enrollment,
     conference: school.conference,
-    coachName: gender === 'womens' ? school.womensCoach : school.mensCoach,
-    coachEmail: gender === 'womens' ? school.womensCoachEmail : school.mensCoachEmail,
+    ...resolveCoach(school, gender),
     category: bucket,
     matchScore,
     athleticFit: athletic,
     academicFit: academic,
     reasons: buildReasons(profile, school, athletic, academic, bucket, academicData, rosterSignal, video, false),
     notes: school.notes ?? '',
-    programStrength: school.programStrength,
+    programStrength: programStrengthFor(school, gender),
     scholarships: school.scholarships,
     gpaAvg: school.gpaAvg,
-    goalsForwardAvg: school.goalsForwardAvg,
-    goalsMidAvg: school.goalsMidAvg,
+    goalsForwardAvg: goalsForwardAvgFor(school, gender),
+    goalsMidAvg: goalsMidAvgFor(school, gender),
     breakdown: buildBreakdown(profile, school, athletic, academic),
     satMid:             academicData?.satMid,
     sat25:              academicData?.sat25,
@@ -1059,7 +1231,7 @@ export function matchSchools(
   video?: VideoRating | null,
   preferences?: ServerPreferences | null,
 ): School[] {
-  const gender = profile.gender ?? 'womens'
+  const gender = requireGender(profile)
   // Hard exclusions — divisions the athlete has explicitly opted out of.
   // Any division in the target set is never excludable (defensive guard
   // against bad client state). Applied before scoring so excluded schools
@@ -1149,7 +1321,7 @@ export function matchSchools(
             size: s.size,
             region: s.region,
             conference: s.conference,
-            programStrength: s.programStrength,
+            programStrength: programStrengthFor(s, gender),
             academicTier: academicTier(s.id),
           })
         : 0
@@ -1160,8 +1332,7 @@ export function matchSchools(
         academic,
         matchScore,
         bucket,
-        coachName: gender === 'womens' ? s.womensCoach : s.mensCoach,
-        coachEmail: gender === 'womens' ? s.womensCoachEmail : s.mensCoachEmail,
+        ...resolveCoach(s, gender),
       } as Candidate
     })
     .filter((c): c is Candidate => c !== null)
@@ -1188,8 +1359,8 @@ export function matchSchools(
     const bClose = divCloseness(b)
     if (aClose !== bClose) return aClose - bClose
     if (a.matchScore !== b.matchScore) return b.matchScore - a.matchScore
-    const aProg = a.school.programStrength ?? 0
-    const bProg = b.school.programStrength ?? 0
+    const aProg = programStrengthFor(a.school, gender)
+    const bProg = programStrengthFor(b.school, gender)
     if (aProg !== bProg) return bProg - aProg
     const aRegion = profile.locationPreference !== 'any' && a.school.region === profile.locationPreference ? 1 : 0
     const bRegion = profile.locationPreference !== 'any' && b.school.region === profile.locationPreference ? 1 : 0
@@ -1287,8 +1458,7 @@ export function matchSchools(
             academic,
             matchScore,
             bucket: 'reach' as Bucket,
-            coachName: gender === 'womens' ? s.womensCoach : s.mensCoach,
-            coachEmail: gender === 'womens' ? s.womensCoachEmail : s.mensCoachEmail,
+            ...resolveCoach(s, gender),
             isStretchReach: true,
           } as Candidate
         })
@@ -1306,8 +1476,8 @@ export function matchSchools(
     const pool = stretchPool.filter((c) => c.school.division === div)
     if (!pool.length) continue
     pool.sort((a, b) => {
-      const aProg = a.school.programStrength ?? 0
-      const bProg = b.school.programStrength ?? 0
+      const aProg = programStrengthFor(a.school, gender)
+      const bProg = programStrengthFor(b.school, gender)
       if (aProg !== bProg) return bProg - aProg
       if (a.academic !== b.academic) return b.academic - a.academic
       const aRegion = profile.locationPreference && profile.locationPreference !== 'any'
@@ -1337,9 +1507,12 @@ export function matchSchools(
   return ordered.map((c) => {
     const academic = getAcademic(c.school.id)
     const rosterSignal = computeRosterSignal(profile, c.school.id) ?? undefined
-    const rawDivGap = divIdx(c.school.division) - divIdx(profile.targetDivision)
-    const programGap = (c.school.programStrength ?? 5) - 5
-    const shot = recruitableShot(c.athletic, c.academic, Math.max(-2, Math.min(2, rawDivGap)), programGap, rosterSignal ?? null)
+    // effectiveDivGap so multi-target athletes get a consistent shot estimate
+    // across their target divisions, and so recruitableShot reads the same
+    // gap signal the matchScore blend already used.
+    const divGap = effectiveDivGap(c.school.division, profile)
+    const programGap = programStrengthFor(c.school, gender) - 5
+    const shot = recruitableShot(c.athletic, c.academic, Math.max(-2, Math.min(2, divGap)), programGap, rosterSignal ?? null)
     return {
       id: c.school.id,
       name: c.school.name,
@@ -1358,11 +1531,14 @@ export function matchSchools(
       reasons: buildReasons(profile, c.school, c.athletic, c.academic, c.bucket, academic, rosterSignal, video, c.isStretchReach),
       notes: c.school.notes ?? '',
       isStretchReach: c.isStretchReach,
-      programStrength: c.school.programStrength,
+      // Output the gender-aware values so the UI badge ("10/10 program") and
+      // breakdown card show the athlete's gender's reality, not a school-wide
+      // amalgam that misrepresents either side.
+      programStrength: programStrengthFor(c.school, gender),
       scholarships: c.school.scholarships,
       gpaAvg: c.school.gpaAvg,
-      goalsForwardAvg: c.school.goalsForwardAvg,
-      goalsMidAvg: c.school.goalsMidAvg,
+      goalsForwardAvg: goalsForwardAvgFor(c.school, gender),
+      goalsMidAvg: goalsMidAvgFor(c.school, gender),
       breakdown: buildBreakdown(profile, c.school, c.athletic, c.academic),
       // Scorecard fields when available (else undefined; UI guards on truthy).
       satMid:             academic?.satMid,
@@ -1394,6 +1570,7 @@ function buildBreakdown(
   const gk = isGoalkeeper(profile.position)
   const fwd = isForward(profile.position)
   const def = isDefender(profile.position)
+  const gender = requireGender(profile)
 
   // Some schools.json entries are partial (e.g., bethel-university-tn). Treat
   // missing numerics as 0 here so the verdict logic doesn't crash on toFixed().
@@ -1418,7 +1595,7 @@ function buildBreakdown(
   // ("below typical midfielders") that the user flagged as wrong.
   let stats: MatchBreakdown['stats'] = null
   if (!gk && !def) {
-    const expected = (fwd ? school.goalsForwardAvg : school.goalsMidAvg) ?? 0
+    const expected = fwd ? goalsForwardAvgFor(school, gender) : goalsMidAvgFor(school, gender)
     const label = fwd ? 'forwards' : 'midfielders'
     const score = expected > 0
       ? Math.max(0, Math.min(100, Math.round((profile.goals / expected) * 100)))

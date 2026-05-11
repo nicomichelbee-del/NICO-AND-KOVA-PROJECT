@@ -56,13 +56,22 @@ app.use('/api/coach', coachRouter)
 app.use('/api/coach', coachReplyRouter)
 
 // Final error handler — turns any error forwarded by next(err) (including the
-// async-wrapped throws from the gmail router) into a clean JSON 500 instead
-// of a dangling socket. Surfaces "Supabase not configured" and similar
-// startup-misconfiguration errors as a real HTTP response the client can show.
+// async-wrapped throws from the gmail router) into a clean JSON response
+// instead of a dangling socket. Surfaces "Supabase not configured" and
+// similar startup-misconfiguration errors as a real HTTP response the client
+// can show.
+//
+// Honors body-parser's statusCode (400 for malformed JSON). Previously every
+// such error became a 500, which is wrong — client SDKs treat 5xx as
+// retryable server bugs, but a malformed payload is a 4xx caller bug.
 app.use((err: unknown, _req: Request, res: Response, _next: NextFunction) => {
   console.error('[express error]', err)
+  const e = err as { statusCode?: number; status?: number; message?: string; expose?: boolean }
+  const status = typeof e?.statusCode === 'number' ? e.statusCode
+    : typeof e?.status === 'number' ? e.status
+    : 500
   const message = err instanceof Error ? err.message : 'Internal server error'
-  if (!res.headersSent) res.status(500).json({ error: message })
+  if (!res.headersSent) res.status(status).json({ error: message })
 })
 
 const server = app.listen(PORT, () => {

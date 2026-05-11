@@ -220,6 +220,13 @@ function VideoRaterInner() {
   async function handleRate() {
     const profile = getProfile()
     if (!profile?.name) { setError('Please complete your athlete profile first.'); return }
+    // Gender gates the rater because the calibration band differs (men's vs
+    // women's college soccer scoring rates, physicality, elite-anchor schools).
+    // The server returns 400 if gender is missing — catch it here with a
+    // user-friendly message instead of surfacing the raw API error.
+    if (profile.gender !== 'mens' && profile.gender !== 'womens') {
+      setError('Please pick a gender (Men\'s/Women\'s) in your athlete profile — the rater calibrates against that league.'); return
+    }
     if (!videoUrl) { setError('Please enter a video URL.'); return }
     if (!/youtube\.com|youtu\.be/.test(videoUrl)) { setError('Only YouTube URLs are supported.'); return }
     setError(''); setRating(null); setLoading(true)

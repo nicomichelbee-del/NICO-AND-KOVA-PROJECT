@@ -1,6 +1,7 @@
 import { useEffect, useState } from 'react'
 import { gmailGetThread, gmailRateAndLog } from '../../lib/api'
 import { Button } from '../ui/Button'
+import { readLegacyProfile } from '../../lib/profileAdapter'
 import type { ThreadMessage } from '../../types'
 
 interface Props {
@@ -50,8 +51,14 @@ export function ThreadView({ userId, threadId, contactId, coachEmail, coachName,
           }
         } catch { /* corrupt entry — fall through to fresh rate */ }
 
+        // Gender comes from the athlete profile — the AI calibrates the
+        // rating against gender-specific recruiting-cycle norms. Skip the
+        // auto-rate silently if profile lacks gender (the UI elsewhere
+        // already prompts the user to complete it).
+        const profile = readLegacyProfile()
+        if (profile?.gender !== 'mens' && profile?.gender !== 'womens') return
         setRatingLoading(true)
-        gmailRateAndLog(userId, contactId, lastCoachMsg.body, coachName, school)
+        gmailRateAndLog(userId, contactId, lastCoachMsg.body, coachName, school, profile.gender)
           .then((r) => {
             setRating(r)
             try { localStorage.setItem(cacheKey, JSON.stringify(r)) } catch { /* quota — non-fatal */ }
