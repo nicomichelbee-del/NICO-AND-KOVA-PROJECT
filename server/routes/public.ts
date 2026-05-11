@@ -167,15 +167,20 @@ router.get('/sitemap', (req, res) => {
   // canonical domain (kickriq.com) even when this handler runs on Railway/Vercel.
   const host = normalizeBaseUrl(process.env.PUBLIC_BASE_URL ?? `${req.protocol}://${req.get('host')}`)
   const positions = Object.keys(POSITION_ALIASES)
-  const urls = [
-    `${host}/`,
-    `${host}/open-spots`,
-    `${host}/open-spots/womens`,
-    `${host}/open-spots/mens`,
+  const urls: { loc: string; priority: string }[] = [
+    { loc: `${host}/`, priority: '1.0' },
+    { loc: `${host}/for-coaches`, priority: '0.9' },
+    { loc: `${host}/open-spots`, priority: '0.8' },
+    { loc: `${host}/open-spots/womens`, priority: '0.8' },
+    { loc: `${host}/open-spots/mens`, priority: '0.8' },
     ...positions.flatMap((p) => [
-      `${host}/open-spots/womens/${p}`,
-      `${host}/open-spots/mens/${p}`,
+      { loc: `${host}/open-spots/womens/${p}`, priority: '0.8' },
+      { loc: `${host}/open-spots/mens/${p}`, priority: '0.8' },
     ]),
+    { loc: `${host}/leaderboard`, priority: '0.6' },
+    { loc: `${host}/about`, priority: '0.5' },
+    { loc: `${host}/privacy`, priority: '0.3' },
+    { loc: `${host}/terms`, priority: '0.3' },
   ]
   const today = new Date().toISOString().slice(0, 10)
   const body =
@@ -183,8 +188,8 @@ router.get('/sitemap', (req, res) => {
     `<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n` +
     urls
       .map(
-        (u) =>
-          `  <url><loc>${u}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>${u.includes('/open-spots/') ? '0.8' : '0.6'}</priority></url>`,
+        ({ loc, priority }) =>
+          `  <url><loc>${loc}</loc><lastmod>${today}</lastmod><changefreq>weekly</changefreq><priority>${priority}</priority></url>`,
       )
       .join('\n') +
     `\n</urlset>\n`

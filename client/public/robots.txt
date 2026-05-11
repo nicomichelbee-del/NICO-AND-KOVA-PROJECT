@@ -1,9 +1,8 @@
 User-agent: *
 Allow: /
-Allow: /open-spots
-Allow: /open-spots/*
 Disallow: /dashboard
 Disallow: /onboarding
+Disallow: /auth/callback
 Disallow: /api/
 
-Sitemap: /sitemap.xml
+Sitemap: https://kickriq.com/sitemap.xml
