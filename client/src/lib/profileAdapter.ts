@@ -79,6 +79,12 @@ export function readLegacyProfile(): AthleteProfile | null {
   if (r.gender !== 'mens' && r.gender !== 'womens') return null
   const gender: 'mens' | 'womens' = r.gender
 
+  // Convert stored metric measurements into the imperial units the email
+  // generator and other consumers expect. Round height to the nearest whole
+  // inch and weight to the nearest pound so coach emails read cleanly.
+  const heightInches = r.height_cm != null ? Math.round(r.height_cm / 2.54) : undefined
+  const weightLbs = r.weight_kg != null ? Math.round(r.weight_kg * 2.20462) : undefined
+
   return {
     name: r.full_name ?? '',
     gradYear: r.graduation_year ?? new Date().getFullYear() + 2,
@@ -92,6 +98,8 @@ export function readLegacyProfile(): AthleteProfile | null {
     assists: r.assists_last_season ?? 0,
     intendedMajor: undefined,
     highlightUrl: r.highlight_video_url ?? undefined,
+    heightInches,
+    weightLbs,
     targetDivision,
     targetDivisions: divs.length > 1 ? divs : undefined,
     locationPreference,

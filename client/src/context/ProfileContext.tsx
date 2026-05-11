@@ -35,6 +35,8 @@ function defaultProfile(): AthleteProfileRecord {
     sat_score: null,
     act_score: null,
     ncaa_eligibility_id: null,
+    height_cm: null,
+    weight_kg: null,
     desired_division_levels: [],
     regions_of_interest: [],
     highlight_video_url: null,

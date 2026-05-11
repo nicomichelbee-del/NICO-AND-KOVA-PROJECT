@@ -314,6 +314,17 @@ export function OnboardingProfile() {
                 <Input label="Club team" placeholder="Bay Area Surf" value={form.current_club ?? ''} onChange={(e) => update('current_club', e.target.value)} />
                 <Input label="League or division" placeholder="ECNL, MLS Next, NPL, etc." value={form.current_league_or_division ?? ''} onChange={(e) => update('current_league_or_division', e.target.value)} />
 
+                <FieldLabel>Height & weight (optional)</FieldLabel>
+                <p className="text-xs text-ink-3 leading-[1.5] -mt-1">
+                  Coaches care about frame — especially for keepers, center backs, and target strikers.
+                  Add it now so it shows up automatically in your coach emails.
+                </p>
+                <HeightWeightInputs
+                  heightCm={form.height_cm ?? null}
+                  weightKg={form.weight_kg ?? null}
+                  onChange={(patch) => setForm((prev) => ({ ...prev, ...patch }))}
+                />
+
                 <FieldLabel>Last-season stats (optional)</FieldLabel>
                 <p className="text-xs text-ink-3 leading-[1.5] -mt-1">
                   Helps the matcher rank schools where your scoring rate fits the program.
@@ -442,6 +453,76 @@ export function OnboardingProfile() {
             </Button>
           </div>
         </div>
+      </div>
+    </div>
+  )
+}
+
+// Storage is metric (height_cm / weight_kg) to match the DB column types, but
+// the inputs are feet/inches + lbs since the user base is US high schoolers.
+// Conversion is intentionally lossy — coaches don't need millimeter precision.
+export function HeightWeightInputs({
+  heightCm,
+  weightKg,
+  onChange,
+}: {
+  heightCm: number | null
+  weightKg: number | null
+  onChange: (patch: { height_cm?: number | null; weight_kg?: number | null }) => void
+}) {
+  const totalInches = heightCm != null ? Math.round(heightCm / 2.54) : null
+  const feet = totalInches != null ? Math.floor(totalInches / 12) : ''
+  const inches = totalInches != null ? totalInches % 12 : ''
+  const lbs = weightKg != null ? Math.round(weightKg * 2.20462) : ''
+
+  function setHeight(nextFeet: string | number, nextInches: string | number) {
+    const f = Number(nextFeet)
+    const i = Number(nextInches)
+    if (!Number.isFinite(f) || !Number.isFinite(i) || f <= 0) {
+      onChange({ height_cm: null })
+      return
+    }
+    const cm = Math.round((f * 12 + i) * 2.54 * 10) / 10
+    onChange({ height_cm: cm })
+  }
+
+  function setWeight(value: string) {
+    if (!value) {
+      onChange({ weight_kg: null })
+      return
+    }
+    const lb = Number(value)
+    if (!Number.isFinite(lb) || lb <= 0) return
+    onChange({ weight_kg: Math.round((lb / 2.20462) * 10) / 10 })
+  }
+
+  return (
+    <div className="grid grid-cols-2 gap-3">
+      <div>
+        <FieldLabel>Height</FieldLabel>
+        <div className="grid grid-cols-2 gap-2">
+          <Input
+            type="number" inputMode="numeric" min={3} max={8}
+            placeholder="ft"
+            value={feet}
+            onChange={(e) => setHeight(e.target.value, inches || 0)}
+          />
+          <Input
+            type="number" inputMode="numeric" min={0} max={11}
+            placeholder="in"
+            value={inches}
+            onChange={(e) => setHeight(feet || 0, e.target.value)}
+          />
+        </div>
+      </div>
+      <div>
+        <FieldLabel>Weight (lbs)</FieldLabel>
+        <Input
+          type="number" inputMode="numeric" min={60} max={400}
+          placeholder="e.g. 165"
+          value={lbs}
+          onChange={(e) => setWeight(e.target.value)}
+        />
       </div>
     </div>
   )

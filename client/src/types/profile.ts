@@ -75,6 +75,12 @@ export interface AthleteProfileRecord {
   sat_score: string | null
   act_score: string | null
   ncaa_eligibility_id: string | null
+  // Physical measurements — stored in metric (matches DB column types) but
+  // the UI collects feet/inches + lbs since the user base is US high schoolers.
+  // Coaches care about height especially for keepers, center backs, and target
+  // strikers; weight gives a frame-of-reference next to height.
+  height_cm?: number | null
+  weight_kg?: number | null
   // Last-season soccer stats — drives athletic-fit scoring for forwards
   // and midfielders. Defenders and keepers don't use these (the matcher
   // skips goal-scoring comparisons for them — see schoolMatcher.athleticFit).

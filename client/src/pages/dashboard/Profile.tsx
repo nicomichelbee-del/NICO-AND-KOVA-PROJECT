@@ -9,6 +9,7 @@ import {
   type ProfileVisibility,
   type AthleteProfileRecord,
 } from '../../types/profile'
+import { HeightWeightInputs } from '../onboarding/OnboardingProfile'
 
 const VISIBILITY_OPTIONS: { value: ProfileVisibility; label: string; hint: string }[] = [
   { value: 'public', label: 'Public', hint: 'Anyone with the link can view your profile.' },
@@ -331,6 +332,21 @@ export function Profile() {
           Goals + assists drive athletic-fit scoring for forwards and midfielders.
           Defenders and keepers can leave these blank — the matcher skips them anyway.
         </p>
+
+        <Field label="Height & weight">
+          <p className="text-[11px] text-ink-3 leading-[1.5] -mt-1">
+            Optional, but coaches notice frame — especially for keepers, center backs, and target strikers.
+            Auto-included in coach emails when set.
+          </p>
+          <HeightWeightInputs
+            heightCm={draft.height_cm ?? null}
+            weightKg={draft.weight_kg ?? null}
+            onChange={(patch) => {
+              setDraft((prev) => ({ ...prev, ...patch }))
+              persist(patch)
+            }}
+          />
+        </Field>
       </Section>
 
       {/* Academics */}

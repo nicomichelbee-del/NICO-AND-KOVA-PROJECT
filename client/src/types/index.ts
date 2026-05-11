@@ -17,6 +17,12 @@ export interface AthleteProfile {
   assists: number
   intendedMajor?: string
   highlightUrl?: string
+  // Physical — total inches (e.g. 70 = 5'10") and lbs. Imperial because the
+  // primary audience is US high schoolers and coach emails read more naturally
+  // with "5'10", 165 lbs" than metric. Optional: profiles created before height
+  // collection landed won't have these.
+  heightInches?: number
+  weightLbs?: number
   targetDivision: Division
   // Multi-division targeting — when set with 2+ entries, the matcher treats
   // every listed division as a first-class target (no above/below penalty

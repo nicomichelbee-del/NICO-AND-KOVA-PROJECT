@@ -131,6 +131,17 @@ router.post('/email', async (req, res) => {
 
     const genderLabel = g === 'womens' ? "women's" : "men's"
 
+    // Format height/weight inline so the AI doesn't have to do arithmetic.
+    // "5'10\", 165 lbs" reads naturally in a coach email; omit either field
+    // entirely when missing rather than printing "null" or "0".
+    const heightStr = profile.heightInches
+      ? `${Math.floor(profile.heightInches / 12)}'${profile.heightInches % 12}"`
+      : null
+    const weightStr = profile.weightLbs ? `${profile.weightLbs} lbs` : null
+    const frameLine = heightStr || weightStr
+      ? `- Frame: ${[heightStr, weightStr].filter(Boolean).join(', ')}\n`
+      : ''
+
     const text = await ask(`Write a cold outreach email from the athlete below to ${resolvedCoach}, head coach of the ${genderLabel} soccer program at ${school} (${division}).
 Tone: ${divisionTone}
 
@@ -141,7 +152,7 @@ Athlete (gender: ${genderLabel}):
 - Club: ${profile.clubTeam} (${profile.clubLeague})
 - Stats: ${profile.goals}G / ${profile.assists}A
 - GPA: ${profile.gpa}
-- Major: ${profile.intendedMajor || 'undecided'}
+${frameLine}- Major: ${profile.intendedMajor || 'undecided'}
 - Highlight: ${profile.highlightUrl || 'not provided'}
 
 Important context — this is a ${genderLabel} college soccer recruit writing to a ${genderLabel} program coach. Tone and references should reflect that (e.g., when citing program success, reference the ${genderLabel} side specifically; don't generalize across the whole school's soccer).
