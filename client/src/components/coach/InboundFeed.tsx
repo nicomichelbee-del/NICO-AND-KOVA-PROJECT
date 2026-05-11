@@ -64,7 +64,13 @@ export function InboundFeed({ coachUserId }: Props) {
   return (
     <div className="flex flex-col gap-3">
       {athletes.map((a) => (
-        <AthleteCard key={a.athleteId} athlete={a} onReply={setReplyTo} gmailConnected={gmailConnected} />
+        <AthleteCard
+          key={a.athleteId}
+          athlete={a}
+          onReply={setReplyTo}
+          gmailConnected={gmailConnected}
+          coachUserId={coachUserId}
+        />
       ))}
       {replyTo && (
         <ReplyComposer

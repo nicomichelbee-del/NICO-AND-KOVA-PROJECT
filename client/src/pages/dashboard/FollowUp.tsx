@@ -227,6 +227,11 @@ function FollowUpInner() {
   async function handleGenerate() {
     const profile = getProfile()
     if (!profile?.name) { setError('Please complete your athlete profile first.'); return }
+    // Gender required — follow-up tone differs between men's and women's
+    // recruiting cycles, and the server returns 400 without it.
+    if (profile.gender !== 'mens' && profile.gender !== 'womens') {
+      setError('Please pick a gender (Men\'s/Women\'s) in your athlete profile — follow-up tone calibrates against that.'); return
+    }
     setError(''); setLoading(true)
     try {
       const fullContext = context + buildScheduleContext()

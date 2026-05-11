@@ -69,8 +69,22 @@ async function get<T>(path: string): Promise<T> {
   return handleResponse<T>(res)
 }
 
-export function generateEmail(profile: AthleteProfile, school: string, division: Division, coachName: string, gender: 'mens' | 'womens') {
-  return post<{ subject: string; body: string }>('/api/ai/email', { profile, school, division, coachName, gender })
+export function generateEmail(
+  profile: AthleteProfile,
+  school: string,
+  division: Division,
+  coachName: string,
+  gender: 'mens' | 'womens',
+  schoolId?: string,
+) {
+  // Passing schoolId lets the server cross-check coachName against the scraped
+  // coach data and correct stale "Head Coach" placeholders before they reach
+  // the AI prompt. Response includes the resolved coachName + coachSource so
+  // the UI can show the athlete who they're actually addressing.
+  return post<{ subject: string; body: string; coachName?: string; coachSource?: 'scraped' | 'caller' | 'fallback' }>(
+    '/api/ai/email',
+    { profile, school, division, coachName, gender, schoolId },
+  )
 }
 
 export function findCoach(school: string, division: Division, gender: 'mens' | 'womens') {
@@ -121,8 +135,10 @@ export function generateFollowUp(profile: AthleteProfile, context: string, type:
   return post<{ body: string; advice?: string }>('/api/ai/followup', { profile, context, type })
 }
 
-export function rateResponse(school: string, coachName: string, text: string) {
-  return post<CoachResponse>('/api/ai/rate-response', { school, coachName, text })
+export function rateResponse(school: string, coachName: string, text: string, gender: 'mens' | 'womens') {
+  // Gender required — the AI rates the reply against gender-specific
+  // recruiting-cycle norms (men's vs women's contact cadence differ).
+  return post<CoachResponse>('/api/ai/rate-response', { school, coachName, text, gender })
 }
 
 export function findCamps(profile: AthleteProfile, schools: { name: string; division: string }[]) {
@@ -205,10 +221,16 @@ export function gmailGetThread(userId: string, threadId: string) {
   )
 }
 
-export function gmailRateAndLog(userId: string, contactId: string, latestCoachMessage: string, coachName: string, school: string) {
+export function gmailRateAndLog(
+  userId: string, contactId: string, latestCoachMessage: string,
+  coachName: string, school: string, gender: 'mens' | 'womens',
+) {
+  // Gender required — the AI rates the reply against gender-specific
+  // recruiting-cycle norms. The Gmail auto-rate flow only fires when the
+  // athlete's profile has gender set, so this is always present.
   return post<{ rating: string; signals: string[]; nextAction: string }>(
     '/api/gmail/rate-and-log',
-    { userId, contactId, latestCoachMessage, coachName, school }
+    { userId, contactId, latestCoachMessage, coachName, school, gender }
   )
 }
 
@@ -347,6 +369,34 @@ export interface CoachInboundAthlete {
 export function getCoachInbound(userId: string) {
   return fetch(`/api/coach/inbound?userId=${encodeURIComponent(userId)}`)
     .then(handlePublicResponse<{ athletes: CoachInboundAthlete[] }>)
+}
+
+export interface CoachFitScore {
+  score: number               // 1-10
+  oneLine: string
+  strengths: string[]
+  concerns: string[]
+}
+
+// Request an AI fit-score for one inbound athlete. The server caches results
+// keyed on (coach, athlete) + hashes of the inputs, so repeat calls without
+// profile/needs changes return instantly from cache (no AI charge). Pass
+// `refresh: true` to bypass the cache and force a fresh AI call.
+export async function getCoachFitScore(
+  coachUserId: string,
+  athleteId: string,
+  refresh = false,
+): Promise<{ fit: CoachFitScore; cached: boolean; generatedAt: string }> {
+  const r = await fetch(`/api/coach/inbound/${encodeURIComponent(athleteId)}/fit`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ userId: coachUserId, refresh }),
+  })
+  if (!r.ok) {
+    const body = await r.json().catch(() => ({})) as { error?: string }
+    throw new Error(body.error || `Fit-score request failed (${r.status})`)
+  }
+  return r.json()
 }
 
 export interface CoachNotifPrefs { perInbound: boolean; dailyDigest: boolean }

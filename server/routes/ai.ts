@@ -27,17 +27,28 @@ const CACHE_TTL_MS = 24 * 60 * 60 * 1000
 router.post('/coach-reply-draft', async (req, res) => {
   try {
     const { athleteName, athletePosition, athleteGradYear, athleteClub, athleteHighlight,
-            athleteLastMessage, programName, programDivision, coachName, programNotes } = req.body as {
+            athleteLastMessage, programName, programDivision, coachName, programNotes,
+            gender } = req.body as {
       athleteName: string; athletePosition: string | null; athleteGradYear: number | null
       athleteClub: string | null; athleteHighlight: string | null
       athleteLastMessage: string; programName: string; programDivision: string
       coachName: string; programNotes: string | null
+      gender?: 'mens' | 'womens'
     }
+    // Gender is REQUIRED — the coach drafts a reply as the head of either a
+    // men's or women's program, and the tone, recruiting-cycle context, and
+    // ID-camp framing differ between them. Previously coachReply.ts smuggled
+    // gender into the `programDivision` field ("Men's program" vs "Women's
+    // program") which lost the actual division label.
+    if (gender !== 'mens' && gender !== 'womens') {
+      return res.status(400).json({ error: 'gender ("mens" or "womens") required to draft a coach reply' })
+    }
+    const programLabel = gender === 'womens' ? "women's" : "men's"
 
-    const prompt = `You are ${coachName}, a college soccer coach at ${programName} (${programDivision}).
+    const prompt = `You are ${coachName}, the head coach of the ${programLabel} soccer program at ${programName} (${programDivision}).
 A high-school recruit emailed you through KickrIQ. Draft a SHORT, warm, personal reply (80-120 words).
 
-Recruit:
+Recruit (this is a ${programLabel} soccer recruit interested in your ${programLabel} program):
 - Name: ${athleteName}
 - Position: ${athletePosition ?? 'unspecified'}
 - Grad year: ${athleteGradYear ?? 'unspecified'}
@@ -50,7 +61,7 @@ Your program notes (for tone/positioning, do not quote verbatim): ${programNotes
 Rules:
 - Coach-to-recruit voice — first name, conversational, no corporate language
 - Reference one specific thing about the recruit (position, club, video)
-- Make ONE clear next step (camp invite, phone call, request more video, request transcripts)
+- Make ONE clear next step (camp invite, phone call, request more video, request transcripts) — if you mention a camp or showcase, it must be the ${programLabel} side specifically
 - Sign off with the coach's first name only
 - 80-120 words, no preamble, no bullet points
 
@@ -65,18 +76,65 @@ Respond with JSON only: { "subject": "...", "body": "..." }`
 
 router.post('/email', async (req, res) => {
   try {
-    const { profile, school, division, coachName, gender } = req.body as {
-      profile: AthleteProfile; school: string; division: Division; coachName: string; gender?: string
+    const { profile, school, division, schoolId, coachName, gender } = req.body as {
+      profile: AthleteProfile; school: string; division: Division
+      schoolId?: string; coachName?: string; gender?: string
     }
+    // Gender is REQUIRED — without it we can't verify the email is addressed
+    // to the correct coach (men's vs women's program at the same school have
+    // different head coaches), and the AI can't tailor tone for D1 women's
+    // vs D1 men's recruiting context. Previously this was silently accepted
+    // and the AI wrote with no gender awareness at all.
+    const profileGender = (profile as { gender?: 'mens' | 'womens' | null }).gender
+    const g: 'mens' | 'womens' | null =
+      gender === 'mens' || gender === 'womens' ? gender
+      : profileGender === 'mens' || profileGender === 'womens' ? profileGender
+      : null
+    if (!g) {
+      return res.status(400).json({ error: 'gender ("mens" or "womens") required to generate a coach email' })
+    }
+
+    // Resolve the real coach for this gender at this school (when schoolId is
+    // available). The scraped data is the source of truth — if the caller
+    // passed a coachName that contradicts the scraped record, prefer the
+    // scraped one so we don't write to "Coach Smith" at a school where the
+    // women's head coach is actually Jones. The schools.json names are stale
+    // placeholders and were the original source of mis-addressed emails.
+    let resolvedCoach = (coachName ?? '').trim()
+    let resolvedSource: 'scraped' | 'caller' | 'fallback' = 'caller'
+    if (schoolId) {
+      const scraped = await getScrapedCoach(schoolId, g)
+      const scrapedName = scraped?.coachName?.trim()
+      if (scrapedName && scrapedName.toLowerCase() !== 'head coach') {
+        // Override the caller-supplied name unless they passed exactly the same
+        // name (case-insensitive). This is the safety net that prevents stale
+        // placeholder names from reaching the AI prompt.
+        if (!resolvedCoach || resolvedCoach.toLowerCase() === 'head coach'
+            || resolvedCoach.toLowerCase() !== scrapedName.toLowerCase()) {
+          resolvedCoach = scrapedName
+          resolvedSource = 'scraped'
+        }
+      }
+    }
+    if (!resolvedCoach || resolvedCoach.toLowerCase() === 'head coach') {
+      // Last-resort fallback — we have no real name. Use "Coach" rather than
+      // a stale placeholder so the AI writes a generic-but-respectful greeting
+      // and the athlete knows to look up the name.
+      resolvedCoach = 'Coach'
+      resolvedSource = 'fallback'
+    }
+
     const divisionTone =
       division === 'D1' ? 'professional, concise, and stat-heavy. Club team matters more than high school.'
       : division === 'D2' || division === 'D3' ? 'warm and emphasizing both athletic and academic fit.'
       : 'emphasizing immediate playing time potential and roster fit.'
 
-    const text = await ask(`Write a cold outreach email from the athlete below to ${coachName} at ${school} (${division}).
+    const genderLabel = g === 'womens' ? "women's" : "men's"
+
+    const text = await ask(`Write a cold outreach email from the athlete below to ${resolvedCoach}, head coach of the ${genderLabel} soccer program at ${school} (${division}).
 Tone: ${divisionTone}
 
-Athlete:
+Athlete (gender: ${genderLabel}):
 - Name: ${profile.name}
 - Grad Year: ${profile.gradYear}
 - Position: ${profile.position}
@@ -86,10 +144,16 @@ Athlete:
 - Major: ${profile.intendedMajor || 'undecided'}
 - Highlight: ${profile.highlightUrl || 'not provided'}
 
-Must include: grad year, position, club+league, stats, GPA, why this school, clear ask (visit/camp/call). Include major and highlight link only if provided above.
+Important context — this is a ${genderLabel} college soccer recruit writing to a ${genderLabel} program coach. Tone and references should reflect that (e.g., when citing program success, reference the ${genderLabel} side specifically; don't generalize across the whole school's soccer).
+
+Must include: grad year, position, club+league, stats, GPA, why this school's ${genderLabel} program, clear ask (visit/camp/call). Include major and highlight link only if provided above.
 
 Respond with JSON only: { "subject": "...", "body": "..." }`, 800)
-    res.json(parseJSON(text, {}))
+    const parsed = parseJSON<Record<string, unknown>>(text, {})
+    // Surface the resolved coach name + source so the client can show a
+    // "we addressed this to <name>" line and the athlete can verify before
+    // sending. coachSource = 'scraped' means we corrected a stale name.
+    res.json({ ...parsed, coachName: resolvedCoach, coachSource: resolvedSource })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
   }
@@ -153,6 +217,14 @@ router.post('/schools', async (req, res) => {
       // Affinity-from-ratings payload. Optional. Validated below before use.
       preferences?: unknown
     }
+    // Up-front validation gives the client a clean 400 with a clear message
+    // instead of letting the matcher's requireGender() throw and surface as
+    // a generic 500. The matcher still enforces gender internally — this is
+    // just the friendly error at the route boundary.
+    const pGender = (profile as { gender?: 'mens' | 'womens' | null } | null)?.gender
+    if (pGender !== 'mens' && pGender !== 'womens') {
+      return res.status(400).json({ error: 'profile.gender ("mens" or "womens") required to match schools' })
+    }
     // Hard-cap topN at 100. The matcher is pure local logic (no AI cost),
     // so this is purely a safety bound — a 100-item list is already past
     // the point most athletes will scroll.
@@ -177,8 +249,21 @@ router.post('/score-school', async (req, res) => {
       video?: import('../../client/src/types/index').VideoRating | null
     }
     if (!schoolId) return res.status(400).json({ error: 'schoolId required' })
+    const pGender = (profile as { gender?: 'mens' | 'womens' | null } | null)?.gender
+    if (pGender !== 'mens' && pGender !== 'womens') {
+      return res.status(400).json({ error: 'profile.gender ("mens" or "womens") required to score a school' })
+    }
     const school = scoreSingleSchool(profile, schoolId, video ?? null)
-    if (!school) return res.status(404).json({ error: 'school not found' })
+    // scoreSingleSchool returns null in two cases: school not in dataset, or
+    // school doesn't field a program for this gender. Surface a clear 404
+    // with a reason field so the UI can distinguish "school doesn't exist"
+    // from "no men's/women's program here".
+    if (!school) {
+      return res.status(404).json({
+        error: 'no scorable program for this gender at the requested school',
+        reason: 'no-program-or-not-found',
+      })
+    }
     res.json({ school })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
@@ -207,7 +292,14 @@ router.post('/program-intel', async (req, res) => {
       schoolId: string; gender: 'mens' | 'womens'; refresh?: boolean
     }
     if (!schoolId) return res.status(400).json({ error: 'schoolId required' })
-    const intel = await getProgramIntel(schoolId, gender ?? 'womens', { refresh: !!refresh })
+    // Gender is REQUIRED — the intel prompt builds a gender-specific program
+    // analysis (formation, playstyle, recruiting profile) and the search-link
+    // helper builds gender-specific Google/YouTube queries. Silently defaulting
+    // to 'womens' produced men's-profile users seeing women's-program intel.
+    if (gender !== 'mens' && gender !== 'womens') {
+      return res.status(400).json({ error: 'gender ("mens" or "womens") required for program intel' })
+    }
+    const intel = await getProgramIntel(schoolId, gender, { refresh: !!refresh })
     res.json({ intel })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
@@ -222,10 +314,23 @@ router.post('/video', async (req, res) => {
       return res.status(400).json({ error: 'Only YouTube URLs are supported at this time.' })
     }
 
+    // Gender is REQUIRED — the rater calibration differs across men's and
+    // women's college soccer. Without it the AI scored every athlete against
+    // a gender-blind rubric, which under-rated men's tape (where scoring rates
+    // are lower) and over-rated women's tape at top D1 schools (where elite
+    // benchmarks run higher than the AI's gender-blind expectation).
+    const profileGender = (profile as { gender?: 'mens' | 'womens' | null }).gender
+    if (profileGender !== 'mens' && profileGender !== 'womens') {
+      return res.status(400).json({ error: 'profile.gender ("mens" or "womens") required to rate a highlight video' })
+    }
+    const gender: 'mens' | 'womens' = profileGender
+
     // Check cache. The "v" prefix is a schema version — bump it whenever the
     // rating output shape changes. v3 dropped profile.position from the cache
-    // key; v9 switched the AI from individual frames to grid composites.
-    const cacheKey = `v10::${videoUrl}::${profile.targetDivision}`
+    // key; v9 switched the AI from individual frames to grid composites;
+    // v11 added gender so men's and women's profiles can't share a cached
+    // rating for the same video (the rubric calibration now differs).
+    const cacheKey = `v11::${videoUrl}::${gender}::${profile.targetDivision}`
     const cached = videoCache.get(cacheKey)
     if (cached && Date.now() - cached.cachedAt < CACHE_TTL_MS) {
       return res.json(cached.result)
@@ -252,6 +357,25 @@ router.post('/video', async (req, res) => {
       profile.targetDivision === 'D2' || profile.targetDivision === 'D3' ? `${profile.targetDivision}: show fit + versatility, not just goals. Academic info on overlay is a plus.` :
       'NAIA/JUCO: show physical and tactical readiness for immediate playing time.'
 
+    // League context that the tape evaluator legitimately needs. This is NOT
+    // a profile-leakage signal (position / club / stats are still off-limits)
+    // — gender determines the actual league being played, which changes the
+    // calibration of pace, physicality, and goal-scoring benchmarks the
+    // evaluator should anchor against.
+    const genderLabel = gender === 'womens' ? "women's" : "men's"
+    const genderCalibration = gender === 'womens'
+      ? `LEAGUE CONTEXT — WOMEN'S COLLEGE SOCCER:
+This tape is being evaluated against the women's college soccer ${profile.targetDivision} level. Pace, physicality, and tactical norms differ from men's college soccer — calibrate against women's program benchmarks specifically (e.g., top-program strikers in women's D1 score at a higher rate than men's D1; comparing to a men's rubric will under-rate elite women's tape).`
+      : `LEAGUE CONTEXT — MEN'S COLLEGE SOCCER:
+This tape is being evaluated against the men's college soccer ${profile.targetDivision} level. Pace, physicality, and tactical norms differ from women's college soccer — calibrate against men's program benchmarks specifically (e.g., men's D1 forwards typically score in the 8–12 goals/season range; women's-rubric expectations will over-penalize men's tape).`
+    // Top-program anchors for the 8.0–8.9 scoring band. Women's elite D1 is
+    // dominated by Stanford/Duke/UNC/UCLA; men's elite D1 is Indiana/Maryland/
+    // Wake Forest/Akron/Virginia. Using the wrong set as the anchor confuses
+    // the AI about what an "8.0 player at this level" looks like.
+    const eliteAnchorD1 = gender === 'womens'
+      ? 'Stanford / Duke / UNC / UCLA'
+      : 'Indiana / Maryland / Wake Forest / Akron / Virginia'
+
     const prompt = `You are an experienced college soccer recruiting coordinator with 15+ years of evaluating player tape. You have ${grids.length} grid montages, each one a 4-column × 3-row composite of up to 12 video frames. Across all grids you are seeing ${frames.length} frames spanning the ENTIRE video.
 
 GRID FORMAT — read this carefully:
@@ -260,10 +384,13 @@ Each grid image is a 4×3 grid of frames. Read them left-to-right, top-to-bottom
 Your job is to evaluate THE PLAYER — what position they play on tape, how they play it, and the quality of their play. You are NOT a video producer. Do not grade the editing, the camera angle, the title card, the music, the stat overlay, or the video length. Coaches care about the soccer; that is what you are here to assess.
 
 Target division (the level you are calibrating against): ${profile.targetDivision}
+Target league: ${genderLabel} college soccer
 Grad year: ${profile.gradYear}
 
+${genderCalibration}
+
 CRITICAL — IGNORE ANY OFF-TAPE PROFILE:
-You are NOT told the player's listed position, club, or stats. Even if you have prior context that says otherwise, do NOT use it. The recruit's listed position can be wrong, outdated, or from a different team. Your evaluation must come ONLY from what is visible in these frames. Trust the tape, not a profile.
+You are NOT told the player's listed position, club, or stats. Even if you have prior context that says otherwise, do NOT use it. The recruit's listed position can be wrong, outdated, or from a different team. Your evaluation must come ONLY from what is visible in these frames. Trust the tape, not a profile. (Gender / league context above is legitimate evaluation calibration, not a profile leak — use it.)
 
 WHAT TO IGNORE (do not mention, do not score, do not include in improvements):
 - Camera angle of any kind (high-angle / drone / sideline / Veo / Trace / Pixellot / handheld / phone — ALL FINE, ALL EQUIVALENT)
@@ -329,7 +456,7 @@ SCORING — every score is a 1.0–10.0 number on this scale, with ONE decimal p
   5.0–5.9 = at the lower edge of ${profile.targetDivision} (could fit the bench of a weaker program at this division)
   6.0–6.9 = competitive at ${profile.targetDivision} — would fit a typical roster at this division
   7.0–7.9 = solid ${profile.targetDivision} contributor — would compete for minutes at a typical program
-  8.0–8.9 = above ${profile.targetDivision} — clear impact player, could start at most programs at this level (this is the band for top-program commits like Stanford / Duke / UNC / UCLA at D1)
+  8.0–8.9 = above ${profile.targetDivision} — clear impact player, could start at most programs at this level (this is the band for top-program commits like ${eliteAnchorD1} at D1)
   9.0–9.9 = well above ${profile.targetDivision} — top-program starter, could play a level higher
   10.0  = elite for ${profile.targetDivision} — best-in-class, plays well above this level
 
@@ -507,15 +634,24 @@ You hedged. Re-evaluate. Pick the player's clearest STRENGTH from what you actua
 router.post('/followup', async (req, res) => {
   try {
     const { profile, context, type } = req.body as { profile: AthleteProfile; context: string; type: 'followup' | 'thankyou' | 'answer' }
+    // Gender is REQUIRED — follow-ups, thank-yous, and Q&A responses to a
+    // coach all need to know whether the recipient runs a men's or women's
+    // program. Without it the AI writes generic copy that misses tone +
+    // recruiting-cycle context (men's D1 vs women's D1 timelines differ).
+    const pGender = (profile as { gender?: 'mens' | 'womens' | null } | null)?.gender
+    if (pGender !== 'mens' && pGender !== 'womens') {
+      return res.status(400).json({ error: 'profile.gender ("mens" or "womens") required to generate a follow-up' })
+    }
+    const genderLabel = pGender === 'womens' ? "women's" : "men's"
     const typeInstruction = type === 'followup' ? 'a follow-up email to a coach who has not responded in 2 weeks'
       : type === 'thankyou' ? 'a thank-you email after a campus visit or call'
       : 'a response to a coach question or inquiry'
     const text = await ask(`You are a college soccer recruitment counselor with 15+ years of experience.
 
-Write ${typeInstruction} for: ${profile.name}, ${profile.position}, Class of ${profile.gradYear}, ${profile.clubTeam}. Target: ${profile.targetDivision}.
+Write ${typeInstruction} for: ${profile.name}, ${profile.position}, Class of ${profile.gradYear}, ${profile.clubTeam}. Target: ${profile.targetDivision} (${genderLabel} college soccer). The coach being contacted runs a ${genderLabel} soccer program — tone and recruiting-cycle references should reflect that.
 Context: ${context || 'No additional context provided.'}
 
-Also provide brief counselor advice (2–3 sentences) on strategy, timing, or tone the athlete should know about this specific situation — not generic tips, but insight specific to the context above.
+Also provide brief counselor advice (2–3 sentences) on strategy, timing, or tone the athlete should know about this specific situation — not generic tips, but insight specific to the context above and the ${genderLabel} recruiting cycle.
 
 Respond with JSON only: { "body": "...", "advice": "..." }`, 600)
     res.json(parseJSON(text, {}))
@@ -526,8 +662,17 @@ Respond with JSON only: { "body": "...", "advice": "..." }`, 600)
 
 router.post('/rate-response', async (req, res) => {
   try {
-    const { school, coachName, text: replyText } = req.body as { school: string; coachName: string; text: string }
-    const json = await rateCoachReply(school, coachName, replyText)
+    const { school, coachName, text: replyText, gender } = req.body as {
+      school: string; coachName: string; text: string; gender?: 'mens' | 'womens'
+    }
+    // Gender is REQUIRED — the rating rubric calibrates against the gender's
+    // recruiting cycle and contact-cadence norms. Without it the AI rates
+    // every reply against a generic blend that misreads women's-cycle signals
+    // (early contact normal) and men's-cycle signals (later contact normal).
+    if (gender !== 'mens' && gender !== 'womens') {
+      return res.status(400).json({ error: 'gender ("mens" or "womens") required to rate a coach reply' })
+    }
+    const json = await rateCoachReply(school, coachName, replyText, gender)
     res.json({ ...json, id: crypto.randomUUID(), school, coachName, date: new Date().toISOString() })
   } catch (e) {
     res.status(500).json({ error: e instanceof Error ? e.message : 'Failed' })
@@ -540,6 +685,15 @@ router.post('/find-camps', async (req, res) => {
       profile: AthleteProfile
       schools: { name: string; division: string }[]
     }
+    // Gender is REQUIRED — the camp search builds gender-specific Google
+    // queries ("UCLA women's soccer ID camp register") and labels each camp
+    // as men's or women's. Previously this silently defaulted to women's
+    // when profile.gender was missing, surfacing women's camps to men's
+    // profiles with no signal.
+    const pGender = (profile as { gender?: 'mens' | 'womens' | null } | null)?.gender
+    if (pGender !== 'mens' && pGender !== 'womens') {
+      return res.status(400).json({ error: 'profile.gender ("mens" or "womens") required to find ID camps' })
+    }
 
     // For each school the user adds, return a generic ID-camp record. We DO
     // NOT ask the AI to invent registration URLs, dates, or coach names — those
@@ -548,7 +702,7 @@ router.post('/find-camps', async (req, res) => {
     // The curated /id-camps directory is the source of truth for major
     // programs; this endpoint is the fallback for arbitrary user-added schools.
     const enc = (s: string) => encodeURIComponent(s)
-    const gender = profile.gender === 'mens' ? 'men' : 'women'
+    const gender = pGender === 'mens' ? 'men' : 'women'
     const camps = schools.map((s) => ({
       id: `search-${s.name.replace(/\W+/g, '-').toLowerCase()}`,
       school: s.name,
@@ -574,16 +728,25 @@ router.post('/camp-emails', async (req, res) => {
       camp: { campName: string; school: string; date: string; location: string }
       coaches: { name: string; title: string }[]
     }
+    // Gender is REQUIRED — camp outreach emails address coaches of a specific
+    // program (men's vs women's ID camp). Without gender the AI writes
+    // tone-blind emails that may even reference the wrong program. Previously
+    // this endpoint silently used whatever was in the profile, including null.
+    const pGender = (profile as { gender?: 'mens' | 'womens' | null } | null)?.gender
+    if (pGender !== 'mens' && pGender !== 'womens') {
+      return res.status(400).json({ error: 'profile.gender ("mens" or "womens") required to generate camp emails' })
+    }
+    const genderLabel = pGender === 'womens' ? "women's" : "men's"
     const coachList = coaches.map((c) => `${c.name} (${c.title})`).join('; ')
     const text = await ask(`Write personalized ID camp outreach emails from this athlete to each coach.
 
-Athlete: ${profile.name}, ${profile.position}, Class of ${profile.gradYear}, ${profile.clubTeam} (${profile.clubLeague}), ${profile.goals}G/${profile.assists}A, GPA ${profile.gpa}, Highlight: ${profile.highlightUrl}
+Athlete (${genderLabel} soccer recruit): ${profile.name}, ${profile.position}, Class of ${profile.gradYear}, ${profile.clubTeam} (${profile.clubLeague}), ${profile.goals}G/${profile.assists}A, GPA ${profile.gpa}, Highlight: ${profile.highlightUrl}
 
-Camp: ${camp.campName} at ${camp.school} on ${camp.date} in ${camp.location}
+Camp: ${camp.campName} at ${camp.school} on ${camp.date} in ${camp.location} (${genderLabel} program ID camp)
 
 Coaches: ${coachList}
 
-For each coach, write a concise email (under 200 words) mentioning: attending their specific camp on the date, key stats, highlight link, why their program, and a clear ask to connect at camp.
+For each coach, write a concise email (under 200 words) mentioning: attending their specific ${genderLabel} camp on the date, key stats, highlight link, why their ${genderLabel} program, and a clear ask to connect at camp.
 
 Respond with JSON only: { "emails": [{ "coachName": "...", "subject": "...", "body": "..." }] }`, 900)
     res.json(parseJSON(text, { emails: [] }))
@@ -666,6 +829,15 @@ function normalizeAthletePosition(raw: string): string {
 router.post('/roster-intel', async (req, res) => {
   try {
     const { gender, division, athletePosition } = req.body as { gender: 'mens' | 'womens'; division: string; athletePosition: string }
+    // Gender is REQUIRED — buildRosterPrograms keys coach lookups by
+    // `${schoolId}:${gender}` and filters out programs that don't field
+    // the requested gender. Without it the function silently produces an
+    // empty or misleading list. Previously this relied on TypeScript at the
+    // boundary, which doesn't catch runtime payloads (the client UI is the
+    // only intended caller, but the API itself should fail loudly).
+    if (gender !== 'mens' && gender !== 'womens') {
+      return res.status(400).json({ error: 'gender ("mens" or "womens") required for roster intel' })
+    }
 
     let programs = buildRosterPrograms(gender, division)
 

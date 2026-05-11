@@ -69,11 +69,15 @@ export function readLegacyProfile(): AthleteProfile | null {
     VALID_REGIONS.includes(reg as Region))
   const locationPreference: Region = regions[0] ?? 'any'
 
-  // Gender lives on the AthleteProfileRecord directly. The matcher needs
-  // a real choice to filter out programs of the wrong gender. The 'mens'
-  // fallback is for the brief window between record creation and the
-  // user picking gender in onboarding (where it's required to advance).
-  const gender: 'mens' | 'womens' = r.gender ?? 'mens'
+  // Gender lives on the AthleteProfileRecord directly. The matcher REQUIRES
+  // a real choice — it throws on missing gender (silently picking one was
+  // the bug that surfaced women's programs for men's profiles and vice
+  // versa). If the stored record predates the gender field (legacy users
+  // who completed onboarding before gender was required), return null here
+  // so the caller routes them back through onboarding instead of building
+  // a profile with a fake gender.
+  if (r.gender !== 'mens' && r.gender !== 'womens') return null
+  const gender: 'mens' | 'womens' = r.gender
 
   return {
     name: r.full_name ?? '',

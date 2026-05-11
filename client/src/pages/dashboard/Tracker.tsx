@@ -13,6 +13,7 @@ import { getContacts, createContact, updateContact, gmailGetThreads, getGmailSta
 import { ProGate } from '../../components/ui/ProGate'
 import { consumePreview } from '../../lib/waitlist'
 import { useAuth } from '../../context/AuthContext'
+import { readLegacyProfile } from '../../lib/profileAdapter'
 import type { OutreachContact, CoachResponse, UntrackedThread, Division } from '../../types'
 
 const ratingConfig = {
@@ -208,12 +209,19 @@ function TrackerInner() {
 
   async function handleRateResponse() {
     if (!resSchool || !resCoach) { setRatingError('Please enter school and coach name.'); return }
+    // Gender comes from the athlete profile — the AI calibrates the rating
+    // against gender-specific recruiting-cycle norms. Server returns 400 if
+    // it's missing, so catch here with a friendly message.
+    const profile = readLegacyProfile()
+    if (profile?.gender !== 'mens' && profile?.gender !== 'womens') {
+      setRatingError('Please pick a gender (Men\'s/Women\'s) in your athlete profile — the rating calibrates against that league.'); return
+    }
     const text = inputMode === 'paste' ? resText
       : `Coach responded. ${quickVisit ? 'Invited to visit campus.' : ''} ${quickQuestions ? 'Asked follow-up questions.' : ''} ${quickScholarship ? 'Mentioned scholarship possibility.' : ''}`
     if (!text.trim()) { setRatingError('Please provide some context about the response.'); return }
     setRatingError(''); setRatingLoading(true)
     try {
-      const result = await rateResponse(resSchool, resCoach, text)
+      const result = await rateResponse(resSchool, resCoach, text, profile.gender)
       const entry: CoachResponse = { ...result, rawText: inputMode === 'paste' ? resText : undefined }
       const updated = [entry, ...responses]
       setResponses(updated); saveResponses(updated)

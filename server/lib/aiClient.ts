@@ -292,11 +292,16 @@ export async function rateCoachReply(
   school: string,
   coachName: string,
   replyText: string,
+  gender: 'mens' | 'womens',
 ): Promise<CoachReplyAnalysis> {
+  // Gender shapes how to read coach interest: men's and women's recruiting
+  // cycles peak at different times and the cadence/tone of "engaged" replies
+  // looks different in each. Without it the AI rates with a single rubric.
+  const genderLabel = gender === 'womens' ? "women's" : "men's"
   const text = await ask(
-    `Analyze this coach reply for a high school soccer recruit and return a detailed JSON assessment.
+    `Analyze this ${genderLabel} college soccer coach's reply to a high school recruit and return a detailed JSON assessment. Calibrate genuineness and interest signals against ${genderLabel} college recruiting norms (timeline, contact cadence, what "engaged" looks like at this level).
 
-School: ${school}
+School: ${school} (${genderLabel} program)
 Coach: ${coachName}
 Reply:
 ${replyText}
