@@ -140,7 +140,7 @@ export function OnboardingProfile() {
       return !!form.full_name && !!form.gender && !!form.graduation_year && !!form.high_school_name
     }
     if (step.key === 'soccer') {
-      return !!form.gender && !!form.primary_position && !!form.preferred_foot && !!form.current_club && !!form.current_league_or_division
+      return !!form.gender && !!form.primary_position && !!form.preferred_foot && !!form.current_club && !!form.current_league_or_division && form.height_cm != null && form.weight_kg != null
     }
     if (step.key === 'academics') {
       return form.gpa != null
@@ -356,10 +356,10 @@ export function OnboardingProfile() {
                   ))}
                 </select>
 
-                <FieldLabel>Height & weight (optional)</FieldLabel>
+                <FieldLabel>Height & weight</FieldLabel>
                 <p className="text-xs text-ink-3 leading-[1.5] -mt-1">
                   Coaches care about frame — especially for keepers, center backs, and target strikers.
-                  Add it now so it shows up automatically in your coach emails.
+                  It shows up automatically in your coach emails.
                 </p>
                 <HeightWeightInputs
                   heightCm={form.height_cm ?? null}
